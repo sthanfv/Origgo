@@ -73,10 +73,26 @@ function actualizarVistaCarrusel(cardIndex, activeIndex) {
   slides.forEach((slide, sIdx) => {
     if (sIdx === activeIndex) {
       slide.classList.add('active');
+      // Carga bajo demanda de la foto activa si aún no se ha descargado
+      const img = slide.querySelector('img[data-src]');
+      if (img) {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      }
     } else {
       slide.classList.remove('active');
     }
   });
+
+  // Precarga proactiva del siguiente slide para respuesta instantánea sin peso inicial
+  if (slides.length > 1) {
+    const nextIdx = (activeIndex + 1) % slides.length;
+    const nextImg = slides[nextIdx]?.querySelector('img[data-src]');
+    if (nextImg) {
+      nextImg.src = nextImg.dataset.src;
+      nextImg.removeAttribute('data-src');
+    }
+  }
 
   const dotsContainer = document.getElementById(`dots-${cardIndex}`);
   if (dotsContainer) {
@@ -164,11 +180,7 @@ async function cargarDatos(rutaJson) {
   }
 
   try {
-    // Breve destello de 220ms para permitir la transición fluida del Skeleton sin demoras
-    const [res] = await Promise.all([
-      fetch(rutaJson),
-      new Promise(resolve => setTimeout(resolve, 220))
-    ]);
+    const res = await fetch(rutaJson);
     if (!res.ok) throw new Error(`HTTP ${res.status}: No se pudo cargar el dataset.`);
     const json = await res.json();
     datosActuales = json;
@@ -264,7 +276,11 @@ function renderizarInterfaz(dataset) {
         <div class="carousel-track" id="carousel-${index}">
           ${fotos.map((foto, fIdx) => `
             <div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}">
-              <img src="${escaparHtml(foto)}" alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" loading="lazy" />
+              ${fIdx === 0 ? `
+                <img src="${escaparHtml(foto)}" alt="${escaparHtml(item.titulo)} - Foto 1" class="carousel-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
+              ` : `
+                <img data-src="${escaparHtml(foto)}" alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" loading="lazy" decoding="async" />
+              `}
             </div>
           `).join('')}
           
@@ -286,7 +302,7 @@ function renderizarInterfaz(dataset) {
       `;
     } else {
       mediaHtml += `
-        <img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" loading="lazy" />
+        <img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
       `;
     }
     mediaHtml += '</div>';

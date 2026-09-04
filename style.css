@@ -49,6 +49,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2') format('woff2');
+}
+
 /* ═════════════════════════════════════════════════════════════════════════
    🏛️ ESTILOS DARK LUXURY TERMINAL v3.2 (LUFGA OFFICIAL EDITION)
    ═════════════════════════════════════════════════════════════════════════ */
@@ -129,8 +145,8 @@
   --border-hover: var(--color-border-hover);
 
   --text-main: #FFFFFF;                        /* Blanco Puro Absoluto (Cero tinte verdoso) */
-  --text-muted: rgba(255, 255, 255, 0.72);     /* Blanco secundario limpio */
-  --text-dim: rgba(255, 255, 255, 0.48);       /* Blanco terciario limpio */
+  --text-muted: rgba(255, 255, 255, 0.88);     /* Blanco secundario limpio (ratio > 9:1) */
+  --text-dim: #9EB1A8;                         /* Salvia Claro Neutro de Alto Contraste (ratio > 6.2:1) */
 
   --accent-emerald: hsl(158, 64%, 48%);
   --accent-emerald-hover: hsl(158, 70%, 40%);
@@ -210,8 +226,8 @@
   --border-hover: hsl(170, 59%, 22%);
 
   --text-main: #0A110E;                        /* Carbón Obsidiana Orgánico: Cero tinte azul slate */
-  --text-muted: #2E3B35;                       /* Carbón Esmerilado Neutro */
-  --text-dim: #54655D;                         /* Salvia Oscuro Neutro */
+  --text-muted: #242E29;                       /* Carbón Esmerilado Neutro de Alto Contraste (ratio > 8.5:1) */
+  --text-dim: #374640;                         /* Salvia Oscuro Neutro de Alto Contraste (ratio > 6.5:1) */
 
   --accent-emerald: hsl(170, 59%, 18%);    /* Verde bosque esmeralda de alta prestancia */
   --accent-emerald-hover: hsl(170, 59%, 12%);
@@ -427,13 +443,9 @@ body {
 @keyframes animCalibRingMid {
   0%, 32%, 80%, 100% {
     transform: rotate(0deg);
-    stroke: #10B981;
-    stroke-opacity: 0.72;
   }
   48% {
     transform: rotate(45deg); /* Giro a la derecha */
-    stroke: #34D399;
-    stroke-opacity: 1;
   }
   65% {
     transform: rotate(-3deg);
@@ -450,13 +462,9 @@ body {
 @keyframes animCalibRingInner {
   0%, 32%, 80%, 100% {
     transform: rotate(0deg);
-    stroke: #34D399;
-    stroke-opacity: 0.9;
   }
   48% {
     transform: rotate(-45deg); /* Contragiro a la izquierda */
-    stroke: #6EE7B7;
-    stroke-opacity: 1;
   }
   65% {
     transform: rotate(3deg);
@@ -474,19 +482,19 @@ body {
 @keyframes animCalibCoreLens {
   0%, 35%, 80%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4));
+    opacity: 0.85;
   }
   48% {
-    transform: scale(1.45); /* Apertura de lente */
-    filter: drop-shadow(0 0 10px rgba(52, 211, 153, 1));
+    transform: scale(1.35); /* Apertura de lente */
+    opacity: 1;
   }
   62% {
     transform: scale(0.95);
-    filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.6));
+    opacity: 0.9;
   }
   70% {
     transform: scale(1);
-    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4));
+    opacity: 0.85;
   }
 }
 
@@ -535,26 +543,22 @@ body {
 @keyframes animHunterReveal {
   0% {
     opacity: 0;
-    transform: translateX(-24px);
-    filter: blur(6px);
+    transform: translateX(-16px);
   }
   100% {
     opacity: 1;
     transform: translateX(0);
-    filter: blur(0);
   }
 }
 
 @keyframes animProReveal {
   0% {
     opacity: 0;
-    transform: translateX(20px) scale(0.92);
-    filter: blur(6px);
+    transform: translateX(16px) scale(0.94);
   }
   100% {
     opacity: 1;
     transform: translateX(0) scale(1);
-    filter: blur(0);
   }
 }
 
@@ -765,14 +769,14 @@ body {
   background-color: var(--accent-emerald);
   border-radius: 50%;
   box-shadow: 0 0 8px var(--accent-emerald);
-  animation: pulse-dot 2s infinite;
+  position: relative;
+  animation: pulse-dot 2s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 @keyframes pulse-dot {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  0%, 100% { transform: scale(0.9); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 
 /* Botón VIP Header (Píldora de Cristal con Letras en Oro Puro y Destello Metálico Shine de Desmulta) */
@@ -797,17 +801,7 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 hsla(43, 85%, 65%, 0.25);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Efecto Shine Puro por dentro de la corona y el texto */
-@keyframes vip-text-glint {
-  0% {
-    background-position: 200% center;
-  }
-  25%, 100% {
-    background-position: -100% center;
-  }
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
 
 .btn-vip-header i,
@@ -820,13 +814,20 @@ body {
     #F59E0B 65%, 
     #D97706 100%
   );
-  background-size: 250% auto;
+  background-size: 100% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: #F59E0B; /* Fallback */
-  animation: vip-text-glint 4s infinite cubic-bezier(0.25, 1, 0.5, 1);
   position: relative;
   z-index: 1;
+}
+
+[data-theme="light"] .btn-vip-header i,
+[data-theme="light"] .vip-btn-text {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: #B45309;
+  color: #B45309;
 }
 
 .btn-vip-header i {
@@ -3097,16 +3098,27 @@ main {
       #F59E0B 65%, 
       #D97706 100%
     );
-    background-size: 250% auto;
+    background-size: 100% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     color: #F59E0B;
-    animation: vip-text-glint 4s infinite cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 1;
+  }
+
+  [data-theme="light"] #btnNavVip i,
+  [data-theme="light"] #btnNavVip span {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: #B45309;
+    color: #B45309; /* Alto contraste certificado WCAG AA en fondo claro */
   }
 
   #btnNavVip i {
     filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+  }
+
+  [data-theme="light"] #btnNavVip i {
+    filter: none;
   }
 
   #btnNavVip span {
