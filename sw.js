@@ -3,7 +3,7 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'hunter-pro-v16';
+const NOMBRE_CACHE = 'hunter-pro-v17';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',

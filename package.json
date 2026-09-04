@@ -5,7 +5,10 @@
   "main": "index.html",
   "scripts": {
     "start": "npx serve -l 5000 .",
-    "test": "node -e \"console.log('✅ Archivos estáticos verificados exitosamente.')\""
+    "build": "node scripts/build.js",
+    "validate": "node scripts/validate.js",
+    "test": "npm run build && npm run validate",
+    "prepare": "husky"
   },
   "keywords": [
     "real-estate",
@@ -16,5 +19,8 @@
     "fsbo"
   ],
   "author": "Ofertas Hunter Pro Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }
