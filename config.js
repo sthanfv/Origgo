@@ -12,7 +12,7 @@ const PORTAL_CONFIG = {
   
   // Llave Pública Wompi (Modo Sandbox para pruebas seguras con Nequi, PSE y Tarjetas)
   wompi: {
-    publicKey: "pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGObCi", // Llave Sandbox oficial de pruebas Wompi
+    publicKey: "pub_test_PQAm6bJXtS4ScbCpBU058xY0vlTPFXfA", // Llave Sandbox oficial del comercio Wompi
     entorno: "sandbox" // "sandbox" o "produccion"
   },
 
