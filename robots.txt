@@ -5,4 +5,21 @@ Allow: /
 Disallow: /data/
 Disallow: /api/
 
+# Rastreadores de Inteligencia Artificial (Agentic Browsing y Búsqueda Semántica)
+User-agent: GPTBot
+Allow: /llms.txt
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /llms.txt
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /llms.txt
+Allow: /
+
+User-agent: Google-Extended
+Allow: /llms.txt
+Allow: /
+
 Sitemap: https://hunter-pro.vercel.app/sitemap.xml

@@ -1,0 +1,18 @@
+# Hunter Pro Intelligence
+
+> Terminal privada de inteligencia inmobiliaria, arbitraje comercial y captación directa de particulares (FSBO) en Colombia.
+
+## Visión General
+Hunter Pro es una plataforma tecnológica de análisis pericial y agregación de oportunidades inmobiliarias directas. El sistema monitorea de forma continua ofertas en los principales polos de inversión comercial del país, filtrando intermediarios y agencias para conectar a inversionistas con propietarios directos.
+
+## Características Principales
+- **Filtro FSBO Estricto:** Detección de avisos publicados exclusivamente por propietarios particulares, excluyendo corredores, inmobiliarias y constructoras.
+- **Linaje Criptográfico B2B:** Cada oportunidad indexada cuenta con un sello criptográfico SHA-256 (`raw_response_sha256`) generado sobre los datos originales para garantizar trazabilidad e inmutabilidad.
+- **Auditoría de Rebajas de Precio:** Historial de reducciones de precio en tiempo real con cálculo del descuento en COP y porcentaje.
+- **Métrica $/m² y Arbitraje:** Cálculo del precio unitario por metro cuadrado y contraste frente a la mediana histórica del sector.
+- **Cobertura Nacional:** Monitoreo activo en Bogotá D.C., Sabana Norte, Medellín, Valle de Aburrá, Oriente Antioqueño, Cali, Barranquilla, Cartagena, Bucaramanga, Floridablanca y Eje Cafetero.
+
+## Estructura de la Terminal
+- [Página Principal / Terminal](https://hunter-pro.vercel.app/): Vitrina de oportunidades inmobiliarias directas con filtros por ciudad, tipología y rango de precios.
+- [Mapa del Sitio (Sitemap)](https://hunter-pro.vercel.app/sitemap.xml): Estructura XML de indexación para motores de búsqueda.
+- [Directivas de Rastreo (Robots)](https://hunter-pro.vercel.app/robots.txt): Especificación de permisos y reglas de indexación.
