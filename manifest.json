@@ -1,0 +1,19 @@
+{
+  "name": "Hunter Pro Intelligence",
+  "short_name": "Hunter Pro",
+  "description": "Terminal de Oportunidades Directas y Arbitraje Inmobiliario y Vehicular en Colombia",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#051F20",
+  "theme_color": "#051F20",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./assets/img/hunter_radar_logo.svg",
+      "sizes": "192x192 512x512 any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "config": {
+    "titulo_modulo": "Terminal de Vehículos <span class=\"editorial-italic\">con margen</span> de Reventa",
+    "subtitulo": "Radar de vehículos particulares comercializados por sus dueños por debajo de la guía comercial Fasecolda para compra y reventa inmediata.",
+    "columna_variable_1": "Kilometraje",
+    "columna_variable_2": "Transmisión",
+    "precio_membresia_cop": 89000,
+    "total_sectores_monitoreados": 12,
+    "actualizado_en": "3 de Septiembre de 2026, 6:45 PM"
+  },
+  "leads": [
+    {
+      "id": "lead-veh-001",
+      "titulo": "Mazda 3 Grand Touring LX 2.0 2022",
+      "ubicacion": "Chicó Norte, Bogotá",
+      "barrio": "Chicó Norte",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Sedán Deportivo",
+      "imagen": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80",
+      "dato_1": "34.000 km",
+      "dato_2": "Automática Secuencial",
+      "precio_m2": "Modelo 2022",
+      "precio": "$ 78.000.000",
+      "precio_raw": 78000000,
+      "rebaja": "-$ 8M",
+      "urgencia": "🔥 Traslado Exterior",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Publicado hace 15 min",
+      "telefono_bloqueado": "310 ••• ••••",
+      "enlace_bloqueado": "https://tucarro.com.co/vehiculo-••••••",
+      "detalles": {
+        "Año Modelo": "2022",
+        "Kilometraje": "34.000 km",
+        "Transmisión": "Automática Secuencial 6 Vel",
+        "Motor": "2.0L SkyActiv-G Gasolina",
+        "Placa": "Bogotá (Terminada en 4)",
+        "Estado": "Único dueño, mantenimientos al día"
+      }
+    },
+    {
+      "id": "lead-veh-002",
+      "titulo": "Toyota Hilux 2.8 Diesel 4x4 2021",
+      "ubicacion": "Laureles, Medellín",
+      "barrio": "Laureles",
+      "ciudad": "Medellín",
+      "tipo_inmueble": "Pick-up Utilitaria 4x4",
+      "imagen": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "52.000 km",
+      "dato_2": "Mecánica 6 Vel • 4x4",
+      "precio_m2": "Modelo 2021",
+      "precio": "$ 152.000.000",
+      "precio_raw": 152000000,
+      "rebaja": "-$ 15M",
+      "urgencia": "📉 Ganga",
+      "urgencia_tipo": "arbitraje",
+      "fecha_relativa": "Publicado hace 45 min",
+      "telefono_bloqueado": "314 ••• ••••",
+      "enlace_bloqueado": "https://tucarro.com.co/vehiculo-••••••",
+      "detalles": {
+        "Año Modelo": "2021",
+        "Kilometraje": "52.000 km",
+        "Tracción": "4x4 con Bajo y Bloqueo",
+        "Combustible": "Diésel 2.8 Turbo",
+        "Placa": "Envigado (Terminada en 8)",
+        "Accesorios": "Carpa plana, duraliner y tiro de arrastre"
+      }
+    },
+    {
+      "id": "lead-veh-003",
+      "titulo": "Renault Duster Oroch 1.3 Turbo 2023",
+      "ubicacion": "Valle del Lili, Cali",
+      "barrio": "Valle del Lili",
+      "ciudad": "Cali",
+      "tipo_inmueble": "SUV Compacta",
+      "imagen": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+      "dato_1": "19.500 km",
+      "dato_2": "Automática CVT",
+      "precio_m2": "Modelo 2023",
+      "precio": "$ 68.000.000",
+      "precio_raw": 68000000,
+      "rebaja": "-$ 5M",
+      "urgencia": "💼 Venta Rápida",
+      "urgencia_tipo": "rebaja",
+      "fecha_relativa": "Publicado hace 1h 20m",
+      "telefono_bloqueado": "316 ••• ••••",
+      "enlace_bloqueado": "https://mercadolibre.com.co/vehiculo-••••••",
+      "detalles": {
+        "Año Modelo": "2023",
+        "Kilometraje": "19.500 km",
+        "Motor": "1.3 TCe Turbo Gasolina",
+        "Transmisión": "Automática CVT X-Tronic",
+        "Placa": "Cali (Terminada en 2)",
+        "Garantía": "Vigente de fábrica hasta 2026"
+      }
+    }
+  ]
+}

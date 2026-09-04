@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://checkout.wompi.co; frame-src https://checkout.wompi.co; connect-src 'self' https://checkout.wompi.co;">
+  <title>Hunter Pro Intelligence - Terminal VIP</title>
+
+  <!-- Forzar modo inmersivo en Android e iOS -->
+  <meta name="theme-color" content="#0A110E" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#E4EEE7" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Manifiesto para instalación nativa -->
+  <link rel="manifest" href="./manifest.json">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./style.css?v=13">
+</head>
+<body>
+
+  <!-- 1. CABECERA PRINCIPAL -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="header-spacer"></div>
+
+      <div class="brand-badge">
+        <div class="brand-logo-container">
+          <svg class="brand-iso-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#34D399" />
+                <stop offset="50%" stop-color="#10B981" />
+                <stop offset="100%" stop-color="#047857" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" stroke="url(#ringGrad)" stroke-width="1.5" stroke-dasharray="2 4" class="radar-sonar-ring" />
+            <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="1" class="radar-ring-mid" />
+            <circle cx="50" cy="50" r="28" stroke="#34D399" stroke-width="0.75" class="radar-ring-inner" />
+            <path d="M50 2 L50 12 M50 98 L50 88" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-north" />
+            <path d="M2 50 L12 50 M98 50 L88 50" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-east" />
+            <circle cx="50" cy="50" r="10" fill="url(#ringGrad)" fill-opacity="0.2" stroke="#10B981" stroke-width="1.5" class="radar-core-lens" />
+            <circle cx="50" cy="50" r="3" fill="#6EE7B7" class="radar-core-dot" />
+          </svg>
+        </div>
+        <div class="brand-text-block">
+          <h1 class="brand-title">
+            <span class="brand-word-hunter">HUNTER</span>
+            <span class="brand-word-pro">PRO</span>
+          </h1>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn-theme-toggle" id="btnThemeToggle" title="Cambiar tema (Claro/Oscuro)" aria-label="Cambiar tema de color">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button class="btn-vip-header" id="btnVipHeader" title="Activar Pase VIP" aria-label="Comprar acceso VIP">
+          <i class="fa-solid fa-crown"></i>
+          <span class="vip-btn-text">Acceso VIP</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. COMMAND BAR FLOTANTE -->
+  <div class="command-bar-wrapper">
+    <div class="command-bar-container">
+      <div class="cmd-search-box">
+        <i class="fa-solid fa-magnifying-glass cmd-search-icon"></i>
+        <input type="text" id="omniboxSearch" class="cmd-search-input" placeholder="Buscar por barrio, ciudad o palabra clave..." autocomplete="off">
+        <button type="button" id="cmdSearchClear" class="cmd-search-clear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="cmd-niche-group" id="nicheSwitcher">
+        <button class="cmd-niche-tab active" data-dataset="./data/inmobiliario.json">
+          <i class="fa-solid fa-building"></i> Inmuebles Directos
+        </button>
+        <button class="cmd-niche-tab" data-dataset="./data/vehiculos.json">
+          <i class="fa-solid fa-car"></i> Vehículos con Margen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero-container-outer">
+      <div class="hero-macro-card">
+        <div class="hero-side-bg hero-side-left"></div>
+        <div class="hero-side-bg hero-side-right"></div>
+        <div class="hero-backdrop-gradient"></div>
+
+        <div class="hero-center-content">
+          <div class="hero-eyebrow-tag">
+            <span class="eyebrow-line"></span>
+            <span class="status-pulse"></span>
+            <span class="eyebrow-text" id="badgeSectoresHero">26 Sectores Monitoreados en Tiempo Real</span>
+            <span class="eyebrow-line"></span>
+          </div>
+
+          <h1 class="hero-macro-title" id="heroTitle">
+            Terminal de Inmuebles <span class="editorial-italic">directos</span> y Arbitraje
+          </h1>
+
+          <p class="hero-macro-subtitle" id="heroSubtitle">
+            Radar institucional de captación en tiempo real: Inmuebles comercializados directamente por sus dueños sin intermediarios ni comisiones de agencia en Colombia.
+          </p>
+
+          <div class="hero-cta-wrapper">
+            <button class="btn-hero-cta" id="btnHeroCta">
+              <span>Explorar Oportunidades</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-marquee-container">
+      <div class="marquee-track">
+        <!-- Grupo 1 -->
+        <div class="marquee-group">
+          <div class="marquee-item">
+            <span class="marquee-title">0% Comisión</span>
+            <span class="marquee-sub">Trato directo</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Alertas &lt; 3 Min</span>
+            <span class="marquee-sub">Tiempo real</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Margen Arbitraje</span>
+            <span class="marquee-sub">Bajo mediana</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Acceso Abierto</span>
+            <span class="marquee-sub">Avisos reales</span>
+            <span class="marquee-dot"></span>
+          </div>
+        </div>
+        <!-- Grupo 2 (Duplicado para loop infinito sin saltos) -->
+        <div class="marquee-group" aria-hidden="true">
+          <div class="marquee-item">
+            <span class="marquee-title">0% Comisión</span>
+            <span class="marquee-sub">Trato directo</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Alertas &lt; 3 Min</span>
+            <span class="marquee-sub">Tiempo real</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Margen Arbitraje</span>
+            <span class="marquee-sub">Bajo mediana</span>
+            <span class="marquee-dot"></span>
+          </div>
+          <div class="marquee-item">
+            <span class="marquee-title">Acceso Abierto</span>
+            <span class="marquee-sub">Avisos reales</span>
+            <span class="marquee-dot"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-container">
+      <div class="catalog-header-row" id="catalogHeaderRow">
+        <div class="catalog-title-group">
+          <span class="catalog-eyebrow">PORTAFOLIO VERIFICADO</span>
+          <h2 class="catalog-heading" id="catalogHeading">Oportunidades en Vivo</h2>
+        </div>
+        <div class="catalog-meta-controls">
+          <span class="catalog-count-pill" id="catalogCountPill">
+            <span class="status-pulse"></span>
+            <span id="catalogCountText">6 oportunidades directas</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bento-grid" id="bentoGridContainer">
+        <!-- Renderizado dinámico vía app.js -->
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL DE CHECKOUT WOMPI -->
+  <div class="modal-backdrop" id="checkoutModal">
+    <div class="modal-card">
+      <button class="btn-modal-close" id="btnModalClose">&times;</button>
+      
+      <div class="modal-header-tag">
+        <i class="fa-solid fa-shield-halved"></i> Hunter Pro Intelligence
+      </div>
+      <h2 class="modal-title">Desbloqueo de Contacto Directo</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">
+        Inmueble publicado directamente por su propietario particular. Para acceder a su número de celular, WhatsApp verificado y enlace de origen, activa tu suscripción.
+      </p>
+
+      <div class="modal-lead-summary" id="modalLeadSummary">
+        <!-- Se inyecta con JS -->
+      </div>
+
+      <ul class="modal-benefits-list">
+        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Contacto Directo:</strong> Celular y WhatsApp personal del propietario.</li>
+        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Sin Intermediarios:</strong> Negocia directo con el dueño sin pagar comisión de agencia.</li>
+        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Oportunidades al Instante:</strong> Captura en tiempo real para ser el primero en ofertar.</li>
+      </ul>
+
+      <button class="btn-wompi-pay" id="btnConfirmWompi">
+        <i class="fa-solid fa-bolt"></i> Pagar con Wompi ($ 89.000 / mes)
+      </button>
+
+      <div class="wompi-secure-badge">
+        <i class="fa-solid fa-lock"></i> Pasarela protegida por Wompi Bancolombia • PSE, Nequi y Tarjetas
+      </div>
+
+      <button type="button" class="btn-modal-cancel" id="btnModalCancel">
+        Cerrar y volver a la terminal
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       FOOTER INSTITUCIONAL (TERMINAL PRIVADA)
+       ═══════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <!-- Columna 1: Identidad y Alcance -->
+      <div class="footer-brand-column">
+        <div class="footer-logo-row">
+          <div class="brand-logo-container" style="width: 28px; height: 28px;">
+            <svg class="brand-iso-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" stroke="#10B981" stroke-width="2" stroke-dasharray="3 3" />
+              <circle cx="50" cy="50" r="34" stroke="#34D399" stroke-width="1.5" />
+              <circle cx="50" cy="50" r="12" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="2" />
+            </svg>
+          </div>
+          <span class="brand-title" style="font-size: 1.25rem;">
+            <span class="brand-word-hunter">HUNTER</span><span class="brand-word-pro">PRO</span>
+          </span>
+        </div>
+        <p class="footer-bio">
+          Terminal privada de inteligencia de mercado y arbitraje comercial. Motor de indexación automática de oportunidades negociadas directamente entre particulares sin intermediarios.
+        </p>
+        <div class="footer-status-line">
+          <span class="status-pulse"></span>
+          <span>Monitoreo continuo en principales ciudades y polos de inversión comercial.</span>
+        </div>
+      </div>
+      
+      <!-- Columna 2: Marco Jurídico y Protección -->
+      <div class="footer-nav-column">
+        <h4 class="footer-heading">Seguridad Jurídica</h4>
+        <ul class="footer-link-list">
+          <li>
+            <button class="footer-text-link" id="btnOpenTerminos">
+              Términos de Servicio y Exoneración
+            </button>
+          </li>
+          <li>
+            <button class="footer-text-link" id="btnOpenPrivacidad">
+              Protección de Datos (Ley 1581)
+            </button>
+          </li>
+          <li>
+            <span class="footer-text-muted">Sin comisiones ni intermediación</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Columna 3: Canales Exclusivos -->
+      <div class="footer-nav-column">
+        <h4 class="footer-heading">Atención y Canales</h4>
+        <ul class="footer-link-list">
+          <li>
+            <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="footer-text-link">
+              <i class="fa-brands fa-whatsapp footer-icon-wa"></i> Canal de Atención a Miembros
+            </a>
+          </li>
+          <li>
+            <a href="https://t.me/" target="_blank" rel="noopener noreferrer" class="footer-text-link">
+              <i class="fa-brands fa-telegram footer-icon-tg"></i> Canal Oficial de Señales
+            </a>
+          </li>
+          <li>
+            <span class="footer-text-muted">Horario hábil para miembros activos</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Barra Inferior de Declaración Legal y Exoneración -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-inner">
+        <p>&copy; 2026 Hunter Pro Intelligence. Marca y software registrados. Prohibida la reproducción total o parcial sin autorización expresa.</p>
+        <p class="footer-disclaimer">
+          <strong>Aviso de Exoneración Legal:</strong> Hunter Pro opera exclusivamente como un agregador e indexador de información pública. No actúa como intermediario, corredor inmobiliario ni asesor financiero. La verificación jurídica, física y documental de cada oportunidad es responsabilidad exclusiva de las partes contratantes.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL INSTITUCIONAL (TEXTOS LEGALES) -->
+  <div class="modal-backdrop" id="modalLegalOverlay">
+    <div class="modal-card legal-modal-card">
+      <button class="btn-modal-close" id="btnLegalCloseIcon">&times;</button>
+      
+      <div class="modal-header-tag">
+        <i class="fa-solid fa-scale-balanced"></i> Documentación Legal
+      </div>
+      <h2 class="modal-title" id="legalModalTitle">Título del Documento</h2>
+      
+      <div class="legal-content-box" id="legalContentBox" style="max-height: 400px; overflow-y: auto; text-align: left; font-size: 0.85rem; color: var(--text-muted); margin: 1rem 0; padding-right: 0.5rem;">
+        <!-- El contenido se inyecta por JS -->
+      </div>
+      
+      <button type="button" class="btn-modal-cancel" id="btnLegalCancel">
+        Entendido y Aceptado
+      </button>
+    </div>
+  </div>
+
+  <!-- Navegación Inferior Nativa (Solo Móvil) -->
+  <nav class="mobile-bottom-bar" id="mobileBottomBar">
+    <button class="mobile-nav-btn active" id="btnNavHome" data-nav="home">
+      <i class="fa-solid fa-house"></i>
+      <span>Inicio</span>
+    </button>
+    <button class="mobile-nav-btn" id="btnNavSearch" data-nav="search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Buscar</span>
+    </button>
+    <button class="mobile-nav-btn" id="btnThemeToggleMobile" data-nav="theme">
+      <i class="fa-solid fa-sun"></i>
+      <span>Tema</span>
+    </button>
+    <button class="mobile-nav-btn" id="btnNavVip" data-nav="vip">
+      <i class="fa-solid fa-crown"></i>
+      <span>VIP</span>
+    </button>
+    <button class="mobile-nav-btn" id="btnNavMenuBottom" data-nav="menu">
+      <i class="fa-solid fa-bars"></i>
+      <span>Menú</span>
+    </button>
+  </nav>
+
+  <!-- Side Menu (Right off-canvas) -->
+  <aside class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <div class="brand-text-block">
+        <h2 class="brand-title" style="font-size: 1.2rem;">
+          <span class="brand-word-hunter">HUNTER</span><span class="brand-word-pro">PRO</span>
+        </h2>
+      </div>
+      <button class="btn-close-menu" id="btnCloseSideMenu" aria-label="Cerrar Menú">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <nav class="side-menu-nav">
+      <a href="#" class="side-menu-link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="#" class="side-menu-link"><i class="fa-solid fa-building"></i> Inmuebles</a>
+      <a href="#" class="side-menu-link"><i class="fa-solid fa-car"></i> Vehículos</a>
+      <a href="#" class="side-menu-link"><i class="fa-solid fa-gavel"></i> Remates</a>
+      <a href="#" class="side-menu-link"><i class="fa-solid fa-shield-halved"></i> Cuenta VIP</a>
+      <a href="#" class="side-menu-link"><i class="fa-solid fa-headset"></i> Soporte VIP</a>
+    </nav>
+    <div class="side-menu-footer">
+      <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Hunter Pro v1.0.0<br>Terminal Privada</p>
+    </div>
+  </aside>
+  <div class="menu-overlay" id="sideMenuOverlay"></div>
+
+  <!-- Scripts -->
+  <script src="./config.js"></script>
+  <script src="./app.js?v=13"></script>
+</body>
+</html>

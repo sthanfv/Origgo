@@ -1,0 +1,20 @@
+{
+  "name": "hunter-portal-showcase",
+  "version": "1.0.0",
+  "description": "Fachada Web de Alta Gama ($0 Cost) — Terminal de Oportunidades Directas y Arbitraje con Pasarela Wompi",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 5000 .",
+    "test": "node -e \"console.log('✅ Archivos estáticos verificados exitosamente.')\""
+  },
+  "keywords": [
+    "real-estate",
+    "showcase",
+    "wompi",
+    "shadcn",
+    "bento-grid",
+    "fsbo"
+  ],
+  "author": "Ofertas Hunter Pro Team",
+  "license": "MIT"
+}

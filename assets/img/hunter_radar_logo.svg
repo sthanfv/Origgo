@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="50%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <radialGradient id="lensGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="28%" stop-color="#6EE7B7" />
+      <stop offset="68%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="rgba(16, 185, 129, 0)" />
+    </radialGradient>
+    <style>
+      .radar-sonar-ring, .radar-ring-mid, .radar-ring-inner, .pointer-north, .pointer-south, .pointer-west, .pointer-east, .radar-core-lens {
+        transform-box: view-box;
+        transform-origin: 50px 50px;
+      }
+      .radar-sonar-ring {
+        animation: animSonarSpin 12s linear infinite;
+      }
+      @keyframes animSonarSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .pointer-north { animation: animPorth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+      @keyframes animPorth {
+        0%, 35%, 80%, 100% { transform: translateY(0); }
+        48% { transform: translateY(-5px); }
+        60% { transform: translateY(0.8px); }
+        70% { transform: translateY(0); }
+      }
+      .pointer-south { animation: animPSouth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+      @keyframes animPSouth {
+        0%, 35%, 80%, 100% { transform: translateY(0); }
+        48% { transform: translateY(5px); }
+        60% { transform: translateY(-0.8px); }
+        70% { transform: translateY(0); }
+      }
+      .pointer-west { animation: animPWest 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+      @keyframes animPWest {
+        0%, 35%, 80%, 100% { transform: translateX(0); }
+        48% { transform: translateX(-5px); }
+        60% { transform: translateX(0.8px); }
+        70% { transform: translateY(0); }
+      }
+      .pointer-east { animation: animPEast 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+      @keyframes animPEast {
+        0%, 35%, 80%, 100% { transform: translateX(0); }
+        48% { transform: translateX(5px); }
+        60% { transform: translateX(-0.8px); }
+        70% { transform: translateY(0); }
+      }
+      .radar-ring-mid { animation: animRMid 6s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+      @keyframes animRMid {
+        0%, 32%, 80%, 100% { transform: rotate(0deg); }
+        48% { transform: rotate(45deg); stroke: #34D399; }
+        72% { transform: rotate(0deg); }
+      }
+      .radar-ring-inner { animation: animRInner 6s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+      @keyframes animRInner {
+        0%, 32%, 80%, 100% { transform: rotate(0deg); }
+        48% { transform: rotate(-45deg); stroke: #6EE7B7; }
+        72% { transform: rotate(0deg); }
+      }
+      .radar-core-lens { animation: animCLens 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+      @keyframes animCLens {
+        0%, 35%, 80%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+        48% { transform: scale(1.45); filter: drop-shadow(0 0 10px rgba(52, 211, 153, 1)); }
+        70% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+      }
+    </style>
+  </defs>
+
+  <!-- 1. Bisel Circular Exterior de Cristal y Acento Esmeralda -->
+  <circle class="radar-bezel-outer" cx="50" cy="50" r="46" stroke="url(#ringGrad)" stroke-width="2.5" fill="#0B2B26" />
+
+  <!-- 2. Anillo de Radar Sonar Exterior (Rotación Continua de Relojería Suiza) -->
+  <circle class="radar-sonar-ring" cx="50" cy="50" r="37" stroke="#10B981" stroke-width="1.8" stroke-opacity="0.38" stroke-dasharray="4 5" />
+
+  <!-- 3. Anillos de Enfoque y Captación Medios (Contrarrotación en Calibración) -->
+  <circle class="radar-ring-mid" cx="50" cy="50" r="26" stroke="#10B981" stroke-width="1.8" stroke-opacity="0.72" />
+  <circle class="radar-ring-inner" cx="50" cy="50" r="14" stroke="#34D399" stroke-width="1.4" stroke-opacity="0.9" />
+
+  <!-- 4. Ejes y Puntas Angulares Triangulares en los 4 Puntos Cardinales (Expansión Elástica en Calibración) -->
+  <g class="radar-cardinal-pointers">
+    <!-- Norte -->
+    <g class="cardinal-pointer pointer-north">
+      <line x1="50" y1="26" x2="50" y2="14" stroke="#34D399" stroke-width="2" stroke-linecap="round" />
+      <polygon points="46.5,14 53.5,14 50,5" fill="url(#ringGrad)" />
+    </g>
+
+    <!-- Sur -->
+    <g class="cardinal-pointer pointer-south">
+      <line x1="50" y1="74" x2="50" y2="86" stroke="#34D399" stroke-width="2" stroke-linecap="round" />
+      <polygon points="46.5,86 53.5,86 50,95" fill="url(#ringGrad)" />
+    </g>
+
+    <!-- Oeste -->
+    <g class="cardinal-pointer pointer-west">
+      <line x1="26" y1="50" x2="14" y2="50" stroke="#34D399" stroke-width="2" stroke-linecap="round" />
+      <polygon points="14,46.5 14,53.5 5,50" fill="url(#ringGrad)" />
+    </g>
+
+    <!-- Este -->
+    <g class="cardinal-pointer pointer-east">
+      <line x1="74" y1="50" x2="86" y2="50" stroke="#34D399" stroke-width="2" stroke-linecap="round" />
+      <polygon points="86,46.5 86,53.5 95,50" fill="url(#ringGrad)" />
+    </g>
+  </g>
+
+  <!-- 5. Núcleo Óptico Central de Captación de Oportunidad (Apertura de Iris Focal) -->
+  <g class="radar-core-lens">
+    <circle cx="50" cy="50" r="6" fill="url(#lensGlow)" />
+    <circle cx="50" cy="50" r="2.5" fill="#FFFFFF" />
+  </g>
+</svg>
