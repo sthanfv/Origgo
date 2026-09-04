@@ -13,7 +13,7 @@ let limiteVisible = 6;
 
 // Inicialización al cargar el DOM
 document.addEventListener("DOMContentLoaded", () => {
-  cargarScriptWompi();
+  // Wompi se carga bajo demanda (Lazy Loading) al interactuar con acciones VIP
   cargarDatos("./data/inmobiliario.json");
   configurarListeners();
   
@@ -512,6 +512,9 @@ function iniciarScrollReveal() {
  * @param {number} index
  */
 function abrirModalCheckout(index) {
+  if (!wompiScriptCargado) {
+    cargarScriptWompi();
+  }
   if (!datosActuales || !datosActuales.leads || !datosActuales.leads[index]) return;
   leadSeleccionado = datosActuales.leads[index];
 
@@ -996,10 +999,12 @@ function configurarListeners() {
   const mobileNavBtns = document.querySelectorAll(".mobile-nav-btn");
   mobileNavBtns.forEach(btn => {
     btn.addEventListener("click", () => {
+      const navType = btn.getAttribute("data-nav");
+      if (navType === "menu") return; // El menú lateral tiene su propio ciclo de vida
+
       mobileNavBtns.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      const navType = btn.getAttribute("data-nav");
       if (navType === "home") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (navType === "search") {
@@ -1013,6 +1018,14 @@ function configurarListeners() {
       }
     });
   });
+
+  // Precarga bajo demanda de Wompi al acercar el cursor o iniciar toque en botones VIP
+  const preCargarWompi = () => { if (!wompiScriptCargado) cargarScriptWompi(); };
+  const elBtnNavVip = document.getElementById("btnNavVip");
+  if (elBtnNavVip) {
+    elBtnNavVip.addEventListener("mouseenter", preCargarWompi, { once: true });
+    elBtnNavVip.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
+  }
 
   // Dropdown de Ciudades de Alta Demanda
   const pillLocation = document.getElementById("cmdFilterLocation");
@@ -1101,6 +1114,8 @@ function configurarListeners() {
   // Botón VIP del Header
   const btnVipHeader = document.getElementById("btnVipHeader");
   if (btnVipHeader) {
+    btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
+    btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
     btnVipHeader.addEventListener("click", () => {
       abrirModalCheckout(0);
     });
@@ -1367,30 +1382,93 @@ function inicializarEfectosPremium() {
   }, { passive: true });
 
   // 5. Lógica del Menú Lateral Móvil (Off-Canvas)
-  const btnMenuTrigger = document.getElementById('btnMenuTrigger');
-  const btnCloseMenu = document.getElementById('btnCloseMenu');
   const sideMenu = document.getElementById('sideMenu');
-  const menuOverlay = document.getElementById('menuOverlay');
+  const menuOverlay = document.getElementById('sideMenuOverlay') || document.getElementById('menuOverlay');
+  const btnCloseMenu = document.getElementById('btnCloseSideMenu') || document.getElementById('btnCloseMenu');
+  const btnNavMenuBottom = document.getElementById('btnNavMenuBottom');
+  const btnMenuTrigger = document.getElementById('btnMenuTrigger');
 
-  const toggleMenu = () => {
+  const abrirSideMenu = () => {
     if (sideMenu && menuOverlay) {
-      sideMenu.classList.toggle('active');
-      menuOverlay.classList.toggle('active');
-      if(btnMenuTrigger) btnMenuTrigger.classList.toggle('active');
-      // Prevenir scroll de fondo si se abre
-      if (sideMenu.classList.contains('active')) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
+      sideMenu.classList.add('active');
+      menuOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (btnNavMenuBottom) btnNavMenuBottom.classList.add('active');
     }
   };
 
-  if (btnMenuTrigger) btnMenuTrigger.addEventListener('click', toggleMenu);
-  const btnNavMenuBottom = document.getElementById('btnNavMenuBottom');
-  if (btnNavMenuBottom) btnNavMenuBottom.addEventListener('click', toggleMenu);
+  const cerrarSideMenu = () => {
+    if (sideMenu && menuOverlay) {
+      sideMenu.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      if (btnNavMenuBottom) btnNavMenuBottom.classList.remove('active');
+    }
+  };
 
-  if (btnCloseMenu) btnCloseMenu.addEventListener('click', toggleMenu);
-  if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
+  if (btnNavMenuBottom) {
+    btnNavMenuBottom.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (sideMenu && sideMenu.classList.contains('active')) {
+        cerrarSideMenu();
+      } else {
+        abrirSideMenu();
+      }
+    });
+  }
+
+  if (btnMenuTrigger) {
+    btnMenuTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirSideMenu();
+    });
+  }
+
+  if (btnCloseMenu) {
+    btnCloseMenu.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarSideMenu();
+    });
+  }
+
+  if (menuOverlay) {
+    menuOverlay.addEventListener('click', cerrarSideMenu);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('active')) {
+      cerrarSideMenu();
+    }
+  });
+
+  // Vinculación de Enlaces de Navegación del Menú Lateral
+  const sideLinks = document.querySelectorAll('.side-menu-link[data-side]');
+  sideLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const action = link.getAttribute('data-side');
+      cerrarSideMenu();
+      sideLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      if (action === 'dashboard' || action === 'inmuebles') {
+        e.preventDefault();
+        const tabInm = document.querySelector('.cmd-niche-tab[data-dataset="./data/inmobiliario.json"]');
+        if (tabInm) tabInm.click();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (action === 'vehiculos') {
+        e.preventDefault();
+        const tabVeh = document.querySelector('.cmd-niche-tab[data-dataset="./data/vehiculos.json"]');
+        if (tabVeh) tabVeh.click();
+      } else if (action === 'vip') {
+        e.preventDefault();
+        abrirModalCheckout(0);
+      } else if (action === 'terminos') {
+        e.preventDefault();
+        const btnTerminos = document.getElementById('btnOpenTerminos');
+        if (btnTerminos) btnTerminos.click();
+      }
+    });
+  });
 
 }

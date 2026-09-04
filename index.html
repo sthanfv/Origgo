@@ -2,30 +2,55 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://checkout.wompi.co; frame-src https://checkout.wompi.co; connect-src 'self' https://checkout.wompi.co;">
-  <title>Hunter Pro Intelligence - Terminal VIP</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src https://checkout.wompi.co; connect-src 'self' https://checkout.wompi.co;">
+  
+  <title>Hunter Pro Intelligence - Terminal Privada de Inmuebles Directos</title>
+  <meta name="description" content="Terminal de inteligencia de mercado y arbitraje inmobiliario. Captación directa de propietarios (FSBO) sin comisiones ni intermediarios en Colombia.">
+  <link rel="canonical" href="https://hunter-pro.vercel.app/">
 
-  <!-- Forzar modo inmersivo en Android e iOS -->
+  <!-- Identidad de Marca y Favicon Oficial -->
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="apple-touch-icon" href="./favicon.svg">
+
+  <!-- Open Graph / Redes Sociales & WhatsApp Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hunter-pro.vercel.app/">
+  <meta property="og:title" content="Hunter Pro Intelligence — Terminal de Inmuebles Directos">
+  <meta property="og:description" content="Radar de captación en tiempo real: Inmuebles comercializados directamente por sus dueños sin intermediarios ni comisiones de agencia.">
+  <meta property="og:image" content="https://hunter-pro.vercel.app/favicon.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hunter Pro Intelligence">
+  <meta name="twitter:description" content="Terminal privada de inteligencia inmobiliaria y arbitraje comercial en Colombia.">
+  <meta name="twitter:image" content="https://hunter-pro.vercel.app/favicon.svg">
+
+  <!-- Modo Inmersivo en Android e iOS -->
   <meta name="theme-color" content="#0A110E" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#E4EEE7" media="(prefers-color-scheme: light)">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Manifiesto para instalación nativa -->
+  <!-- Manifiesto para instalación nativa (PWA) -->
   <link rel="manifest" href="./manifest.json">
   
-  <!-- FontAwesome 6 Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Google Fonts -->
+  <!-- Preconexión a CDNs de Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <!-- Google Fonts con Font-Display Swap -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap"></noscript>
+
+  <!-- FontAwesome 6 Icons Diferido Anti-Bloqueo de Render -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   
-  <link rel="stylesheet" href="./style.css?v=13">
+  <!-- Hoja de Estilos Principal -->
+  <link rel="stylesheet" href="./style.css?v=14">
 </head>
 <body>
 
@@ -243,11 +268,22 @@
       <!-- Columna 1: Identidad y Alcance -->
       <div class="footer-brand-column">
         <div class="footer-logo-row">
-          <div class="brand-logo-container" style="width: 28px; height: 28px;">
+          <div class="brand-logo-container" style="width: 32px; height: 32px;">
             <svg class="brand-iso-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="48" stroke="#10B981" stroke-width="2" stroke-dasharray="3 3" />
-              <circle cx="50" cy="50" r="34" stroke="#34D399" stroke-width="1.5" />
-              <circle cx="50" cy="50" r="12" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="2" />
+              <defs>
+                <linearGradient id="ringGradFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34D399" />
+                  <stop offset="50%" stop-color="#10B981" />
+                  <stop offset="100%" stop-color="#047857" />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="48" stroke="url(#ringGradFooter)" stroke-width="1.5" stroke-dasharray="2 4" class="radar-sonar-ring" />
+              <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="1" class="radar-ring-mid" />
+              <circle cx="50" cy="50" r="28" stroke="#34D399" stroke-width="0.75" class="radar-ring-inner" />
+              <path d="M50 2 L50 12 M50 98 L50 88" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-north" />
+              <path d="M2 50 L12 50 M98 50 L88 50" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-east" />
+              <circle cx="50" cy="50" r="10" fill="url(#ringGradFooter)" fill-opacity="0.2" stroke="#10B981" stroke-width="1.5" class="radar-core-lens" />
+              <circle cx="50" cy="50" r="3" fill="#6EE7B7" class="radar-core-dot" />
             </svg>
           </div>
           <span class="brand-title" style="font-size: 1.25rem;">
@@ -372,21 +408,21 @@
       </button>
     </div>
     <nav class="side-menu-nav">
-      <a href="#" class="side-menu-link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-      <a href="#" class="side-menu-link"><i class="fa-solid fa-building"></i> Inmuebles</a>
-      <a href="#" class="side-menu-link"><i class="fa-solid fa-car"></i> Vehículos</a>
-      <a href="#" class="side-menu-link"><i class="fa-solid fa-gavel"></i> Remates</a>
-      <a href="#" class="side-menu-link"><i class="fa-solid fa-shield-halved"></i> Cuenta VIP</a>
-      <a href="#" class="side-menu-link"><i class="fa-solid fa-headset"></i> Soporte VIP</a>
+      <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard Principal</a>
+      <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> Inmuebles Directos</a>
+      <a href="#" class="side-menu-link" data-side="vehiculos"><i class="fa-solid fa-car"></i> Vehículos con Margen</a>
+      <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown" style="color: #F59E0B;"></i> Desbloqueo VIP</a>
+      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> Soporte VIP WhatsApp</a>
+      <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> Términos & Exoneración</a>
     </nav>
     <div class="side-menu-footer">
-      <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Hunter Pro v1.0.0<br>Terminal Privada</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Hunter Pro Intelligence v5.0<br>Terminal Privada Inmobiliaria</p>
     </div>
   </aside>
   <div class="menu-overlay" id="sideMenuOverlay"></div>
 
   <!-- Scripts -->
   <script src="./config.js"></script>
-  <script src="./app.js?v=13"></script>
+  <script src="./app.js?v=14"></script>
 </body>
 </html>

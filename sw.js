@@ -3,13 +3,14 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'hunter-pro-v13';
+const NOMBRE_CACHE = 'hunter-pro-v14';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
+  './favicon.svg',
   './assets/img/hunter_radar_logo.svg'
 ];
 

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="50%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+  <!-- Fondo oscuro circular -->
+  <circle cx="50" cy="50" r="48" fill="#0A110E" stroke="url(#favGrad)" stroke-width="3" />
+  
+  <!-- Anillo exterior punteado tipo sónar -->
+  <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="2" stroke-dasharray="3 3" opacity="0.8" />
+  
+  <!-- Anillo medio de precisión -->
+  <circle cx="50" cy="50" r="26" stroke="#34D399" stroke-width="1.8" opacity="0.9" />
+  
+  <!-- Puntos cardinales de radar -->
+  <line x1="50" y1="6" x2="50" y2="18" stroke="#34D399" stroke-width="3" stroke-linecap="round" />
+  <line x1="50" y1="94" x2="50" y2="82" stroke="#34D399" stroke-width="3" stroke-linecap="round" />
+  <line x1="6" y1="50" x2="18" y2="50" stroke="#34D399" stroke-width="3" stroke-linecap="round" />
+  <line x1="94" y1="50" x2="82" y2="50" stroke="#34D399" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Lente y núcleo luminoso -->
+  <circle cx="50" cy="50" r="12" fill="url(#favGrad)" fill-opacity="0.3" stroke="#10B981" stroke-width="2" />
+  <circle cx="50" cy="50" r="4.5" fill="#6EE7B7" />
+</svg>

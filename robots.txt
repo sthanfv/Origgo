@@ -1,0 +1,8 @@
+# robots.txt para Hunter Pro Intelligence
+# Permitir indexación de la vitrina institucional y restringir endpoints de datos brutos
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /api/
+
+Sitemap: https://hunter-pro.vercel.app/sitemap.xml
