@@ -4,15 +4,22 @@
  * Ecosistema Ofertas Hunter Pro — Interfaz Dark Luxury Terminal v2.0
  */
 
-// Estado en memoria de la interfaz
+// Estado en memoria de la interfaz y sesión de usuario
 let datosActuales = null;
 let leadSeleccionado = null;
 let wompiScriptCargado = false;
 const carruselIndices = {};
 let limiteVisible = 6;
 
+// Estado del ledger de créditos y usuario autenticado
+let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }
+const cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, whatsappUrl, enlace, portal } }
+
 // Inicialización al cargar el DOM
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Inicializar sesión persistente de usuario (JWT / PIN / Retorno de Wompi)
+  await inicializarSesionUsuario();
+
   // Wompi se carga bajo demanda (Lazy Loading) al interactuar con acciones VIP
   cargarDatos("./data/inmobiliario.json");
   configurarListeners();
@@ -342,8 +349,10 @@ function renderizarInterfaz(dataset) {
     const ciudadNorm = normalizarTextoBusqueda(item.ciudad || '');
     const barrioNorm = normalizarTextoBusqueda(item.barrio || '');
 
+    const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
+
     return `
-      <article class="bento-card" data-index="${index}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
+      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
         <!-- Cabecera Fotográfica con Fusión Degradada -->
         <div class="card-media-wrapper" data-action="abrir-ficha" data-index="${index}">
           ${mediaHtml}
@@ -356,11 +365,13 @@ function renderizarInterfaz(dataset) {
             <span class="badge-time-pill">
               <i class="fa-regular fa-clock"></i> ${escaparHtml(item.fecha_relativa || 'Reciente')}
             </span>
-            ${item.urgencia ? `
+            ${estaDesbloqueado ? `
+              <span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> Desbloqueado</span>
+            ` : (item.urgencia ? `
               <span class="badge-status-pill ${claseUrgencia}">
                 ${escaparHtml(item.urgencia)}
               </span>
-            ` : ''}
+            ` : '')}
           </div>
         </div>
 
@@ -405,9 +416,15 @@ function renderizarInterfaz(dataset) {
               ` : ''}
             </div>
 
-            <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
-              <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? 'Ver Cierre' : 'Desbloquear'}
-            </button>
+            ${estaDesbloqueado ? `
+              <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Chatear con el propietario directo">
+                <i class="fa-brands fa-whatsapp"></i> Chatear Propietario
+              </button>
+            ` : `
+              <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
+                <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? 'Ver Cierre' : 'Desbloquear'}
+              </button>
+            `}
           </div>
         </div>
 
@@ -447,12 +464,21 @@ function renderizarInterfaz(dataset) {
 
             <!-- Grupo de Acción: Botón CTA y Micro-Garantía -->
             <div class="slideup-action-group">
-              <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}">
-                <i class="fa-solid fa-unlock-keyhole"></i> Desbloquear Contacto del Dueño
-              </button>
-              <span class="slideup-cta-note">
-                <i class="fa-solid fa-bolt"></i> Acceso al instante • Sin pagar comisiones
-              </span>
+              ${estaDesbloqueado ? `
+                <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
+                  <i class="fa-brands fa-whatsapp"></i> Chatear con el Propietario Directo
+                </button>
+                <span class="slideup-cta-note" style="color: #22C55E;">
+                  <i class="fa-solid fa-check-double"></i> Contacto ya desbloqueado para tu cuenta
+                </span>
+              ` : `
+                <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}">
+                  <i class="fa-solid fa-unlock-keyhole"></i> Desbloquear Contacto del Dueño
+                </button>
+                <span class="slideup-cta-note">
+                  <i class="fa-solid fa-bolt"></i> Acceso al instante • Sin pagar comisiones
+                </span>
+              `}
             </div>
           </div>
         </div>
@@ -524,60 +550,273 @@ function iniciarScrollReveal() {
 }
 
 /**
- * Abre el modal de checkout para desbloquear el lead seleccionado.
- * @param {number} index
+ * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
-function abrirModalCheckout(index) {
+async function inicializarSesionUsuario() {
+  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  if (paymentRef && paymentRef.startsWith('HNT-')) {
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
+      });
+      const data = await res.json();
+      if (data.ok && data.token) {
+        localStorage.setItem('hunter_pro_token', data.token);
+        sesionUsuario = { ...data.user, token: data.token };
+        actualizarBadgeVip();
+        mostrarNotificacionToast(`🎉 ¡Pago confirmado! Tu PIN es ${data.user.pin}. Tienes ${data.user.credits} créditos disponibles.`);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+    } catch (e) {
+      console.warn('[Sesión] No se pudo reclamar por referencia:', e.message);
+    }
+  }
+
+  // 2. Restaurar sesión desde localStorage
+  const tokenGuardado = localStorage.getItem('hunter_pro_token');
+  if (tokenGuardado) {
+    try {
+      const res = await fetch('/api/user/balance', {
+        headers: { 'Authorization': `Bearer ${tokenGuardado}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        sesionUsuario = { ...data, token: tokenGuardado };
+        actualizarBadgeVip();
+      } else {
+        localStorage.removeItem('hunter_pro_token');
+        sesionUsuario = null;
+      }
+    } catch (e) {
+      console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
+    }
+  }
+}
+
+/**
+ * Actualiza visualmente el botón VIP del header y el botón de la barra móvil.
+ */
+function actualizarBadgeVip() {
+  const btnHeader = document.getElementById('btnVipHeader');
+  const btnNavVip = document.getElementById('btnNavVip');
+
+  if (sesionUsuario) {
+    let htmlBadge = '';
+    let labelMovil = '';
+
+    if (sesionUsuario.plan === 'national') {
+      htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
+      labelMovil = 'VIP Nac.';
+    } else if (sesionUsuario.plan === 'city') {
+      const ciudad = sesionUsuario.planCity || 'Ciudad';
+      htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
+      labelMovil = 'VIP Ciudad';
+    } else {
+      const cr = Number(sesionUsuario.credits || 0);
+      htmlBadge = `<i class="fa-solid fa-bolt" style="color: #10B981;"></i><span class="vip-btn-text">⚡ ${cr} Créditos</span>`;
+      labelMovil = `${cr} Créditos`;
+    }
+
+    if (btnHeader) btnHeader.innerHTML = htmlBadge;
+    if (btnNavVip) {
+      const span = btnNavVip.querySelector('span');
+      if (span) span.textContent = labelMovil;
+    }
+  } else {
+    if (btnHeader) {
+      btnHeader.innerHTML = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">Acceso VIP</span>';
+    }
+    if (btnNavVip) {
+      const span = btnNavVip.querySelector('span');
+      if (span) span.textContent = 'VIP';
+    }
+  }
+}
+
+/**
+ * Muestra una notificación toast elegante y flotante.
+ * @param {string} mensaje
+ * @param {'success'|'error'|'info'} tipo
+ */
+function mostrarNotificacionToast(mensaje, tipo = 'success') {
+  let toast = document.getElementById('hunterToastAlert');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'hunterToastAlert';
+    toast.style.cssText = `
+      position: fixed;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 100000;
+      padding: 0.85rem 1.45rem;
+      border-radius: 9999px;
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      max-width: 90vw;
+      text-align: center;
+    `;
+    document.body.appendChild(toast);
+  }
+
+  if (tipo === 'error') {
+    toast.style.background = 'hsla(0, 84%, 18%, 0.95)';
+    toast.style.border = '1px solid #EF4444';
+    toast.style.color = '#FCA5A5';
+  } else if (tipo === 'info') {
+    toast.style.background = 'hsla(217, 50%, 15%, 0.95)';
+    toast.style.border = '1px solid #3B82F6';
+    toast.style.color = '#93C5FD';
+  } else {
+    toast.style.background = 'hsla(166, 60%, 12%, 0.95)';
+    toast.style.border = '1px solid #10B981';
+    toast.style.color = '#A7F3D0';
+  }
+
+  toast.innerHTML = mensaje;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+  }, 4200);
+}
+
+/**
+ * Cambia la pestaña activa del modal de checkout.
+ * @param {'comprar'|'tengo-pin'|'perfil'} pestana
+ */
+function cambiarPestanaCheckout(pestana) {
+  const tabComprar = document.getElementById('tabBtnComprar');
+  const tabPin = document.getElementById('tabBtnTengoPin');
+  const panelComprar = document.getElementById('panelComprar');
+  const panelPin = document.getElementById('panelTengoPin');
+  const panelPerfil = document.getElementById('panelUsuarioActivo');
+  const tabsBar = document.getElementById('checkoutTabsBar');
+
+  if (panelComprar) panelComprar.classList.remove('active');
+  if (panelPin) panelPin.classList.remove('active');
+  if (panelPerfil) panelPerfil.classList.remove('active');
+  if (tabComprar) tabComprar.classList.remove('active');
+  if (tabPin) tabPin.classList.remove('active');
+  if (tabsBar) tabsBar.style.display = 'flex';
+
+  if (pestana === 'comprar') {
+    if (tabComprar) tabComprar.classList.add('active');
+    if (panelComprar) panelComprar.classList.add('active');
+  } else if (pestana === 'tengo-pin') {
+    if (tabPin) tabPin.classList.add('active');
+    if (panelPin) panelPin.classList.add('active');
+  } else if (pestana === 'perfil') {
+    if (panelPerfil) panelPerfil.classList.add('active');
+  }
+}
+
+/**
+ * Abre el modal de checkout para comprar créditos, ver PIN o perfil.
+ * @param {number|undefined} index - Índice del lead seleccionado si aplica
+ * @param {string|null} pestana - Pestaña inicial
+ */
+function abrirModalCheckout(index, pestana = null) {
   if (!wompiScriptCargado) {
     cargarScriptWompi();
   }
-  if (!datosActuales || !datosActuales.leads || !datosActuales.leads[index]) return;
-  leadSeleccionado = datosActuales.leads[index];
+
+  if (typeof index === 'number' && datosActuales?.leads && datosActuales.leads[index]) {
+    leadSeleccionado = datosActuales.leads[index];
+  }
 
   const modal = document.getElementById("checkoutModal");
   const elSummary = document.getElementById("modalLeadSummary");
-  const btnPagar = document.getElementById("btnConfirmWompi");
 
   if (elSummary) {
-    const imgHtml = leadSeleccionado.imagen ? `
-      <div class="modal-lead-thumb-wrap">
-        <img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" />
-        <div class="modal-lead-thumb-gradient"></div>
-      </div>
-    ` : '';
-
-    elSummary.innerHTML = `
-      ${imgHtml}
-      <div class="modal-summary-item">
-        <span style="color: var(--text-muted);">Inmueble:</span>
-        <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.titulo)}</strong>
-      </div>
-      <div class="modal-summary-item">
-        <span style="color: var(--text-muted);">Ubicación:</span>
-        <span style="color: var(--text-muted);">${escaparHtml(leadSeleccionado.ubicacion)}</span>
-      </div>
-      <div class="modal-summary-item">
-        <span style="color: var(--text-muted);">Precio Publicado:</span>
-        <strong style="color: var(--accent-emerald); font-size: 1.15rem;">${escaparHtml(leadSeleccionado.precio)}</strong>
-      </div>
-      ${leadSeleccionado.precio_m2 ? `
-        <div class="modal-summary-item" style="border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem;">
-          <span style="color: var(--text-muted);">Valor Unitario:</span>
-          <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
+    if (leadSeleccionado) {
+      elSummary.style.display = 'block';
+      const imgHtml = leadSeleccionado.imagen ? `
+        <div class="modal-lead-thumb-wrap">
+          <img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" />
+          <div class="modal-lead-thumb-gradient"></div>
         </div>
-      ` : ''}
-    `;
+      ` : '';
+
+      elSummary.innerHTML = `
+        ${imgHtml}
+        <div class="modal-summary-item">
+          <span style="color: var(--text-muted);">Inmueble:</span>
+          <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.titulo)}</strong>
+        </div>
+        <div class="modal-summary-item">
+          <span style="color: var(--text-muted);">Ubicación:</span>
+          <span style="color: var(--text-muted);">${escaparHtml(leadSeleccionado.ubicacion)}</span>
+        </div>
+        <div class="modal-summary-item">
+          <span style="color: var(--text-muted);">Precio Publicado:</span>
+          <strong style="color: var(--accent-emerald); font-size: 1.15rem;">${escaparHtml(leadSeleccionado.precio)}</strong>
+        </div>
+        ${leadSeleccionado.precio_m2 ? `
+          <div class="modal-summary-item" style="border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem;">
+            <span style="color: var(--text-muted);">Valor Unitario:</span>
+            <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
+          </div>
+        ` : ''}
+      `;
+    } else {
+      elSummary.style.display = 'none';
+    }
   }
 
-  if (btnPagar) {
-    const precioFmt = (window.PORTAL_CONFIG && window.PORTAL_CONFIG.precioMembresiaFormateado) 
-      || "$ 89.000 / mes";
-    btnPagar.innerHTML = `<i class="fa-solid fa-bolt"></i> Pagar con Wompi (${precioFmt})`;
+  // Si el usuario ya tiene sesión activa
+  if (sesionUsuario) {
+    const elPhone = document.getElementById('userActivePhone');
+    const elPin = document.getElementById('userActivePin');
+    const elCredits = document.getElementById('userActiveCredits');
+    const elPlan = document.getElementById('userActivePlan');
+    const elCount = document.getElementById('userActiveUnlockedCount');
+    const inputWa = document.getElementById('checkoutWhatsappInput');
+
+    if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
+    if (elPin) elPin.textContent = `PIN: ${sesionUsuario.pin}`;
+    if (elCredits) elCredits.textContent = `⚡ ${sesionUsuario.credits} Créditos`;
+    if (elPlan) {
+      if (sesionUsuario.plan === 'national') elPlan.textContent = '👑 Plan Nacional VIP (Ilimitado)';
+      else if (sesionUsuario.plan === 'city') elPlan.textContent = `👑 Plan Pro Ciudad (${sesionUsuario.planCity || 'Activa'})`;
+      else elPlan.textContent = 'Plan Estándar por Créditos';
+    }
+    if (elCount) {
+      const cant = (sesionUsuario.unlockedLeads || []).length;
+      elCount.textContent = `Has desbloqueado ${cant} ${cant === 1 ? 'propiedad' : 'propiedades'} directamente.`;
+    }
+    if (inputWa) inputWa.value = sesionUsuario.phone;
+
+    if (pestana === 'comprar' || (!sesionUsuario.credits && sesionUsuario.plan === 'free')) {
+      cambiarPestanaCheckout('comprar');
+    } else {
+      cambiarPestanaCheckout('perfil');
+    }
+  } else {
+    cambiarPestanaCheckout(pestana || 'comprar');
   }
 
   if (modal) {
     modal.classList.add("active");
-    document.body.style.overflow = "hidden"; // Prevenir scroll de fondo mientras el modal está abierto
+    document.body.style.overflow = "hidden";
   }
 }
 
@@ -589,80 +828,303 @@ function cerrarModalCheckout() {
   if (modal) {
     modal.classList.remove("active");
   }
-  document.body.style.overflow = ""; // Restaurar scroll del body
+  document.body.style.overflow = "";
 }
 
 /**
- * Dispara el Widget oficial de Wompi para procesar el pago.
+ * Inicia la orden de pago y abre el widget oficial de Wompi con firma SHA256.
  */
-function ejecutarPagoWompi() {
-  const config = window.PORTAL_CONFIG || {};
-  const wompiConf = config.wompi || {};
-  const publicKey = wompiConf.publicKey || "pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGObCi";
-  const amountInCents = (config.precioMembresiaCop || 89000) * 100;
-  // [LEGAL] Generación de referencia criptográficamente segura (Fallback a timestamp si no hay crypto)
-  const safeId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.floor(Math.random() * 1000000);
-  const reference = "OHP-" + Date.now() + "-" + safeId;
+async function ejecutarPagoWompi() {
+  const radio = document.querySelector('input[name="checkoutProduct"]:checked');
+  const productType = radio ? radio.value : 'pack_10_leads';
+  const inputWa = document.getElementById('checkoutWhatsappInput');
+  const whatsappRaw = inputWa ? inputWa.value.trim() : '';
+  const celularLimpio = whatsappRaw.replace(/\D/g, '');
+  const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
+    ? celularLimpio.substring(2) 
+    : celularLimpio;
 
-  // Manejo de Race Condition: Si el usuario presiona muy rápido y la CDN aún no responde
-  if (typeof WidgetCheckout === "undefined") {
-    console.warn("[QA] Widget de Wompi aún no está listo en el entorno (Race condition evitada).");
-    const btnConfirm = document.getElementById("btnConfirmWompi");
-    if (btnConfirm) {
-      const textoOriginal = btnConfirm.innerHTML;
-      btnConfirm.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Conectando pasarela segura...`;
-      btnConfirm.style.pointerEvents = "none";
-      
-      // Reintentar en 1.5s
-      setTimeout(() => {
-        btnConfirm.innerHTML = textoOriginal;
-        btnConfirm.style.pointerEvents = "auto";
-        // Si aún falla, que se vaya por WhatsApp como fallback comercial
-        ejecutarPagoWompi(); 
-      }, 1500);
-      return; // Detenemos la ejecución síncrona aquí
-    }
+  if (!celular || celular.length < 10) {
+    alert('Por favor ingresa un número de WhatsApp válido (10 dígitos). Ejemplo: 300 123 4567');
+    if (inputWa) inputWa.focus();
+    return;
   }
 
-  // Si el script de Wompi está cargado y disponible
-  if (typeof WidgetCheckout !== "undefined") {
-    try {
+  const btnPagar = document.getElementById('btnConfirmWompi');
+  const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
+  if (btnPagar) {
+    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando firma criptográfica...';
+    btnPagar.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/payments/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productType, celular })
+    });
+
+    const orderData = await res.json();
+    if (!res.ok || !orderData.ok) {
+      throw new Error(orderData.error || 'No se pudo generar la orden de pago');
+    }
+
+    if (typeof WidgetCheckout === 'undefined') {
+      await new Promise((resolve) => {
+        cargarScriptWompi();
+        const check = setInterval(() => {
+          if (typeof WidgetCheckout !== 'undefined') {
+            clearInterval(check);
+            resolve();
+          }
+        }, 200);
+        setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+      });
+    }
+
+    if (typeof WidgetCheckout !== 'undefined') {
       const checkout = new WidgetCheckout({
-        currency: "COP",
-        amountInCents: amountInCents,
-        reference: reference,
-        publicKey: publicKey,
-        redirectUrl: window.location.href,
+        currency: orderData.currency || 'COP',
+        amountInCents: orderData.amountInCents,
+        reference: orderData.reference,
+        publicKey: orderData.publicKey,
+        signature: {
+          integrity: orderData.signature
+        },
+        redirectUrl: `${window.location.origin}${window.location.pathname}?payment_ref=${orderData.reference}`,
         customerData: {
-          email: "inversionista@hunterpro.com",
-          fullName: "Agente Inmobiliario Hunter Pro",
-          phoneNumber: "3001234567"
+          phoneNumber: celular
         }
       });
 
       cerrarModalCheckout();
-      checkout.open((result) => {
-        const transaction = result.transaction;
-        console.log("Transacción Wompi completada:", transaction);
-        if (transaction && transaction.status === "APPROVED") {
-          alert("🎉 ¡Pago aprobado exitosamente! Bienvenido a la Terminal VIP Hunter Pro.");
+
+      checkout.open(async (result) => {
+        const trx = result?.transaction;
+        if (trx && trx.status === 'APPROVED') {
+          try {
+            const claimRes = await fetch('/api/auth/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
+            });
+            const claimData = await claimRes.json();
+            if (claimData.ok && claimData.token) {
+              localStorage.setItem('hunter_pro_token', claimData.token);
+              sesionUsuario = { ...claimData.user, token: claimData.token };
+              actualizarBadgeVip();
+              renderizarInterfaz(datosActuales);
+              mostrarNotificacionToast(`🎉 ¡Pago aprobado! Tu PIN es: ${claimData.user.pin}. Tienes ${claimData.user.credits} créditos.`);
+              if (leadSeleccionado) {
+                await ejecutarDesbloqueoLead(leadSeleccionado);
+              }
+            }
+          } catch (errClaim) {
+            console.warn('[Wompi Callback] Error reclamando sesión:', errClaim);
+          }
         }
       });
       return;
-    } catch (errWompi) {
-      console.error("Error al instanciar WidgetCheckout:", errWompi);
+    }
+
+    // Fallback si la CDN de Wompi estuviera caída
+    const msg = encodeURIComponent(`Hola Hunter Pro, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
+    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank');
+    cerrarModalCheckout();
+  } catch (err) {
+    console.error('[Pago Wompi] Error:', err);
+    alert('Error al conectar con la pasarela: ' + err.message);
+  } finally {
+    if (btnPagar) {
+      btnPagar.innerHTML = textoOriginal;
+      btnPagar.disabled = false;
     }
   }
+}
 
-  // Fallback comercial si la CDN de Wompi no estuviera disponible
-  const mensaje = encodeURIComponent(
-    `Hola Hunter Pro, deseo activar mi suscripción VIP para acceder al contacto directo de: "${leadSeleccionado ? leadSeleccionado.titulo : 'Oportunidad'}". Ref: ${reference}`
-  );
-  const telWhatsapp = config.contacto?.whatsapp || "573001234567";
-  const urlWhatsapp = `https://wa.me/${telWhatsapp}?text=${mensaje}`;
-  
-  window.open(urlWhatsapp, "_blank");
+/**
+ * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
+ */
+async function restaurarSesionConPin() {
+  const inputWa = document.getElementById('restoreWhatsappInput');
+  const inputPin = document.getElementById('restorePinInput');
+  const msgBox = document.getElementById('restoreStatusMsg');
+  const btn = document.getElementById('btnRestoreSession');
+
+  const celular = inputWa ? inputWa.value.trim() : '';
+  const pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
+
+  if (!celular || !pin) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
+      msgBox.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ celular, pin })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || 'Credenciales incorrectas');
+    }
+
+    localStorage.setItem('hunter_pro_token', data.token);
+    sesionUsuario = { ...data.user, token: data.token };
+    actualizarBadgeVip();
+    renderizarInterfaz(datosActuales);
+
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg success';
+      msgBox.textContent = `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
+      msgBox.style.display = 'block';
+    }
+
+    setTimeout(() => {
+      abrirModalCheckout(undefined, 'perfil');
+    }, 800);
+  } catch (err) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = err.message;
+      msgBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos';
+      btn.disabled = false;
+    }
+  }
+}
+
+/**
+ * Cierra la sesión activa del usuario.
+ */
+function cerrarSesionUsuario() {
+  localStorage.removeItem('hunter_pro_token');
+  sesionUsuario = null;
+  actualizarBadgeVip();
+  renderizarInterfaz(datosActuales);
   cerrarModalCheckout();
+  mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
+}
+
+/**
+ * Maneja el clic en "Desbloquear": si tiene créditos desbloquea directo, sino abre checkout.
+ * @param {number} index
+ */
+async function manejarClicDesbloquear(index) {
+  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
+  const lead = datosActuales.leads[index];
+  leadSeleccionado = lead;
+
+  const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
+  const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
+
+  if (sesionUsuario && (tieneCreditos || tienePlanActivo)) {
+    await ejecutarDesbloqueoLead(lead, index);
+  } else {
+    abrirModalCheckout(index, 'comprar');
+  }
+}
+
+/**
+ * Desbloquea un lead llamando a /api/leads/unlock y descifrando el contacto en backend.
+ * @param {object} lead
+ * @param {number|undefined} index
+ */
+async function ejecutarDesbloqueoLead(lead, index) {
+  if (!sesionUsuario || !sesionUsuario.token) {
+    abrirModalCheckout(index, 'comprar');
+    return;
+  }
+
+  const selector = typeof index === 'number' ? `.bento-card[data-index="${index}"] .btn-unlock-lead` : null;
+  const btn = selector ? document.querySelector(selector) : null;
+  const textoOriginal = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/leads/unlock', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sesionUsuario.token}`
+      },
+      body: JSON.stringify({
+        leadId: lead.id,
+        contactoCifrado: lead.contacto_cifrado || ''
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      if (res.status === 402) {
+        mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
+        abrirModalCheckout(index, 'comprar');
+        return;
+      }
+      throw new Error(data.error || 'Error al desbloquear contacto');
+    }
+
+    sesionUsuario.credits = data.creditsRemaining;
+    if (!sesionUsuario.unlockedLeads) sesionUsuario.unlockedLeads = [];
+    if (!sesionUsuario.unlockedLeads.includes(lead.id)) {
+      sesionUsuario.unlockedLeads.push(lead.id);
+    }
+    cacheContactosDesbloqueados[lead.id] = data.contacto;
+
+    actualizarBadgeVip();
+    renderizarInterfaz(datosActuales);
+
+    mostrarNotificacionToast(
+      data.alreadyUnlocked 
+        ? '✅ Inmueble ya desbloqueado (Costo 0 créditos).' 
+        : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`
+    );
+
+    if (data.contacto?.whatsappUrl) {
+      window.open(data.contacto.whatsappUrl, '_blank');
+    }
+  } catch (err) {
+    console.error('[Desbloqueo] Error:', err);
+    mostrarNotificacionToast(err.message || 'Error de conexión', 'error');
+  } finally {
+    if (btn) {
+      btn.innerHTML = textoOriginal;
+      btn.disabled = false;
+    }
+  }
+}
+
+/**
+ * Maneja el clic en "Chatear Propietario" de un inmueble previamente desbloqueado.
+ * @param {number} index
+ */
+async function manejarContactoWhatsapp(index) {
+  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
+  const lead = datosActuales.leads[index];
+
+  if (cacheContactosDesbloqueados[lead.id]?.whatsappUrl) {
+    window.open(cacheContactosDesbloqueados[lead.id].whatsappUrl, '_blank');
+    return;
+  }
+
+  await ejecutarDesbloqueoLead(lead, index);
 }
 
 // Variables de estado reactivo del Omnibox
@@ -991,11 +1453,14 @@ function configurarListeners() {
         cerrarFichaTecnica(idx, e);
       } else if (action === "abrir-checkout") {
         e.stopPropagation();
-        abrirModalCheckout(idx);
+        manejarClicDesbloquear(idx);
       } else if (action === "slideup-cta") {
         e.stopPropagation();
         cerrarFichaTecnica(idx, e);
-        abrirModalCheckout(idx);
+        manejarClicDesbloquear(idx);
+      } else if (action === "contactar-whatsapp") {
+        e.stopPropagation();
+        manejarContactoWhatsapp(idx);
       }
     });
   }
@@ -1030,7 +1495,7 @@ function configurarListeners() {
           setTimeout(() => omnibox.focus(), 350);
         }
       } else if (navType === "vip") {
-        abrirModalCheckout(0);
+        abrirModalCheckout();
       }
     });
   });
@@ -1107,24 +1572,64 @@ function configurarListeners() {
     });
   }
 
-  // Modal Close
-  const btnClose = document.getElementById("btnModalClose");
-  if (btnClose) btnClose.addEventListener("click", cerrarModalCheckout);
+  // Cierre de Modal de Checkout
+  const btnCloseModal = document.getElementById("btnCloseCheckoutModal") || document.getElementById("btnModalClose");
+  if (btnCloseModal) btnCloseModal.addEventListener("click", cerrarModalCheckout);
 
-  const btnCancel = document.getElementById("btnModalCancel");
-  if (btnCancel) btnCancel.addEventListener("click", cerrarModalCheckout);
+  const btnCancelModal = document.getElementById("btnModalCancel");
+  if (btnCancelModal) btnCancelModal.addEventListener("click", cerrarModalCheckout);
 
-  const modal = document.getElementById("checkoutModal");
-  if (modal) {
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) cerrarModalCheckout();
+  const modalCheckout = document.getElementById("checkoutModal");
+  if (modalCheckout) {
+    modalCheckout.addEventListener("click", (e) => {
+      if (e.target === modalCheckout) cerrarModalCheckout();
     });
   }
+
+  // Conmutación de Pestañas en el Modal de Checkout
+  const tabComprar = document.getElementById("tabBtnComprar");
+  if (tabComprar) {
+    tabComprar.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
+  }
+
+  const tabTengoPin = document.getElementById("tabBtnTengoPin");
+  if (tabTengoPin) {
+    tabTengoPin.addEventListener("click", () => cambiarPestanaCheckout('tengo-pin'));
+  }
+
+  // Selección visual de tarjetas de producto en el modal
+  const optionCards = document.querySelectorAll(".pricing-option-card");
+  optionCards.forEach(card => {
+    card.addEventListener("click", () => {
+      optionCards.forEach(c => c.classList.remove("active-option"));
+      card.classList.add("active-option");
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
 
   // Botón Confirmar Pago Wompi
   const btnPagar = document.getElementById("btnConfirmWompi");
   if (btnPagar) {
     btnPagar.addEventListener("click", ejecutarPagoWompi);
+  }
+
+  // Botón Restaurar Sesión por PIN
+  const btnRestore = document.getElementById("btnRestoreSession");
+  if (btnRestore) {
+    btnRestore.addEventListener("click", restaurarSesionConPin);
+  }
+
+  // Botón Cerrar Sesión en Perfil
+  const btnLogout = document.getElementById("btnLogoutSession");
+  if (btnLogout) {
+    btnLogout.addEventListener("click", cerrarSesionUsuario);
+  }
+
+  // Botón Comprar Más Créditos desde el Perfil
+  const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
+  if (btnBuyMore) {
+    btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
   }
 
   // Botón VIP del Header
@@ -1133,7 +1638,7 @@ function configurarListeners() {
     btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
     btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
     btnVipHeader.addEventListener("click", () => {
-      abrirModalCheckout(0);
+      abrirModalCheckout();
     });
   }
 

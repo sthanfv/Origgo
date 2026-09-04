@@ -4,3 +4,8 @@ Thumbs.db
 *.log
 .temp*
 *.tmp
+.env
+.env*.local
+*.pem
+serviceAccountKey*.json
+data/ledger_store.json

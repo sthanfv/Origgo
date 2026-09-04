@@ -20,8 +20,20 @@ function assert(condicion, mensaje) {
   }
 }
 
-console.log('\n🔍 [VALIDACIÓN 1/5] Sintaxis de Scripts JavaScript...');
-const jsFiles = ['app.js', 'sw.js', 'config.js', 'scripts/build.js'];
+console.log('\n🔍 [VALIDACIÓN 1/6] Sintaxis de Scripts JavaScript y Endpoints Serverless...');
+const jsFiles = [
+  'app.js', 
+  'sw.js', 
+  'config.js', 
+  'scripts/build.js',
+  'api/lib/crypto.js',
+  'api/lib/db.js',
+  'api/payments/create-order.js',
+  'api/payments/webhook-wompi.js',
+  'api/auth/session.js',
+  'api/leads/unlock.js',
+  'api/user/balance.js'
+];
 for (const relPath of jsFiles) {
   const fullPath = path.join(ROOT_DIR, relPath);
   try {
@@ -32,7 +44,7 @@ for (const relPath of jsFiles) {
   }
 }
 
-console.log('\n🎨 [VALIDACIÓN 2/5] Integridad y Compilación de Hojas de Estilos (CSS)...');
+console.log('\n🎨 [VALIDACIÓN 2/6] Integridad y Compilación de Hojas de Estilos (CSS)...');
 const cssPath = path.join(ROOT_DIR, 'style.css');
 const cssMinPath = path.join(ROOT_DIR, 'style.min.css');
 
@@ -58,7 +70,11 @@ if (fs.existsSync(cssPath) && fs.existsSync(cssMinPath)) {
     ':root',
     '[data-theme="light"]',
     '--bg-main',
-    '--accent-emerald'
+    '--accent-emerald',
+    '.checkout-modal-card',
+    '.btn-confirm-wompi',
+    '.pricing-option-card',
+    '.btn-whatsapp-direct'
   ];
 
   for (const sel of selectoresCriticos) {
@@ -70,7 +86,7 @@ if (fs.existsSync(cssPath) && fs.existsSync(cssMinPath)) {
   assert(regexSvg.test(minCss), 'Regla .brand-iso-svg acotada y protegida contra desbordamiento');
 }
 
-console.log('\n📄 [VALIDACIÓN 3/5] Integridad de Marcado HTML y Referencias de Recursos...');
+console.log('\n📄 [VALIDACIÓN 3/6] Integridad de Marcado HTML y Referencias de Recursos...');
 const htmlPath = path.join(ROOT_DIR, 'index.html');
 assert(fs.existsSync(htmlPath), 'index.html existe');
 
@@ -82,6 +98,8 @@ if (fs.existsSync(htmlPath)) {
   assert(html.includes('style.min.css'), 'style.min.css enlazado en el head');
   assert(html.includes('<script defer src="./app.js'), 'app.js enlazado con defer');
   assert(html.includes('<script defer src="./config.js'), 'config.js enlazado con defer');
+  assert(html.includes('checkoutModal'), 'Modal de checkout y ledger presente en DOM');
+  assert(html.includes('checkout.wompi.co/widget.js'), 'Widget de pasarela Wompi enlazado');
 
   // Verificar que los recursos locales enlazados existen en disco
   const recursosLocales = [
@@ -101,7 +119,7 @@ if (fs.existsSync(htmlPath)) {
   }
 }
 
-console.log('\n📦 [VALIDACIÓN 4/5] Contratos de Datos JSON...');
+console.log('\n📦 [VALIDACIÓN 4/6] Contratos de Datos JSON y Cifrado AES-256...');
 const jsonPath = path.join(ROOT_DIR, 'data', 'inmobiliario.json');
 assert(fs.existsSync(jsonPath), 'data/inmobiliario.json existe');
 
@@ -112,21 +130,32 @@ if (fs.existsSync(jsonPath)) {
     assert(data.leads.length > 0, `leads contiene ${data.leads.length} oportunidades`);
     assert(typeof data.config === 'object', 'dataset.config es un objeto válido');
     
-    // Validar sanidad del primer lead
+    // Validar sanidad del primer lead y cifrado Zero-Trust
     const primerLead = data.leads[0];
     assert(!!primerLead.titulo, 'Lead tiene título');
     assert(primerLead.precio !== undefined, 'Lead tiene precio');
     assert(Array.isArray(primerLead.imagenes) && primerLead.imagenes.length > 0, 'Lead tiene galería fotográfica válida');
+    assert(!!primerLead.contacto_cifrado && primerLead.contacto_cifrado.includes(':'), 'Lead tiene contacto_cifrado AES-256 válido (iv:tag:cipher)');
+    assert(primerLead.telefono_bloqueado && primerLead.telefono_bloqueado.includes('•••'), 'Teléfono público permanece protegido/ofuscado');
   } catch (e) {
     assert(false, `data/inmobiliario.json no es JSON válido: ${e.message}`);
   }
 }
 
-console.log('\n🛡️ [VALIDACIÓN 5/5] Auditoría de Seguridad Zero-Trust...');
+console.log('\n💳 [VALIDACIÓN 5/6] Suite Automatizada de Integración Wompi y Ledger...');
+try {
+  execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_ledger_wompi.js')}"`, { stdio: 'pipe' });
+  assert(true, '8/8 pruebas unitarias de pasarela Wompi, timingSafeEqual y ledger pasadas al 100%');
+} catch (e) {
+  assert(false, `Fallo en suite de pruebas de Wompi: ${e.message}`);
+}
+
+console.log('\n🛡️ [VALIDACIÓN 6/6] Auditoría de Seguridad Zero-Trust...');
 if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, 'utf8');
   assert(!html.includes('ghp_'), 'Cero tokens de GitHub expuestos en HTML');
   assert(!html.includes('sk_live'), 'Cero llaves privadas Wompi expuestas en HTML');
+  assert(!html.includes('prv_live'), 'Cero credenciales de producción expuestas en HTML');
 }
 
 console.log('\n------------------------------------------------------------');

@@ -356,6 +356,178 @@
     </div>
   </footer>
 
+  <!-- MODAL DE CHECKOUT WOMPI, GESTIÓN DE CRÉDITOS Y PIN DE USUARIO -->
+  <div class="modal-backdrop checkout-modal-backdrop" id="checkoutModal">
+    <div class="modal-card checkout-modal-card">
+      <button class="btn-modal-close" id="btnCloseCheckoutModal" aria-label="Cerrar modal">&times;</button>
+      
+      <!-- Cabecera del Modal -->
+      <div class="checkout-modal-header">
+        <div class="checkout-badge-pill">
+          <i class="fa-solid fa-shield-halved"></i> Pasarela Segura Wompi Bancolombia
+        </div>
+        <h2 class="checkout-modal-title" id="checkoutModalTitle">Desbloqueo de Propietarios Directos</h2>
+        <p class="checkout-modal-subtitle">Sin intermediarios, comisiones de agencia ni mensualidades forzosas.</p>
+      </div>
+
+      <!-- Resumen del Inmueble (Si se abrió desde una tarjeta específica) -->
+      <div class="modal-lead-summary" id="modalLeadSummary"></div>
+
+      <!-- Pestañas de Navegación del Modal -->
+      <div class="checkout-tabs-bar" id="checkoutTabsBar">
+        <button type="button" class="checkout-tab-btn active" id="tabBtnComprar" data-tab="comprar">
+          <i class="fa-solid fa-cart-shopping"></i> Comprar Créditos / Planes
+        </button>
+        <button type="button" class="checkout-tab-btn" id="tabBtnTengoPin" data-tab="tengo-pin">
+          <i class="fa-solid fa-key"></i> Ya Tengo un PIN
+        </button>
+      </div>
+
+      <!-- PANEL 1: COMPRAR CRÉDITOS / PLANES -->
+      <div class="checkout-tab-panel active" id="panelComprar">
+        <div class="pricing-options-grid">
+          <!-- Opción 1: Pase Individual -->
+          <label class="pricing-option-card" data-product="single_lead">
+            <input type="radio" name="checkoutProduct" value="single_lead" class="checkout-radio">
+            <div class="option-card-inner">
+              <div class="option-header-row">
+                <span class="option-name">Desbloqueo Individual</span>
+                <span class="option-price">$ 5.000 COP</span>
+              </div>
+              <p class="option-desc">1 Contacto verificado del propietario directo. Ideal para compra puntual.</p>
+            </div>
+          </label>
+
+          <!-- Opción 2: Bolsa 10 Contactos (Recomendado) -->
+          <label class="pricing-option-card featured active-option" data-product="pack_10_leads">
+            <div class="featured-ribbon">⭐ Más Popular (-30%)</div>
+            <input type="radio" name="checkoutProduct" value="pack_10_leads" class="checkout-radio" checked>
+            <div class="option-card-inner">
+              <div class="option-header-row">
+                <span class="option-name">Bolsa 10 Contactos</span>
+                <span class="option-price">$ 35.000 COP</span>
+              </div>
+              <p class="option-desc">$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.</p>
+            </div>
+          </label>
+
+          <!-- Opción 3: Plan Pro Ciudad -->
+          <label class="pricing-option-card" data-product="subscription_city">
+            <input type="radio" name="checkoutProduct" value="subscription_city" class="checkout-radio">
+            <div class="option-card-inner">
+              <div class="option-header-row">
+                <span class="option-name">Plan Pro Ciudad</span>
+                <span class="option-price">$ 89.000 / mes</span>
+              </div>
+              <p class="option-desc">Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.</p>
+            </div>
+          </label>
+
+          <!-- Opción 4: Plan Nacional VIP -->
+          <label class="pricing-option-card" data-product="subscription_national">
+            <input type="radio" name="checkoutProduct" value="subscription_national" class="checkout-radio">
+            <div class="option-card-inner">
+              <div class="option-header-row">
+                <span class="option-name">Plan Nacional VIP</span>
+                <span class="option-price">$ 149.000 / mes</span>
+              </div>
+              <p class="option-desc">Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Formulario de Celular para asociar créditos -->
+        <div class="checkout-form-group">
+          <label for="checkoutWhatsappInput" class="checkout-form-label">
+            <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> Tu Número de WhatsApp (para asociar créditos y generar tu PIN):
+          </label>
+          <div class="checkout-input-wrapper">
+            <span class="checkout-input-prefix">+57</span>
+            <input type="tel" id="checkoutWhatsappInput" class="checkout-text-input" placeholder="Ej: 300 123 4567" maxlength="10" />
+          </div>
+          <span class="checkout-input-help">Tus créditos se guardarán con este número. Podrás usarlos desde cualquier dispositivo.</span>
+        </div>
+
+        <!-- Botón de Acción Wompi -->
+        <button type="button" class="btn-confirm-wompi" id="btnConfirmWompi">
+          <i class="fa-solid fa-lock"></i> Continuar al Pago Seguro con Wompi
+        </button>
+
+        <div class="checkout-guarantee-badges">
+          <span><i class="fa-solid fa-shield"></i> Pasarela Bancolombia / Wompi</span>
+          <span><i class="fa-solid fa-bolt"></i> Activación Instantánea</span>
+        </div>
+      </div>
+
+      <!-- PANEL 2: YA TENGO UN PIN (RESTAURACIÓN) -->
+      <div class="checkout-tab-panel" id="panelTengoPin">
+        <div class="pin-restore-box">
+          <p class="pin-restore-intro">
+            Si ya compraste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu PIN de seguridad (ej. <strong>HNT-7489</strong>).
+          </p>
+
+          <div class="checkout-form-group">
+            <label for="restoreWhatsappInput" class="checkout-form-label">
+              <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> WhatsApp Registrado:
+            </label>
+            <div class="checkout-input-wrapper">
+              <span class="checkout-input-prefix">+57</span>
+              <input type="tel" id="restoreWhatsappInput" class="checkout-text-input" placeholder="Ej: 300 123 4567" maxlength="10" />
+            </div>
+          </div>
+
+          <div class="checkout-form-group">
+            <label for="restorePinInput" class="checkout-form-label">
+              <i class="fa-solid fa-key" style="color: #F59E0B;"></i> PIN de Seguridad:
+            </label>
+            <input type="text" id="restorePinInput" class="checkout-text-input pin-input" placeholder="Ej: HNT-7492" maxlength="8" style="text-transform: uppercase;" />
+          </div>
+
+          <button type="button" class="btn-restore-session" id="btnRestoreSession">
+            <i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos
+          </button>
+
+          <div id="restoreStatusMsg" class="restore-status-msg" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- PANEL 3: PERFIL DE USUARIO CON SALDO ACTIVO -->
+      <div class="checkout-tab-panel" id="panelUsuarioActivo">
+        <div class="user-profile-box">
+          <div class="user-profile-header">
+            <div class="user-avatar-badge">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div>
+              <h3 class="user-phone-title" id="userActivePhone">+57 300 ••• ••••</h3>
+              <span class="user-pin-badge" id="userActivePin">PIN: HNT-••••</span>
+            </div>
+          </div>
+
+          <div class="user-credits-card">
+            <span class="user-credits-label">Saldo Disponible</span>
+            <div class="user-credits-value" id="userActiveCredits">⚡ 10 Créditos</div>
+            <p class="user-plan-status" id="userActivePlan">Plan Estándar por Créditos</p>
+          </div>
+
+          <div class="user-unlocked-info">
+            <span id="userActiveUnlockedCount">Has desbloqueado 0 propiedades.</span>
+          </div>
+
+          <div class="user-actions-row">
+            <button type="button" class="btn-buy-more-credits" id="btnBuyMoreFromProfile">
+              <i class="fa-solid fa-plus"></i> Comprar Más Créditos
+            </button>
+            <button type="button" class="btn-logout-session" id="btnLogoutSession">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL INSTITUCIONAL (TEXTOS LEGALES) -->
   <div class="modal-backdrop" id="modalLegalOverlay">
     <div class="modal-card legal-modal-card">
@@ -427,6 +599,7 @@
   <div class="menu-overlay" id="sideMenuOverlay"></div>
 
   <!-- Scripts Diferidos Anti-Bloqueo de Render -->
+  <script defer src="https://checkout.wompi.co/widget.js"></script>
   <script defer src="./config.js"></script>
   <script defer src="./app.js?v=17"></script>
 </body>
