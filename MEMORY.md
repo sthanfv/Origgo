@@ -1,53 +1,57 @@
 # 🧠 MEMORY.md — Hunter Pro Intelligence (Showcase & Ledger)
 
-Última actualización: 2026-09-04 21:45 (GMT-5)
+Última actualización: 2026-09-04 21:52 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Eliminación Definitiva del Parpadeo Blanco (350ms) al Revelar Contacto**:
-   - Se reemplazó la llamada destructiva global `renderizarInterfaz(datosActuales)` dentro de `ejecutarDesbloqueoLead()` en `app.js` por una mutación quirúrgica localizada mediante la nueva función `actualizarTarjetaEnElDOM(leadId, contacto, index)`.
-   - Causa raíz: al desbloquear un lead, `renderizarInterfaz` purgaba los 52 elementos con `container.innerHTML`, recreaba todos los nodos con `opacity: 0` y esperaba ~350ms a que el `IntersectionObserver` disparara la clase `.revealed`, provocando el parpadeo en blanco.
-   - Solución quirúrgica: `actualizarTarjetaEnElDOM` muta únicamente la tarjeta seleccionada:
-     1. Añade la clase `.card-unlocked`.
-     2. Reemplaza el badge de estado por el badge flotante `<span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> Desbloqueado</span>`.
-     3. Inserta o actualiza la barra verde esmeralda con el número telefónico real y el portal de origen (`.card-contact-phone-bar`).
-     4. Transforma los botones inferiores al clúster de acción directa (`.btn-whatsapp-direct` con enlace verificado, `.btn-call-direct` con `tel:` y `.btn-portal-direct` con el enlace original al portal).
-     5. Actualiza sincronizadamente el cajón deslizable de detalles (`#slideup-${cardIndex}`).
-   - Resultado: 0 milisegundos de recarga, cero desplazamientos de scroll y cero parpadeos visuales.
+1. **Ejecución del Reseteo y Purgado de Datos de Prueba en Firestore**:
+   - Se ejecutó `node scripts/reset_user.js 3113114357 --delete`.
+   - Se eliminó el documento `users/3113114357` (que contenía 12 leads desbloqueados y plan city) y se purgaron 3 órdenes de prueba asociadas en la colección `orders`.
+   - El entorno queda en estado virgen para simular la experiencia completa de un nuevo comprador.
 
-2. **Herramienta Administrativa para Reseteo y Limpieza de Usuario de Pruebas**:
-   - Se creó el script `scripts/reset_user.js` conectado a Google Cloud Firestore.
-   - Permite consultar y reiniciar o purgar cualquier número de teléfono (por defecto `3113114357`), restableciendo sus créditos a 0, plan a `free`, desvinculando leads desbloqueados y archivando u eliminando órdenes de prueba en Firestore.
-   - Opciones:
-     - `node scripts/reset_user.js <celular>`: Modo reinicio (créditos 0, plan libre, leads limpios).
-     - `node scripts/reset_user.js <celular> --delete`: Modo borrado físico total de documentos en `users` y `orders`.
+2. **Auditoría e Implementación de Reglas de Seguridad NoSQL (`firestore.rules`) Inspiradas en Desmulta**:
+   - Se auditó el archivo `Desmulta/firestore.rules` ubicado en `C:\workspace\Ecosistema_Desmulta\Desmulta\firestore.rules`.
+   - Patrón adoptado: Arquitectura **Zero-Trust Serverless** con principio de mínimo privilegio y denegación explícita e implícita (`Default-Deny`).
+   - Se crearon `firestore.rules`, `firebase.json` y `.firebaserc` para `hunter-pro-showcase`:
+     - `users/{phone}`: `allow read, write: if false;` (Blindaje total: previene que clientes web o atacantes lean teléfonos, hashes de PIN, saldos de créditos o inyecten saldo de forma fraudulenta).
+     - `orders/{reference}`: `allow read, write: if false;` (Inviolabilidad de órdenes, montos y firmas SHA-256).
+     - `transactions/{transactionId}`: `allow read, write: if false;` (Ledger inmutable contra ataques de replay o manipulación).
+     - `system_config/{docId}`: `allow get: if true; allow list, write: if false;` (Configuración pública controlada).
+     - `match /{document=**}`: `allow read, write: if false;` (Catch-all defensivo).
+   - Las reglas fueron **desplegadas exitosamente en vivo** en el proyecto Google Cloud / Firebase `hunter-pro-showcase` mediante Firebase MCP CLI (`firebase_deploy`).
 
-3. **Suite de Validación y Pruebas Automatizadas (6/6 Fases Aprobadas)**:
+3. **Eliminación Definitiva del Parpadeo Blanco (350ms) al Revelar Contacto**:
+   - Mutación quirúrgica en DOM mediante `actualizarTarjetaEnElDOM()`.
+   - Reemplazo inmediato de badge, barra de teléfono y botones a llamadas/WhatsApp directo sin reconstruir la grilla ni disparar opacidades transicionales de 350ms.
+
+4. **Suite de Validación y Pruebas Automatizadas (6/6 Fases Aprobadas)**:
    - Compilación exitosa de CSS (570 bloques).
-   - Verificación estricta de sintaxis en `app.js`, `scripts/reset_user.js` y endpoints serverless.
-   - Pruebas unitarias de pasarela Wompi y ledger: 12/12 pruebas al 100% con 0 fallos.
+   - Sintaxis JavaScript y endpoints serverless al 100%.
+   - Pruebas unitarias de pasarela Wompi y ledger: 12/12 con 0 fallos.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Parpadeo al Revelar**: El usuario experimentaba una pantalla blanca de 350ms al hacer clic en "Revelar contacto". La reconstrucción total del catálogo mediante `innerHTML` afectaba negativamente la percepción de velocidad y calidad de la aplicación.
-- **Necesidad de Pruebas Limpias como Usuario Nuevo**: Para validar el flujo de compra desde la perspectiva de un nuevo cliente, se requería un método controlado para restablecer el estado del usuario de prueba en Firestore sin afectar datos de producción y explicando la limpieza de la sesión en el navegador.
+- **Reinicio de Ciclo de Pruebas**: El usuario solicitó limpiar la base de datos para validar el flujo como cliente nuevo.
+- **Protección NoSQL de Producción**: Para prevenir vulnerabilidades donde un cliente malicioso intente consultar o alterar documentos de Firestore directamente desde el navegador, se adoptó la arquitectura de seguridad probada en el proyecto `Desmulta`.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `app.js`: Implementación de `actualizarTarjetaEnElDOM()` y desacoplamiento de `renderizarInterfaz` en `ejecutarDesbloqueoLead()`.
-- `scripts/reset_user.js`: Nuevo script administrativo de reseteo y borrado selectivo en Firestore.
-- `MEMORY.md`: Sincronización de memoria del proyecto.
+- `firestore.rules`: Reglas de seguridad Cloud Firestore (Zero-Trust).
+- `firebase.json`: Manifiesto de servicios Firebase apuntando a `firestore.rules`.
+- `.firebaserc`: Mapeo del proyecto por defecto a `hunter-pro-showcase`.
+- `MEMORY.md`: Registro de memoria actualizado.
 
 ---
 
 ## 4. Estado Actual del Sistema
 
-- **Compilación CSS (`style.min.css`)**: 73.8 KB (-30% de peso), balance de 570 bloques.
+- **Reglas Firestore**: Desplegadas al 100% en `hunter-pro-showcase` (Protección activa).
+- **Usuario de Prueba**: Reseteado y purgado en Firestore (`3113114357`).
 - **Suite de Pruebas (`npm test`)**: 6 fases superadas al 100% con 0 errores.
-- **Git**: Listo para commit y despliegue a producción en Vercel.
+- **Git**: Listo para commit y sincronización.

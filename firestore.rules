@@ -1,0 +1,70 @@
+rules_version = '2';
+
+/**
+ * 🛡️ REGLAS DE SEGURIDAD DE CLOUD FIRESTORE — ZERO-TRUST & PRIVACIDAD POR DISEÑO
+ * Hunter Pro Intelligence — Portal Showcase & Ledger Criptográfico
+ * 
+ * Filosofía de Seguridad:
+ * 1. Acceso Cero Directo desde Clientes Web: Las consultas a la base de datos se ejecutan
+ *    estrictamente a través de las Serverless Functions de Vercel (/api/*) utilizando
+ *    el Firebase Admin SDK con credenciales de cuenta de servicio.
+ * 2. Protección Antifraude y Privacidad de Leads: Ningún usuario puede inspeccionar
+ *    números de teléfono, PINs, créditos, órdenes ni transacciones directamente vía cliente Firestore.
+ * 3. Denegación Explícita e Implícita (Default-Deny).
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Validación de administrador mediante Custom Claims en Firebase Auth
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // ─── 1. USUARIOS Y CREDENCIALES (users/{phone}) ───
+    // Contiene: Celular, PIN hash/normalizado, saldo de créditos, planes activos y leads desbloqueados.
+    // El cliente web NUNCA debe tener acceso directo a esta colección para evitar:
+    // a) Robo o enumeración de teléfonos y PINs de otros usuarios.
+    // b) Manipulación arbitraria de saldo de créditos o suplantación de membresías.
+    // El acceso legítimo se realiza exclusivamente vía Serverless (/api/auth/session, /api/user/balance, /api/leads/unlock).
+    match /users/{phone} {
+      allow read, write: if false;
+    }
+
+    // ─── 2. ÓRDENES DE PAGO (orders/{reference}) ───
+    // Contiene: Referencia de pasarela Wompi, montos en centavos, firma SHA-256 de integridad,
+    // paquetes adquiridos y estado de verificación.
+    // Prohibida cualquier lectura o escritura desde el frontend para evitar spoofing o bypass de pagos.
+    match /orders/{reference} {
+      allow read, write: if false;
+    }
+
+    // ─── 3. LEDGER TRANSACCIONAL E IDEMPOTENCIA (transactions/{transactionId}) ───
+    // Contiene: Registro histórico de transacciones procesadas por el webhook de Wompi.
+    // Garantiza que un evento de pago no se procese dos veces. Inmutable desde el cliente.
+    match /transactions/{transactionId} {
+      allow read, write: if false;
+    }
+
+    // ─── 4. METADATOS Y CONFIGURACIÓN PÚBLICA DEL SISTEMA (system_config/{docId}) ───
+    // Documentos que requieran ser leídos públicamente (por ejemplo: tasas de cambio, avisos de sistema).
+    // Permite lectura individual ('get') pero prohíbe listado masivo ('list') y escritura pública.
+    match /system_config/{docId} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ─── 5. REGISTROS DE AUDITORÍA Y TELEMETRÍA (audit_logs/{logId}) ───
+    // Logs de seguridad y eventos de auditoría emitidos por el backend serverless.
+    match /audit_logs/{logId} {
+      allow read, write: if false;
+    }
+
+    // ─── 6. BLINDAJE RESIDUAL ZERO-TRUST (CATCH-ALL) ───
+    // Cualquier colección nueva o no especificada queda bloqueada automáticamente por defecto.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
