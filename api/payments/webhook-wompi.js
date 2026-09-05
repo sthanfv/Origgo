@@ -117,11 +117,19 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true, status });
   }
 
-  // 6. Recuperar la orden asociada
+  // 6. Recuperar la orden asociada (o extraer de la referencia si la lambda es stateless)
   const pendingOrder = await db.getPendingOrder(reference);
   let celular = pendingOrder ? pendingOrder.celular : null;
   let creditosAAcreditar = 0;
   let planData = null;
+
+  // Extracción determinista de celular desde la referencia HNT-[celular]-[timestamp]-[entropy]
+  if (!celular && reference && reference.startsWith('HNT-')) {
+    const partes = reference.split('-');
+    if (partes.length >= 2 && partes[1].length === 10 && /^\d+$/.test(partes[1])) {
+      celular = partes[1];
+    }
+  }
 
   if (pendingOrder) {
     creditosAAcreditar = pendingOrder.creditos || 0;
@@ -131,7 +139,7 @@ module.exports = async function handler(req, res) {
       planData = { plan: 'national', days: 30 };
     }
   } else {
-    // Si no se encontró pre-orden (ej. pago directo desde widget externo), inferir por monto
+    // Si la lambda no compartió el /tmp de create-order, inferir por monto de transacción
     const monto = transaction.amount_in_cents || 0;
     if (monto === 500000) creditosAAcreditar = 1;
     else if (monto === 3500000) creditosAAcreditar = 10;
@@ -139,7 +147,9 @@ module.exports = async function handler(req, res) {
     else if (monto === 14900000) planData = { plan: 'national', days: 30 };
     else creditosAAcreditar = 1;
 
-    celular = transaction.customer_email || transaction.reference;
+    if (!celular) {
+      celular = transaction.customer_email || transaction.reference;
+    }
   }
 
   // 7. Generar PIN de usuario si es nuevo y acreditar saldo

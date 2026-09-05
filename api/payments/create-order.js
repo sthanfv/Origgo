@@ -79,9 +79,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Referencia única con entropía de alta calidad
+    // Referencia única con celular y entropía (Stateless Architecture)
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const reference = `HNT-${Date.now()}-${randomSuffix}`;
+    const reference = `HNT-${normPhone}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
     const amountInCents = producto.montoCentavos;
     const currency = 'COP';
 

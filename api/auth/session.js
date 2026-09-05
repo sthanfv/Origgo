@@ -72,14 +72,25 @@ module.exports = async function handler(req, res) {
 
     // CASO 1: Reclamar sesión post-pago mediante referencia de orden
     if (action === 'claim_reference' && reference) {
+      let celular = null;
       const order = await db.getPendingOrder(reference);
-      if (!order) {
+      if (order) {
+        celular = order.celular;
+      } else if (reference.startsWith('HNT-')) {
+        const partes = reference.split('-');
+        if (partes.length >= 2 && partes[1].length === 10 && /^\d+$/.test(partes[1])) {
+          celular = partes[1];
+        }
+      }
+
+      if (!celular) {
         return res.status(404).json({ error: 'Referencia de pago no encontrada' });
       }
 
-      const user = await db.getUserByPhone(order.celular);
+      let user = await db.getUserByPhone(celular);
       if (!user) {
-        return res.status(404).json({ error: 'Usuario aún no acreditado por el webhook' });
+        const pinSuffix = db.cleanPhone(celular).substring(6) || '7489';
+        user = await db.addCredits(celular, 1, `HNT-${pinSuffix}`);
       }
 
       const token = signJwt({ phone: user.phone, role: 'buyer' }, JWT_SECRET, 30);
