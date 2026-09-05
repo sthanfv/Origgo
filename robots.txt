@@ -1,4 +1,4 @@
-# robots.txt para Hunter Pro Intelligence
+# robots.txt para Origgo
 # Permitir indexación de la vitrina institucional y restringir endpoints de datos brutos
 User-agent: *
 Allow: /
@@ -22,4 +22,4 @@ User-agent: Google-Extended
 Allow: /llms.txt
 Allow: /
 
-Sitemap: https://hunter-pro.vercel.app/sitemap.xml
+Sitemap: https://origgo.vercel.app/sitemap.xml

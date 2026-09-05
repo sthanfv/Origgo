@@ -52,6 +52,9 @@
 - `modules/11-welcome.js`: CTA de exploración de oportunidades directas.
 - `style.css` y `style.min.css`: Recompilados (91.7 KB minificado, -29%).
 - `app.js` y `app.min.js`: Recompilados (109.7 KB minificado, -14%).
+- `sitemap.xml`: Estructura XML de URLs actualizada hacia `https://origgo.vercel.app/`.
+- `robots.txt`: Directivas de rastreo para bots de búsqueda e IA apuntando al sitemap de Origgo.
+- `llms.txt`: Manifiesto semántico para indexación de modelos LLM bajo la marca Origgo.
 - `MEMORY.md`: Bitácora actualizada.
 
 ---
