@@ -2219,6 +2219,9 @@ main {
 
 .slideup-body {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   flex: 1;
   padding-right: 0.2rem;
   display: flex;
@@ -2227,16 +2230,11 @@ main {
   gap: 0.85rem;
 }
 
-/* Scrollbar sutil para el Drawer */
 .slideup-body::-webkit-scrollbar {
-  width: 5px;
-}
-.slideup-body::-webkit-scrollbar-track {
+  display: none;
+  width: 0;
+  height: 0;
   background: transparent;
-}
-.slideup-body::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 9999px;
 }
 
 .slideup-specs-grid {
@@ -2502,7 +2500,17 @@ main {
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   display: none;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 3rem 1rem 4rem;
+}
+
+.modal-backdrop::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
 [data-theme="light"] .modal-backdrop {
@@ -2727,6 +2735,17 @@ main {
   max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.checkout-modal-card::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
 .checkout-modal-header {
@@ -4034,11 +4053,21 @@ main {
 .legal-content-box {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-right: 0.75rem;
   margin: 1.25rem 0;
   color: var(--text-muted);
   font-size: 0.92rem;
   line-height: 1.65;
+}
+
+.legal-content-box::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
 .legal-content-box p {

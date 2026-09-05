@@ -76,6 +76,9 @@
 
 .slideup-body {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   flex: 1;
   padding-right: 0.2rem;
   display: flex;
@@ -84,16 +87,11 @@
   gap: 0.85rem;
 }
 
-/* Scrollbar sutil para el Drawer */
 .slideup-body::-webkit-scrollbar {
-  width: 5px;
-}
-.slideup-body::-webkit-scrollbar-track {
+  display: none;
+  width: 0;
+  height: 0;
   background: transparent;
-}
-.slideup-body::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 9999px;
 }
 
 .slideup-specs-grid {
