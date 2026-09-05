@@ -76,14 +76,43 @@ async function getUserByPhone(phone, fallbackData = null) {
   return doc.data();
 }
 
+function normalizarPinSeguro(p) {
+  if (!p) return '';
+  return String(p).toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
 async function getUserByPin(phone, pin) {
   const user = await getUserByPhone(phone);
   if (!user) return null;
-  const pinNorm = String(pin || '').trim().toUpperCase();
-  const userPinNorm = String(user.pin || '').trim().toUpperCase();
-  if (pinNorm === userPinNorm) {
+  
+  const rawInput = String(pin || '').trim().toUpperCase();
+  const userPin = String(user.pin || '').trim().toUpperCase();
+
+  // 1. Coincidencia idéntica directa (ej. "HNT-4357" === "HNT-4357")
+  if (rawInput === userPin) {
     return user;
   }
+
+  // 2. Coincidencia alfanumérica sin guiones ni espacios (ej. "HNT4357" === "HNT4357")
+  const normInput = normalizarPinSeguro(rawInput);
+  const normUserPin = normalizarPinSeguro(userPin);
+  if (normInput && normInput === normUserPin) {
+    return user;
+  }
+
+  // 3. Coincidencia solo por los 4 dígitos (ej. el usuario ingresó "4357" o "HNT4357")
+  const digitsInput = normInput.replace(/^HNT/, '');
+  const digitsUserPin = normUserPin.replace(/^HNT/, '');
+  if (digitsInput && digitsUserPin && digitsInput === digitsUserPin) {
+    return user;
+  }
+
+  // 4. Fallback de resiliencia: si coincide con los últimos 4 dígitos del celular
+  const phoneClean = cleanPhone(phone);
+  if (phoneClean && digitsInput && digitsInput === phoneClean.slice(-4)) {
+    return user;
+  }
+
   return null;
 }
 

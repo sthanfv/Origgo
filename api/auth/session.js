@@ -157,7 +157,7 @@ module.exports = async function handler(req, res) {
     // CASO 2: Inicio de sesión con WhatsApp + PIN
     const normPhone = db.cleanPhone(celular);
     if (!normPhone || !pin) {
-      return res.status(400).json({ error: 'Debe ingresar WhatsApp y su PIN de 6 caracteres.' });
+      return res.status(400).json({ error: 'Debe ingresar su número de WhatsApp y su PIN de seguridad.' });
     }
 
     const user = await db.getUserByPin(normPhone, pin);

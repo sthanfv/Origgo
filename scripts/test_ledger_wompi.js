@@ -142,22 +142,40 @@ async function runTests() {
   assert.strictEqual(userAfterDup.credits, 10, 'Los créditos deben seguir en 10 (no 20)');
   console.log('  ✅ Idempotencia atómica confirmada: saldo protegido contra reintentos de red.');
 
-  // TEST 6: Inicio de Sesión con WhatsApp y PIN
-  console.log('▶ Test 6: Autenticación con WhatsApp + PIN...');
+  // TEST 6: Inicio de Sesión con WhatsApp y PIN (Tolerante con guion, sin guion y solo 4 dígitos)
+  console.log('▶ Test 6: Autenticación con WhatsApp + PIN (Tolerancia total de formatos)...');
+  // 6a: Con formato completo oficial (HNT-XXXX)
   const mockReqLogin = {
     method: 'POST',
-    body: {
-      celular: testCelular,
-      pin: userPin
-    }
+    body: { celular: testCelular, pin: userPin }
   };
   const mockResLogin = createMockRes();
   await sessionHandler(mockReqLogin, mockResLogin);
-
   assert.strictEqual(mockResLogin.statusCode, 200);
   assert.ok(mockResLogin.data.token, 'Debe retornar un token JWT');
+
+  // 6b: Sin guion (HNTXXXX)
+  const pinSinGuion = userPin.replace('-', '');
+  const mockReqLoginSinGuion = {
+    method: 'POST',
+    body: { celular: testCelular, pin: pinSinGuion }
+  };
+  const mockResLoginSinGuion = createMockRes();
+  await sessionHandler(mockReqLoginSinGuion, mockResLoginSinGuion);
+  assert.strictEqual(mockResLoginSinGuion.statusCode, 200, 'Debe permitir login con PIN sin guion (ej. HNT4357)');
+
+  // 6c: Solo los 4 dígitos (XXXX)
+  const soloDigitos = userPin.slice(-4);
+  const mockReqLoginDigitos = {
+    method: 'POST',
+    body: { celular: testCelular, pin: soloDigitos }
+  };
+  const mockResLoginDigitos = createMockRes();
+  await sessionHandler(mockReqLoginDigitos, mockResLoginDigitos);
+  assert.strictEqual(mockResLoginDigitos.statusCode, 200, 'Debe permitir login solo con los 4 dígitos');
+
   const userToken = mockResLogin.data.token;
-  console.log('  ✅ Autenticación exitosa. Token JWT generado.');
+  console.log('  ✅ Autenticación tolerante exitosa: probado con HNT-XXXX, HNTXXXX y XXXX.');
 
   // TEST 7: Desbloqueo de Inmueble y Descuento de 1 Crédito
   console.log('▶ Test 7: Desbloqueo de Inmueble con deducción de 1 crédito...');
