@@ -257,6 +257,7 @@ function renderizarInterfaz(dataset) {
 
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
     const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
+    const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     return `
       <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
@@ -289,6 +290,9 @@ function renderizarInterfaz(dataset) {
               <span class="card-location">
                 <i class="fa-solid fa-location-dot"></i> ${escaparHtml(item.ubicacion)}
               </span>
+              <span class="card-portal-badge" title="Portal de origen verificado">
+                <i class="fa-solid fa-circle-check"></i> ${escaparHtml(portalNombre)}
+              </span>
               <button class="btn-specs-pill" data-action="abrir-ficha" data-index="${index}" title="Ver Detalles Completos">
                 Ver Detalles <i class="fa-solid fa-chevron-up"></i>
               </button>
@@ -311,9 +315,9 @@ function renderizarInterfaz(dataset) {
             </div>
 
             ${(estaDesbloqueado && contacto) ? `
-              <div style="margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
-                <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
-                ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
+              <div class="card-contact-phone-bar">
+                <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+                <span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(portalNombre)}</span>
               </div>
             ` : ''}
           </div>
@@ -372,14 +376,19 @@ function renderizarInterfaz(dataset) {
           </div>
 
           <div class="slideup-body">
-            <!-- Grid de Características -->
+            <!-- Grid de Características Simétricas -->
             <div class="slideup-specs-grid">
-              ${Object.entries(detalles).map(([k, v]) => `
-                <div class="slideup-spec-card">
-                  <span class="slideup-spec-key">${escaparHtml(k)}</span>
-                  <span class="slideup-spec-val">${escaparHtml(v)}</span>
-                </div>
-              `).join('')}
+              ${Object.entries(detalles).map(([k, v]) => {
+                const kLow = k.toLowerCase();
+                const iconClass = kLow.includes('estrato') ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('superficie')) ? 'fa-ruler-combined' : kLow.includes('hab') ? 'fa-bed' : kLow.includes('baño') ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero')) ? 'fa-square-parking' : kLow.includes('contacto') ? 'fa-user-shield' : 'fa-circle-info';
+                const vNorm = String(v || 'N/A').replace(/\b1 espacios\b/gi, '1 espacio').replace(/\b1 alcobas\b/gi, '1 alcoba').replace(/\b1 completos\b/gi, '1 completo');
+                return `
+                  <div class="slideup-spec-card">
+                    <span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span>
+                    <span class="slideup-spec-val">${escaparHtml(vNorm)}</span>
+                  </div>
+                `;
+              }).join('')}
             </div>
 
             <!-- Bloque de Confianza: Trato Directo Sin Intermediarios -->

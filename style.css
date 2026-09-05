@@ -2141,6 +2141,84 @@ main {
   transform: translateY(-1px);
 }
 
+/* Badge de Portal de Origen en Tarjetas (Bloqueadas y Desbloqueadas) */
+.card-portal-badge {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-transform: uppercase;
+  background: hsla(166, 40%, 18%, 0.45);
+  border: 1px solid hsla(158, 64%, 52%, 0.35);
+  color: var(--accent-emerald);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.1);
+}
+
+[data-theme="light"] .card-portal-badge {
+  background: hsla(140, 25%, 92%, 0.95);
+  border: 1px solid hsla(166, 40%, 23%, 0.22);
+  color: var(--accent-emerald);
+}
+
+/* Barra de Contacto y Teléfono Revelado */
+.card-contact-phone-bar {
+  margin-top: 0.55rem;
+  margin-bottom: 0.45rem;
+  background: hsla(158, 64%, 52%, 0.1);
+  border: 1px solid hsla(158, 64%, 52%, 0.35);
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.1);
+}
+
+.card-contact-phone-bar span i {
+  color: #10b981;
+  margin-right: 0.35rem;
+}
+
+.contact-phone-number {
+  color: #34D399;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="light"] .contact-phone-number {
+  color: #065F46;
+}
+
+.unlocked-portal-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: hsla(158, 64%, 52%, 0.18);
+  border: 1px solid hsla(158, 64%, 52%, 0.4);
+  color: #34D399;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+[data-theme="light"] .unlocked-portal-pill {
+  background: hsla(166, 40%, 23%, 0.12);
+  border-color: hsla(166, 40%, 23%, 0.25);
+  color: #065F46;
+}
+
+
 /* ═══════════════════════════════════════════════════
    OVERLAY DE FICHA TÉCNICA (Slide-Up Drawer Integrado)
    ═══════════════════════════════════════════════════ */
@@ -2226,8 +2304,8 @@ main {
   padding-right: 0.2rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 0.85rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
 }
 
 .slideup-body::-webkit-scrollbar {
@@ -2239,29 +2317,34 @@ main {
 
 .slideup-specs-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.55rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
 }
 
 .slideup-spec-card {
   background: var(--glass-metrics-bg);
   border: 1px solid var(--border-subtle);
   border-radius: 0.95rem;
-  padding: 0.68rem 0.85rem;
+  padding: 0.75rem 0.9rem;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.08);
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 68px;
 }
 
 [data-theme="light"] .slideup-spec-card {
-  background: hsla(0, 0%, 100%, 0.75);
+  background: hsla(0, 0%, 100%, 0.85);
   border: 1px solid hsla(160, 20%, 88%, 0.9);
   box-shadow: 0 2px 6px rgba(5, 31, 32, 0.04);
 }
 
 .slideup-spec-card:hover {
   border-color: var(--border-hover);
+  transform: translateY(-1px);
 }
 
 .slideup-spec-key {
@@ -2270,8 +2353,15 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-dim);
-  display: block;
-  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.slideup-spec-key i {
+  font-size: 11px;
+  color: var(--accent-emerald);
 }
 
 [data-theme="light"] .slideup-spec-key {
@@ -2280,7 +2370,7 @@ main {
 
 .slideup-spec-val {
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: var(--text-main);
   line-height: 1.3;

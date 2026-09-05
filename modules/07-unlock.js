@@ -69,8 +69,8 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
       }
     }
     phoneBar.innerHTML = `
-      <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
-      ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
+      <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+      <span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(contacto.portal || 'Finca Raíz')}</span>
     `;
   }
 
