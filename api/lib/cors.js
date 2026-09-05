@@ -8,6 +8,7 @@
 
 const DOMINIOS_PERMITIDOS = new Set([
   'https://origgo.vercel.app',
+  'https://origgo-co.vercel.app',
   'https://origgo.online',
   'https://www.origgo.online',
   'http://localhost:5000',

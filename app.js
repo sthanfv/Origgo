@@ -9,7 +9,8 @@ let datosActuales = null;
 let leadSeleccionado = null;
 let wompiScriptCargado = false;
 const carruselIndices = {};
-let limiteVisible = 6;
+let limiteVisible = 9; // Display 9 cards per page for a better grid
+let paginaActual = 1;
 
 // Estado del ledger de créditos y usuario autenticado
 let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }

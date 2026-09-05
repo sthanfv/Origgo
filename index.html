@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co https://*.wompi.co; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://checkout.wompi.co https://*.wompi.co; connect-src 'self' https://checkout.wompi.co https://*.wompi.co https://sandbox.wompi.co https://production.wompi.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://images.unsplash.com https://*.unsplash.com https://cdn2.infocasas.com.uy https://*.infocasas.com.uy;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co https://*.wompi.co https://ka-f.fontawesome.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://ka-f.fontawesome.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com https://ka-f.fontawesome.com; img-src 'self' data: https: blob:; frame-src 'self' https://checkout.wompi.co https://*.wompi.co; connect-src 'self' https://checkout.wompi.co https://*.wompi.co https://sandbox.wompi.co https://production.wompi.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://images.unsplash.com https://*.unsplash.com https://cdn2.infocasas.com.uy https://*.infocasas.com.uy https://ka-f.fontawesome.com;">
   
   <title>Origgo — Terminal de Oportunidades Directas y Arbitraje</title>
   <meta name="description" content="Origgo: Plataforma de inteligencia de mercado y arbitraje inmobiliario. Conexión de primera mano directamente con propietarios en Colombia.">
@@ -52,6 +52,8 @@
 
   <!-- FontAwesome 6 Icons Diferido Anti-Bloqueo de Render -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- FontAwesome Kit CDN Fallback -->
+  <link rel="preload" href="https://ka-f.fontawesome.com/releases/v6.5.1/css/free.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   
   <!-- Hoja de Estilos Principal Minificada y Verificada -->
@@ -68,8 +70,8 @@
         <div class="brand-text-block">
           <h1 class="brand-title" aria-label="Origgo">
             <span class="brand-logo-container brand-initial-o-wrap" aria-hidden="true">
-              <img src="./assets/img/origgo-icon.svg" alt="" class="brand-iso-svg brand-icon-o" width="36" height="36" />
-            </span><span class="brand-letters-riggo">riggo</span>
+              <img src="./assets/img/origgo-icon.svg" alt="" class="brand-iso-svg brand-icon-o" width="46" height="46" />
+            </span><span class="brand-letters-riggo"><span style="animation-delay: 0.1s">r</span><span style="animation-delay: 0.2s">i</span><span style="animation-delay: 0.3s">g</span><span style="animation-delay: 0.4s">g</span><span style="animation-delay: 0.5s">o</span></span>
           </h1>
         </div>
       </div>
