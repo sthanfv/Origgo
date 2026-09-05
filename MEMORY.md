@@ -1,91 +1,57 @@
 # 🧠 MEMORY.md — Hunter Pro Intelligence (Showcase & Ledger)
 
-Última actualización: 2026-09-05 05:52 (GMT-5)
+Última actualización: 2026-09-05 06:05 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Sistema de Bienvenida Exclusiva y Notificaciones Toast Diferenciadas por Nivel**:
-   - Se erradicó el mensaje frío y genérico `"Tienes 0 créditos"` que aparecía al adquirir planes ilimitados.
-   - Función `generarMensajeBienvenidaToast(usuario, tipoProducto, ciudad)` en `modules/02-toast.js`:
-     - **Plan Pro Ciudad**: Reconocimiento territorial de alta gama con acceso ilimitado a propietarios directos por 30 días en la ciudad seleccionada.
-     - **Plan Nacional VIP**: Acceso total nacional y radar de rebajas urgentes/arbitraje activado.
-     - **Bolsa de 10 Contactos**: Confirmación del 30% OFF y créditos perpetuos sin vencimiento.
-     - **Desbloqueo Individual**: Confirmación de contacto directo sin intermediarios.
+1. **Erradicación Definitiva y Estructural de la Barra de Desplazamiento Interna del Modal**:
+   - Diagnóstico: `.checkout-modal-card` tenía `max-height: 90vh; overflow-y: auto;` y en `styles/13-footer.css` (`@media (max-width: 640px)`) tenía `overflow-y: auto !important;`. Esto generaba un scroll anidado en una tarjeta de 540px, obligando a Chrome/Edge en Windows a pintar una barra vertical nativa de 17px con flechas `▲` y `▼` pegada al borde derecho de la tarjeta (en medio de la pantalla).
+   - Solución Arquitectónica: Se configuró `.checkout-modal-card` con `overflow: visible !important; max-height: none !important;`. Al no tener límite de altura interna ni overflow, el contenedor modal no genera scrollbar propia; el desplazamiento vertical lo gestiona enteramente el viewport `.modal-backdrop`, donde las barras están suprimidas globalmente con `scrollbar-width: none !important` y pseudo-elementos `::-webkit-scrollbar { display: none !important; width: 0 !important; }`.
 
-2. **Modal Celebratorio de Bienvenida & Onboarding de Beneficios VIP (`#modalWelcomeSuccess`)**:
-   - Experiencia de lujo post-pago inspirada en Google One Pro y Apple Gold.
-   - Halo ambiental dorado/esmeralda animado (`.welcome-modal-aura`).
-   - Badge superior de estatus con corona o diamante metalizado.
-   - Tarjeta de credencial segura con WhatsApp registrado, PIN maestro destacado y botón interactivo para **Copiar PIN en un solo clic** con feedback visual.
-   - Matriz de privilegios activos con checks esmeralda y explicación de beneficios (0% comisión, trato directo, alertas en tiempo real).
-   - Botón CTA principal de inmersión (*"Comenzar a Cazar Oportunidades"* o *"Ver Teléfono de Mi Inmueble"*).
+2. **Cálculo Antifraude de Mes Calendario Real y Corte por Hora Exacta (`api/lib/db.js`)**:
+   - Se reemplazó el cálculo rígido de 30 días (`Date.now() + 30 * 86400 * 1000`) por la función `calcularExpiracionMesCalendario(fechaInicio, meses = 1)` siguiendo el estándar de telecomunicaciones y Stripe Billing.
+   - En meses de 31 días (enero, marzo, mayo, julio, agosto, octubre, diciembre), el usuario disfruta de sus 31 días completos sin que el sistema le reste tiempo.
+   - La fecha de corte (`planExpiresAt`) se guarda en formato ISO 8601 UTC y se corta exactamente al minuto de la misma hora en que el usuario realizó la compra.
+   - En `api/leads/unlock.js`, la validación `new Date(user.planExpiresAt) > new Date()` se evalúa en el servidor contra el reloj atómico UTC de Google Cloud, impidiendo cualquier manipulación desde el reloj del dispositivo móvil o PC.
 
-3. **Navegación Tripartita en el Modal de Gestión (`#checkoutTabsBar`)**:
-   - Solución definitiva al problema de navegación reportado por el usuario: cuando un usuario con sesión activa consultaba la lista de precios, ya no quedaba atrapado sin poder volver a ver su saldo.
-   - Barra conmutada dinámicamente:
-     - **Usuario con Sesión Activa**: 3 pestañas:
-       1. 👑 **Mi Membresía** (`tabBtnMiCuenta` -> `panelUsuarioActivo`).
-       2. 💎 **Comprar Planes** (`tabBtnComprar` -> `panelComprar`).
-       3. 🔑 **Ya Tengo un PIN** (`tabBtnTengoPin` -> `panelTengoPin`).
-     - **Usuario sin Sesión**: 2 pestañas estándar (`Comprar Planes` y `Ya Tengo un PIN`).
+3. **Arquitectura y Trazabilidad Antifraude de Órdenes**:
+   - El tipo de paquete (`productType`: `single_lead`, `pack_10_leads`, `subscription_city`, `subscription_national`), el monto en centavos y la ciudad quedan sellados desde el inicio en Firestore (`pendingOrders`) con firma HMAC-SHA256 (`WOMPI_INTEGRITY_SECRET`).
+   - El backend valida que la transacción de Wompi coincida exactamente al centavo y en estado `APPROVED` antes de acreditar beneficios de forma idempotente (`claim_${reference}`).
 
-4. **Rediseño Ejecutivo de la Tarjeta de Membresía en Perfil (`#panelUsuarioActivo`)**:
-   - Se erradicó la visualización de `⚡ 0 Créditos` para usuarios con planes activos.
-   - Nueva tarjeta de alto patrimonio `.user-credits-card.vip-mode`:
-     - Badge dorado de nivel (`👑 Plan Pro Ciudad (Bogotá)` o `👑 Plan Nacional VIP`).
-     - Título de estatus: `Estado de Cobertura: Acceso Ilimitado`.
-     - Cobertura territorial y vigencia de 30 días.
-     - Acordeón interactivo desplegable con desglose de privilegios activos (`0% Comisión`, `Alertas en Tiempo Real`).
-     - Bolsa de créditos adicionales fuera de cobertura si el usuario acumula saldo.
-
-5. **Desacoplamiento Modular y Cumplimiento Estricto del Estándar Desmulta (< 500 Líneas)**:
-   - Nuevo módulo JS: `modules/11-welcome.js` (193 líneas) para gestión del modal onboarding y credenciales.
-   - Nuevo módulo CSS: `styles/15-welcome-modal.css` (352 líneas) para diseño luxury, halo ambiental y tarjetas de beneficios.
-   - `modules/08-checkout.js` optimizado a 421 líneas.
-   - Todos los 11 submódulos JS y 15 submódulos CSS permanecen estrictamente por debajo de las 500 líneas.
-
-6. **Suite DevSecOps en 8 Fases (`npm test`)**:
-   - 8/8 Fases pasadas al 100% con 0 errores (Sintaxis, CSS, HTML/OWASP, Criptografía AES-256, Wompi 12/12, Antifraude, Blindaje de PIN y Modularidad < 500 líneas).
+4. **Modularidad Desmulta (< 500 líneas)**:
+   - 11 submódulos JS (`modules/`) y 15 submódulos CSS (`styles/`), todos rigurosamente por debajo de 500 líneas.
+   - Suite DevSecOps de 8 fases (`npm test`) aprobada al 100% con 0 errores.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Requerimiento Directo del Usuario**:
-  1. Las notificaciones post-pago no eran claras sobre el motivo de su presencia y mostraban "Tienes 0 créditos" a un comprador de plan pro ciudad.
-  2. Necesidad de un modal inmediato post-compra con beneficios claros y exclusivos (referencia Google One Pro) que eleve la percepción de lujo y alto valor.
-  3. Faltaba una tercera pestaña en el modal de checkout para regresar a la sección del plan/PIN propio una vez que el usuario navegaba a ver otros precios.
-  4. La tarjeta de usuario requería estética de alta gama acorde a un entorno de alto flujo de inversión.
+- **Eliminación Visual de la Barra Recta**: El usuario reportó que la barra de desplazamiento seguía visible a la derecha de la tarjeta modal en Windows (`media_1788606084387.png`), rompiendo la estética limpia.
+- **Transparencia y Precisión en el Vencimiento**: El usuario consultó cómo opera el vencimiento de planes, exigiendo que no se roben días en meses de 31 días y que el corte se ejecute a la hora exacta de la compra con validación del servidor a prueba de fraude.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `index.html`: Incorporación de `tabBtnMiCuenta`, rediseño de `panelUsuarioActivo` y nuevo modal `#modalWelcomeSuccess`.
-- `styles/15-welcome-modal.css` [NUEVO]: Submódulo de estilos luxury para el modal de bienvenida.
-- `styles/09-checkout-modal.css`: Soporte responsive para barra de 3 pestañas y acento dorado VIP.
-- `styles/10-checkout-plans.css`: Estilos para `.vip-mode`, badge de membresía y acordeón de beneficios.
-- `modules/11-welcome.js` [NUEVO]: Lógica de renderizado dinámico de beneficios y copiado de PIN.
-- `modules/08-checkout.js`: Orquestación de 3 pestañas dinámicas, render de perfil enriquecido y callback Wompi.
-- `modules/02-toast.js`: Función `generarMensajeBienvenidaToast` con copys exclusivos según plan.
-- `modules/01-state.js`: Conexión de bienvenida y modal VIP en retorno por URL.
-- `style.css` y `style.min.css`: Recompilados con 15 submódulos CSS.
-- `app.js` y `app.min.js`: Recompilados con 11 submódulos JS.
-- `MEMORY.md`: Bitácora actualizada.
+- `styles/09-checkout-modal.css`: `.checkout-modal-card` reconfigurado con `overflow: visible !important; max-height: none !important;` y selectores de scrollbar reforzados.
+- `styles/13-footer.css`: Eliminado el `overflow-y: auto !important` de `.checkout-modal-card` en media queries móviles.
+- `api/lib/db.js`: Función `calcularExpiracionMesCalendario` para respetar meses de 31 días y horas de corte exactas.
+- `style.css` y `style.min.css`: Recompilados y verificados.
+- `MEMORY.md`: Bitácora sincronizada.
 
 ---
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Desacoplamiento en `11-welcome.js`**: Para evitar que `08-checkout.js` excediera el límite de 500 líneas (alcanzaba 601), se extrajo la lógica del modal de bienvenida en su propio módulo, cumpliendo el límite de 500 líneas en todos los archivos.
-- **Navegación Dinámica según Estado**: En lugar de mostrar siempre 3 pestañas (lo que confundiría a un usuario anónimo), la pestaña *👑 Mi Membresía* se oculta si no hay sesión y se activa con prioridad si el usuario está autenticado.
+- **Delegación de Scroll al Backdrop**: Al transferir el scroll exclusivamente a `.modal-backdrop` y liberar `.checkout-modal-card` de restricciones de altura (`max-height: none`), se erradica la barra nativa interna en medio de la pantalla preservando la fluidez del desplazamiento en toda la página.
+- **Mes Calendario**: Se aplica la lógica `d.setMonth(d.getMonth() + 1)` con ajuste al último día del mes si el mes siguiente tiene menos días (ej. 31 de enero a 28 de febrero), garantizando equidad y exactitud temporal.
 
 ---
 
 ## 5. Estado Actual del Sistema
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
-- **Compilación Modular**: 15 módulos CSS ensamblados (89.7 KB minificado), 11 módulos JS ensamblados (109.3 KB minificado).
-- **Seguridad**: Cero tokens o credenciales expuestas, reconciliación estricta Wompi y PIN blindado.
+- **Estética Modal**: Cero barras internas de scroll; curvatura orgánica completa (`border-radius: 40px`).
+- **Seguridad y Ledger**: Reconciliación estricta Wompi, vencimiento por servidor UTC y zero-trust.

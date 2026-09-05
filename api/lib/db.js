@@ -121,6 +121,25 @@ async function getUserByPin(phone, pin) {
   return null;
 }
 
+/**
+ * Calcula la fecha y hora exacta de vencimiento de un ciclo de membresía (mes calendario).
+ * Si el mes tiene 31 días (ej. diciembre, marzo, mayo), preserva los 31 días completos sin robar tiempo.
+ * Se corta exactamente a la misma hora y minuto en que se activó la compra (reloj servidor UTC).
+ * @param {Date|string|number} [fechaInicio=new Date()]
+ * @param {number} [meses=1]
+ * @returns {string} Fecha de expiración en formato ISO 8601 UTC
+ */
+function calcularExpiracionMesCalendario(fechaInicio = new Date(), meses = 1) {
+  const d = new Date(fechaInicio);
+  const diaOriginal = d.getDate();
+  d.setMonth(d.getMonth() + meses);
+  // Si el mes destino tiene menos días (ej. 31 de enero -> último día de febrero)
+  if (d.getDate() !== diaOriginal) {
+    d.setDate(0);
+  }
+  return d.toISOString();
+}
+
 async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) {
   const normPhone = cleanPhone(phone);
   if (!normPhone) throw new Error('Número de teléfono inválido');
@@ -152,8 +171,12 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
     if (planData && planData.plan) {
       existing.plan = planData.plan;
       if (planData.city) existing.planCity = planData.city;
-      const days = planData.days || 30;
-      existing.planExpiresAt = new Date(Date.now() + days * 86400 * 1000).toISOString();
+      // Cálculo antifraude de mes calendario preservando 31 días y hora exacta de compra
+      if (typeof planData.days === 'number' && planData.days !== 30) {
+        existing.planExpiresAt = new Date(Date.now() + planData.days * 86400 * 1000).toISOString();
+      } else {
+        existing.planExpiresAt = calcularExpiracionMesCalendario(Date.now(), 1);
+      }
     }
 
     existing.updatedAt = new Date().toISOString();

@@ -306,8 +306,8 @@
 /* Optimización para Teléfonos Móviles y Pantallas Táctiles */
 @media (max-width: 640px) {
   .checkout-modal-card {
-    max-height: 90vh !important;
-    overflow-y: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     padding: 1.25rem 1rem 2rem !important;
     border-radius: 20px !important;
     margin: auto 0.75rem !important;
