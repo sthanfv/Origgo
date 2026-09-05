@@ -34,7 +34,7 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ authenticated: false, error: 'Token inválido o expirado' });
     }
 
-    const user = await db.getUserByPhone(payload.phone, payload);
+    const user = await db.getUserByPhone(payload.phone);
     if (!user) {
       return res.status(404).json({ authenticated: false, error: 'Usuario no encontrado' });
     }

@@ -1,30 +1,22 @@
 # 🧠 MEMORY.md — Hunter Pro Intelligence (Showcase & Ledger)
 
-Última actualización: 2026-09-04 21:52 (GMT-5)
+Última actualización: 2026-09-04 22:22 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Ejecución del Reseteo y Purgado de Datos de Prueba en Firestore**:
-   - Se ejecutó `node scripts/reset_user.js 3113114357 --delete`.
-   - Se eliminó el documento `users/3113114357` (que contenía 12 leads desbloqueados y plan city) y se purgaron 3 órdenes de prueba asociadas en la colección `orders`.
-   - El entorno queda en estado virgen para simular la experiencia completa de un nuevo comprador.
+1. **Erradicación del Bug de "Resurrección Zombi" de Usuarios Eliminados**:
+   - Se identificó la causa exacta por la cual no se podía empezar de cero con el mismo número: en `api/lib/db.js` (`getUserByPhone` y `unlockLead`), `api/user/balance.js` y `api/auth/session.js`, el backend aceptaba un argumento `fallbackData` / `sessionData` derivado del JWT en `localStorage`. Si el usuario había sido borrado de Firestore, al recargar la web el endpoint `/api/user/balance` **re-creaba al usuario en Firestore** con los datos viejos del token (12 leads y plan city).
+   - Solución: Se eliminó por completo la lógica de fallback/resurrección. Firestore es la única fuente de verdad. Si un usuario no existe en `usersRef`, `getUserByPhone` retorna `null` y `/api/user/balance` responde `404 Usuario no encontrado`.
+   - En `app.js`, al recibir error 404 de `/api/user/balance`, el frontend purga automáticamente `hunter_pro_token`, `hunter_unlocked_contacts`, restablece el caché en memoria y resetea la sesión sin requerir intervención manual en DevTools.
+   - En `cerrarSesionUsuario()`, se añadió la remoción explícita de `hunter_unlocked_contacts` y reseteo de `cacheContactosDesbloqueados`.
 
-2. **Auditoría e Implementación de Reglas de Seguridad NoSQL (`firestore.rules`) Inspiradas en Desmulta**:
-   - Se auditó el archivo `Desmulta/firestore.rules` ubicado en `C:\workspace\Ecosistema_Desmulta\Desmulta\firestore.rules`.
-   - Patrón adoptado: Arquitectura **Zero-Trust Serverless** con principio de mínimo privilegio y denegación explícita e implícita (`Default-Deny`).
-   - Se crearon `firestore.rules`, `firebase.json` y `.firebaserc` para `hunter-pro-showcase`:
-     - `users/{phone}`: `allow read, write: if false;` (Blindaje total: previene que clientes web o atacantes lean teléfonos, hashes de PIN, saldos de créditos o inyecten saldo de forma fraudulenta).
-     - `orders/{reference}`: `allow read, write: if false;` (Inviolabilidad de órdenes, montos y firmas SHA-256).
-     - `transactions/{transactionId}`: `allow read, write: if false;` (Ledger inmutable contra ataques de replay o manipulación).
-     - `system_config/{docId}`: `allow get: if true; allow list, write: if false;` (Configuración pública controlada).
-     - `match /{document=**}`: `allow read, write: if false;` (Catch-all defensivo).
-   - Las reglas fueron **desplegadas exitosamente en vivo** en el proyecto Google Cloud / Firebase `hunter-pro-showcase` mediante Firebase MCP CLI (`firebase_deploy`).
+2. **Purgado Definitivo del Usuario `3113114357` en Firestore**:
+   - Se ejecutó el purgado de `users/3113114357` y órdenes residuales. Verificado con `Doc exists? false`. Ahora el usuario puede registrarse y comprar desde cero con su número original.
 
-3. **Eliminación Definitiva del Parpadeo Blanco (350ms) al Revelar Contacto**:
-   - Mutación quirúrgica en DOM mediante `actualizarTarjetaEnElDOM()`.
-   - Reemplazo inmediato de badge, barra de teléfono y botones a llamadas/WhatsApp directo sin reconstruir la grilla ni disparar opacidades transicionales de 350ms.
+3. **Despliegue y Blindaje de Reglas NoSQL (`firestore.rules`) Inspiradas en Desmulta**:
+   - Reglas Zero-Trust desplegadas en producción en `hunter-pro-showcase`. Acceso directo de cliente web cerrado (`allow read, write: if false;`). Todo el tráfico transaccional pasa por las Serverless Functions autorizadas con Service Account.
 
 4. **Suite de Validación y Pruebas Automatizadas (6/6 Fases Aprobadas)**:
    - Compilación exitosa de CSS (570 bloques).
@@ -35,16 +27,17 @@
 
 ## 2. ¿Por qué cambió?
 
-- **Reinicio de Ciclo de Pruebas**: El usuario solicitó limpiar la base de datos para validar el flujo como cliente nuevo.
-- **Protección NoSQL de Producción**: Para prevenir vulnerabilidades donde un cliente malicioso intente consultar o alterar documentos de Firestore directamente desde el navegador, se adoptó la arquitectura de seguridad probada en el proyecto `Desmulta`.
+- **Imposibilidad de Reiniciar con el Mismo Número**: El usuario reportó que no podía empezar de cero con su número `3113114357`. Al investigar el ciclo de vida del token, se descubrió que el backend estaba resucitando los registros borrados en cada llamada a `balance.js`.
+- **Estrategia de Autenticación por Celular + PIN**: Se aclaró técnicamente la validez de la autenticación por número de WhatsApp + PIN frente a email tradicional, confirmando que es la arquitectura idónea para este modelo de negocio en Colombia.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `firestore.rules`: Reglas de seguridad Cloud Firestore (Zero-Trust).
-- `firebase.json`: Manifiesto de servicios Firebase apuntando a `firestore.rules`.
-- `.firebaserc`: Mapeo del proyecto por defecto a `hunter-pro-showcase`.
+- `api/lib/db.js`: Remoción de `fallbackData` en `getUserByPhone` y denegación en `unlockLead` si `!doc.exists`.
+- `api/user/balance.js`: Consulta sin rehidratación a `getUserByPhone`.
+- `api/auth/session.js`: Consulta sin rehidratación a `getUserByPhone`.
+- `app.js`: Purga automática de `hunter_pro_token` y `hunter_unlocked_contacts` en 404 y en `cerrarSesionUsuario`.
 - `MEMORY.md`: Registro de memoria actualizado.
 
 ---
@@ -52,6 +45,7 @@
 ## 4. Estado Actual del Sistema
 
 - **Reglas Firestore**: Desplegadas al 100% en `hunter-pro-showcase` (Protección activa).
-- **Usuario de Prueba**: Reseteado y purgado en Firestore (`3113114357`).
+- **Usuario de Prueba `3113114357`**: Totalmente eliminado de Firestore (`Doc exists: false`).
+- **Resurrección Zombi**: Erradicada.
 - **Suite de Pruebas (`npm test`)**: 6 fases superadas al 100% con 0 errores.
-- **Git**: Listo para commit y sincronización.
+- **Git**: Listo para commit y despliegue a producción en Vercel.

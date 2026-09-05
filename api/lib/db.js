@@ -48,28 +48,12 @@ function cleanPhone(phone) {
   return num.startsWith('57') && num.length === 12 ? num.substring(2) : num;
 }
 
-async function getUserByPhone(phone, fallbackData = null) {
+async function getUserByPhone(phone) {
   const normPhone = cleanPhone(phone);
   if (!normPhone) return null;
 
   const doc = await usersRef.doc(normPhone).get();
-  
   if (!doc.exists) {
-    if (fallbackData && cleanPhone(fallbackData.phone) === normPhone) {
-      const newUser = {
-        phone: normPhone,
-        pin: fallbackData.pin || generatePin(normPhone),
-        credits: Number(fallbackData.credits || 0),
-        plan: fallbackData.plan || 'free',
-        planCity: fallbackData.planCity || null,
-        planExpiresAt: fallbackData.planExpiresAt || null,
-        unlockedLeads: Array.isArray(fallbackData.unlockedLeads) ? fallbackData.unlockedLeads : [],
-        createdAt: fallbackData.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      await usersRef.doc(normPhone).set(newUser);
-      return newUser;
-    }
     return null;
   }
   
@@ -169,32 +153,9 @@ async function unlockLead(phone, leadId, sessionData = null, leadCity = null) {
     let user;
 
     if (!doc.exists) {
-      if (sessionData && cleanPhone(sessionData.phone) === normPhone) {
-        user = {
-          phone: normPhone,
-          pin: sessionData.pin || generatePin(normPhone),
-          credits: Number(sessionData.credits || 0),
-          plan: sessionData.plan || 'free',
-          planCity: sessionData.planCity || null,
-          planExpiresAt: sessionData.planExpiresAt || null,
-          unlockedLeads: Array.isArray(sessionData.unlockedLeads) ? sessionData.unlockedLeads : [],
-          createdAt: new Date().toISOString()
-        };
-      } else {
-        user = {
-          phone: normPhone,
-          pin: generatePin(normPhone),
-          credits: 0,
-          plan: 'free',
-          planCity: null,
-          planExpiresAt: null,
-          unlockedLeads: [],
-          createdAt: new Date().toISOString()
-        };
-      }
-    } else {
-      user = doc.data();
+      return { success: false, error: 'USUARIO_NO_REGISTRADO' };
     }
+    user = doc.data();
 
     user.unlockedLeads = Array.isArray(user.unlockedLeads) ? user.unlockedLeads : [];
 

@@ -666,7 +666,10 @@ async function inicializarSesionUsuario() {
         sincronizarFiltroCiudadUsuario();
       } else {
         localStorage.removeItem('hunter_pro_token');
+        localStorage.removeItem('hunter_unlocked_contacts');
+        cacheContactosDesbloqueados = {};
         sesionUsuario = null;
+        actualizarBadgeVip();
       }
     } catch (e) {
       console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
@@ -1185,6 +1188,8 @@ async function restaurarSesionConPin() {
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
+  localStorage.removeItem('hunter_unlocked_contacts');
+  cacheContactosDesbloqueados = {};
   sesionUsuario = null;
   actualizarBadgeVip();
   renderizarInterfaz(datosActuales);
