@@ -642,6 +642,7 @@ async function inicializarSesionUsuario() {
         localStorage.setItem('hunter_pro_token', data.token);
         sesionUsuario = { ...data.user, token: data.token };
         actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
         mostrarNotificacionToast(`🎉 ¡Pago confirmado! Tu PIN es ${data.user.pin}. Tienes ${data.user.credits} créditos disponibles.`);
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -662,6 +663,7 @@ async function inicializarSesionUsuario() {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
         actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
       } else {
         localStorage.removeItem('hunter_pro_token');
         sesionUsuario = null;
@@ -708,6 +710,45 @@ function actualizarBadgeVip() {
     if (btnNavVip) {
       const span = btnNavVip.querySelector('span');
       if (span) span.textContent = 'VIP';
+    }
+  }
+}
+
+/**
+ * Sincroniza el filtro de ubicación del Omnibox con la ciudad del Plan Pro del usuario.
+ */
+function sincronizarFiltroCiudadUsuario() {
+  if (sesionUsuario && sesionUsuario.plan === 'city' && sesionUsuario.planCity) {
+    const targetCity = String(sesionUsuario.planCity).trim();
+    if (targetCity) {
+      filtroCiudadActivo = targetCity;
+
+      const dropdownLocation = document.getElementById("cmdLocationDropdown");
+      const pillLocation = document.getElementById("cmdFilterLocation");
+      const labelLocation = document.getElementById("cmdFilterLocationLabel");
+
+      if (dropdownLocation) {
+        let matchItem = null;
+        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+          const itemCity = item.getAttribute("data-city") || "";
+          if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) {
+            matchItem = item;
+          }
+        });
+        if (matchItem) {
+          dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+          matchItem.classList.add("active");
+          const spanText = matchItem.querySelector("span") ? matchItem.querySelector("span").textContent : targetCity;
+          if (labelLocation) labelLocation.textContent = spanText;
+          if (pillLocation) pillLocation.classList.add("active-filter");
+        } else if (labelLocation) {
+          labelLocation.textContent = targetCity;
+          if (pillLocation) pillLocation.classList.add("active-filter");
+        }
+      }
+      if (typeof aplicarFiltrosOmnibox === 'function') {
+        aplicarFiltrosOmnibox();
+      }
     }
   }
 }
@@ -888,6 +929,13 @@ function abrirModalCheckout(index, pestana = null) {
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
+  // Sincronizar visibilidad del selector de ciudad según la opción seleccionada
+  const radioActivo = document.querySelector('input[name="checkoutProduct"]:checked');
+  const groupCity = document.getElementById("groupCitySelect");
+  if (groupCity) {
+    groupCity.style.display = (radioActivo && radioActivo.value === 'subscription_city') ? 'block' : 'none';
+  }
+
   if (modal) {
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
@@ -940,6 +988,26 @@ async function ejecutarPagoWompi() {
     errorBox.style.display = 'none';
   }
 
+  // Validación estricta de ciudad para Plan Pro Ciudad
+  let ciudad = null;
+  if (productType === 'subscription_city') {
+    const selectCity = document.getElementById('checkoutCitySelect');
+    const cityError = document.getElementById('checkoutCityError');
+    ciudad = selectCity ? selectCity.value.trim() : '';
+    if (!ciudad) {
+      if (cityError) {
+        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor selecciona la ciudad de cobertura para tu membresía.';
+        cityError.style.display = 'block';
+      }
+      if (selectCity) {
+        selectCity.focus();
+        selectCity.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    if (cityError) cityError.style.display = 'none';
+  }
+
   const btnPagar = document.getElementById('btnConfirmWompi');
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
   if (btnPagar) {
@@ -951,7 +1019,7 @@ async function ejecutarPagoWompi() {
     const res = await fetch('/api/payments/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productType, celular })
+      body: JSON.stringify({ productType, celular, ciudad })
     });
 
     const orderData = await res.json();
@@ -1009,6 +1077,7 @@ async function ejecutarPagoWompi() {
               localStorage.setItem('hunter_pro_token', claimData.token);
               sesionUsuario = { ...claimData.user, token: claimData.token };
               actualizarBadgeVip();
+              sincronizarFiltroCiudadUsuario();
               renderizarInterfaz(datosActuales);
               mostrarNotificacionToast(`🎉 ¡Pago aprobado! Tu PIN es: ${claimData.user.pin}. Tienes ${claimData.user.credits} créditos.`);
               if (leadSeleccionado) {
@@ -1085,6 +1154,7 @@ async function restaurarSesionConPin() {
     localStorage.setItem('hunter_pro_token', data.token);
     sesionUsuario = { ...data.user, token: data.token };
     actualizarBadgeVip();
+    sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);
 
     if (msgBox) {
@@ -1169,12 +1239,18 @@ async function ejecutarDesbloqueoLead(lead, index) {
       },
       body: JSON.stringify({
         leadId: lead.id,
-        contactoCifrado: lead.contacto_cifrado || ''
+        contactoCifrado: lead.contacto_cifrado || '',
+        leadCity: lead.ciudad || lead.ubicacion || lead.barrio || ''
       })
     });
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
+      if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
+        mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
+        abrirModalCheckout(index, 'comprar');
+        return;
+      }
       if (res.status === 402) {
         mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
         abrirModalCheckout(index, 'comprar');
@@ -1205,11 +1281,15 @@ async function ejecutarDesbloqueoLead(lead, index) {
     actualizarBadgeVip();
     renderizarInterfaz(datosActuales);
 
-    mostrarNotificacionToast(
-      data.alreadyUnlocked 
-        ? '✅ Inmueble ya desbloqueado (Costo 0 créditos).' 
-        : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`
-    );
+    let mensajeExito = '';
+    if (data.alreadyUnlocked) {
+      mensajeExito = '✅ Inmueble ya desbloqueado (Costo 0 créditos).';
+    } else if (data.planBenefit) {
+      mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
+    } else {
+      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`;
+    }
+    mostrarNotificacionToast(mensajeExito);
 
     // Eliminada la redirección automática a WhatsApp para mostrar el PIN primero
     /* if (data.contacto?.whatsappUrl) {
@@ -1719,14 +1799,29 @@ function configurarListeners() {
 
   // Selección visual de tarjetas de producto en el modal
   const optionCards = document.querySelectorAll(".pricing-option-card");
+  const groupCitySelect = document.getElementById("groupCitySelect");
   optionCards.forEach(card => {
     card.addEventListener("click", () => {
       optionCards.forEach(c => c.classList.remove("active-option"));
       card.classList.add("active-option");
       const radio = card.querySelector('input[type="radio"]');
-      if (radio) radio.checked = true;
+      if (radio) {
+        radio.checked = true;
+        if (groupCitySelect) {
+          groupCitySelect.style.display = (radio.value === 'subscription_city') ? 'block' : 'none';
+        }
+      }
     });
   });
+
+  // Limpieza de error en selector de ciudad al elegir opción
+  const selectCityInput = document.getElementById("checkoutCitySelect");
+  if (selectCityInput) {
+    selectCityInput.addEventListener("change", () => {
+      const cityErr = document.getElementById("checkoutCityError");
+      if (cityErr) cityErr.style.display = "none";
+    });
+  }
 
   // Botón Confirmar Pago Wompi
   const btnPagar = document.getElementById("btnConfirmWompi");

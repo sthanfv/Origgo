@@ -145,7 +145,7 @@ if (fs.existsSync(jsonPath)) {
 console.log('\n💳 [VALIDACIÓN 5/6] Suite Automatizada de Integración Wompi y Ledger...');
 try {
   execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_ledger_wompi.js')}"`, { stdio: 'pipe' });
-  assert(true, '8/8 pruebas unitarias de pasarela Wompi, timingSafeEqual y ledger pasadas al 100%');
+  assert(true, '12/12 pruebas unitarias de pasarela Wompi, antifraude y ledger pasadas al 100%');
 } catch (e) {
   assert(false, `Fallo en suite de pruebas de Wompi: ${e.message}`);
 }

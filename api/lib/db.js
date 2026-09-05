@@ -127,7 +127,7 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
   });
 }
 
-async function unlockLead(phone, leadId, sessionData = null) {
+async function unlockLead(phone, leadId, sessionData = null, leadCity = null) {
   const normPhone = cleanPhone(phone);
   if (!normPhone || !leadId) {
     return { success: false, error: 'DATOS_INVALIDOS' };
@@ -179,9 +179,24 @@ async function unlockLead(phone, leadId, sessionData = null) {
       };
     }
 
-    const hasActivePlan = (user.plan === 'national' || user.plan === 'city') && 
-                          user.planExpiresAt && new Date(user.planExpiresAt) > new Date();
-    if (hasActivePlan) {
+    const isPlanDateValid = Boolean(user.planExpiresAt && new Date(user.planExpiresAt) > new Date());
+    let hasPlanCoverage = false;
+
+    if (isPlanDateValid) {
+      if (user.plan === 'national') {
+        hasPlanCoverage = true;
+      } else if (user.plan === 'city') {
+        if (!leadCity || !user.planCity) {
+          hasPlanCoverage = true;
+        } else {
+          const normLeadCity = String(leadCity).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+          const normUserCity = String(user.planCity).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+          hasPlanCoverage = normLeadCity.includes(normUserCity) || normUserCity.includes(normLeadCity);
+        }
+      }
+    }
+
+    if (hasPlanCoverage) {
       user.unlockedLeads.push(leadId);
       user.updatedAt = new Date().toISOString();
       t.set(userRef, user);
@@ -197,6 +212,16 @@ async function unlockLead(phone, leadId, sessionData = null) {
 
     const currentCredits = Number(user.credits || 0);
     if (currentCredits < 1) {
+      if (user.plan === 'city' && isPlanDateValid && leadCity && user.planCity) {
+        return {
+          success: false,
+          error: 'PLAN_CIUDAD_DIFERENTE',
+          message: `Tu Plan Pro cubre ${user.planCity}. Este inmueble es de ${leadCity}. Adquiere créditos individuales para desbloquearlo.`,
+          credits: 0,
+          unlockedLeads: user.unlockedLeads,
+          user
+        };
+      }
       return {
         success: false,
         error: 'SALDO_INSUFICIENTE',

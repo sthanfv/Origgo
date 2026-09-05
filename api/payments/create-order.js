@@ -72,6 +72,14 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    if (productType === 'subscription_city') {
+      if (!ciudad || typeof ciudad !== 'string' || !ciudad.trim()) {
+        return res.status(400).json({ 
+          error: 'Debe seleccionar una ciudad para activar el Plan Pro Ciudad.' 
+        });
+      }
+    }
+
     const normPhone = db.cleanPhone(celular);
     if (!normPhone || normPhone.length < 10) {
       return res.status(400).json({ 
@@ -79,22 +87,27 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Referencia única con celular, código de producto determinista y entropía (Stateless Architecture)
-    const productCodeMap = {
-      single_lead: '1CR',
-      pack_10_leads: '10CR',
-      subscription_city: 'VIPCIU',
-      subscription_national: 'VIPNAC'
-    };
-    const prodCode = productCodeMap[productType] || '1CR';
+    const ciudadLimpia = ciudad ? ciudad.trim() : null;
+    let prodCode = '1CR';
+    if (productType === 'single_lead') prodCode = '1CR';
+    else if (productType === 'pack_10_leads') prodCode = '10CR';
+    else if (productType === 'subscription_city') {
+      const slug = ciudadLimpia 
+        ? ciudadLimpia.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]/g, '').substring(0, 8) 
+        : 'CIU';
+      prodCode = `VIPCIU_${slug}`;
+    } else if (productType === 'subscription_national') {
+      prodCode = 'VIPNAC';
+    }
+
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
     const reference = `HNT-${normPhone}-${prodCode}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
     const amountInCents = producto.montoCentavos;
     const currency = 'COP';
 
-    // Llaves de Wompi (Sandbox por defecto si no están en .env)
-    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_Q5yDA9xoKdePzhSGeVe9KStXTIIOxjwW';
-    const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || 'test_integrity_b8a91f42c3d5e67890abcdef12345678';
+    // Llaves oficiales de Wompi Sandbox del comercio
+    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_PQAm6bJXtS4ScbCpBU058xY0vlTPFXfA';
+    const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || 'test_integrity_2g8NUSOa7paHZDObHhpPlnIRszyxGfIq';
 
     // Cálculo estricto de firma de integridad Wompi:
     // SHA256(reference + amountInCents + currency + integritySecret)
@@ -109,7 +122,7 @@ module.exports = async function handler(req, res) {
       amountInCents,
       currency,
       celular: normPhone,
-      ciudad: ciudad || null,
+      ciudad: ciudadLimpia,
       tipo: producto.tipo,
       creditos: producto.creditos,
       status: 'PENDING'

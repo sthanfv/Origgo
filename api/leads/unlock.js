@@ -55,15 +55,23 @@ module.exports = async function handler(req, res) {
     }
     body = body || {};
 
-    const { leadId, contactoCifrado } = body;
+    const { leadId, contactoCifrado, leadCity } = body;
     if (!leadId) {
       return res.status(400).json({ error: 'leadId es requerido' });
     }
 
     // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
-    const resultado = await db.unlockLead(session.phone, leadId, session);
+    const resultado = await db.unlockLead(session.phone, leadId, session, leadCity);
 
     if (!resultado.success) {
+      if (resultado.error === 'PLAN_CIUDAD_DIFERENTE') {
+        return res.status(403).json({
+          ok: false,
+          error: 'PLAN_CIUDAD_DIFERENTE',
+          message: resultado.message || 'Tu Plan Pro Ciudad no cubre este municipio. Requiere créditos individuales.',
+          credits: resultado.credits || 0
+        });
+      }
       if (resultado.error === 'SALDO_INSUFICIENTE') {
         return res.status(402).json({
           ok: false,

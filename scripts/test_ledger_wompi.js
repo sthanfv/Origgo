@@ -93,7 +93,7 @@ async function runTests() {
   const testRef = mockResOrder.data.reference;
   const transactionId = 'trx-test-' + Date.now();
   const timestamp = Math.floor(Date.now() / 1000);
-  const eventsSecret = process.env.WOMPI_EVENTS_SECRET || 'test_events_secret_hunter_2026';
+  const eventsSecret = process.env.WOMPI_EVENTS_SECRET || 'test_events_Ywbmm47eiERZEHu4hRjTyyIzXe8EpEkc';
 
   const rawData = {
     transaction: {
@@ -106,7 +106,7 @@ async function runTests() {
   };
 
   // Cadena concatenada en el orden exacto de properties + timestamp + secret
-  const concatChain = `${transactionId}${status = 'APPROVED'}${3500000}${timestamp}${eventsSecret}`;
+  const concatChain = `${transactionId}${rawData.transaction.status}${3500000}${timestamp}${eventsSecret}`;
   const checksum = crypto.createHash('sha256').update(concatChain).digest('hex');
 
   const webhookPayload = {
@@ -239,7 +239,85 @@ async function runTests() {
   assert.strictEqual(mockResClaim.data.user.credits, 10, 'Debe asignar 10 créditos por el código 10CR de la referencia');
   console.log('  ✅ Reclamo determinista por referencia verificado con éxito (+10 créditos).');
 
-  console.log('\n🏆 [TEST SUITE] ¡Todos los 10 tests de integración y resiliencia serverless pasaron al 100%!');
+  // TEST 11: Escudo Anti-Fraude — Rechazo de Transacción con Monto Manipulado ($0 o menor al catálogo)
+  console.log('▶ Test 11: Escudo Anti-Fraude (Rechazo de montos manipulados)...');
+  const fraudRef = `HNT-3109998877-10CR-${Date.now().toString(36)}-FRD`;
+  const fraudTrxId = 'trx-fraud-' + Date.now();
+  const fraudTimestamp = Math.floor(Date.now() / 1000);
+  const fraudMonto = 0; // Intentó pagar $0 por la bolsa de $35.000
+  const fraudConcat = `${fraudTrxId}APPROVED${fraudMonto}${fraudTimestamp}${eventsSecret}`;
+  const fraudChecksum = crypto.createHash('sha256').update(fraudConcat).digest('hex');
+
+  const mockReqFraud = {
+    method: 'POST',
+    body: {
+      event: 'transaction.updated',
+      data: {
+        transaction: {
+          id: fraudTrxId,
+          reference: fraudRef,
+          amount_in_cents: fraudMonto,
+          status: 'APPROVED',
+          payment_method_type: 'CARD'
+        }
+      },
+      timestamp: fraudTimestamp,
+      signature: {
+        properties: ['transaction.id', 'transaction.status', 'transaction.amount_in_cents'],
+        checksum: fraudChecksum
+      }
+    }
+  };
+  const mockResFraud = createMockRes();
+  await webhookHandler(mockReqFraud, mockResFraud);
+
+  assert.strictEqual(mockResFraud.statusCode, 400, 'Debe responder con 400 Bad Request por fraude');
+  assert.strictEqual(mockResFraud.data.error, 'MONTO_INVALIDO_FRAUDE');
+  console.log('  ✅ Escudo Anti-Fraude validado: Transacción de $0 rechazada y 0 créditos acreditados.');
+
+  // TEST 12: Plan Pro Ciudad — Desbloqueo en ciudad cubierta vs Rechazo 403 en ciudad ajena
+  console.log('▶ Test 12: Plan Pro Ciudad y Restricción Geográfica...');
+  const cityPhone = '318' + Math.floor(1000000 + Math.random() * 9000000);
+  const cityRef = `HNT-${cityPhone}-VIPCIU_BOGOTA-${Date.now().toString(36)}-CITY`;
+  
+  // Reclamar suscripción ciudad Bogotá
+  const mockReqCityClaim = {
+    method: 'POST',
+    body: { action: 'claim_reference', reference: cityRef }
+  };
+  const mockResCityClaim = createMockRes();
+  await sessionHandler(mockReqCityClaim, mockResCityClaim);
+
+  assert.strictEqual(mockResCityClaim.statusCode, 200);
+  assert.strictEqual(mockResCityClaim.data.user.plan, 'city');
+  const cityToken = mockResCityClaim.data.token;
+
+  // Desbloqueo de inmueble en Bogotá (Costo 0 / Beneficio de Plan)
+  const mockReqUnlockBogota = {
+    method: 'POST',
+    headers: { authorization: `Bearer ${cityToken}` },
+    body: { leadId: 'inm-bog-1', contactoCifrado: cipherText, leadCity: 'Bogotá D.C.' }
+  };
+  const mockResUnlockBogota = createMockRes();
+  await unlockHandler(mockReqUnlockBogota, mockResUnlockBogota);
+
+  assert.strictEqual(mockResUnlockBogota.statusCode, 200);
+  assert.strictEqual(mockResUnlockBogota.data.planBenefit, true, 'Debe aplicar beneficio de plan sin restar créditos');
+
+  // Intento de desbloqueo en Medellín con 0 créditos (Debe dar 403 PLAN_CIUDAD_DIFERENTE)
+  const mockReqUnlockMedellin = {
+    method: 'POST',
+    headers: { authorization: `Bearer ${mockResUnlockBogota.data.token}` },
+    body: { leadId: 'inm-med-1', contactoCifrado: cipherText, leadCity: 'Medellín' }
+  };
+  const mockResUnlockMedellin = createMockRes();
+  await unlockHandler(mockReqUnlockMedellin, mockResUnlockMedellin);
+
+  assert.strictEqual(mockResUnlockMedellin.statusCode, 403, 'Debe rechazar con 403 por pertenecer a otra ciudad');
+  assert.strictEqual(mockResUnlockMedellin.data.error, 'PLAN_CIUDAD_DIFERENTE');
+  console.log('  ✅ Plan Pro Ciudad validado: Ilimitado en Bogotá y blindado contra acceso en Medellín.');
+
+  console.log('\n🏆 [TEST SUITE] ¡Todos los 12 tests de integración, antifraude y resiliencia pasaron al 100%!');
 }
 
 runTests().catch((err) => {

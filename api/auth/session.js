@@ -79,7 +79,7 @@ module.exports = async function handler(req, res) {
       const order = await db.getPendingOrder(reference);
       if (order) {
         celular = order.celular;
-        creditosAAcreditar = order.creditos || 1;
+        creditosAAcreditar = order.creditos !== undefined ? order.creditos : 0;
         if (order.tipo === 'suscripcion_ciudad') {
           planData = { plan: 'city', city: order.ciudad, days: 30 };
         } else if (order.tipo === 'suscripcion_nacional') {
@@ -92,10 +92,18 @@ module.exports = async function handler(req, res) {
         }
         if (partes.length >= 3) {
           const code = partes[2];
-          if (code === '10CR') creditosAAcreditar = 10;
-          else if (code === 'VIPCIU') planData = { plan: 'city', days: 30 };
-          else if (code === 'VIPNAC') planData = { plan: 'national', days: 30 };
-          else creditosAAcreditar = 1;
+          if (code === '10CR') {
+            creditosAAcreditar = 10;
+          } else if (code.startsWith('VIPCIU')) {
+            const cSlug = code.includes('_') ? code.split('_')[1] : null;
+            planData = { plan: 'city', city: cSlug || 'Colombia', days: 30 };
+            creditosAAcreditar = 0;
+          } else if (code === 'VIPNAC') {
+            planData = { plan: 'national', days: 30 };
+            creditosAAcreditar = 0;
+          } else {
+            creditosAAcreditar = 1;
+          }
         }
       }
 
@@ -103,10 +111,20 @@ module.exports = async function handler(req, res) {
         return res.status(404).json({ error: 'Referencia de pago no encontrada' });
       }
 
+      // Idempotencia contra doble reclamo de la misma referencia
+      const primerReclamo = await db.recordTransaction(`claim_${reference}`, {
+        reference,
+        celular,
+        claimedAt: new Date().toISOString()
+      });
+
       let user = await db.getUserByPhone(celular);
-      if (!user) {
-        const pinSuffix = db.cleanPhone(celular).substring(6) || '7489';
-        user = await db.addCredits(celular, creditosAAcreditar, `HNT-${pinSuffix}`, planData);
+      const userPin = user ? user.pin : null;
+
+      if (primerReclamo) {
+        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData);
+      } else if (!user) {
+        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData);
       }
 
       // Token JWT con estado criptográfico enriquecido (Stateless Signed Token)

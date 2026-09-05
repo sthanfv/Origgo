@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
     const host = isProd ? 'production.wompi.co' : 'sandbox.wompi.co';
     
     const data = await new Promise((resolve, reject) => {
-      https.get(https:// + host + /v1/transactions/ + id, (response) => {
+      https.get(`https://${host}/v1/transactions/${encodeURIComponent(id)}`, (response) => {
         let body = '';
         response.on('data', (chunk) => body += chunk);
         response.on('end', () => {
@@ -28,11 +28,18 @@ module.exports = async function handler(req, res) {
     });
 
     if (data && data.data && data.data.reference) {
-      return res.status(200).json({ ok: true, reference: data.data.reference, status: data.data.status });
+      const trx = data.data;
+      return res.status(200).json({ 
+        ok: true, 
+        reference: trx.reference, 
+        status: trx.status,
+        amountInCents: trx.amount_in_cents,
+        currency: trx.currency
+      });
     } else {
       return res.status(404).json({ error: 'Transacción no encontrada en Wompi' });
     }
   } catch (err) {
-    return res.status(500).json({ error: 'Error al consultar Wompi' });
+    return res.status(500).json({ error: 'Error al consultar Wompi', details: err.message });
   }
 };
