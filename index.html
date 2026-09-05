@@ -228,43 +228,6 @@
     </section>
   </main>
 
-  <!-- MODAL DE CHECKOUT WOMPI -->
-  <div class="modal-backdrop" id="checkoutModal">
-    <div class="modal-card">
-      <button class="btn-modal-close" id="btnModalClose">&times;</button>
-      
-      <div class="modal-header-tag">
-        <i class="fa-solid fa-shield-halved"></i> Hunter Pro Intelligence
-      </div>
-      <h2 class="modal-title">Desbloqueo de Contacto Directo</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">
-        Inmueble publicado directamente por su propietario particular. Para acceder a su número de celular, WhatsApp verificado y enlace de origen, activa tu suscripción.
-      </p>
-
-      <div class="modal-lead-summary" id="modalLeadSummary">
-        <!-- Se inyecta con JS -->
-      </div>
-
-      <ul class="modal-benefits-list">
-        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Contacto Directo:</strong> Celular y WhatsApp personal del propietario.</li>
-        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Sin Intermediarios:</strong> Negocia directo con el dueño sin pagar comisión de agencia.</li>
-        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> <strong>Oportunidades al Instante:</strong> Captura en tiempo real para ser el primero en ofertar.</li>
-      </ul>
-
-      <button class="btn-wompi-pay" id="btnConfirmWompi">
-        <i class="fa-solid fa-bolt"></i> Pagar con Wompi ($ 89.000 / mes)
-      </button>
-
-      <div class="wompi-secure-badge">
-        <i class="fa-solid fa-lock"></i> Pasarela protegida por Wompi Bancolombia • PSE, Nequi y Tarjetas
-      </div>
-
-      <button type="button" class="btn-modal-cancel" id="btnModalCancel">
-        Cerrar y volver a la terminal
-      </button>
-    </div>
-  </div>
-
   <!-- ═══════════════════════════════════════════════════
        FOOTER INSTITUCIONAL (TERMINAL PRIVADA)
        ═══════════════════════════════════════════════════ -->
@@ -436,16 +399,38 @@
           </label>
         </div>
 
-        <!-- Formulario de Celular para asociar créditos -->
-        <div class="checkout-form-group">
-          <label for="checkoutWhatsappInput" class="checkout-form-label">
-            <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> Tu Número de WhatsApp (para asociar créditos y generar tu PIN):
-          </label>
-          <div class="checkout-input-wrapper">
-            <span class="checkout-input-prefix">+57</span>
-            <input type="tel" id="checkoutWhatsappInput" class="checkout-text-input" placeholder="Ej: 300 123 4567" maxlength="10" />
+        <!-- Banner de Advertencia de WhatsApp Real -->
+        <div class="checkout-phone-alert" role="alert">
+          <div class="phone-alert-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
-          <span class="checkout-input-help">Tus créditos se guardarán con este número. Podrás usarlos desde cualquier dispositivo.</span>
+          <div class="phone-alert-body">
+            <strong>Atención: Ingresa tu WhatsApp REAL y activo</strong>
+            <p>Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, <u>no podrás acceder a tus créditos ni recuperar tu PIN</u>. El sistema no realiza llamadas ni spam.</p>
+          </div>
+        </div>
+
+        <!-- Formulario de Celular para asociar créditos -->
+        <div class="checkout-form-group" id="groupWhatsappInput">
+          <label for="checkoutWhatsappInput" class="checkout-form-label">
+            <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> WhatsApp de Autenticación (10 dígitos):
+          </label>
+          <div class="checkout-input-wrapper" id="checkoutInputWrapper">
+            <span class="checkout-input-prefix">+57</span>
+            <input 
+              type="tel" 
+              id="checkoutWhatsappInput" 
+              class="checkout-text-input" 
+              placeholder="Ej: 300 123 4567" 
+              maxlength="10" 
+              inputmode="numeric" 
+              pattern="[0-9]*" 
+              autocomplete="tel-national" 
+            />
+          </div>
+          <!-- Mensaje de error visual en línea (reemplaza a los alerts) -->
+          <div id="checkoutPhoneError" class="checkout-inline-error" style="display: none;"></div>
+          <span class="checkout-input-help">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
         </div>
 
         <!-- Botón de Acción Wompi -->

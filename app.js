@@ -838,6 +838,8 @@ async function ejecutarPagoWompi() {
   const radio = document.querySelector('input[name="checkoutProduct"]:checked');
   const productType = radio ? radio.value : 'pack_10_leads';
   const inputWa = document.getElementById('checkoutWhatsappInput');
+  const errorBox = document.getElementById('checkoutPhoneError');
+  const inputWrapper = document.getElementById('checkoutInputWrapper');
   const whatsappRaw = inputWa ? inputWa.value.trim() : '';
   const celularLimpio = whatsappRaw.replace(/\D/g, '');
   const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
@@ -845,9 +847,23 @@ async function ejecutarPagoWompi() {
     : celularLimpio;
 
   if (!celular || celular.length < 10) {
-    alert('Por favor ingresa un número de WhatsApp válido (10 dígitos). Ejemplo: 300 123 4567');
-    if (inputWa) inputWa.focus();
+    if (errorBox) {
+      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567';
+      errorBox.style.display = 'block';
+    }
+    if (inputWrapper) {
+      inputWrapper.classList.add('input-error-shake');
+      setTimeout(() => inputWrapper.classList.remove('input-error-shake'), 600);
+    }
+    if (inputWa) {
+      inputWa.focus();
+      inputWa.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return;
+  }
+
+  if (errorBox) {
+    errorBox.style.display = 'none';
   }
 
   const btnPagar = document.getElementById('btnConfirmWompi');
@@ -1612,6 +1628,17 @@ function configurarListeners() {
   const btnPagar = document.getElementById("btnConfirmWompi");
   if (btnPagar) {
     btnPagar.addEventListener("click", ejecutarPagoWompi);
+  }
+
+  // Limpieza de error en tiempo real al escribir WhatsApp
+  const inputWaReal = document.getElementById("checkoutWhatsappInput");
+  if (inputWaReal) {
+    inputWaReal.addEventListener("input", () => {
+      const errBox = document.getElementById("checkoutPhoneError");
+      if (errBox) errBox.style.display = "none";
+      const wrapper = document.getElementById("checkoutInputWrapper");
+      if (wrapper) wrapper.classList.remove("input-error-shake");
+    });
   }
 
   // Botón Restaurar Sesión por PIN
