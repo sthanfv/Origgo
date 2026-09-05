@@ -2741,16 +2741,71 @@ main {
   -ms-overflow-style: none !important;
 }
 
-.checkout-modal-card::-webkit-scrollbar,
+/* Erradicación absoluta e incondicional de barras nativas en modales para Windows */
+.modal-backdrop,
+.modal-backdrop *,
+.modal-card,
+.modal-card *,
+.checkout-modal-card,
+.checkout-modal-card *,
+.welcome-modal-card,
+.welcome-modal-card *,
+.checkout-tab-panel,
+.checkout-tab-panel * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
 .modal-backdrop::-webkit-scrollbar,
-.modal-card::-webkit-scrollbar {
+.modal-backdrop *::-webkit-scrollbar,
+.modal-card::-webkit-scrollbar,
+.modal-card *::-webkit-scrollbar,
+.checkout-modal-card::-webkit-scrollbar,
+.checkout-modal-card *::-webkit-scrollbar,
+.welcome-modal-card::-webkit-scrollbar,
+.welcome-modal-card *::-webkit-scrollbar,
+.checkout-tab-panel::-webkit-scrollbar,
+.checkout-tab-panel *::-webkit-scrollbar {
   display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  width: 0px !important;
+  height: 0px !important;
   background: transparent !important;
   opacity: 0 !important;
   pointer-events: none !important;
   -webkit-appearance: none !important;
+}
+
+.modal-backdrop::-webkit-scrollbar-thumb,
+.modal-backdrop *::-webkit-scrollbar-thumb,
+.modal-card::-webkit-scrollbar-thumb,
+.modal-card *::-webkit-scrollbar-thumb,
+.checkout-modal-card::-webkit-scrollbar-thumb,
+.checkout-modal-card *::-webkit-scrollbar-thumb {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+.modal-backdrop::-webkit-scrollbar-track,
+.modal-backdrop *::-webkit-scrollbar-track,
+.modal-card::-webkit-scrollbar-track,
+.modal-card *::-webkit-scrollbar-track,
+.checkout-modal-card::-webkit-scrollbar-track,
+.checkout-modal-card *::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+}
+
+.modal-backdrop::-webkit-scrollbar-button,
+.modal-backdrop *::-webkit-scrollbar-button,
+.modal-card::-webkit-scrollbar-button,
+.modal-card *::-webkit-scrollbar-button,
+.checkout-modal-card::-webkit-scrollbar-button,
+.checkout-modal-card *::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
 }
 
 .checkout-modal-header {
