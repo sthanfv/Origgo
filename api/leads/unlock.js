@@ -75,23 +75,49 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ ok: false, error: resultado.error });
     }
 
-    // 4. Descifrar el contacto en memoria con AES-256-GCM
+    // 4. Descifrar el contacto en memoria con AES-256-GCM (probando llaves activas)
     let contactoDescifrado = null;
     if (contactoCifrado) {
-      contactoDescifrado = decryptLeadContact(contactoCifrado, LEADS_ENCRYPTION_KEY);
+      const keysToTry = [
+        process.env.LEADS_ENCRYPTION_KEY,
+        '92eb1c43f7a6599258f0e16cbe7a24524bc9fc91f048680bd9dd7242969ee637',
+        'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c'
+      ].filter(Boolean);
+
+      for (const k of keysToTry) {
+        try {
+          contactoDescifrado = decryptLeadContact(contactoCifrado, k);
+          if (contactoDescifrado) break;
+        } catch (e) {}
+      }
     }
 
-    // Si por alguna razón el lead no traía contactoCifrado o falló, construir fallback seguro
-    const telefono = contactoDescifrado?.telefono || '+573100000000';
-    const telLimpio = telefono.replace(/\D/g, '');
-    const enlace = contactoDescifrado?.enlace || 'https://hunterpro.co';
-    const portal = contactoDescifrado?.portal || 'fincaraiz';
+    // 5. Normalizar teléfono y enlace original del inmueble
+    const rawTel = contactoDescifrado?.telefono || '';
+    const telLimpio = rawTel.replace(/\D/g, '');
+    const esCelularValido = !rawTel.includes('...') && telLimpio.length >= 10 && (telLimpio.startsWith('573') || telLimpio.startsWith('3'));
 
-    // Construir enlace directo oficial de WhatsApp Web/App
-    const mensajeWa = encodeURIComponent(`Hola, vi tu propiedad en Hunter Pro y me interesa comunicarme directamente con el propietario.`);
-    const whatsappUrl = `https://wa.me/57${telLimpio.startsWith('57') ? telLimpio.substring(2) : telLimpio}?text=${mensajeWa}`;
+    let whatsappUrl = null;
+    let telLlamar = null;
+    let telefonoDisplay = rawTel;
 
-    // 5. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
+    if (esCelularValido) {
+      const waNum = telLimpio.startsWith('57') ? telLimpio : `57${telLimpio}`;
+      const cel10 = telLimpio.startsWith('57') ? telLimpio.substring(2) : telLimpio;
+      telefonoDisplay = `+57 ${cel10.substring(0, 3)} ${cel10.substring(3, 6)} ${cel10.substring(6)}`;
+      telLlamar = `+${waNum}`;
+      const mensajeWa = encodeURIComponent(`Hola, vi tu propiedad en Hunter Pro y me interesa comunicarme directamente con el propietario.`);
+      whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
+    } else if (rawTel) {
+      telefonoDisplay = rawTel.includes('...') ? `${rawTel} (Enlace Directo)` : rawTel;
+    } else {
+      telefonoDisplay = 'Disponible en Anuncio Original';
+    }
+
+    const enlace = contactoDescifrado?.enlace || 'https://www.fincaraiz.com.co';
+    const portal = (contactoDescifrado?.portal || 'fincaraiz').toUpperCase();
+
+    // 6. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
     const userPayload = resultado.user || {};
     const newToken = signJwt({
       phone: session.phone,
@@ -113,7 +139,10 @@ module.exports = async function handler(req, res) {
       token: newToken,
       planBenefit: Boolean(resultado.planBenefit),
       contacto: {
-        telefono,
+        telefono: rawTel || telefonoDisplay,
+        telefonoDisplay: telefonoDisplay || rawTel,
+        telLlamar,
+        esCelularValido,
         whatsappUrl,
         enlace,
         portal

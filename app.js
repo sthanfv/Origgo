@@ -13,7 +13,13 @@ let limiteVisible = 6;
 
 // Estado del ledger de créditos y usuario autenticado
 let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }
-const cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, whatsappUrl, enlace, portal } }
+let cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, telLlamar, esCelularValido, whatsappUrl, enlace, portal } }
+try {
+  const guardados = localStorage.getItem('hunter_unlocked_contacts');
+  if (guardados) cacheContactosDesbloqueados = JSON.parse(guardados);
+} catch (e) {
+  cacheContactosDesbloqueados = {};
+}
 
 // Inicialización al cargar el DOM
 document.addEventListener("DOMContentLoaded", async () => {
@@ -350,6 +356,7 @@ function renderizarInterfaz(dataset) {
     const barrioNorm = normalizarTextoBusqueda(item.barrio || '');
 
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
+    const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
 
     return `
       <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
@@ -402,9 +409,16 @@ function renderizarInterfaz(dataset) {
                 </div>
               </div>
             </div>
+
+            ${(estaDesbloqueado && contacto) ? `
+              <div style="margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+                ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
+              </div>
+            ` : ''}
           </div>
 
-          <!-- Bloque Inferior: Precio Publicado y Botón de Desbloqueo -->
+          <!-- Bloque Inferior: Precio Publicado y Acciones de Contacto -->
           <div class="card-bottom-row">
             <div class="pricing-column">
               <span class="pricing-label">Precio Publicado</span>
@@ -417,9 +431,27 @@ function renderizarInterfaz(dataset) {
             </div>
 
             ${estaDesbloqueado ? `
-              <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Chatear con el propietario directo">
-                <i class="fa-brands fa-whatsapp"></i> Chatear Propietario
-              </button>
+              <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                ${contacto?.whatsappUrl ? `
+                  <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                  </a>
+                ` : ''}
+                ${contacto?.telLlamar ? `
+                  <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                    <i class="fa-solid fa-phone"></i> Llamar
+                  </a>
+                ` : ''}
+                ${contacto?.enlace ? `
+                  <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                  </a>
+                ` : `
+                  <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
+                    <i class="fa-solid fa-unlock"></i> Revelar Contacto
+                  </button>
+                `}
+              </div>
             ` : `
               <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
                 <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? 'Ver Cierre' : 'Desbloquear'}
@@ -465,12 +497,40 @@ function renderizarInterfaz(dataset) {
             <!-- Grupo de Acción: Botón CTA y Micro-Garantía -->
             <div class="slideup-action-group">
               ${estaDesbloqueado ? `
-                <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
-                  <i class="fa-brands fa-whatsapp"></i> Chatear con el Propietario Directo
-                </button>
-                <span class="slideup-cta-note" style="color: #22C55E;">
-                  <i class="fa-solid fa-check-double"></i> Contacto ya desbloqueado para tu cuenta
-                </span>
+                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px 12px;">
+                    <div style="font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+                      <i class="fa-solid fa-unlock"></i> Datos de Contacto Desbloqueados
+                    </div>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: monospace;">
+                      ${contacto?.telefono ? escaparHtml(contacto.telefono) : 'Consultando contacto...'}
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${contacto?.whatsappUrl ? `
+                      <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                      </a>
+                    ` : ''}
+                    ${contacto?.telLlamar ? `
+                      <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                        <i class="fa-solid fa-phone"></i> Llamar
+                      </a>
+                    ` : ''}
+                    ${contacto?.enlace ? `
+                      <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                      </a>
+                    ` : `
+                      <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
+                        <i class="fa-solid fa-unlock"></i> Revelar Contacto Directo
+                      </button>
+                    `}
+                  </div>
+                  <span class="slideup-cta-note" style="color: #22C55E;">
+                    <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
+                  </span>
+                </div>
               ` : `
                 <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}">
                   <i class="fa-solid fa-unlock-keyhole"></i> Desbloquear Contacto del Dueño
@@ -1137,6 +1197,9 @@ async function ejecutarDesbloqueoLead(lead, index) {
       }
     }
     cacheContactosDesbloqueados[lead.id] = data.contacto;
+    try {
+      localStorage.setItem('hunter_unlocked_contacts', JSON.stringify(cacheContactosDesbloqueados));
+    } catch (e) {}
 
     cerrarModalCheckout();
     actualizarBadgeVip();
@@ -1171,8 +1234,13 @@ async function manejarContactoWhatsapp(index) {
   if (!datosActuales?.leads || !datosActuales.leads[index]) return;
   const lead = datosActuales.leads[index];
 
-  if (cacheContactosDesbloqueados[lead.id]?.whatsappUrl) {
-    window.open(cacheContactosDesbloqueados[lead.id].whatsappUrl, '_blank');
+  const contacto = cacheContactosDesbloqueados[lead.id];
+  if (contacto?.whatsappUrl) {
+    window.open(contacto.whatsappUrl, '_blank');
+    return;
+  }
+  if (contacto?.enlace) {
+    window.open(contacto.enlace, '_blank');
     return;
   }
 
