@@ -248,7 +248,43 @@
   background: hsla(166, 40%, 14%, 0.5);
   border: 1px solid hsla(158, 64%, 52%, 0.3);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1rem;
+  padding: 1.25rem 1.15rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-credits-card.vip-mode {
+  background: linear-gradient(135deg, hsla(170, 50%, 10%, 0.8) 0%, hsla(43, 70%, 12%, 0.4) 100%);
+  border-color: hsla(43, 85%, 60%, 0.45);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5), inset 0 1px 0 hsla(43, 90%, 70%, 0.25);
+}
+
+[data-theme="light"] .user-credits-card.vip-mode {
+  background: linear-gradient(135deg, #F0FDF4 0%, #FEF3C7 100%);
+  border-color: hsla(43, 80%, 45%, 0.4);
+}
+
+.user-membership-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: hsla(43, 90%, 50%, 0.18);
+  border: 1px solid hsla(43, 85%, 60%, 0.4);
+  color: #FBBF24;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  margin-bottom: 0.55rem;
+}
+
+[data-theme="light"] .user-membership-badge {
+  color: #B45309;
+  border-color: hsla(43, 85%, 45%, 0.4);
 }
 
 .user-credits-label {
@@ -261,16 +297,96 @@
 
 .user-credits-value {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.85rem;
   font-weight: 900;
   color: var(--accent-emerald);
-  margin: 0.35rem 0;
+  margin: 0.25rem 0;
+  line-height: 1.15;
+}
+
+.user-credits-card.vip-mode .user-credits-value {
+  color: #FBBF24;
+}
+
+[data-theme="light"] .user-credits-card.vip-mode .user-credits-value {
+  color: #B45309;
 }
 
 .user-plan-status {
   font-size: 0.8rem;
   color: var(--text-muted);
+  margin: 0.25rem 0 0.5rem;
+  line-height: 1.35;
+}
+
+.user-extra-credits-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: hsla(158, 64%, 48%, 0.15);
+  border: 1px solid hsla(158, 64%, 48%, 0.3);
+  color: var(--accent-emerald);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  margin-top: 0.35rem;
+}
+
+.user-benefits-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-emerald);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.user-benefits-toggle-btn:hover {
+  color: var(--accent-emerald-hover);
+}
+
+.user-benefits-accordion {
+  display: none;
+  text-align: left;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.user-benefits-accordion.active {
+  display: block;
+}
+
+.user-benefits-accordion ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.user-benefits-accordion li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.user-benefits-accordion li i {
+  color: var(--accent-emerald);
+  font-size: 0.7rem;
 }
 
 .user-unlocked-info {

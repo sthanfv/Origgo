@@ -389,8 +389,11 @@
 
       <!-- Pestañas de Navegación del Modal -->
       <div class="checkout-tabs-bar" id="checkoutTabsBar">
+        <button type="button" class="checkout-tab-btn vip-tab" id="tabBtnMiCuenta" data-tab="mi-cuenta" style="display: none;">
+          <i class="fa-solid fa-crown"></i> Mi Membresía
+        </button>
         <button type="button" class="checkout-tab-btn active" id="tabBtnComprar" data-tab="comprar">
-          <i class="fa-solid fa-cart-shopping"></i> Comprar Créditos / Planes
+          <i class="fa-solid fa-cart-shopping"></i> Comprar Planes
         </button>
         <button type="button" class="checkout-tab-btn" id="tabBtnTengoPin" data-tab="tengo-pin">
           <i class="fa-solid fa-key"></i> Ya Tengo un PIN
@@ -555,7 +558,7 @@
       <div class="checkout-tab-panel" id="panelUsuarioActivo">
         <div class="user-profile-box">
           <div class="user-profile-header">
-            <div class="user-avatar-badge">
+            <div class="user-avatar-badge" id="userAvatarBadge">
               <i class="fa-solid fa-user-check"></i>
             </div>
             <div>
@@ -564,10 +567,30 @@
             </div>
           </div>
 
-          <div class="user-credits-card">
-            <span class="user-credits-label">Saldo Disponible</span>
+          <div class="user-credits-card" id="userCreditsCard">
+            <div id="userMembershipBadgeWrap" style="display: none;">
+              <span class="user-membership-badge" id="userMembershipBadge">
+                <i class="fa-solid fa-crown"></i> Plan Pro Ciudad
+              </span>
+            </div>
+            <span class="user-credits-label" id="userCreditsLabel">Saldo Disponible</span>
             <div class="user-credits-value" id="userActiveCredits">⚡ 10 Créditos</div>
             <p class="user-plan-status" id="userActivePlan">Plan Estándar por Créditos</p>
+
+            <div id="userExtraCreditsWrap" style="display: none;">
+              <span class="user-extra-credits-pill" id="userExtraCreditsPill">⚡ +0 Créditos en bolsa</span>
+            </div>
+
+            <div id="userBenefitsToggleWrap" style="display: none; margin-top: 0.45rem;">
+              <button type="button" class="user-benefits-toggle-btn" id="btnToggleUserBenefits">
+                <i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía
+              </button>
+              <div class="user-benefits-accordion" id="userBenefitsAccordion">
+                <ul id="userBenefitsList">
+                  <!-- Inyectado dinámicamente -->
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div class="user-unlocked-info">
@@ -576,7 +599,7 @@
 
           <div class="user-actions-row">
             <button type="button" class="btn-buy-more-credits" id="btnBuyMoreFromProfile">
-              <i class="fa-solid fa-plus"></i> Comprar Más Créditos
+              <i class="fa-solid fa-gem"></i> Planes & Recargas
             </button>
             <button type="button" class="btn-logout-session" id="btnLogoutSession">
               <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
@@ -585,6 +608,61 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL ONBOARDING DE BIENVENIDA Y BENEFICIOS VIP (ESTILO GOOGLE ONE / APPLE GOLD) -->
+  <div class="modal-backdrop" id="modalWelcomeSuccess">
+    <div class="modal-card welcome-modal-card">
+      <button class="btn-modal-close" id="btnWelcomeCloseIcon" aria-label="Cerrar modal">&times;</button>
+      
+      <div class="welcome-modal-aura"></div>
+
+      <div class="welcome-badge-pill" id="welcomeBadgePill">
+        <i class="fa-solid fa-crown"></i> MEMBRESÍA VIP ACTIVADA
+      </div>
+
+      <h2 class="welcome-modal-title" id="welcomeModalTitle">¡Bienvenido a Hunter Pro!</h2>
+      <p class="welcome-modal-subtitle" id="welcomeModalSubtitle">Tu acceso prioritario ha sido sellado con éxito en el ledger criptográfico.</p>
+
+      <!-- Tarjeta de Credencial Segura con Copia de PIN en 1 clic -->
+      <div class="welcome-credential-card">
+        <div class="credential-info-row">
+          <div class="credential-phone-block">
+            <span class="credential-label">WhatsApp Asociado</span>
+            <strong class="credential-val" id="welcomeUserPhone">+57 ••••••••••</strong>
+          </div>
+          <div class="credential-pin-block">
+            <span class="credential-label">Tu PIN Maestro de Acceso</span>
+            <div class="credential-pin-wrap">
+              <strong class="credential-pin-code" id="welcomeUserPin">HNT-••••</strong>
+              <button type="button" class="btn-copy-pin" id="btnCopyPin" title="Copiar PIN">
+                <i class="fa-solid fa-copy"></i> Copiar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="credential-note">
+          <i class="fa-solid fa-shield-check"></i> Guarda este PIN. Te permitirá restaurar tu acceso en cualquier teléfono o computador.
+        </div>
+      </div>
+
+      <!-- Matriz de Beneficios Desbloqueados -->
+      <div class="welcome-benefits-section">
+        <span class="welcome-section-tag">Tus Privilegios Activos</span>
+        <div class="welcome-benefits-list" id="welcomeBenefitsList">
+          <!-- Inyectado dinámicamente por JS según el plan -->
+        </div>
+      </div>
+
+      <!-- Botón de Acción Principal -->
+      <button type="button" class="btn-welcome-cta" id="btnWelcomeCta">
+        <i class="fa-solid fa-bolt"></i> <span id="welcomeCtaText">Comenzar a Cazar Oportunidades</span>
+      </button>
+
+      <div class="welcome-guarantee-note">
+        <i class="fa-solid fa-lock"></i> 100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos
+      </div>
     </div>
   </div>
 

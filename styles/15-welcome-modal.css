@@ -1,0 +1,351 @@
+/**
+ * 👑 MÓDULO DE ESTILOS MODAL DE BIENVENIDA Y BENEFICIOS VIP (styles/15-welcome-modal.css)
+ * Experiencia de lujo post-pago estilo Google One Pro / Apple Gold.
+ * Iluminación ambiental esmeralda-oro, tarjeta de credencial y beneficios.
+ * Estándar Ecosistema Desmulta UI/UX.
+ */
+
+.welcome-modal-card {
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  padding: 2.2rem 1.85rem 2rem;
+  background: var(--bg-card);
+  border: 1px solid hsla(43, 85%, 60%, 0.35);
+  border-radius: var(--radius-card);
+  box-shadow: 
+    0 32px 80px -16px rgba(0, 0, 0, 0.85),
+    0 0 0 1px hsla(158, 64%, 52%, 0.25),
+    inset 0 1px 0 hsla(43, 90%, 70%, 0.3);
+  overflow: hidden;
+  animation: welcomePop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+[data-theme="light"] .welcome-modal-card {
+  border-color: hsla(43, 70%, 45%, 0.4);
+  box-shadow: 
+    0 32px 80px -16px rgba(2, 44, 34, 0.25),
+    0 0 0 1px hsla(166, 40%, 23%, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+@keyframes welcomePop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Halo Ambiental Dorado / Esmeralda */
+.welcome-modal-aura {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 340px;
+  height: 220px;
+  background: radial-gradient(circle, hsla(43, 90%, 55%, 0.22) 0%, hsla(158, 64%, 48%, 0.15) 55%, transparent 75%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-theme="light"] .welcome-modal-aura {
+  background: radial-gradient(circle, hsla(43, 90%, 50%, 0.18) 0%, hsla(158, 64%, 40%, 0.12) 55%, transparent 75%);
+}
+
+/* Badge Superior de Estatus */
+.welcome-badge-pill {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, hsla(43, 90%, 50%, 0.18) 0%, hsla(158, 64%, 45%, 0.18) 100%);
+  border: 1px solid hsla(43, 85%, 60%, 0.45);
+  color: #FBBF24;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.35rem 0.95rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 4px 14px hsla(43, 90%, 50%, 0.15);
+}
+
+[data-theme="light"] .welcome-badge-pill {
+  color: #B45309;
+  border-color: hsla(43, 85%, 45%, 0.5);
+  background: linear-gradient(135deg, #FEF3C7 0%, #D1FAE5 100%);
+}
+
+.welcome-modal-title {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 0.45rem;
+}
+
+.welcome-modal-subtitle {
+  position: relative;
+  z-index: 2;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 1.35rem;
+}
+
+/* Tarjeta de Credenciales de Seguridad */
+.welcome-credential-card {
+  position: relative;
+  z-index: 2;
+  background: hsla(170, 50%, 8%, 0.65);
+  border: 1px solid hsla(158, 64%, 52%, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1.05rem 1.15rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.1);
+}
+
+[data-theme="light"] .welcome-credential-card {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(166, 40%, 23%, 0.2);
+  box-shadow: 0 4px 16px rgba(5, 31, 32, 0.06);
+}
+
+.credential-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.65rem;
+}
+
+@media (max-width: 440px) {
+  .credential-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+}
+
+.credential-phone-block,
+.credential-pin-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.credential-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 0.2rem;
+}
+
+.credential-val {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.credential-pin-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.credential-pin-code {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #FBBF24;
+  letter-spacing: 0.08em;
+}
+
+[data-theme="light"] .credential-pin-code {
+  color: #B45309;
+}
+
+.btn-copy-pin {
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-copy-pin:hover {
+  color: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  background: var(--color-surface-hover);
+}
+
+.btn-copy-pin.copied {
+  color: #FFFFFF;
+  background: #059669;
+  border-color: #059669;
+}
+
+.credential-note {
+  font-size: 0.725rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.credential-note i {
+  color: var(--accent-emerald);
+  font-size: 0.8rem;
+}
+
+/* Sección de Beneficios */
+.welcome-benefits-section {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 1.35rem;
+  text-align: left;
+}
+
+.welcome-section-tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.65rem;
+}
+
+.welcome-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease;
+}
+
+.benefit-item:hover {
+  border-color: var(--border-hover);
+}
+
+.benefit-icon-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: hsla(158, 64%, 48%, 0.18);
+  border: 1px solid hsla(158, 64%, 48%, 0.35);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.benefit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.benefit-title {
+  font-family: var(--font-display);
+  font-size: 0.825rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.benefit-desc {
+  font-size: 0.735rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+/* Botón CTA Principal de Bienvenida */
+.btn-welcome-cta {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 50px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #041B12;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  box-shadow: 
+    0 4px 18px rgba(16, 185, 129, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-welcome-cta:hover {
+  background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 24px rgba(16, 185, 129, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.welcome-guarantee-note {
+  position: relative;
+  z-index: 2;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}

@@ -60,7 +60,13 @@ async function inicializarSesionUsuario() {
         sesionUsuario = { ...data.user, token: data.token };
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
-        mostrarNotificacionToast(`🎉 ¡Pago confirmado! Tu PIN es ${data.user.pin}. Tienes ${data.user.credits} créditos disponibles.`);
+        const notif = typeof generarMensajeBienvenidaToast === 'function' 
+          ? generarMensajeBienvenidaToast(sesionUsuario)
+          : { titulo: '🎉 ¡Pago confirmado!', mensaje: `Tu PIN es ${data.user.pin}.`, tipo: 'success' };
+        mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
+        if (typeof abrirModalBienvenidaVIP === 'function') {
+          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, sesionUsuario);
+        }
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       }

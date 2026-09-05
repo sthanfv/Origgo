@@ -224,4 +224,46 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   // Iniciar la cuenta regresiva inicial
   iniciarTimer(duracionMs);
 }
-
+
+/**
+ * Construye la notificación toast personalizada con tono de alta gama y exclusividad según el plan.
+ * @param {object} usuario - Datos del usuario autenticado
+ * @param {string|null} [tipoProducto] - Tipo de producto adquirido
+ * @param {string|null} [ciudad] - Ciudad de cobertura si aplica
+ * @returns {{ titulo: string, mensaje: string, tipo: string }}
+ */
+function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = null) {
+  const pin = usuario?.pin || 'HNT-••••';
+  const plan = usuario?.plan || 'free';
+  const city = ciudad || usuario?.planCity || 'tu ciudad';
+
+  if (plan === 'national' || tipoProducto === 'subscription_national') {
+    return {
+      titulo: '👑 ¡Élite Nacional Desbloqueada!',
+      mensaje: `¡Bienvenido al Plan Nacional VIP! Tu PIN es ${pin}. Acceso total en toda Colombia y radar de rebajas activado.`,
+      tipo: 'vip'
+    };
+  }
+
+  if (plan === 'city' || tipoProducto === 'subscription_city') {
+    return {
+      titulo: `👑 ¡Membresía Pro ${city} Activa!`,
+      mensaje: `¡Bienvenido! Tu PIN es ${pin}. Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
+      tipo: 'vip'
+    };
+  }
+
+  if (tipoProducto === 'pack_10_leads' || (usuario?.credits >= 10)) {
+    return {
+      titulo: '⭐ ¡Paquete Pro 10 Contactos Activo!',
+      mensaje: `¡Ahorro del 30% asegurado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
+      tipo: 'success'
+    };
+  }
+
+  return {
+    titulo: '🎉 ¡Operación Exitosa!',
+    mensaje: `¡Pago aprobado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
+    tipo: 'success'
+  };
+}

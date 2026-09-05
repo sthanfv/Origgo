@@ -1,6 +1,7 @@
 /**
  * 💳 MÓDULO DE CHECKOUT Y PASARELA WOMPI (modules/08-checkout.js)
- * Modal de compra, selector de planes, orquestación del widget Wompi y verificación de firmas.
+ * Modal de compra, selector de planes, orquestación del widget Wompi
+ * y gestión de 3 pestañas de cuenta con perfil VIP enriquecido.
  * Estándar Ecosistema Desmulta Finanzas.
  */
 
@@ -23,12 +24,12 @@ function cargarScriptWompi() {
   document.head.appendChild(script);
 }
 
-
 /**
  * Cambia la pestaña activa del modal de checkout.
- * @param {'comprar'|'tengo-pin'|'perfil'} pestana
+ * @param {'comprar'|'tengo-pin'|'perfil'|'mi-cuenta'} pestana
  */
 function cambiarPestanaCheckout(pestana) {
+  const tabMiCuenta = document.getElementById('tabBtnMiCuenta');
   const tabComprar = document.getElementById('tabBtnComprar');
   const tabPin = document.getElementById('tabBtnTengoPin');
   const panelComprar = document.getElementById('panelComprar');
@@ -39,6 +40,7 @@ function cambiarPestanaCheckout(pestana) {
   if (panelComprar) panelComprar.classList.remove('active');
   if (panelPin) panelPin.classList.remove('active');
   if (panelPerfil) panelPerfil.classList.remove('active');
+  if (tabMiCuenta) tabMiCuenta.classList.remove('active');
   if (tabComprar) tabComprar.classList.remove('active');
   if (tabPin) tabPin.classList.remove('active');
   if (tabsBar) tabsBar.style.display = 'flex';
@@ -49,7 +51,8 @@ function cambiarPestanaCheckout(pestana) {
   } else if (pestana === 'tengo-pin') {
     if (tabPin) tabPin.classList.add('active');
     if (panelPin) panelPin.classList.add('active');
-  } else if (pestana === 'perfil') {
+  } else if (pestana === 'perfil' || pestana === 'mi-cuenta') {
+    if (tabMiCuenta) tabMiCuenta.classList.add('active');
     if (panelPerfil) panelPerfil.classList.add('active');
   }
 }
@@ -70,6 +73,7 @@ function abrirModalCheckout(index, pestana = null) {
 
   const modal = document.getElementById("checkoutModal");
   const elSummary = document.getElementById("modalLeadSummary");
+  const tabMiCuenta = document.getElementById('tabBtnMiCuenta');
 
   if (elSummary) {
     if (leadSeleccionado) {
@@ -109,33 +113,96 @@ function abrirModalCheckout(index, pestana = null) {
 
   // Si el usuario ya tiene sesión activa
   if (sesionUsuario) {
+    if (tabMiCuenta) tabMiCuenta.style.display = 'flex';
+
     const elPhone = document.getElementById('userActivePhone');
     const elPin = document.getElementById('userActivePin');
     const elCredits = document.getElementById('userActiveCredits');
     const elPlan = document.getElementById('userActivePlan');
     const elCount = document.getElementById('userActiveUnlockedCount');
     const inputWa = document.getElementById('checkoutWhatsappInput');
+    const cardCredits = document.getElementById('userCreditsCard');
+    const badgeWrap = document.getElementById('userMembershipBadgeWrap');
+    const badgeEl = document.getElementById('userMembershipBadge');
+    const labelCredits = document.getElementById('userCreditsLabel');
+    const extraWrap = document.getElementById('userExtraCreditsWrap');
+    const extraPill = document.getElementById('userExtraCreditsPill');
+    const benefitsWrap = document.getElementById('userBenefitsToggleWrap');
+    const benefitsList = document.getElementById('userBenefitsList');
 
     if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
     if (elPin) elPin.textContent = `PIN: ${sesionUsuario.pin}`;
-    if (elCredits) elCredits.textContent = `⚡ ${sesionUsuario.credits} Créditos`;
-    if (elPlan) {
-      if (sesionUsuario.plan === 'national') elPlan.textContent = '👑 Plan Nacional VIP (Ilimitado)';
-      else if (sesionUsuario.plan === 'city') elPlan.textContent = `👑 Plan Pro Ciudad (${sesionUsuario.planCity || 'Activa'})`;
-      else elPlan.textContent = 'Plan Estándar por Créditos';
+    if (inputWa) inputWa.value = sesionUsuario.phone;
+
+    if (sesionUsuario.plan === 'national') {
+      if (cardCredits) cardCredits.classList.add('vip-mode');
+      if (badgeWrap) badgeWrap.style.display = 'block';
+      if (badgeEl) badgeEl.innerHTML = '<i class="fa-solid fa-crown"></i> Plan Nacional VIP';
+      if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
+      if (elCredits) elCredits.textContent = 'Colombia Ilimitada';
+      if (elPlan) elPlan.textContent = 'Acceso total sin límites a todas las ciudades y categorías.';
+      if (extraWrap && extraPill) {
+        if (sesionUsuario.credits > 0) {
+          extraWrap.style.display = 'block';
+          extraPill.textContent = `⚡ +${sesionUsuario.credits} Créditos acumulados`;
+        } else {
+          extraWrap.style.display = 'none';
+        }
+      }
+      if (benefitsWrap) benefitsWrap.style.display = 'block';
+      if (benefitsList) {
+        benefitsList.innerHTML = `
+          <li><i class="fa-solid fa-check"></i> Desbloqueo ilimitado nacional por 30 días.</li>
+          <li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li>
+          <li><i class="fa-solid fa-check"></i> Radar exclusivo de rebajas de precio y arbitraje.</li>
+        `;
+      }
+    } else if (sesionUsuario.plan === 'city') {
+      const cNom = sesionUsuario.planCity || 'Bogotá';
+      if (cardCredits) cardCredits.classList.add('vip-mode');
+      if (badgeWrap) badgeWrap.style.display = 'block';
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNom})`;
+      if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
+      if (elCredits) elCredits.textContent = 'Acceso Ilimitado';
+      if (elPlan) elPlan.textContent = `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
+      if (extraWrap && extraPill) {
+        if (sesionUsuario.credits > 0) {
+          extraWrap.style.display = 'block';
+          extraPill.textContent = `⚡ +${sesionUsuario.credits} Créditos fuera de cobertura`;
+        } else {
+          extraWrap.style.display = 'none';
+        }
+      }
+      if (benefitsWrap) benefitsWrap.style.display = 'block';
+      if (benefitsList) {
+        benefitsList.innerHTML = `
+          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNom}.</li>
+          <li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li>
+          <li><i class="fa-solid fa-check"></i> Radar de nuevas oportunidades en tiempo real.</li>
+        `;
+      }
+    } else {
+      if (cardCredits) cardCredits.classList.remove('vip-mode');
+      if (badgeWrap) badgeWrap.style.display = 'none';
+      if (labelCredits) labelCredits.textContent = 'Saldo Disponible';
+      if (elCredits) elCredits.textContent = `⚡ ${sesionUsuario.credits} Créditos`;
+      if (elPlan) elPlan.textContent = 'Plan Estándar: 1 crédito = 1 propietario directo de por vida.';
+      if (extraWrap) extraWrap.style.display = 'none';
+      if (benefitsWrap) benefitsWrap.style.display = 'none';
     }
+
     if (elCount) {
       const cant = (sesionUsuario.unlockedLeads || []).length;
       elCount.textContent = `Has desbloqueado ${cant} ${cant === 1 ? 'propiedad' : 'propiedades'} directamente.`;
     }
-    if (inputWa) inputWa.value = sesionUsuario.phone;
 
-    if (pestana === 'comprar' || (!sesionUsuario.credits && sesionUsuario.plan === 'free')) {
+    if (pestana === 'comprar') {
       cambiarPestanaCheckout('comprar');
     } else {
-      cambiarPestanaCheckout('perfil');
+      cambiarPestanaCheckout('mi-cuenta');
     }
   } else {
+    if (tabMiCuenta) tabMiCuenta.style.display = 'none';
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
@@ -289,7 +356,17 @@ async function ejecutarPagoWompi() {
               actualizarBadgeVip();
               sincronizarFiltroCiudadUsuario();
               renderizarInterfaz(datosActuales);
-              mostrarNotificacionToast(`🎉 ¡Pago aprobado! Tu PIN es: ${claimData.user.pin}. Tienes ${claimData.user.credits} créditos.`);
+
+              const notif = typeof generarMensajeBienvenidaToast === 'function'
+                ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
+                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: `PIN: ${claimData.user.pin}`, tipo: 'success' };
+              mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
+
+              // Abrir modal de bienvenida y beneficios VIP
+              if (typeof abrirModalBienvenidaVIP === 'function') {
+                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, sesionUsuario);
+              }
+
               if (leadSeleccionado) {
                 await ejecutarDesbloqueoLead(leadSeleccionado);
               }
@@ -322,4 +399,23 @@ async function ejecutarPagoWompi() {
     }
   }
 }
-
+
+// Inicialización de Listeners Propios de Pestañas y Acordeón en Checkout
+document.addEventListener("DOMContentLoaded", () => {
+  const tabMiCuenta = document.getElementById("tabBtnMiCuenta");
+  if (tabMiCuenta) {
+    tabMiCuenta.addEventListener("click", () => cambiarPestanaCheckout('mi-cuenta'));
+  }
+
+  const btnToggleBenefits = document.getElementById("btnToggleUserBenefits");
+  const accordionBenefits = document.getElementById("userBenefitsAccordion");
+  if (btnToggleBenefits && accordionBenefits) {
+    btnToggleBenefits.addEventListener("click", () => {
+      accordionBenefits.classList.toggle("active");
+      const isActive = accordionBenefits.classList.contains("active");
+      btnToggleBenefits.innerHTML = isActive 
+        ? '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios' 
+        : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía';
+    });
+  }
+});
