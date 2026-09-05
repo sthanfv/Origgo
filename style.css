@@ -422,8 +422,8 @@ body {
   flex-shrink: 0;
   vertical-align: middle;
   position: relative;
-  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.45));
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+  filter: none; /* Cero blur o resplandor difuso: nitidez vectorial cristalina */
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-icon-o {
@@ -431,11 +431,11 @@ body {
   height: 100%;
   display: block;
   object-fit: contain;
+  filter: none;
 }
 
 .brand-badge:hover .brand-initial-o-wrap {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.7));
+  transform: scale(1.06);
 }
 
 /* Compatibilidad retroactiva de selectores de 'O' dorada */
@@ -446,8 +446,7 @@ body {
 }
 
 .brand-letters-riggo {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   font-family: var(--font-display, 'Lufga', sans-serif);
   background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
   -webkit-background-clip: text;
@@ -455,7 +454,8 @@ body {
   color: #10B981;
   font-weight: 800;
   letter-spacing: -0.02em;
-  transition: filter 0.3s ease;
+  animation: animOriggoRiggo 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
 [data-theme="light"] .brand-letters-riggo {
@@ -469,23 +469,14 @@ body {
   filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.45));
 }
 
-/* Animación secuencial cinemática letra por letra de 'riggo' */
-.brand-letter {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(8px) scale(0.95);
-  animation: animLetterAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(0.12s + var(--char-i, 1) * 0.08s);
-}
-
-@keyframes animLetterAppear {
+@keyframes animOriggoRiggo {
   0% {
     opacity: 0;
-    transform: translateY(8px) scale(0.95);
+    transform: translateX(14px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0);
   }
 }
 

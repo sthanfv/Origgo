@@ -1,55 +1,39 @@
 # 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-05 16:30 (GMT-5)
+Última actualización: 2026-09-05 17:55 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Integración del Logotipo Oficial como "O" de la Palabra "Origgo" y Animación Letra por Letra**:
-   - Diagnóstico y Solicitud: El usuario solicitó eliminar el logo creado anteriormente que estaba separado a la izquierda, y en su lugar emplear el isotipo de la marca (la 'O' con el radar/flecha) directamente como la primera letra de la palabra "Origgo". La imagen debe permanecer quieta y estática, mientras las letras "r-i-g-g-o" se animan una por una secuencialmente de forma cinematográfica.
-   - Solución en `index.html` y `styles/02-base.css`:
-     - Se eliminó el isotipo exterior redundante que precedía al título.
-     - `.brand-title`: Contiene `.brand-logo-container.brand-initial-o-wrap` con la imagen `./assets/img/origgo-icon.svg` (36×36 px, estática, con sombra esmeralda `drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))`).
-     - Cada letra de `.brand-letters-riggo` se maquetó como un `<span class="brand-letter" style="--char-i: 1..5;">` con animación escalonada `animLetterAppear` mediante retardo dinámico `animation-delay: calc(0.12s + var(--char-i) * 0.08s)`.
-     - Preservación de selectores críticos: Se mantuvieron `.brand-logo-container` y `.brand-iso-svg` con sus dimensiones intactas garantizando compatibilidad 100% con la suite DevSecOps.
+1. **Corrección de Conectividad CSP Multi-CDN y Estabilización del Service Worker**:
+   - Diagnóstico: Al activar la cabecera `Content-Security-Policy`, la directiva `connect-src` no contemplaba los dominios externos de los que la aplicación obtiene imágenes de los inmuebles (`cdn2.infocasas.com.uy`, `images.unsplash.com`) ni los CDNs de fuentes (`fonts.googleapis.com`, `fonts.gstatic.com`, `cdnjs.cloudflare.com`). Adicionalmente, `sw.js` interceptaba indiscriminadamente peticiones de terceros sin tenerlas en caché, provocando rechazos de promesa con `TypeError: Failed to convert value to 'Response'` y bloqueos de red.
+   - Solución en `vercel.json`, `index.html` y `sw.js`:
+     - **CSP Ampliado**: Se incluyeron en `connect-src` todos los dominios necesarios: `https://checkout.wompi.co`, `https://*.wompi.co`, `https://fonts.googleapis.com`, `https://fonts.gstatic.com`, `https://cdnjs.cloudflare.com`, `https://images.unsplash.com`, `https://*.unsplash.com`, `https://cdn2.infocasas.com.uy` y `https://*.infocasas.com.uy`.
+     - **Service Worker Aislado (`sw.js`)**: Se condicionó el evento `fetch` a peticiones `same-origin` (`url.origin === self.location.origin`). Las imágenes y estilos de CDNs externos ahora pasan directamente por la red del navegador sin interferencia del Service Worker, erradicando los errores de promesa. Se actualizó la versión de caché a `origgo-v3`.
 
-2. **Remediación de Vulnerabilidades de la Auditoría DevSecOps**:
-   - **Control de Acceso CORS Centralizado (`api/lib/cors.js`)**: Creado módulo con lista blanca estricta (`DOMINIOS_PERMITIDOS`: `origgo.vercel.app`, `origgo.online`, `www.origgo.online`, entornos locales) erradicando `Access-Control-Allow-Origin: *` en `api/auth/session.js`, `api/payments/create-order.js`, `api/leads/unlock.js`, `api/user/balance.js` y `api/payments/verify.js`.
-   - **Eliminación de CORS en Webhooks (`api/payments/webhook-wompi.js`)**: Al ser peticiones server-to-server bancarias, se removió la cabecera innecesaria y se aisló el fallback de firma exclusivamente para `process.env.NODE_ENV === 'test'`.
-   - **Generación Criptográficamente Segura de PIN (`api/lib/crypto.js`)**: Se erradicó la derivación del PIN a partir de los últimos 4 dígitos del celular. Ahora genera un PIN de 4 dígitos verdaderamente aleatorio mediante `crypto.randomInt(1000, 9999)` bajo estándar Zero-Trust.
-   - **Erradicación de Secretos Hardcodeados en Producción**: `JWT_SECRET` y `LEADS_ENCRYPTION_KEY` exigen estrictamente variables de entorno en producción tanto en `api/auth/session.js`, `api/leads/unlock.js` como en `api/user/balance.js`.
-   - **Aislamiento de Carga de Cuenta de Servicio (`api/lib/db.js`)**: Se condicionó la búsqueda del archivo `service-account.json` para que nunca se intente cargar en producción, exigiendo credenciales de entorno (`FIREBASE_SERVICE_ACCOUNT_BASE64`) o ADC.
-   - **Sanitización contra XSS (`modules/11-welcome.js`)**: Se envolvió la variable territorial `ciudad` con `escaparHtml()` en interpolaciones de `innerHTML`.
-   - **Content-Security-Policy (CSP) en `vercel.json`**: Se agregó cabecera `Content-Security-Policy` estricta para Vercel Edge.
-   - **Service Worker Versionado (`sw.js`)**: Se incrementó a `origgo-v2` y se actualizaron los recursos críticos para cachear exclusivamente activos minificados (`app.min.js`, `style.min.css`) e icono SVG.
+2. **Purificación Visual del Isotipo y Restauración de la Animación Oficial de "riggo"**:
+   - Diagnóstico: El usuario solicitó eliminar cualquier blur/brillo borroso artificial de la 'O' para preservar la pureza del logo original, y restaurar la animación cinemática suave de la palabra completa "riggo" tal como estaba originalmente (deslizamiento horizontal elegante con degradado esmeralda continuo).
+   - Solución en `styles/02-base.css` e `index.html`:
+     - `.brand-initial-o-wrap` y `.brand-icon-o`: `filter: none;` (cero blur, máxima nitidez y definición de imagen).
+     - `.brand-letters-riggo`: Restaurada como texto unificado en fuente Lufga con su degradado esmeralda institucional y la animación cinemática oficial `animOriggoRiggo` (`0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both`), deslizándose suavemente desde `translateX(14px)` a `translateX(0)`.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Unificación Visual de Marca**: El usuario requirió que el logo fuera parte intrínseca de la palabra, simplificando la barra de navegación y ofreciendo una animación tipográfica distintiva letra por letra.
-- **Blindaje DevSecOps Post-Auditoría**: Cumplimiento estricto del plan de remediación aprobado, cerrando vectores de ataque (CORS wildcard, predecibilidad de PIN, inyección XSS y exposición potencial de credenciales).
+- **Estabilidad de Red y Prevención de Bloqueos**: Evitar que políticas de seguridad demasiado restrictivas bloqueen los feeds de fotografías de inmuebles y fuentes del portal.
+- **Preferencia Estética y Fidelidad de Marca**: Mantener el logotipo con bordes afilados y limpios sin filtros borrosos, y preservar el degradado continuo de la palabra "riggo" con su cinemática nativa.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `index.html`: Integración del isotipo como 'O' y letras animables individuales de 'riggo'.
-- `styles/02-base.css`: Estilos de `.brand-title`, `.brand-initial-o-wrap`, `.brand-letter` y keyframes (334 líneas, < 500).
-- `api/lib/cors.js`: Nuevo módulo de CORS con lista blanca (40 líneas, < 500).
-- `api/lib/crypto.js`: PIN con `crypto.randomInt` (197 líneas).
-- `api/lib/db.js`: Aislamiento de carga de archivo de credenciales.
-- `api/auth/session.js`: CORS restringido y validación de `JWT_SECRET`.
-- `api/leads/unlock.js`: CORS restringido y eliminación de llaves residuales en producción.
-- `api/payments/create-order.js`: CORS restringido y validación de secretos de Wompi.
-- `api/payments/webhook-wompi.js`: Eliminación de CORS y aislamiento de fallback a test.
-- `api/payments/verify.js`: CORS restringido.
-- `api/user/balance.js`: CORS restringido y validación de `JWT_SECRET`.
-- `modules/11-welcome.js`: Sanitización con `escaparHtml()` (194 líneas).
-- `sw.js`: Versión `origgo-v2` y caché de minificados.
-- `vercel.json`: Cabecera CSP agregada.
-- `style.css` y `style.min.css`: Recompilados (92.5 KB minificado).
+- `index.html`: CSP ampliado y unificación de `.brand-letters-riggo`.
+- `vercel.json`: Directiva `connect-src` multi-CDN en CSP.
+- `sw.js`: Versión `origgo-v3` con filtrado estricto `same-origin`.
+- `styles/02-base.css`: Supresión de `filter: drop-shadow`, nitidez pura en la 'O' y animación `animOriggoRiggo` (325 líneas, < 500).
+- `style.css` y `style.min.css`: Recompilados (92.3 KB minificado).
 - `app.js` y `app.min.js`: Recompilados (109.8 KB minificado).
 - `MEMORY.md`: Bitácora actualizada.
 
@@ -57,9 +41,8 @@
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Animación Escalonada CSS Pura**: Se utilizó CSS Grid/Flexbox y variables CSS (`--char-i`) para la animación de entrada letra por letra sin añadir dependencias JS externas (peso 0 KB adicional).
-- **Inmutabilidad de Pruebas**: La suite de pruebas de 8 fases (`npm test`) se preservó funcionando al 100% (12/12 pruebas unitarias de pasarela y ledger aprobadas).
-- **Lista Blanca de Dominios**: Preparada proactivamente para el futuro dominio oficial `origgo.online` y `www.origgo.online`.
+- **Aislamiento de Tráfico en Service Worker**: Delegar el tráfico cross-origin de imágenes directamente al subsistema de red del navegador garantiza cero latencia adicional en carruseles fotográficos y previene fallos por peticiones concurrentes de imágenes externas.
+- **Integridad DevSecOps**: La suite `npm test` continúa aprobada al 100% en sus 8 fases.
 
 ---
 
@@ -67,5 +50,5 @@
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
 - **Límite de Líneas**: Ningún archivo supera las 500 líneas en `modules/` ni en `styles/`.
-- **Identidad de Marca**: Origgo desplegado con la "O" de radar estática y la animación letra por letra de "riggo".
-- **Seguridad**: AES-256-GCM, tokens JWT firmados, CORS con whitelist, CSP activo y generación de PIN aleatoria.
+- **Identidad de Marca**: Origgo desplegado con la "O" de radar cristalina y la animación clásica suave de "riggo".
+- **Conectividad**: Imágenes externas y fuentes autorizadas plenamente en CSP.
