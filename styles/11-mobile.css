@@ -1,0 +1,475 @@
+/* ═══════════════════════════════════════════════════
+   FOOTER CORPORATIVO
+   ═══════════════════════════════════════════════════ */
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-main);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.site-footer strong {
+  color: var(--text-main);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   📱 ADAPTABILIDAD RESPONSIVA MOBILE-FIRST DE ÉLITE (iOS & ANDROID)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Tablets y Pantallas Medianas (<= 1024px) */
+@media (max-width: 1024px) {
+  .site-header, .hero-section, .showcase-container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  .bento-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Teléfonos Inteligentes Estándar y Grandes (<= 768px) */
+@media (max-width: 768px) {
+  .site-header {
+    margin: 0.75rem auto 0;
+    padding: 0 1rem;
+  }
+
+  .site-header-inner {
+    padding: 0.5rem 0 0.75rem;
+    gap: 0.5rem;
+  }
+
+  /* Ocultar píldora del header para eliminar el apiñamiento horizontal */
+  .header-status-pill {
+    display: none !important;
+  }
+
+  /* Activar píldora de sectores en el Hero con espacio y protagonismo */
+  .hero-status-tag {
+    display: flex;
+    margin-bottom: 0.65rem;
+  }
+
+  /* Compactar textos de marca para que nunca quiebren en 3 renglones */
+  .brand-badge {
+    gap: 0.55rem;
+  }
+
+  .brand-logo-container {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.02rem;
+    letter-spacing: -0.025em;
+  }
+
+  .brand-tag .tag-desktop {
+    display: none;
+  }
+
+  .brand-tag .tag-mobile {
+    display: inline;
+    font-size: 0.58rem;
+    white-space: nowrap;
+  }
+
+  /* Acciones a la derecha limpias y táctiles */
+  .nav-actions {
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .btn-theme-toggle {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 0.95rem;
+  }
+
+  .btn-vip-header {
+    padding: 0.38rem 0.85rem;
+    font-size: 0.76rem;
+    gap: 0.35rem;
+  }
+
+  .btn-vip-header i {
+    font-size: 0.74rem;
+  }
+
+  /* Hero Section y Macro-Card Móvil */
+  .hero-container-outer {
+    padding: 0 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-macro-card {
+    border-radius: 2rem;
+    min-height: auto;
+    padding: 2.2rem 1.15rem;
+  }
+
+  .hero-side-bg {
+    display: none !important; /* Ocultar fotos laterales para concentrar el impacto en el texto */
+  }
+
+  .hero-macro-title, .hero-title {
+    font-size: 1.78rem;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-macro-subtitle, .hero-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.48;
+  }
+
+  .btn-hero-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+  }
+
+  /* Barra de Comando Móvil */
+
+  .command-bar-wrapper {
+    margin: 0.5rem auto 1rem;
+    padding: 0 1rem;
+  }
+
+  .command-bar-container {
+    border-radius: 1.35rem;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.65rem 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .cmd-filters-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cmd-search-box {
+    display: none !important;
+  }
+
+  .cmd-niche-group {
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.15rem;
+  }
+
+  .cmd-niche-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cmd-niche-tab {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.76rem;
+    flex-shrink: 0;
+  }
+
+  /* Cabecera de Catálogo Móvil */
+  .catalog-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .catalog-heading {
+    font-size: 1.35rem;
+  }
+
+  .showcase-container {
+    padding: 0 1rem;
+  }
+
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Tarjetas Bento en Pantalla Pequeña */
+  .bento-card {
+    border-radius: 2rem;
+  }
+
+  .card-media-wrapper {
+    height: 240px;
+  }
+
+  .card-footer {
+    padding: 0.85rem 1.15rem 1.15rem;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .card-price-block {
+    width: 100%;
+  }
+
+  .btn-unlock {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+/* Teléfonos Compactos / Pantallas Angostas (<= 480px) */
+@media (max-width: 480px) {
+  .site-header-inner {
+    padding: 0.4rem 0 0.6rem;
+  }
+
+  .brand-badge {
+    gap: 0.5rem;
+  }
+
+  .brand-logo-container {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.18rem;
+  }
+
+  .btn-vip-header {
+    padding: 0.36rem 0.65rem;
+    font-size: 0.74rem;
+  }
+
+  .hero-macro-title, .hero-title {
+    font-size: 1.65rem;
+  }
+
+  .cmd-niche-tab {
+    padding: 0.42rem 0.75rem;
+    font-size: 0.74rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   ⚡ OPTIMIZACIÓN DE GPU Y ACCESIBILIDAD MÓVIL (SAMSUNG J7 & POCO X3 PRO)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Agrega aceleración de GPU a las clases con blur */
+.glass-metrics-bg, .command-bar-container, .cmd-dropdown-menu {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Reducir animaciones si el sistema operativo del usuario tiene ahorro de batería/rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .radar-sonar-ring, .cardinal-pointer, .radar-ring-mid, .radar-ring-inner {
+    animation: none !important;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   📱 NAVEGACIÓN INFERIOR NATIVA (ESTILO PWA APP MÓVIL ANDROID / IOS)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* REGLA GLOBAL: Ocultar barra móvil en PC */
+.mobile-bottom-bar {
+  display: none;
+}
+
+/* REGLAS EXCLUSIVAS PARA MÓVIL (Android / iOS) */
+@media (max-width: 768px) {
+  /* 1. Ocultar menús de la cabecera de escritorio para dejar el logo solo (Estándar App Nativa) */
+  .header-left-nav,
+  .header-spacer,
+  .nav-actions {
+    display: none !important;
+  }
+
+  /* Centrar identidad de marca institucional al ocultar los laterales */
+  .site-header-inner {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 2. Activar y estilizar barra inferior (Glassmorphism) */
+  .mobile-bottom-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background: var(--glass-pill-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom); /* Soporte barra de gestos nativa */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
+  .mobile-nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: color 0.2s ease, transform 0.15s ease;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.92);
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--accent-emerald);
+  }
+
+  .mobile-nav-btn i {
+    font-size: 1.1rem;
+  }
+  
+  /* Botón VIP Móvil (Oro Puro y Destello) */
+  #btnNavVip {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #btnNavVip i,
+  #btnNavVip span {
+    background: linear-gradient(
+      to right, 
+      #FBBF24 0%, 
+      #F59E0B 35%, 
+      #FFFFFF 50%, 
+      #F59E0B 65%, 
+      #D97706 100%
+    );
+    background-size: 100% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #F59E0B;
+    z-index: 1;
+  }
+
+  [data-theme="light"] #btnNavVip i,
+  [data-theme="light"] #btnNavVip span {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: #B45309;
+    color: #B45309; /* Alto contraste certificado WCAG AA en fondo claro */
+  }
+
+  #btnNavVip i {
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+  }
+
+  [data-theme="light"] #btnNavVip i {
+    filter: none;
+  }
+
+  #btnNavVip span {
+    font-weight: 800;
+  }
+
+  /* 3. Espaciado final para evitar solapamiento */
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ✨ MICRO-INTERACCIONES PREMIUM (APP NATIVA)
+   ═══════════════════════════════════════════════════ */
+
+/* 1. COMANDO FLOTANTE (STICKY GLASS) */
+.command-bar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  padding-top: 0.5rem; /* Margen superior dinámico */
+  transition: transform 0.3s ease;
+}
+
+/* Elevación de sombras al hacer scroll */
+.command-bar-wrapper.is-scrolled .command-bar-container {
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 hsla(129, 48%, 87%, 0.15);
+  background: hsla(183, 73%, 5%, 0.88);
+}
+[data-theme="light"] .command-bar-wrapper.is-scrolled .command-bar-container {
+  background: hsla(0, 0%, 100%, 0.95);
+  box-shadow: 0 16px 30px -10px rgba(5, 31, 32, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* 2. PROFUNDIDAD PARALLAX */
+.card-media-wrapper {
+  overflow: hidden; /* Contenedor estricto */
+}
+.carousel-img, .card-static-img {
+  height: 115%; /* 15% extra de altura oculta para tener margen de movimiento */
+  top: -7.5%;   /* Centrado vertical inicial */
+  position: relative;
+  will-change: transform; /* Aviso a la GPU */
+}
+
+/* 3. EFECTO ONDA ACÚSTICA (RIPPLE) */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Excepción para botones sin fondo (transparentes) para que la onda circule libremente */
+.mobile-nav-btn.btn-ripple, .btn-theme-toggle.btn-ripple {
+  overflow: visible !important;
+}
+.ripple-span {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: ripple-anim 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none; /* Que el click traspase la onda */
+  z-index: 0;
+}
+[data-theme="light"] .ripple-span {
+  background: rgba(0, 0, 0, 0.15);
+}
+@keyframes ripple-anim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════

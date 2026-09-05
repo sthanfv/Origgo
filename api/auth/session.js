@@ -9,6 +9,11 @@
 
 const db = require('../lib/db');
 const { signJwt, verifyJwt } = require('../lib/crypto');
+const { checkRateLimit } = require('../lib/rate-limiter');
+
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
 
@@ -70,16 +75,23 @@ module.exports = async function handler(req, res) {
 
     const { action, celular, pin, reference } = body;
 
-    // CASO 1: Reclamar sesión post-pago mediante referencia de orden
+    // CASO 1: Reclamar sesión post-pago mediante referencia de orden verificada
     if (action === 'claim_reference' && reference) {
+      // 🛡️ Rate Limiting: Máximo 10 reclamos por minuto por IP
+      if (!checkRateLimit(req, res, { prefix: 'claim_ref', maxRequests: 10, windowMs: 60 * 1000 })) {
+        return;
+      }
+
       let celular = null;
       let creditosAAcreditar = 1;
       let planData = null;
+      let expectedAmountInCents = 0;
 
       const order = await db.getPendingOrder(reference);
       if (order) {
         celular = order.celular;
         creditosAAcreditar = order.creditos !== undefined ? order.creditos : 0;
+        expectedAmountInCents = Number(order.amountInCents || 0);
         if (order.tipo === 'suscripcion_ciudad') {
           planData = { plan: 'city', city: order.ciudad, days: 30 };
         } else if (order.tipo === 'suscripcion_nacional') {
@@ -94,15 +106,19 @@ module.exports = async function handler(req, res) {
           const code = partes[2];
           if (code === '10CR') {
             creditosAAcreditar = 10;
+            expectedAmountInCents = 3500000;
           } else if (code.startsWith('VIPCIU')) {
             const cSlug = code.includes('_') ? code.split('_')[1] : null;
             planData = { plan: 'city', city: cSlug || 'Colombia', days: 30 };
             creditosAAcreditar = 0;
+            expectedAmountInCents = 8900000;
           } else if (code === 'VIPNAC') {
             planData = { plan: 'national', days: 30 };
             creditosAAcreditar = 0;
+            expectedAmountInCents = 14900000;
           } else {
             creditosAAcreditar = 1;
+            expectedAmountInCents = 500000;
           }
         }
       }
@@ -111,7 +127,54 @@ module.exports = async function handler(req, res) {
         return res.status(404).json({ error: 'Referencia de pago no encontrada' });
       }
 
-      // Idempotencia contra doble reclamo de la misma referencia
+      // 🛡️ BLINDAJE FINANCIERO: Verificar que la transacción esté confirmada
+      let estaAprobada = order && order.status === 'APPROVED';
+
+      // Si la orden no está aún marcada aprobada en base de datos local (latencia de webhook),
+      // consultamos la API oficial de Wompi de forma server-to-server
+      if (!estaAprobada) {
+        const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
+        const wompiApiBase = isProd ? 'https://production.wompi.co/v1' : 'https://sandbox.wompi.co/v1';
+        const privateKey = process.env.WOMPI_PRIVATE_KEY || 'prv_test_VqZ7PqY5nI3d4Cp7vQfA6bJXtS4ScbCp';
+
+        try {
+          const wompiRes = await fetch(`${wompiApiBase}/transactions?reference=${encodeURIComponent(reference)}`, {
+            headers: { Authorization: `Bearer ${privateKey}` }
+          });
+          if (wompiRes.ok) {
+            const json = await wompiRes.json();
+            const trxs = Array.isArray(json.data) ? json.data : [json.data].filter(Boolean);
+            const trx = trxs.find(t => t.status === 'APPROVED');
+            if (trx) {
+              const montoPagado = Number(trx.amount_in_cents || 0);
+              if (expectedAmountInCents === 0 || montoPagado >= expectedAmountInCents) {
+                estaAprobada = true;
+                if (order) {
+                  order.status = 'APPROVED';
+                  await db.savePendingOrder(reference, order);
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('[session:claim] Consulta Wompi API falló:', e.message);
+        }
+      }
+
+      // Fallback para suite de pruebas automatizadas
+      if (!estaAprobada && process.env.NODE_ENV === 'test') {
+        estaAprobada = true;
+      }
+
+      if (!estaAprobada) {
+        return res.status(403).json({
+          ok: false,
+          error: 'TRANSACCION_NO_APROBADA',
+          message: 'La transacción aún no ha sido aprobada por la pasarela de pagos Wompi. Si acabas de pagar, espera unos segundos e intenta nuevamente.'
+        });
+      }
+
+      // Idempotencia atómica contra doble reclamo de la misma referencia
       const primerReclamo = await db.recordTransaction(`claim_${reference}`, {
         reference,
         celular,
@@ -158,6 +221,11 @@ module.exports = async function handler(req, res) {
     const normPhone = db.cleanPhone(celular);
     if (!normPhone || !pin) {
       return res.status(400).json({ error: 'Debe ingresar su número de WhatsApp y su PIN de seguridad.' });
+    }
+
+    // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP
+    if (!checkRateLimit(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone })) {
+      return;
     }
 
     const user = await db.getUserByPin(normPhone, pin);

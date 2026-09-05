@@ -9,17 +9,27 @@
 
 const db = require('../lib/db');
 const { signJwt, verifyJwt, decryptLeadContact } = require('../lib/crypto');
+const { checkRateLimit } = require('../lib/rate-limiter');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
-const LEADS_ENCRYPTION_KEY = process.env.LEADS_ENCRYPTION_KEY || 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c';
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232');
+const LEADS_ENCRYPTION_KEY = process.env.LEADS_ENCRYPTION_KEY || (process.env.NODE_ENV === 'production' ? null : 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c');
+
+if (process.env.NODE_ENV === 'production' && (!JWT_SECRET || !LEADS_ENCRYPTION_KEY)) {
+  console.error('[FATAL] Variables críticas faltantes en producción: JWT_SECRET o LEADS_ENCRYPTION_KEY.');
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Trace-Id');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // 🛡️ Rate Limiting: máx 30 desbloqueos por minuto por IP
+  if (!checkRateLimit(req, res, { prefix: 'leads_unlock', maxRequests: 30, windowMs: 60 * 1000 })) {
+    return;
   }
 
   if (req.method !== 'POST') {

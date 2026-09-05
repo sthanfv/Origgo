@@ -1,0 +1,235 @@
+   BENTO GRID COMPACTO DE ALTA DENSIDAD
+   ═══════════════════════════════════════════════════ */
+.showcase-container {
+  max-width: 1280px;
+  margin: 1.25rem auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.4rem;
+}
+
+/* Tarjeta Bento: Arquitectura de Curvatura Extrema (2.5rem) y Contorno Sutil */
+.bento-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  contain: paint;
+  isolation: isolate;
+  transform: translateY(16px) scale(0.99);
+  opacity: 0;
+  will-change: transform, box-shadow, opacity;
+  transition: 
+    opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+    border-color 0.3s ease, 
+    background-color 0.3s ease;
+  transition-delay: var(--enter-delay, 0s);
+}
+
+/* Estado cuando la tarjeta entra al viewport en el scroll del teléfono */
+.bento-card.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Tarjetas Esqueleto Shimmer visibles de inmediato durante la carga */
+.bento-card.skeleton-card {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: none;
+  user-select: none;
+  border-color: var(--border-subtle);
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card-inner) 0%,
+    hsla(158, 64%, 48%, 0.12) 50%,
+    var(--bg-card-inner) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s infinite ease-in-out;
+}
+
+[data-theme="light"] .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(140, 25%, 92%) 0%,
+    hsla(170, 59%, 18%, 0.12) 50%,
+    hsl(140, 25%, 92%) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-media {
+  height: 240px;
+  width: 100%;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 9999px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-box {
+  height: 64px;
+  border-radius: var(--radius-md);
+  margin: 0.75rem 0;
+}
+
+.skeleton-btn {
+  height: 38px;
+  border-radius: 9999px;
+}
+
+.bento-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  background-color: var(--bg-card-hover);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px hsla(166, 52%, 36%, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+   CABECERA FOTOGRÁFICA & EL SECRETO DE FUSIÓN (h-32)
+   ═══════════════════════════════════════════════════ */
+.card-media-wrapper {
+  position: relative;
+  width: 100%;
+  height: 255px;
+  overflow: hidden;
+  background-color: var(--bg-card);
+  cursor: pointer;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Badges Superiores Flotantes (Izquierda) */
+.card-floating-badges {
+  position: absolute;
+  top: 1.15rem;
+  left: 1.15rem;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.badge-time-pill {
+  background: var(--glass-pill-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-pill-border);
+  box-shadow: var(--glass-pill-shadow);
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+/* Modo Claro: Contraste Editorial Impecable (Verde Bosque y Carbón sobre Cristal Puro) */
+[data-theme="light"] .badge-time-pill {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: hsla(166, 40%, 23%, 0.16);
+  box-shadow: 0 2px 10px rgba(5, 31, 32, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+  color: #0A110E;
+}
+
+[data-theme="light"] .badge-time-pill i {
+  color: #022C22;
+}
+
+.badge-status-pill {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-pill-shadow);
+  white-space: nowrap;
+}
+
+.badge-status-pill.urgente {
+  background: var(--accent-rose-bg);
+  color: var(--accent-rose);
+  border: 1px solid hsla(348, 83%, 60%, 0.35);
+}
+
+[data-theme="light"] .badge-status-pill.urgente {
+  background: #FFE4E6;
+  color: #BE123C;
+  border: 1px solid #FDA4AF;
+}
+
+.badge-status-pill.arbitraje {
+  background: hsla(158, 64%, 48%, 0.15);
+  color: var(--accent-emerald);
+  border: 1px solid hsla(158, 64%, 48%, 0.35);
+}
+
+[data-theme="light"] .badge-status-pill.arbitraje {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+.badge-status-pill.rebaja {
+  background: hsla(43, 49%, 57%, 0.18);
+  color: #FDE047;
+  border: 1px solid hsla(43, 49%, 57%, 0.35);
+}
+
+[data-theme="light"] .badge-status-pill.rebaja {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+}
+
+.badge-status-pill.cerrado {
+  background: hsla(169, 43%, 15%, 0.65);
+  color: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="light"] .badge-status-pill.cerrado {
+  background: hsla(140, 25%, 95%, 0.9);
+  color: #2E3B35;
+  border: 1px solid hsla(166, 40%, 23%, 0.2);
+}
+

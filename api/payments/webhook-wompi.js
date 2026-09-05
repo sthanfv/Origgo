@@ -12,15 +12,21 @@
 const crypto = require('crypto');
 const db = require('../lib/db');
 const { generatePin } = require('../lib/crypto');
+const { checkRateLimit } = require('../lib/rate-limiter');
 
 module.exports = async function handler(req, res) {
   // CORS y métodos
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Trace-Id');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // 🛡️ Rate Limiting: máx 60 peticiones por minuto por IP para webhooks
+  if (!checkRateLimit(req, res, { prefix: 'payments_webhook', maxRequests: 60, windowMs: 60 * 1000 })) {
+    return;
   }
 
   if (req.method !== 'POST') {

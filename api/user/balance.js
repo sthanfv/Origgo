@@ -8,16 +8,22 @@
 
 const db = require('../lib/db');
 const { verifyJwt } = require('../lib/crypto');
+const { checkRateLimit } = require('../lib/rate-limiter');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Trace-Id');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // 🛡️ Rate Limiting: máx 60 consultas de saldo por minuto
+  if (!checkRateLimit(req, res, { prefix: 'user_balance', maxRequests: 60, windowMs: 60 * 1000 })) {
+    return;
   }
 
   if (req.method !== 'GET') {

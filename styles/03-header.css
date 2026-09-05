@@ -1,0 +1,230 @@
+
+.menu-hamburger-icon .bar-top,
+.menu-hamburger-icon .bar-mid,
+.menu-hamburger-icon .bar-bot {
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-emerald);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+.btn-menu-pill:hover .menu-hamburger-icon .bar-top,
+.btn-menu-pill:hover .menu-hamburger-icon .bar-mid,
+.btn-menu-pill:hover .menu-hamburger-icon .bar-bot {
+  background-color: #34D399;
+}
+
+[data-theme="light"] .btn-menu-pill:hover .menu-hamburger-icon .bar-top,
+[data-theme="light"] .btn-menu-pill:hover .menu-hamburger-icon .bar-mid,
+[data-theme="light"] .btn-menu-pill:hover .menu-hamburger-icon .bar-bot {
+  background-color: #047857;
+}
+
+/* Estado Activo: Transformación Cinemática a 'X' */
+.btn-menu-pill.is-active .menu-hamburger-icon .bar-top {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.btn-menu-pill.is-active .menu-hamburger-icon .bar-mid {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.btn-menu-pill.is-active .menu-hamburger-icon .bar-bot {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.menu-pill-text {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.btn-menu-pill.is-active {
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+}
+
+.nav-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+/* Botón Conmutador de Tema (Circular de precisión de cristal arquitectónico) */
+.btn-theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.95rem;
+}
+
+.btn-theme-toggle i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+[data-theme="light"] .btn-theme-toggle {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #2E3B35;
+  box-shadow: 0 2px 8px rgba(5, 31, 32, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.btn-theme-toggle:hover {
+  color: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+  transform: scale(1.05);
+}
+
+[data-theme="light"] .btn-theme-toggle:hover {
+  color: #047857;
+  border-color: #047857;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  background: var(--glass-metrics-bg);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid var(--glass-metrics-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  white-space: nowrap;
+}
+
+.hero-status-tag {
+  display: none; /* Se activa en móviles vía media query */
+  margin-bottom: 0.5rem;
+}
+
+.status-pulse {
+  width: 7px;
+  height: 7px;
+  background-color: var(--accent-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-emerald);
+  position: relative;
+  animation: pulse-dot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(0.9); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Botón VIP Header (Píldora de Cristal con Letras en Oro Puro y Destello Metálico Shine de Desmulta) */
+.btn-vip-header {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--glass-metrics-bg);
+  color: var(--text-main);
+  border: 1px solid hsla(43, 85%, 55%, 0.4);
+  padding: 0.42rem 1.05rem;
+  border-radius: 9999px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 hsla(43, 85%, 65%, 0.25);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.btn-vip-header i,
+.vip-btn-text {
+  background: linear-gradient(
+    to right, 
+    #FBBF24 0%, 
+    #F59E0B 35%, 
+    #FFFFFF 50%, 
+    #F59E0B 65%, 
+    #D97706 100%
+  );
+  background-size: 100% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #F59E0B; /* Fallback */
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .btn-vip-header i,
+[data-theme="light"] .vip-btn-text {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: #B45309;
+  color: #B45309;
+}
+
+.btn-vip-header i {
+  font-size: 0.8rem;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.vip-btn-text {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="light"] .btn-vip-header {
+  background: hsla(0, 0%, 100%, 0.9);
+  border-color: hsla(43, 75%, 45%, 0.4);
+  box-shadow: 0 2px 8px rgba(5, 31, 32, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="light"] .btn-vip-header i {
+  color: #D97706;
+  filter: none;
+}
+
+[data-theme="light"] .vip-btn-text {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 60%, #92400E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #B45309;
+}
+
+.btn-vip-header:hover {
+  transform: translateY(-1px);
+  border-color: #F59E0B;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+.btn-vip-header:hover i {
+  transform: scale(1.15) rotate(-6deg);
+}

@@ -1,0 +1,375 @@
+}
+
+.pricing-option-card.featured {
+  border-color: hsla(158, 64%, 52%, 0.4);
+}
+
+.featured-ribbon {
+  position: absolute;
+  top: -9px;
+  right: 12px;
+  background: var(--accent-emerald);
+  color: #041B12;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px var(--accent-emerald-glow);
+}
+
+.checkout-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.option-header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.45rem;
+}
+
+.option-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.option-price {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--accent-emerald);
+}
+
+.option-desc {
+  font-size: 0.735rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Campos de Formulario */
+.checkout-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1.15rem;
+  text-align: left;
+}
+
+.checkout-form-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.checkout-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.25rem 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.checkout-input-wrapper:focus-within {
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 3px var(--accent-emerald-glow);
+}
+
+.checkout-input-prefix {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  padding-right: 0.5rem;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.checkout-text-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.65rem 0.75rem;
+  outline: none;
+}
+
+.checkout-text-input::placeholder {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.checkout-text-input.pin-input {
+  letter-spacing: 0.15em;
+  font-size: 1.1rem;
+  text-align: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--glass-metrics-bg);
+}
+
+.checkout-input-help {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+
+.btn-confirm-wompi,
+.btn-restore-session {
+  width: 100%;
+  font-family: var(--font-display);
+  background: var(--accent-emerald);
+  color: #041B12;
+  border: none;
+  padding: 0.95rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 14px var(--accent-emerald-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-confirm-wompi:hover,
+.btn-restore-session:hover {
+  background: var(--accent-emerald-hover);
+  transform: translateY(-1px);
+}
+
+.checkout-guarantee-badges {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 0.85rem;
+}
+
+.checkout-guarantee-badges span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Panel Restaurar PIN */
+.pin-restore-box {
+  text-align: left;
+}
+
+.pin-restore-intro {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 1.15rem;
+}
+
+.restore-status-msg {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.restore-status-msg.error {
+  background: hsla(0, 84%, 60%, 0.15);
+  border: 1px solid hsla(0, 84%, 60%, 0.35);
+  color: #F87171;
+}
+
+.restore-status-msg.success {
+  background: hsla(158, 64%, 52%, 0.15);
+  border: 1px solid hsla(158, 64%, 52%, 0.35);
+  color: var(--accent-emerald);
+}
+
+/* Panel Perfil Usuario Activo */
+.user-profile-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  text-align: center;
+}
+
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.95rem;
+  text-align: left;
+}
+
+.user-avatar-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent-emerald-bg);
+  border: 1px solid var(--accent-emerald);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.user-phone-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.user-pin-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  letter-spacing: 0.08em;
+}
+
+.user-credits-card {
+  background: hsla(166, 40%, 14%, 0.5);
+  border: 1px solid hsla(158, 64%, 52%, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1rem;
+}
+
+.user-credits-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.user-credits-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--accent-emerald);
+  margin: 0.35rem 0;
+}
+
+.user-plan-status {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.user-unlocked-info {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+}
+
+.user-actions-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-buy-more-credits {
+  flex: 2;
+  font-family: var(--font-display);
+  background: var(--accent-emerald);
+  color: #041B12;
+  border: none;
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.btn-buy-more-credits:hover {
+  background: var(--accent-emerald-hover);
+}
+
+.btn-logout-session {
+  flex: 1;
+  font-family: var(--font-display);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  font-size: 0.825rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.btn-logout-session:hover {
+  color: #F87171;
+  border-color: #F87171;
+}
+
+/* Tarjeta Desbloqueada y Botón WhatsApp Directo */
+.bento-card.card-unlocked {
+  border-color: hsla(158, 64%, 52%, 0.4);
+  box-shadow: 0 0 24px -6px hsla(158, 64%, 52%, 0.15);
+}
+
+.btn-whatsapp-direct {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #22C55E;
+  color: #FFFFFF !important;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 0.825rem;
+  font-weight: 800;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-whatsapp-direct:hover {
+  background: #16A34A;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45);
+}
+
+.card-unlocked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: hsla(158, 64%, 52%, 0.2);
+  border: 1px solid hsla(158, 64%, 52%, 0.4);
+  color: var(--accent-emerald);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+

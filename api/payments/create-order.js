@@ -8,6 +8,11 @@
 
 const crypto = require('crypto');
 const db = require('../lib/db');
+const { checkRateLimit } = require('../lib/rate-limiter');
+
+if (process.env.NODE_ENV === 'production' && !process.env.WOMPI_INTEGRITY_SECRET) {
+  throw new Error('CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET es obligatorio en producción.');
+}
 
 // Diccionario oficial de productos y precios en centavos de peso (COP)
 const PRODUCT_CATALOG = {
@@ -49,6 +54,11 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido. Utilice POST.' });
+  }
+
+  // 🛡️ Rate Limiting Anti-DDoS: Máximo 12 solicitudes de orden por minuto por IP
+  if (!checkRateLimit(req, res, { prefix: 'create_order', maxRequests: 12, windowMs: 60 * 1000 })) {
+    return;
   }
 
   try {

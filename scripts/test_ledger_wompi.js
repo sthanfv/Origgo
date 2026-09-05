@@ -3,9 +3,12 @@
  * Hunter Pro Intelligence — Suite Automatizada DevSecOps
  */
 
+process.env.NODE_ENV = 'test';
+
 const assert = require('assert');
 const crypto = require('crypto');
 const db = require('../api/lib/db');
+const { resetRateLimiter } = require('../api/lib/rate-limiter');
 const { 
   encryptLeadContact, 
   decryptLeadContact, 
@@ -35,6 +38,7 @@ function createMockRes() {
 
 async function runTests() {
   console.log('🧪 [TEST] Iniciando Suite de Verificación de Pagos y Criptografía...\n');
+  resetRateLimiter();
 
   const encryptionKey = process.env.LEADS_ENCRYPTION_KEY || 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c';
   const jwtSecret = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';

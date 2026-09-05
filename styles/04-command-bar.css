@@ -1,0 +1,350 @@
+
+/* ═══════════════════════════════════════════════════
+   2. BARRA DE COMANDO TÁCTICA (NIVEL 2 - SUBHEADER)
+   Inspirado en la franja unificada de filtros, buscador y categorías de Nspring
+   ═══════════════════════════════════════════════════ */
+.command-bar-wrapper {
+  position: relative;
+  z-index: 50;
+  max-width: 1280px;
+  margin: 0.75rem auto 1.5rem;
+  padding: 0 1.5rem;
+}
+
+.command-bar-container {
+  position: relative;
+  z-index: 50;
+  background: var(--glass-pill-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  padding: 0.45rem 0.65rem 0.45rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 hsla(129, 48%, 87%, 0.12);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .command-bar-container {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 86%, 0.9);
+  box-shadow: 0 8px 25px rgba(5, 31, 32, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.cmd-filters-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.cmd-filter-pill {
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.42rem 0.85rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .cmd-filter-pill {
+  background: hsla(140, 25%, 95%, 0.9);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #0A110E;
+}
+
+.cmd-filter-pill:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--border-hover);
+}
+
+[data-theme="light"] .cmd-filter-pill:hover {
+  background-color: hsla(140, 25%, 88%, 0.95);
+  border-color: var(--accent-emerald);
+  color: #022C22;
+}
+
+.cmd-filter-pill.open {
+  border-color: var(--accent-emerald);
+  background-color: var(--accent-emerald-bg);
+}
+
+[data-theme="light"] .cmd-filter-pill.open {
+  background-color: hsla(140, 30%, 88%, 0.95);
+  border-color: var(--accent-emerald);
+  color: #022C22;
+  box-shadow: 0 0 0 2px var(--accent-emerald-glow);
+}
+
+.cmd-filter-pill.active-filter {
+  background: var(--accent-emerald-bg);
+  border-color: var(--accent-emerald);
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .cmd-filter-pill.active-filter {
+  background: hsla(140, 30%, 88%, 0.95);
+  border-color: var(--accent-emerald);
+  color: #022C22;
+  font-weight: 800;
+}
+
+.cmd-filter-pill i {
+  color: var(--accent-emerald);
+  font-size: 0.75rem;
+}
+
+.cmd-dropdown-arrow {
+  font-size: 0.65rem !important;
+  color: var(--text-dim) !important;
+  transition: transform 0.2s ease;
+  margin-left: 0.15rem;
+}
+
+.cmd-filter-pill.open .cmd-dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Envoltura del Dropdown de Filtros */
+.cmd-filter-pill-dropdown-wrapper {
+  position: relative;
+  display: inline-flex;
+  z-index: 60;
+}
+
+/* Menú Desplegable Flotante Glassmorphic */
+.cmd-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 235px;
+  background: hsla(170, 59%, 10%, 0.98);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid hsla(129, 48%, 87%, 0.22);
+  border-radius: var(--radius-md);
+  padding: 0.55rem;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px hsla(166, 40%, 23%, 0.4);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+[data-theme="light"] .cmd-dropdown-menu {
+  background: #FFFFFF;
+  border-color: hsla(166, 40%, 23%, 0.22);
+  box-shadow: 0 24px 50px -10px rgba(2, 44, 34, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.cmd-dropdown-menu.show {
+  display: flex;
+  animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cmd-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.52rem 0.85rem;
+  border-radius: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.cmd-dropdown-item:hover {
+  background: hsla(166, 40%, 23%, 0.3);
+  color: var(--text-main);
+}
+
+[data-theme="light"] .cmd-dropdown-item {
+  color: #2E3B35;
+}
+
+[data-theme="light"] .cmd-dropdown-item:hover {
+  background: hsla(140, 25%, 93%, 0.9);
+  color: #0A110E;
+}
+
+.cmd-dropdown-item.active {
+  background: var(--accent-emerald-bg);
+  color: var(--accent-emerald);
+  font-weight: 800;
+}
+
+[data-theme="light"] .cmd-dropdown-item.active {
+  background: hsla(140, 30%, 88%, 0.9);
+  color: #022C22;
+}
+
+.cmd-dropdown-item .item-check {
+  margin-left: auto;
+  font-size: 0.75rem;
+  opacity: 0;
+  color: var(--accent-emerald);
+}
+
+.cmd-dropdown-item.active .item-check {
+  opacity: 1;
+}
+
+.cmd-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: hsla(169, 43%, 15%, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+[data-theme="light"] .cmd-search-box {
+  background: hsla(140, 20%, 93%, 0.75);
+  border-color: hsla(160, 20%, 88%, 0.9);
+}
+
+.cmd-search-box:focus-within {
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 3px var(--accent-emerald-glow);
+  background: hsla(170, 59%, 11%, 0.85);
+}
+
+[data-theme="light"] .cmd-search-box:focus-within {
+  background: #FFFFFF;
+  border-color: var(--accent-emerald);
+}
+
+.cmd-search-icon {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.cmd-search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+[data-theme="light"] .cmd-search-input {
+  color: #0A110E;
+}
+
+.cmd-search-input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Botón Limpiar Búsqueda (Cruz rápida) */
+.cmd-search-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cmd-search-clear.visible {
+  display: inline-flex;
+}
+
+.cmd-search-clear:hover {
+  color: var(--text-main);
+  background: hsla(0, 0%, 100%, 0.12);
+}
+
+[data-theme="light"] .cmd-search-clear:hover {
+  color: #0A110E;
+  background: rgba(5, 31, 32, 0.08);
+}
+
+.cmd-niche-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.cmd-niche-tab, .niche-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cmd-niche-tab:hover, .niche-tab:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .cmd-niche-tab:hover, [data-theme="light"] .niche-tab:hover {
+  background: rgba(5, 31, 32, 0.06);
+  color: #0A110E;
+}
+
+.cmd-niche-tab.active, .niche-tab.active {
+  background: var(--text-main);
+  color: var(--color-base-night) !important;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .cmd-niche-tab.active, [data-theme="light"] .niche-tab.active {
+  background: #022C22;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 10px rgba(2, 44, 34, 0.25);
+}
+
+.cmd-niche-tab.active i, .niche-tab.active i {
+  color: var(--accent-emerald) !important;
+}
+
+[data-theme="light"] .cmd-niche-tab.active i, [data-theme="light"] .niche-tab.active i {
+  color: #34D399 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   3. MACRO-HERO EN CÁPSULA ENMARCADA (NIVEL 3)
+   Inspirado en la tarjeta de gran formato con curvas extremas y atmósfera de lujo

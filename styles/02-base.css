@@ -1,0 +1,366 @@
+   CABECERA PRINCIPAL INTEGRADA (Sin conflictos z-index)
+   ═══════════════════════════════════════════════════ */
+.site-header {
+  max-width: 1280px;
+  margin: 1.25rem auto 0;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.site-header-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0.75rem 0 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-badge {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+}
+
+.brand-logo-container {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.28));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+.brand-badge:hover .brand-logo-container {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.45));
+}
+
+.brand-iso-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════
+   CINÉTICA VECTORIAL DEL ISOTIPO HUNTER PRO
+   Instrumentación Táctica Autónoma y Continua (Ciclo de 6s)
+   - Corrección estricta de transform-box: view-box para rotación perfectamente centrada en móviles
+   - Giro continuo en sentido horario del anillo de sonar (12s)
+   - Calibración sincronizada de puntas cardinales, anillos y núcleo visible sin requerir hover
+   ═══════════════════════════════════════════════════ */
+
+/* Todos los elementos móviles del SVG referencian la caja de vista oficial (0 0 100 100) */
+.radar-sonar-ring,
+.radar-ring-mid,
+.radar-ring-inner,
+.cardinal-pointer,
+.pointer-north,
+.pointer-south,
+.pointer-west,
+.pointer-east,
+.radar-core-lens {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  will-change: transform, filter, stroke-opacity;
+}
+
+/* 1. Anillo de Radar Sonar: Rotación Continua Nítida en Sentido Horario */
+.radar-sonar-ring {
+  animation: animRadarSonarClockwise 12s linear infinite;
+}
+
+@keyframes animRadarSonarClockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 2. Puntas Angulares Cardinales: Calibración Cíclica Autónoma cada 6s (Expansión y Bloqueo) */
+.pointer-north {
+  animation: animCalibNorth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes animCalibNorth {
+  0%, 35%, 80%, 100% {
+    transform: translateY(0);
+  }
+  48% {
+    transform: translateY(-5px); /* Expansión hacia el Norte */
+  }
+  60% {
+    transform: translateY(0.8px); /* Rebote elástico de cerrojo */
+  }
+  70% {
+    transform: translateY(0);
+  }
+}
+
+.pointer-south {
+  animation: animCalibSouth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes animCalibSouth {
+  0%, 35%, 80%, 100% {
+    transform: translateY(0);
+  }
+  48% {
+    transform: translateY(5px); /* Expansión hacia el Sur */
+  }
+  60% {
+    transform: translateY(-0.8px); /* Rebote elástico */
+  }
+  70% {
+    transform: translateY(0);
+  }
+}
+
+.pointer-west {
+  animation: animCalibWest 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes animCalibWest {
+  0%, 35%, 80%, 100% {
+    transform: translateX(0);
+  }
+  48% {
+    transform: translateX(-5px); /* Expansión hacia el Oeste */
+  }
+  60% {
+    transform: translateX(0.8px); /* Rebote elástico */
+  }
+  70% {
+    transform: translateX(0);
+  }
+}
+
+.pointer-east {
+  animation: animCalibEast 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes animCalibEast {
+  0%, 35%, 80%, 100% {
+    transform: translateX(0);
+  }
+  48% {
+    transform: translateX(5px); /* Expansión hacia el Este */
+  }
+  60% {
+    transform: translateX(-0.8px); /* Rebote elástico */
+  }
+  70% {
+    transform: translateX(0);
+  }
+}
+
+/* 3. Anillos Concéntricos Medios: Contrarrotación de Enfoque Óptico cada 6s */
+.radar-ring-mid {
+  animation: animCalibRingMid 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes animCalibRingMid {
+  0%, 32%, 80%, 100% {
+    transform: rotate(0deg);
+  }
+  48% {
+    transform: rotate(45deg); /* Giro a la derecha */
+  }
+  65% {
+    transform: rotate(-3deg);
+  }
+  72% {
+    transform: rotate(0deg);
+  }
+}
+
+.radar-ring-inner {
+  animation: animCalibRingInner 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes animCalibRingInner {
+  0%, 32%, 80%, 100% {
+    transform: rotate(0deg);
+  }
+  48% {
+    transform: rotate(-45deg); /* Contragiro a la izquierda */
+  }
+  65% {
+    transform: rotate(3deg);
+  }
+  72% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 4. Núcleo Óptico Central: Apertura Focal y Destello de Captación cada 6s */
+.radar-core-lens {
+  animation: animCalibCoreLens 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes animCalibCoreLens {
+  0%, 35%, 80%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  48% {
+    transform: scale(1.35); /* Apertura de lente */
+    opacity: 1;
+  }
+  62% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+.brand-text-block {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.42rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.brand-word-hunter {
+  color: #FFFFFF;
+  display: inline-block;
+  animation: animHunterReveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+[data-theme="light"] .brand-word-hunter {
+  color: #0A110E; /* Carbón Obsidiana Orgánico en Modo Claro */
+}
+
+.brand-word-pro {
+  display: inline-block;
+  background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animProReveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+[data-theme="light"] .brand-word-pro {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes animHunterReveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes animProReveal {
+  0% {
+    opacity: 0;
+    transform: translateX(16px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Tipografía Editorial Cursiva Caligráfica Auténtica (Oro de Inversión Puro y Radiante) */
+.editorial-italic, .editorial-cursive {
+  font-family: 'Alex Brush', 'Pinyon Script', cursive;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.45em;
+  background: linear-gradient(135deg, #FFF089 0%, #FBBF24 25%, #F59E0B 60%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #F59E0B;
+  letter-spacing: 0.02em;
+  padding: 0 0.35rem 0 0.15rem;
+  line-height: 0.85;
+  display: inline-block;
+  vertical-align: -0.04em;
+  filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.45));
+}
+
+[data-theme="light"] .editorial-italic, [data-theme="light"] .editorial-cursive {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 50%, #92400E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #B45309;
+  filter: none;
+}
+
+/* Navegación Izquierda en Header (Menú Táctico) */
+.header-left-nav {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn-menu-pill {
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 0.42rem 0.95rem;
+  border-radius: 9999px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .btn-menu-pill {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #2E3B35;
+  box-shadow: 0 2px 8px rgba(5, 31, 32, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.btn-menu-pill:hover {
+  color: var(--text-main);
+  background-color: var(--color-surface-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+/* Menú Hamburguesa Animado Táctico (Hamburger to X - Estilo Desmulta) */
+.menu-hamburger-icon {
+  position: relative;
+  width: 18px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}

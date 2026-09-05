@@ -1,0 +1,481 @@
+/**
+ * 🃏 MÓDULO DE RENDERIZADO BENTO GRID (modules/06-cards.js)
+ * Renderizado de oportunidades, skeletons, badges ejecutivos y formateo de precios.
+ * Estándar Ecosistema Desmulta UI/UX.
+ */
+
+/**
+ * Sanitización de texto HTML para prevenir inyecciones.
+ * @param {string} texto
+ * @returns {string}
+ */
+function escaparHtml(texto) {
+  if (!texto) return "";
+  return String(texto)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
+ * Formatea visualmente un precio con el símbolo $ separado sutilmente
+ * de la cifra numérica, sin mostrar jamás la palabra 'COP'.
+ * @param {string} precioStr - Cadena de precio (ej. "$ 1.250.000.000")
+ * @returns {string} HTML estilizado con separación visual limpia
+ */
+function formatearPrecioDisplay(precioStr) {
+  if (!precioStr) return '<span class="price-currency-sign">$</span> <span class="price-number">0</span>';
+  let str = String(precioStr).replace(/COP|USD|pesos/gi, '').trim();
+  if (str.startsWith('$')) {
+    str = str.substring(1).trim();
+  }
+  return `<span class="price-currency-sign">$</span> <span class="price-number">${escaparHtml(str)}</span>`;
+}
+
+/**
+ * Genera el marcado de tarjetas esqueleto (Skeleton Loading) con efecto Shimmer.
+ * @returns {string}
+ */
+function generarHtmlSkeletons() {
+  return Array(3).fill(0).map((_, i) => `
+    <article class="bento-card skeleton-card" style="--enter-delay: ${i * 0.08}s;">
+      <div class="skeleton-media skeleton-shimmer"></div>
+      <div class="card-body" style="padding: 1.25rem; gap: 0.85rem;">
+        <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 14px;"></div>
+        <div class="skeleton-line skeleton-shimmer" style="width: 80%; height: 22px;"></div>
+        <div class="skeleton-box skeleton-shimmer" style="height: 64px; border-radius: 1.25rem;"></div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.75rem;">
+          <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 26px;"></div>
+          <div class="skeleton-btn skeleton-shimmer" style="width: 38%; height: 38px;"></div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+
+/**
+ * Renderiza la interfaz utilizando Mapeo Dinámico de Llaves (Content-Agnostic) y Dark Luxury Cards.
+ * Estructura de Curvatura 2.5rem y Fusión de Imagen Impecable (h-32 y -mt-4).
+ * @param {Object} dataset
+ */
+function renderizarInterfaz(dataset) {
+  const config = dataset.config || {};
+  const leads = dataset.leads || [];
+
+  // Actualizar textos de cabecera dinámicos
+  const elTitle = document.getElementById("heroTitle");
+  const elSubtitle = document.getElementById("heroSubtitle");
+  const elBadgeSectores = document.getElementById("badgeSectores");
+  const elBadgeSectoresHero = document.getElementById("badgeSectoresHero");
+
+  if (elTitle && config.titulo_modulo) {
+    // [SEGURIDAD] Mitigación XSS (Cross-Site Scripting)
+    // Se sanitizan todos los tags HTML excepto la etiqueta <span> autorizada para cursivas
+    const sanitizedTitle = config.titulo_modulo
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/&lt;span class="editorial-italic"&gt;/gi, '<span class="editorial-italic">')
+      .replace(/&lt;\/span&gt;/gi, '</span>');
+    elTitle.innerHTML = sanitizedTitle;
+  }
+  if (elSubtitle && config.subtitulo) elSubtitle.textContent = config.subtitulo;
+  if (config.total_sectores_monitoreados) {
+    const txtSectores = `${config.total_sectores_monitoreados} Sectores Monitoreados en Tiempo Real`;
+    if (elBadgeSectores) elBadgeSectores.textContent = txtSectores;
+    if (elBadgeSectoresHero) elBadgeSectoresHero.textContent = txtSectores;
+  }
+
+  // Actualizar metadatos de la cabecera de catálogo
+  const countEl = document.getElementById("catalogCountText");
+  if (countEl) {
+    countEl.textContent = `${leads.length} oportunidades directas`;
+  }
+  const headingEl = document.getElementById("catalogHeading");
+  if (headingEl) {
+    const esVehiculoModulo = (config.titulo_modulo && config.titulo_modulo.toLowerCase().includes('vehículo'));
+    headingEl.textContent = esVehiculoModulo ? "Vehículos con Margen en Vivo" : "Inmuebles Directos en Vivo";
+  }
+
+  // Renderizar la grilla Bento
+  const container = document.getElementById("bentoGridContainer");
+  if (!container) return;
+
+  if (leads.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
+        <p style="font-weight: 700;">No hay oportunidades activas registradas en este momento.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const col1Nombre = config.columna_variable_1 || "Atributo 1";
+  const col2Nombre = config.columna_variable_2 || "Atributo 2";
+
+  // 1. Filtrar leads por ciudad y búsqueda de texto ANTES de paginar
+  const leadsFiltrados = leads.filter(item => {
+    // A. Filtro por Ciudad
+    if (filtroCiudadActivo) {
+      const ciudadesObjetivo = filtroCiudadActivo.split("|").map(normalizarTextoBusqueda);
+      const itemCiudadNorm = normalizarTextoBusqueda(item.ciudad || "");
+      const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
+      const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
+      const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
+      const coincideCiudad = ciudadesObjetivo.some(c => 
+        itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
+      );
+      if (!coincideCiudad) return false;
+    }
+    // B. Filtro por Texto Libre
+    if (textoBusquedaActivo) {
+      const itemSearchText = normalizarTextoBusqueda(
+        `${item.titulo || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.detalles ? Object.values(item.detalles).join(' ') : ''}`
+      );
+      if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
+    }
+    return true;
+  });
+
+  // Actualizar metadatos de la cabecera de catálogo con el conteo real filtrado
+  if (countEl) {
+    const sufijoCiudad = filtroCiudadActivo ? ` en ${filtroCiudadActivo}` : '';
+    countEl.textContent = `${leadsFiltrados.length} oportunidad${leadsFiltrados.length === 1 ? '' : 'es'} directa${leadsFiltrados.length === 1 ? '' : 's'}${sufijoCiudad}`;
+  }
+
+  // Estado vacío si no hay coincidencias
+  if (leadsFiltrados.length === 0) {
+    const ciudadTexto = filtroCiudadActivo ? ` en ${filtroCiudadActivo}` : '';
+    const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
+    const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
+    container.innerHTML = `
+      <div class="empty-catalog-state" id="emptyCatalogState" style="grid-column: 1/-1;">
+        <div class="empty-state-icon-box">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+        </div>
+        <div class="empty-state-content">
+          <h3 class="empty-state-title">Sin oportunidades en esta zona</h3>
+          <p class="empty-state-desc">No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.</p>
+        </div>
+        <button type="button" class="btn-empty-reset" id="btnResetFilters">
+          <i class="fa-solid fa-rotate-left"></i> Restablecer todos los filtros
+        </button>
+      </div>
+    `;
+    const btnReset = document.getElementById("btnResetFilters");
+    if (btnReset) {
+      btnReset.addEventListener("click", restablecerTodosLosFiltros);
+    }
+    return;
+  }
+
+  const leadsVisibles = leadsFiltrados.slice(0, limiteVisible);
+  const tieneMasLeads = leadsFiltrados.length > limiteVisible;
+  const restantes = leadsFiltrados.length - limiteVisible;
+
+  let htmlContenido = leadsVisibles.map((item) => {
+    const index = dataset.leads.indexOf(item);
+    const claseUrgencia = item.urgencia_tipo || "urgente";
+    const imgUrl = item.imagen || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80";
+    const tieneMultiplesFotos = Array.isArray(item.imagenes) && item.imagenes.length > 1;
+    const fotos = tieneMultiplesFotos ? item.imagenes : [imgUrl];
+
+    // Renderizado condicional del carrusel vs imagen estática limpia (Mandato del usuario)
+    let mediaHtml = '<div class="card-media-wrapper">';
+    if (tieneMultiplesFotos) {
+      mediaHtml += `
+        <div class="carousel-track" id="carousel-${index}">
+          ${fotos.map((foto, fIdx) => `
+            <div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}">
+              ${fIdx === 0 ? `
+                <img src="${escaparHtml(foto)}" alt="${escaparHtml(item.titulo)} - Foto 1" class="carousel-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
+              ` : `
+                <img data-src="${escaparHtml(foto)}" alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" loading="lazy" decoding="async" />
+              `}
+            </div>
+          `).join('')}
+          
+          <!-- Flechas de navegación (Aparecen en Hover) -->
+          <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="Foto Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button class="carousel-nav-btn next" data-action="carrusel-next" data-index="${index}" data-total="${fotos.length}" title="Siguiente Foto">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+
+          <!-- Puntos indicadores de foto -->
+          <div class="carousel-dots" id="dots-${index}">
+            ${fotos.map((_, fIdx) => `
+              <span class="carousel-dot ${fIdx === 0 ? 'active' : ''}" data-dot="${fIdx}"></span>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      mediaHtml += `
+        <img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
+      `;
+    }
+    mediaHtml += '</div>';
+
+    const esVehiculo = (config.titulo_modulo && config.titulo_modulo.toLowerCase().includes('vehículo')) || (item.tipo_inmueble && (item.tipo_inmueble.toLowerCase().includes('sedán') || item.tipo_inmueble.toLowerCase().includes('pick-up') || item.tipo_inmueble.toLowerCase().includes('suv')));
+
+    // Preparar especificaciones para la Ficha de Detalles
+    const detalles = item.detalles || {
+      [col1Nombre]: item.dato_1 || "No especificado",
+      [col2Nombre]: item.dato_2 || "No especificado",
+      "Ubicación": item.ubicacion || "Colombia",
+      "Tipo": item.tipo_inmueble || (esVehiculo ? "Vehículo" : "Propiedad"),
+      "Operación": esVehiculo ? "Venta Directa Particular" : "Venta Directa con Propietario"
+    };
+
+    // Solo las 2 primeras tarjetas del viewport inicial llevan un retardo sutil de 0.08s
+    const enterDelay = index < 2 ? (index * 0.08) : 0;
+
+    const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
+    const corpusBruto = [
+      item.titulo,
+      item.ubicacion,
+      item.barrio,
+      item.ciudad,
+      item.tipo_inmueble,
+      item.urgencia,
+      item.rebaja,
+      item.dato_1,
+      item.dato_2,
+      item.precio,
+      item.precio_m2,
+      detallesStr,
+      esVehiculo ? 'vehiculo carro auto particular' : 'inmueble propiedad vivienda particular directo dueno'
+    ].filter(Boolean).join(' ');
+
+    const searchDataCorpus = normalizarTextoBusqueda(corpusBruto);
+    const ciudadNorm = normalizarTextoBusqueda(item.ciudad || '');
+    const barrioNorm = normalizarTextoBusqueda(item.barrio || '');
+
+    const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
+    const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
+
+    return `
+      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
+        <!-- Cabecera Fotográfica con Fusión Degradada -->
+        <div class="card-media-wrapper" data-action="abrir-ficha" data-index="${index}">
+          ${mediaHtml}
+
+          <!-- Degradado de fusión profunda (El secreto de 8rem del usuario) -->
+          <div class="card-media-gradient"></div>
+
+          <!-- Badges Superiores Flotantes (Izquierda) -->
+          <div class="card-floating-badges">
+            <span class="badge-time-pill">
+              <i class="fa-regular fa-clock"></i> ${escaparHtml(item.fecha_relativa || 'Reciente')}
+            </span>
+            ${estaDesbloqueado ? `
+              <span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> Desbloqueado</span>
+            ` : (item.urgencia ? `
+              <span class="badge-status-pill ${claseUrgencia}">
+                ${escaparHtml(item.urgencia)}
+              </span>
+            ` : '')}
+          </div>
+        </div>
+
+        <!-- Cuerpo de la Tarjeta (Montado físicamente -mt-4 sobre la foto) -->
+        <div class="card-body">
+          <div>
+            <div class="card-meta-header">
+              <span class="card-location">
+                <i class="fa-solid fa-location-dot"></i> ${escaparHtml(item.ubicacion)}
+              </span>
+              <button class="btn-specs-pill" data-action="abrir-ficha" data-index="${index}" title="Ver Detalles Completos">
+                Ver Detalles <i class="fa-solid fa-chevron-up"></i>
+              </button>
+            </div>
+
+            <h3 class="card-title" data-action="abrir-ficha" data-index="${index}">${escaparHtml(item.titulo)}</h3>
+
+            <!-- Panel de Especificaciones Dinámicas (Inspirado en el bloque del usuario) -->
+            <div class="card-specs-panel" data-action="abrir-ficha" data-index="${index}" title="Click para abrir especificaciones completas">
+              <div class="specs-row">
+                <div class="spec-item">
+                  <span class="spec-label">${escaparHtml(col1Nombre)}</span>
+                  <span class="spec-value">${escaparHtml(item.dato_1 || 'N/A')}</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">${escaparHtml(col2Nombre)}</span>
+                  <span class="spec-value">${escaparHtml(item.dato_2 || 'N/A')}</span>
+                </div>
+              </div>
+            </div>
+
+            ${(estaDesbloqueado && contacto) ? `
+              <div style="margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+                ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Bloque Inferior: Precio Publicado y Acciones de Contacto -->
+          <div class="card-bottom-row">
+            <div class="pricing-column">
+              <span class="pricing-label">Precio Publicado</span>
+              <div class="price-main">${formatearPrecioDisplay(item.precio)}</div>
+              ${item.precio_m2 ? `
+                <div>
+                  <span class="unit-rate-badge">${escaparHtml(item.precio_m2)}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            ${estaDesbloqueado ? `
+              <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                ${contacto?.whatsappUrl ? `
+                  <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                  </a>
+                ` : ''}
+                ${contacto?.telLlamar ? `
+                  <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                    <i class="fa-solid fa-phone"></i> Llamar
+                  </a>
+                ` : ''}
+                ${contacto?.enlace ? `
+                  <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                  </a>
+                ` : `
+                  <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
+                    <i class="fa-solid fa-unlock"></i> Revelar Contacto
+                  </button>
+                `}
+              </div>
+            ` : `
+              <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
+                <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? 'Ver Cierre' : 'Desbloquear'}
+              </button>
+            `}
+          </div>
+        </div>
+
+        <!-- Overlay de Detalles Deslizable (Slide-Up Drawer Integrado) -->
+        <div class="card-slideup-overlay" id="slideup-${index}">
+          <div class="slideup-header">
+            <div class="slideup-title">
+              <i class="fa-solid fa-circle-info"></i> ${esVehiculo ? 'Detalles del Vehículo' : 'Detalles de la Propiedad'}
+            </div>
+            <button class="btn-slideup-close" data-action="cerrar-ficha" data-index="${index}" title="Cerrar Detalles">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="slideup-body">
+            <!-- Grid de Características -->
+            <div class="slideup-specs-grid">
+              ${Object.entries(detalles).map(([k, v]) => `
+                <div class="slideup-spec-card">
+                  <span class="slideup-spec-key">${escaparHtml(k)}</span>
+                  <span class="slideup-spec-val">${escaparHtml(v)}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Bloque de Confianza: Trato Directo Sin Intermediarios -->
+            <div class="slideup-trust-card">
+              <div class="trust-badge">
+                <i class="fa-solid fa-shield-halved"></i> ${esVehiculo ? 'Trato Directo con el Dueño' : 'Trato Directo con el Propietario'}
+              </div>
+              <p class="trust-desc">
+                ${esVehiculo 
+                  ? 'Vehículo publicado directamente por su dueño. Sin intermediarios ni comisiones de concesionario, listo para negociar por llamada o WhatsApp.' 
+                  : 'Propiedad publicada directamente por su dueño. Sin inmobiliarias ni comisiones intermedias, lista para negociar por llamada o WhatsApp.'}
+              </p>
+            </div>
+
+            <!-- Grupo de Acción: Botón CTA y Micro-Garantía -->
+            <div class="slideup-action-group">
+              ${estaDesbloqueado ? `
+                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px 12px;">
+                    <div style="font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+                      <i class="fa-solid fa-unlock"></i> Datos de Contacto Desbloqueados
+                    </div>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: monospace;">
+                      ${contacto?.telefono ? escaparHtml(contacto.telefono) : 'Consultando contacto...'}
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${contacto?.whatsappUrl ? `
+                      <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                      </a>
+                    ` : ''}
+                    ${contacto?.telLlamar ? `
+                      <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                        <i class="fa-solid fa-phone"></i> Llamar
+                      </a>
+                    ` : ''}
+                    ${contacto?.enlace ? `
+                      <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                      </a>
+                    ` : `
+                      <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
+                        <i class="fa-solid fa-unlock"></i> Revelar Contacto Directo
+                      </button>
+                    `}
+                  </div>
+                  <span class="slideup-cta-note" style="color: #22C55E;">
+                    <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
+                  </span>
+                </div>
+              ` : `
+                <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}">
+                  <i class="fa-solid fa-unlock-keyhole"></i> Desbloquear Contacto del Dueño
+                </button>
+                <span class="slideup-cta-note">
+                  <i class="fa-solid fa-bolt"></i> Acceso al instante • Sin pagar comisiones
+                </span>
+              `}
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  if (tieneMasLeads) {
+    htmlContenido += `
+      <div class="pagination-row" id="paginationRow">
+        <button type="button" class="btn-load-more" id="btnLoadMoreLeads">
+          <i class="fa-solid fa-angles-down"></i>
+          <span>Cargar más oportunidades directas (+${restantes} disponibles)</span>
+        </button>
+      </div>
+    `;
+  }
+
+  container.innerHTML = htmlContenido;
+
+  if (tieneMasLeads) {
+    const btnCargar = document.getElementById("btnLoadMoreLeads");
+    if (btnCargar) {
+      btnCargar.addEventListener("click", () => {
+        limiteVisible += 6;
+        renderizarInterfaz(dataset);
+        setTimeout(() => {
+          const nuevasTarjetas = container.querySelectorAll(".bento-card");
+          if (nuevasTarjetas.length > leadsVisibles.length) {
+            nuevasTarjetas[leadsVisibles.length].scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        }, 120);
+      });
+    }
+  }
+
+  // Activar el Scroll Reveal progresivo con inercia para scroll móvil
+  iniciarScrollReveal();
+}
+

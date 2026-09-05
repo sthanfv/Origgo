@@ -48,16 +48,41 @@ function cleanPhone(phone) {
   return num.startsWith('57') && num.length === 12 ? num.substring(2) : num;
 }
 
+/**
+ * Ejecuta una operación asíncrona de base de datos con reintentos exponenciales y jitter aleatorio.
+ * Proporciona resiliencia ante cortes momentáneos de red, cuellos de botella y picos de tráfico.
+ * 
+ * @template T
+ * @param {() => Promise<T>} operacion - Función asíncrona a ejecutar
+ * @param {number} [maxIntentos=3] - Número máximo de intentos antes de fallar
+ * @returns {Promise<T>}
+ */
+async function withRetry(operacion, maxIntentos = 3) {
+  let delay = 200;
+  for (let intento = 1; intento <= maxIntentos; intento++) {
+    try {
+      return await operacion();
+    } catch (err) {
+      if (intento === maxIntentos) throw err;
+      const jitter = Math.floor(Math.random() * 150);
+      console.warn(`[db:retry] Intento ${intento} fallido (${err.message}). Reintentando en ${delay + jitter}ms...`);
+      await new Promise((r) => setTimeout(r, delay + jitter));
+      delay *= 2;
+    }
+  }
+}
+
 async function getUserByPhone(phone) {
   const normPhone = cleanPhone(phone);
   if (!normPhone) return null;
 
-  const doc = await usersRef.doc(normPhone).get();
-  if (!doc.exists) {
-    return null;
-  }
-  
-  return doc.data();
+  return await withRetry(async () => {
+    const doc = await usersRef.doc(normPhone).get();
+    if (!doc.exists) {
+      return null;
+    }
+    return doc.data();
+  });
 }
 
 function normalizarPinSeguro(p) {
@@ -84,19 +109,15 @@ async function getUserByPin(phone, pin) {
     return user;
   }
 
-  // 3. Coincidencia solo por los 4 dígitos (ej. el usuario ingresó "4357" o "HNT4357")
+  // 3. Coincidencia solo por los 4 dígitos (ej. el usuario ingresó "4357" y su PIN es "HNT-4357")
   const digitsInput = normInput.replace(/^HNT/, '');
   const digitsUserPin = normUserPin.replace(/^HNT/, '');
   if (digitsInput && digitsUserPin && digitsInput === digitsUserPin) {
     return user;
   }
 
-  // 4. Fallback de resiliencia: si coincide con los últimos 4 dígitos del celular
-  const phoneClean = cleanPhone(phone);
-  if (phoneClean && digitsInput && digitsInput === phoneClean.slice(-4)) {
-    return user;
-  }
-
+  // 🛡️ SEGURIDAD ZERO-TRUST: Se eliminó el bypass que permitía autenticar con los últimos
+  // 4 dígitos del celular. El PIN debe ser estrictamente el secreto emitido por el sistema.
   return null;
 }
 
@@ -106,8 +127,9 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
 
   const userRef = usersRef.doc(normPhone);
   
-  return await db.runTransaction(async (t) => {
-    const doc = await t.get(userRef);
+  return await withRetry(async () => {
+    return await db.runTransaction(async (t) => {
+      const doc = await t.get(userRef);
     let existing;
     if (doc.exists) {
       existing = doc.data();
@@ -138,6 +160,7 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
     t.set(userRef, existing);
     return existing;
   });
+  });
 }
 
 async function unlockLead(phone, leadId, sessionData = null, leadCity = null) {
@@ -148,8 +171,9 @@ async function unlockLead(phone, leadId, sessionData = null, leadCity = null) {
 
   const userRef = usersRef.doc(normPhone);
 
-  return await db.runTransaction(async (t) => {
-    const doc = await t.get(userRef);
+  return await withRetry(async () => {
+    return await db.runTransaction(async (t) => {
+      const doc = await t.get(userRef);
     let user;
 
     if (!doc.exists) {
@@ -234,40 +258,49 @@ async function unlockLead(phone, leadId, sessionData = null, leadCity = null) {
       user
     };
   });
+  });
 }
 
 async function isTransactionProcessed(transactionId) {
   if (!transactionId) return false;
-  const doc = await transactionsRef.doc(transactionId).get();
-  return doc.exists;
+  return await withRetry(async () => {
+    const doc = await transactionsRef.doc(transactionId).get();
+    return doc.exists;
+  });
 }
 
 async function recordTransaction(transactionId, data) {
   if (!transactionId) return false;
   const docRef = transactionsRef.doc(transactionId);
-  return await db.runTransaction(async (t) => {
-    const doc = await t.get(docRef);
-    if (doc.exists) {
-      return false;
-    }
-    t.set(docRef, {
-      ...data,
-      processedAt: new Date().toISOString()
+  return await withRetry(async () => {
+    return await db.runTransaction(async (t) => {
+      const doc = await t.get(docRef);
+      if (doc.exists) {
+        return false;
+      }
+      t.set(docRef, {
+        ...data,
+        processedAt: new Date().toISOString()
+      });
+      return true;
     });
-    return true;
   });
 }
 
 async function savePendingOrder(reference, orderData) {
-  await ordersRef.doc(reference).set({
-    ...orderData,
-    createdAt: new Date().toISOString()
+  return await withRetry(async () => {
+    await ordersRef.doc(reference).set({
+      ...orderData,
+      createdAt: new Date().toISOString()
+    });
   });
 }
 
 async function getPendingOrder(reference) {
-  const doc = await ordersRef.doc(reference).get();
-  return doc.exists ? doc.data() : null;
+  return await withRetry(async () => {
+    const doc = await ordersRef.doc(reference).get();
+    return doc.exists ? doc.data() : null;
+  });
 }
 
 module.exports = {

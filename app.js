@@ -1,4 +1,10 @@
 /**
+ * 🧠 MÓDULO DE ESTADO Y SESIÓN (modules/01-state.js)
+ * Gestión de estado global, persistencia en localStorage, sesión JWT, balance y membresías.
+ * Estándar Ecosistema Desmulta DevSecOps.
+ */
+
+/**
  * ⚡ MOTOR DE RENDERIZADO UNIVERSAL Y MODAL DE CHECKOUT WOMPI
  * Arquitectura Agnóstica al Contenido (Dynamic Key Mapping)
  * Ecosistema Ofertas Hunter Pro — Interfaz Dark Luxury Terminal v2.0
@@ -42,6 +48,710 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 });
+
+
+/**
+ * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
+ */
+async function inicializarSesionUsuario() {
+  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
+  const urlParams = new URLSearchParams(window.location.search);
+  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  const wompiId = urlParams.get('id');
+
+  if (wompiId && !paymentRef) {
+    try {
+      const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
+      const dataVerify = await resVerify.json();
+      if (dataVerify.ok && dataVerify.reference) {
+        paymentRef = dataVerify.reference;
+      }
+    } catch (e) {
+      console.warn('[Sesión] Error al verificar Wompi ID:', e.message);
+    }
+  }
+
+  if (paymentRef && paymentRef.startsWith('HNT-')) {
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
+      });
+      const data = await res.json();
+      if (data.ok && data.token) {
+        localStorage.setItem('hunter_pro_token', data.token);
+        sesionUsuario = { ...data.user, token: data.token };
+        actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
+        mostrarNotificacionToast(`🎉 ¡Pago confirmado! Tu PIN es ${data.user.pin}. Tienes ${data.user.credits} créditos disponibles.`);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+    } catch (e) {
+      console.warn('[Sesión] No se pudo reclamar por referencia:', e.message);
+    }
+  }
+
+  // 2. Restaurar sesión desde localStorage
+  const tokenGuardado = localStorage.getItem('hunter_pro_token');
+  if (tokenGuardado) {
+    try {
+      const res = await fetch('/api/user/balance', {
+        headers: { 'Authorization': `Bearer ${tokenGuardado}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        sesionUsuario = { ...data, token: tokenGuardado };
+        actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
+      } else {
+        localStorage.removeItem('hunter_pro_token');
+        localStorage.removeItem('hunter_unlocked_contacts');
+        cacheContactosDesbloqueados = {};
+        sesionUsuario = null;
+        actualizarBadgeVip();
+      }
+    } catch (e) {
+      console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
+    }
+  }
+}
+
+/**
+ * Actualiza visualmente el botón VIP del header y el botón de la barra móvil.
+ */
+function actualizarBadgeVip() {
+  const btnHeader = document.getElementById('btnVipHeader');
+  const btnNavVip = document.getElementById('btnNavVip');
+
+  if (sesionUsuario) {
+    let htmlBadge = '';
+    let labelMovil = '';
+
+    if (sesionUsuario.plan === 'national') {
+      htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
+      labelMovil = 'VIP Nac.';
+    } else if (sesionUsuario.plan === 'city') {
+      const ciudad = sesionUsuario.planCity || 'Ciudad';
+      htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
+      labelMovil = 'VIP Ciudad';
+    } else {
+      const cr = Number(sesionUsuario.credits || 0);
+      htmlBadge = `<i class="fa-solid fa-bolt" style="color: #10B981;"></i><span class="vip-btn-text">⚡ ${cr} Créditos</span>`;
+      labelMovil = `${cr} Créditos`;
+    }
+
+    if (btnHeader) btnHeader.innerHTML = htmlBadge;
+    if (btnNavVip) {
+      const span = btnNavVip.querySelector('span');
+      if (span) span.textContent = labelMovil;
+    }
+  } else {
+    if (btnHeader) {
+      btnHeader.innerHTML = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">Acceso VIP</span>';
+    }
+    if (btnNavVip) {
+      const span = btnNavVip.querySelector('span');
+      if (span) span.textContent = 'VIP';
+    }
+  }
+}
+
+/**
+ * Sincroniza el filtro de ubicación del Omnibox con la ciudad del Plan Pro del usuario.
+ */
+function sincronizarFiltroCiudadUsuario() {
+  if (sesionUsuario && sesionUsuario.plan === 'city' && sesionUsuario.planCity) {
+    const targetCity = String(sesionUsuario.planCity).trim();
+    if (targetCity) {
+      filtroCiudadActivo = targetCity;
+
+      const dropdownLocation = document.getElementById("cmdLocationDropdown");
+      const pillLocation = document.getElementById("cmdFilterLocation");
+      const labelLocation = document.getElementById("cmdFilterLocationLabel");
+
+      if (dropdownLocation) {
+        let matchItem = null;
+        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+          const itemCity = item.getAttribute("data-city") || "";
+          if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) {
+            matchItem = item;
+          }
+        });
+        if (matchItem) {
+          dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+          matchItem.classList.add("active");
+          const spanText = matchItem.querySelector("span") ? matchItem.querySelector("span").textContent : targetCity;
+          if (labelLocation) labelLocation.textContent = spanText;
+          if (pillLocation) pillLocation.classList.add("active-filter");
+        } else if (labelLocation) {
+          labelLocation.textContent = targetCity;
+          if (pillLocation) pillLocation.classList.add("active-filter");
+        }
+      }
+      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
+      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
+      if (sideMenuSelect) {
+        let matchedVal = "";
+        for (const opt of sideMenuSelect.options) {
+          if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
+            matchedVal = opt.value;
+            break;
+          }
+        }
+        sideMenuSelect.value = matchedVal || targetCity;
+      }
+      if (sideMenuBadge) {
+        sideMenuBadge.textContent = targetCity;
+      }
+
+      if (typeof aplicarFiltrosOmnibox === 'function') {
+        aplicarFiltrosOmnibox();
+      }
+    }
+  }
+}
+
+
+/**
+ * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
+ */
+async function restaurarSesionConPin() {
+  const inputWa = document.getElementById('restoreWhatsappInput');
+  const inputPin = document.getElementById('restorePinInput');
+  const msgBox = document.getElementById('restoreStatusMsg');
+  const btn = document.getElementById('btnRestoreSession');
+
+  const celular = inputWa ? inputWa.value.trim() : '';
+  const pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
+
+  if (!celular || !pin) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
+      msgBox.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ celular, pin })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || 'Credenciales incorrectas');
+    }
+
+    localStorage.setItem('hunter_pro_token', data.token);
+    sesionUsuario = { ...data.user, token: data.token };
+    actualizarBadgeVip();
+    sincronizarFiltroCiudadUsuario();
+    renderizarInterfaz(datosActuales);
+
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg success';
+      msgBox.textContent = `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
+      msgBox.style.display = 'block';
+    }
+
+    setTimeout(() => {
+      abrirModalCheckout(undefined, 'perfil');
+    }, 800);
+  } catch (err) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = err.message;
+      msgBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos';
+      btn.disabled = false;
+    }
+  }
+}
+
+/**
+ * Cierra la sesión activa del usuario.
+ */
+function cerrarSesionUsuario() {
+  localStorage.removeItem('hunter_pro_token');
+  localStorage.removeItem('hunter_unlocked_contacts');
+  cacheContactosDesbloqueados = {};
+  sesionUsuario = null;
+  actualizarBadgeVip();
+  renderizarInterfaz(datosActuales);
+  cerrarModalCheckout();
+  mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
+}
+
+
+/**
+ * 🔔 MÓDULO DE NOTIFICACIONES TOAST (modules/02-toast.js)
+ * Notificaciones flotantes luxury glassmorphism con ambient glow, micro-barra y swipe gestures.
+ * Estándar Ecosistema Desmulta UI/UX.
+ */
+
+/**
+ * Muestra una notificación toast ejecutiva de alta gama con iluminación ambiental,
+ * micro-barra de progreso interactiva, soporte de gestos táctiles y modo oscuro/claro.
+ * Compatible con la referencia Sonner / Radix Luxury Toast.
+ * 
+ * @param {string} mensaje - Texto principal o detalle de la alerta
+ * @param {'success'|'error'|'warning'|'info'|'vip'} [tipo='success'] - Tipo semántico de notificación
+ * @param {string|{title?: string, duration?: number, actionText?: string, onAction?: Function}} [opciones] - Opciones o título manual
+ */
+function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
+  // Normalizar opciones
+  const opts = typeof opciones === 'string' ? { title: opciones } : (opciones || {});
+  let duracionMs = opts.duration || 4500;
+  let tipoFinal = tipo;
+  let titulo = opts.title || '';
+  let mensajeLimpio = String(mensaje || '').trim();
+
+  // Detección e interpretación inteligente de prefijos y emojis
+  if (mensajeLimpio.startsWith('👑')) {
+    tipoFinal = 'vip';
+    if (!titulo) titulo = 'Membresía VIP Pro';
+    mensajeLimpio = mensajeLimpio.replace(/^👑\s*/, '');
+  } else if (mensajeLimpio.startsWith('🎉')) {
+    if (!titulo) titulo = '¡Operación Exitosa!';
+    mensajeLimpio = mensajeLimpio.replace(/^🎉\s*/, '');
+  } else if (mensajeLimpio.startsWith('📍')) {
+    if (!titulo) titulo = 'Cobertura Regional';
+    mensajeLimpio = mensajeLimpio.replace(/^📍\s*/, '');
+  } else if (mensajeLimpio.startsWith('⚠️')) {
+    tipoFinal = 'warning';
+    if (!titulo) titulo = 'Aviso del Sistema';
+    mensajeLimpio = mensajeLimpio.replace(/^⚠️\s*/, '');
+  } else if (mensajeLimpio.startsWith('✅')) {
+    if (!titulo) titulo = 'Confirmación';
+    mensajeLimpio = mensajeLimpio.replace(/^✅\s*/, '');
+  } else if (mensajeLimpio.startsWith('❌')) {
+    tipoFinal = 'error';
+    if (!titulo) titulo = 'Acceso Restringido';
+    mensajeLimpio = mensajeLimpio.replace(/^❌\s*/, '');
+  }
+
+  // Títulos por defecto según el tipo si no se asignaron previamente
+  if (!titulo) {
+    if (tipoFinal === 'vip') titulo = 'Membresía VIP Pro';
+    else if (tipoFinal === 'error') titulo = 'Acción Requerida';
+    else if (tipoFinal === 'warning') titulo = 'Atención';
+    else if (tipoFinal === 'info') titulo = 'Información';
+    else titulo = 'Notificación Hunter Pro';
+  }
+
+  // Contenedor global de toasts
+  let container = document.getElementById('hunterToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'hunterToastContainer';
+    container.className = 'hunter-toast-container';
+    container.setAttribute('aria-live', 'polite');
+    document.body.appendChild(container);
+  }
+
+  // Si ya hay un toast activo, cerramos el previo de inmediato para evitar sobrecargas
+  const toastsExistentes = container.querySelectorAll('.hunter-toast:not(.hunter-toast--closing)');
+  if (toastsExistentes.length >= 2) {
+    toastsExistentes[0].classList.add('hunter-toast--closing');
+    setTimeout(() => toastsExistentes[0].remove(), 280);
+  }
+
+  // Selector de Icono SVG de alta fidelidad según el tipo
+  let iconoSvg = '';
+  if (tipoFinal === 'vip') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"/></svg>`;
+  } else if (tipoFinal === 'error') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  } else if (tipoFinal === 'warning') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  } else if (tipoFinal === 'info') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  } else {
+    // success por defecto
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+  }
+
+  // Generar tarjeta toast
+  const toast = document.createElement('div');
+  toast.className = `hunter-toast hunter-toast--${tipoFinal}`;
+  toast.setAttribute('role', 'alert');
+
+  // Botón de acción opcional
+  let actionHtml = '';
+  if (opts.actionText) {
+    actionHtml = `<button type="button" class="hunter-toast-action-btn">${opts.actionText}</button>`;
+  }
+
+  const segundosTotal = Math.round(duracionMs / 1000);
+
+  toast.innerHTML = `
+    <div class="hunter-toast-glow"></div>
+    <div class="hunter-toast-inner">
+      <div class="hunter-toast-icon-wrapper">
+        ${iconoSvg}
+      </div>
+      <div class="hunter-toast-content">
+        <div class="hunter-toast-header">
+          <h4 class="hunter-toast-title">${titulo}</h4>
+          <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <p class="hunter-toast-description">${mensajeLimpio}</p>
+        ${actionHtml}
+      </div>
+    </div>
+    <div class="hunter-toast-footer">
+      <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
+      <div class="hunter-toast-progress-track">
+        <div class="hunter-toast-progress-bar" style="animation-duration: ${duracionMs}ms;"></div>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  // Vincular acción opcional si se suministró callback
+  if (opts.onAction && typeof opts.onAction === 'function') {
+    const actionBtn = toast.querySelector('.hunter-toast-action-btn');
+    if (actionBtn) {
+      actionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        opts.onAction();
+        cerrarToast();
+      });
+    }
+  }
+
+  // Función de cierre elegante
+  let cerrado = false;
+  function cerrarToast() {
+    if (cerrado) return;
+    cerrado = true;
+    toast.classList.add('hunter-toast--closing');
+    clearTimeout(timeoutId);
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 280);
+  }
+
+  // Botón de cierre superior
+  const closeBtn = toast.querySelector('.hunter-toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cerrarToast();
+    });
+  }
+
+  // Lógica de temporizador interactivo con soporte para pausa en hover y touch
+  let tiempoRestante = duracionMs;
+  let tiempoInicio = Date.now();
+  let timeoutId = null;
+  const timerLabel = toast.querySelector('.hunter-toast-timer-label');
+
+  function iniciarTimer(ms) {
+    tiempoInicio = Date.now();
+    timeoutId = setTimeout(() => {
+      cerrarToast();
+    }, ms);
+  }
+
+  function pausarTimer() {
+    clearTimeout(timeoutId);
+    const transcurrido = Date.now() - tiempoInicio;
+    tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
+    toast.classList.add('hunter-toast--paused');
+    if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
+  }
+
+  function reanudarTimer() {
+    toast.classList.remove('hunter-toast--paused');
+    if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
+    iniciarTimer(tiempoRestante);
+  }
+
+  // Pausa en hover de escritorio
+  toast.addEventListener('mouseenter', pausarTimer);
+  toast.addEventListener('mouseleave', reanudarTimer);
+
+  // Gestos táctiles para móviles: pausa en toque y Swipe-Up para descartar
+  let touchStartY = 0;
+  let touchDiffY = 0;
+
+  toast.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+    pausarTimer();
+  }, { passive: true });
+
+  toast.addEventListener('touchmove', (e) => {
+    touchDiffY = e.touches[0].clientY - touchStartY;
+    if (touchDiffY < 0) {
+      // Arrastre hacia arriba
+      toast.style.transform = `translateY(${Math.max(touchDiffY, -80)}px) scale(${1 + touchDiffY / 500})`;
+      toast.style.opacity = `${1 + touchDiffY / 120}`;
+    }
+  }, { passive: true });
+
+  toast.addEventListener('touchend', () => {
+    if (touchDiffY < -40) {
+      // Gesto de swipe up confirmado: descartar
+      cerrarToast();
+    } else {
+      // Volver a posición original y reanudar
+      toast.style.transform = '';
+      toast.style.opacity = '';
+      reanudarTimer();
+    }
+    touchDiffY = 0;
+  }, { passive: true });
+
+  // Iniciar la cuenta regresiva inicial
+  iniciarTimer(duracionMs);
+}
+
+
+/**
+ * 🌐 MÓDULO DE RED Y CLIENTE API (modules/03-api.js)
+ * Comunicación HTTP centralizada, inyección de x-trace-id y carga de datasets.
+ * Estándar Ecosistema Desmulta DevSecOps.
+ */
+
+function generarTraceId() {
+  return 'hnt_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
+}
+
+/**
+ * Carga un archivo JSON y realiza el mapeo dinámico de llaves en la interfaz.
+ * @param {string} rutaJson
+ */
+async function cargarDatos(rutaJson) {
+  const container = document.getElementById("bentoGridContainer");
+  if (container) {
+    container.innerHTML = generarHtmlSkeletons();
+  }
+
+  try {
+    const res = await fetch(rutaJson);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: No se pudo cargar el dataset.`);
+    const json = await res.json();
+    datosActuales = json;
+    limiteVisible = 6;
+    renderizarInterfaz(json);
+    aplicarFiltrosOmnibox();
+  } catch (err) {
+    console.error("Error cargando dataset:", err);
+    if (container) {
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: #F43F5E;">
+          <p style="font-weight: 800; font-size: 1.1rem;">Error de conexión con la terminal de datos.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">${err.message}</p>
+        </div>
+      `;
+    }
+  }
+}
+
+
+/**
+ * 🔍 MÓDULO DE BÚSQUEDA Y FILTROS (modules/04-filters.js)
+ * Normalización de búsqueda fonética/inteligente, omnibox y sincronización de ciudades.
+ * Estándar Ecosistema Desmulta.
+ */
+
+/**
+ * Normaliza una cadena de texto para búsqueda flexible y tolerante a la escritura:
+ * - Convierte a minúsculas
+ * - Remueve diacríticos y acentos (á->a, é->e, í->i, ó->o, ú->u, ü->u)
+ * - Mapea 'ñ' a 'n' para permitir que búsquedas sin eñe (dueno -> dueño) coincidan
+ * - Sustituye caracteres de puntuación por espacios
+ * - Colapsa espacios redundantes
+ * @param {string} str
+ * @returns {string}
+ */
+function normalizarTextoBusqueda(str) {
+  if (!str) return "";
+  return String(str)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ñ/g, "n")
+    .replace(/[.,;:()\-–—_'"/\\#+!¿?¡]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Diccionario de sinónimos, abreviaturas y variantes léxicas en Colombia
+ * para búsquedas inmobiliarias y vehiculares de alta precisión.
+ */
+const DICCIONARIO_TERMINOS = {
+  // Tipología Inmobiliaria
+  "apto": ["apartamento", "departamento", "apto"],
+  "aptos": ["apartamento", "departamento", "apto"],
+  "apartamento": ["apartamento", "apto"],
+  "apartamentos": ["apartamento", "apto"],
+  "ph": ["penthouse", "duplex", "ph"],
+  "penthouse": ["penthouse", "ph", "duplex"],
+  "duplex": ["duplex", "penthouse"],
+  "casa": ["casa", "quinta", "campestre", "chalet"],
+  "casas": ["casa", "quinta", "campestre"],
+  "lote": ["lote", "terreno", "campestre"],
+  "campestre": ["campestre", "quinta", "casa", "lote"],
+  "quinta": ["quinta", "campestre", "casa"],
+  // Distribución y Ambientes
+  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "alcobas": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "habitacion": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "habitaciones": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "hab": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
+  "cuarto": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
+  "bano": ["bano", "banos", "ducha"],
+  "banos": ["bano", "banos", "ducha"],
+  "garaje": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq", "cochera"],
+  "garajes": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
+  "parqueadero": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
+  "parqueaderos": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
+  "parq": ["garaje", "garajes", "parqueadero", "parqueaderos"],
+  // Trato Directo y Oportunidad
+  "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"],
+  "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"],
+  "propietario": ["propietario", "particular", "directo", "dueno"],
+  "particular": ["propietario", "particular", "directo", "dueno"],
+  "directo": ["directo", "dueno", "propietario", "particular"],
+  "rebaja": ["rebaja", "descuento", "ganga", "barato", "negociable", "oportunidad"],
+  "descuento": ["rebaja", "descuento", "ganga", "arbitraje"],
+  "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"],
+  "viaje": ["viaje", "motivo", "urgente"],
+  "urgente": ["urgente", "viaje", "motivo", "urgeme", "oportunidad"],
+  "arbitraje": ["arbitraje", "descuento", "mediana", "ganga"],
+  // Vehículos
+  "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"],
+  "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"],
+  "vehiculo": ["vehiculo", "carro", "camioneta", "auto"],
+  "camioneta": ["camioneta", "suv", "pickup", "pick-up", "4x4"],
+  "suv": ["suv", "camioneta", "4x4"],
+  "pickup": ["pickup", "pick-up", "camioneta", "4x4", "utilitaria"],
+  "sedan": ["sedan", "deportivo", "carro", "auto"],
+  "4x4": ["4x4", "camioneta", "suv", "pickup"],
+  // Ciudades / Sectores
+  "bogota": ["bogota", "rosales", "chico", "cundinamarca"],
+  "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
+  "cali": ["cali", "pance", "valle del lili", "valle"],
+  "cartagena": ["cartagena", "bocagrande", "bolivar"],
+  "pereira": ["pereira", "cerritos", "risaralda", "eje cafetero"],
+  "bucaramanga": ["bucaramanga", "floridablanca", "ruitoque", "santander"],
+  "floridablanca": ["floridablanca", "bucaramanga", "ruitoque"]
+};
+
+/**
+ * Evalúa si una tarjeta coincide con la búsqueda del usuario:
+ * - Divide la consulta en tokens
+ * - Verifica coincidencia directa, sinónimos y prefijos de raíz
+ * - Aplica límites de seguridad (máximo 80 caracteres)
+ * @param {string} textoTarjetaNormalizado
+ * @param {string} busquedaUsuario
+ * @returns {boolean}
+ */
+function coincideBusquedaInteligente(textoTarjetaNormalizado, busquedaUsuario) {
+  if (!busquedaUsuario) return true;
+  const queryLimpia = normalizarTextoBusqueda(busquedaUsuario.slice(0, 80));
+  if (!queryLimpia) return true;
+
+  const tokens = queryLimpia.split(" ").filter(t => t.length > 0);
+  if (tokens.length === 0) return true;
+
+  return tokens.every(token => {
+    // 1. Coincidencia directa como subcadena
+    if (textoTarjetaNormalizado.includes(token)) return true;
+
+    // 2. Coincidencia por sinónimos o variantes léxicas
+    const sinonimos = DICCIONARIO_TERMINOS[token];
+    if (sinonimos && sinonimos.some(s => textoTarjetaNormalizado.includes(s))) {
+      return true;
+    }
+
+    // 3. Tolerancia por prefijo (palabra parcial de al menos 4 caracteres)
+    if (token.length >= 4) {
+      const raiz = token.slice(0, token.length - 1);
+      if (textoTarjetaNormalizado.includes(raiz)) return true;
+    }
+
+    return false;
+  });
+}
+
+/**
+ * Aplica los filtros combinados (Omnibox de búsqueda libre inteligente, Ciudad y Trato Directo)
+ * sobre la grilla de oportunidades Bento.
+ */
+function aplicarFiltrosOmnibox() {
+  limiteVisible = 6;
+  if (datosActuales) {
+    renderizarInterfaz(datosActuales);
+  }
+}
+
+/**
+ * Restablece todos los filtros del Omnibox a su estado por defecto.
+ */
+function restablecerTodosLosFiltros() {
+  textoBusquedaActivo = "";
+  filtroCiudadActivo = "";
+  filtroTratoDirectoActivo = false;
+
+  const omnibox = document.getElementById("omniboxSearch");
+  if (omnibox) omnibox.value = "";
+
+  const btnClear = document.getElementById("cmdSearchClear");
+  if (btnClear) btnClear.classList.remove("visible");
+
+  const labelLocation = document.getElementById("cmdFilterLocationLabel");
+  if (labelLocation) labelLocation.textContent = "Colombia (Todas)";
+
+  const pillLocation = document.getElementById("cmdFilterLocation");
+  if (pillLocation) {
+    pillLocation.classList.remove("active-filter", "open");
+    pillLocation.setAttribute("aria-expanded", "false");
+  }
+
+  const dropdown = document.getElementById("cmdLocationDropdown");
+  if (dropdown) {
+    dropdown.classList.remove("show");
+    dropdown.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+      if (item.getAttribute("data-city") === "") {
+        item.classList.add("active");
+      } else {
+        item.classList.remove("active");
+      }
+    });
+  }
+
+  const pillType = document.getElementById("cmdFilterType");
+  if (pillType) pillType.classList.remove("active-filter");
+
+  aplicarFiltrosOmnibox();
+}
+
+
+/**
+ * 🎠 MÓDULO DE CARRUSELES Y FICHA TÉCNICA (modules/05-carousel.js)
+ * Carruseles fotográficos táctiles, navegación y drawer slide-up de detalles.
+ * Estándar Ecosistema Desmulta UI/UX.
+ */
 
 /**
  * Desplaza las diapositivas del carrusel fotográfico.
@@ -142,23 +852,41 @@ function cerrarFichaTecnica(index, event) {
   if (overlay) overlay.classList.remove('active');
 }
 
+
 /**
- * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
+ * 🃏 MÓDULO DE RENDERIZADO BENTO GRID (modules/06-cards.js)
+ * Renderizado de oportunidades, skeletons, badges ejecutivos y formateo de precios.
+ * Estándar Ecosistema Desmulta UI/UX.
  */
-function cargarScriptWompi() {
-  if (document.getElementById("wompi-widget-script")) return;
-  const script = document.createElement("script");
-  script.id = "wompi-widget-script";
-  script.src = "https://checkout.wompi.co/widget.js";
-  script.async = true;
-  script.onload = () => {
-    wompiScriptCargado = true;
-    console.log("✅ Widget de Wompi cargado exitosamente.");
-  };
-  script.onerror = () => {
-    console.warn("⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
-  };
-  document.head.appendChild(script);
+
+/**
+ * Sanitización de texto HTML para prevenir inyecciones.
+ * @param {string} texto
+ * @returns {string}
+ */
+function escaparHtml(texto) {
+  if (!texto) return "";
+  return String(texto)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
+ * Formatea visualmente un precio con el símbolo $ separado sutilmente
+ * de la cifra numérica, sin mostrar jamás la palabra 'COP'.
+ * @param {string} precioStr - Cadena de precio (ej. "$ 1.250.000.000")
+ * @returns {string} HTML estilizado con separación visual limpia
+ */
+function formatearPrecioDisplay(precioStr) {
+  if (!precioStr) return '<span class="price-currency-sign">$</span> <span class="price-number">0</span>';
+  let str = String(precioStr).replace(/COP|USD|pesos/gi, '').trim();
+  if (str.startsWith('$')) {
+    str = str.substring(1).trim();
+  }
+  return `<span class="price-currency-sign">$</span> <span class="price-number">${escaparHtml(str)}</span>`;
 }
 
 /**
@@ -182,36 +910,6 @@ function generarHtmlSkeletons() {
   `).join('');
 }
 
-/**
- * Carga un archivo JSON y realiza el mapeo dinámico de llaves en la interfaz.
- * @param {string} rutaJson
- */
-async function cargarDatos(rutaJson) {
-  const container = document.getElementById("bentoGridContainer");
-  if (container) {
-    container.innerHTML = generarHtmlSkeletons();
-  }
-
-  try {
-    const res = await fetch(rutaJson);
-    if (!res.ok) throw new Error(`HTTP ${res.status}: No se pudo cargar el dataset.`);
-    const json = await res.json();
-    datosActuales = json;
-    limiteVisible = 6;
-    renderizarInterfaz(json);
-    aplicarFiltrosOmnibox();
-  } catch (err) {
-    console.error("Error cargando dataset:", err);
-    if (container) {
-      container.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: #F43F5E;">
-          <p style="font-weight: 800; font-size: 1.1rem;">Error de conexión con la terminal de datos.</p>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">${err.message}</p>
-        </div>
-      `;
-    }
-  }
-}
 
 /**
  * Renderiza la interfaz utilizando Mapeo Dinámico de Llaves (Content-Agnostic) y Dark Luxury Cards.
@@ -636,419 +1334,297 @@ function renderizarInterfaz(dataset) {
   iniciarScrollReveal();
 }
 
-/**
- * Inicia el IntersectionObserver para revelar suavemente las tarjetas a medida que el usuario hace scroll.
- */
-function iniciarScrollReveal() {
-  const cards = document.querySelectorAll(".bento-card:not(.skeleton-card)");
-  if (!cards.length) return;
 
-  if (!("IntersectionObserver" in window)) {
-    cards.forEach(card => card.classList.add("revealed"));
+/**
+ * 🔓 MÓDULO DE DESBLOQUEO DE CONTACTOS (modules/07-unlock.js)
+ * Desbloqueo atómico de propietarios, actualización de tarjeta en DOM y enlace a WhatsApp.
+ * Estándar Ecosistema Desmulta Seguridad.
+ */
+
+/**
+ * Maneja el clic en "Desbloquear": si tiene créditos desbloquea directo, sino abre checkout.
+ * @param {number} index
+ */
+async function manejarClicDesbloquear(index) {
+  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
+  const lead = datosActuales.leads[index];
+  leadSeleccionado = lead;
+
+  const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
+  const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
+
+  if (sesionUsuario && (tieneCreditos || tienePlanActivo)) {
+    await ejecutarDesbloqueoLead(lead, index);
+  } else {
+    abrirModalCheckout(index, 'comprar');
+  }
+}
+
+/**
+ * Actualiza quirúrgicamente una tarjeta en el DOM sin recargar la grilla ni parpadear.
+ * @param {string} leadId
+ * @param {object} contacto
+ * @param {number|undefined} index
+ */
+function actualizarTarjetaEnElDOM(leadId, contacto, index) {
+  const card = document.querySelector(`.bento-card[data-lead-id="${leadId}"]`) || 
+               (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"]`) : null);
+  if (!card) {
+    renderizarInterfaz(datosActuales);
     return;
   }
 
-  // Margen predictivo amplio: activa la tarjeta 350px antes de que entre a la pantalla
-  // para que esté completamente revelada cuando el usuario haga scroll en el teléfono
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.style.transitionDelay = '0s';
-        entry.target.classList.add("revealed");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.01,
-    rootMargin: "350px 0px 250px 0px"
-  });
+  card.classList.add('card-unlocked');
 
-  cards.forEach(card => observer.observe(card));
-}
-
-/**
- * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
- */
-async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
-  const urlParams = new URLSearchParams(window.location.search);
-  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
-  const wompiId = urlParams.get('id');
-
-  if (wompiId && !paymentRef) {
-    try {
-      const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
-      const dataVerify = await resVerify.json();
-      if (dataVerify.ok && dataVerify.reference) {
-        paymentRef = dataVerify.reference;
-      }
-    } catch (e) {
-      console.warn('[Sesión] Error al verificar Wompi ID:', e.message);
+  // 1. Badge superior flotante de "Desbloqueado"
+  const floatingBadges = card.querySelector('.card-floating-badges');
+  if (floatingBadges) {
+    let unlockedBadge = floatingBadges.querySelector('.card-unlocked-badge');
+    if (!unlockedBadge) {
+      unlockedBadge = document.createElement('span');
+      unlockedBadge.className = 'card-unlocked-badge';
+      unlockedBadge.innerHTML = '<i class="fa-solid fa-unlock"></i> Desbloqueado';
+      const statusPill = floatingBadges.querySelector('.badge-status-pill');
+      if (statusPill) statusPill.remove();
+      floatingBadges.appendChild(unlockedBadge);
     }
   }
 
-  if (paymentRef && paymentRef.startsWith('HNT-')) {
-    try {
-      const res = await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
-      });
-      const data = await res.json();
-      if (data.ok && data.token) {
-        localStorage.setItem('hunter_pro_token', data.token);
-        sesionUsuario = { ...data.user, token: data.token };
-        actualizarBadgeVip();
-        sincronizarFiltroCiudadUsuario();
-        mostrarNotificacionToast(`🎉 ¡Pago confirmado! Tu PIN es ${data.user.pin}. Tienes ${data.user.credits} créditos disponibles.`);
-        window.history.replaceState({}, document.title, window.location.pathname);
+  // 2. Barra de teléfono revelado en el cuerpo
+  const cardBody = card.querySelector('.card-body');
+  if (cardBody && contacto) {
+    let phoneBar = cardBody.querySelector('.card-contact-phone-bar');
+    if (!phoneBar) {
+      phoneBar = document.createElement('div');
+      phoneBar.className = 'card-contact-phone-bar';
+      phoneBar.style.cssText = 'margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;';
+      const specsPanel = cardBody.querySelector('.card-specs-panel');
+      if (specsPanel && specsPanel.parentNode) {
+        specsPanel.parentNode.insertBefore(phoneBar, specsPanel.nextSibling);
+      } else {
+        cardBody.appendChild(phoneBar);
+      }
+    }
+    phoneBar.innerHTML = `
+      <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+      ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
+    `;
+  }
+
+  // 3. Botones de acción directa (WhatsApp, Llamar, Ver Anuncio)
+  const bottomRow = card.querySelector('.card-bottom-row');
+  if (bottomRow) {
+    const existingCluster = bottomRow.querySelector('.unlocked-action-cluster');
+    const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-lead');
+    const existingDirectBtn = bottomRow.querySelector('button[data-action="contactar-whatsapp"]');
+    
+    const cluster = existingCluster || document.createElement('div');
+    cluster.className = 'unlocked-action-cluster';
+    cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
+    cluster.innerHTML = `
+      ${contacto?.whatsappUrl ? `
+        <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+      ` : ''}
+      ${contacto?.telLlamar ? `
+        <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+          <i class="fa-solid fa-phone"></i> Llamar
+        </a>
+      ` : ''}
+      ${contacto?.enlace ? `
+        <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+        </a>
+      ` : ''}
+    `;
+
+    if (existingUnlockBtn) existingUnlockBtn.replaceWith(cluster);
+    else if (existingDirectBtn) existingDirectBtn.replaceWith(cluster);
+    else if (!existingCluster) bottomRow.appendChild(cluster);
+  }
+
+  // 4. Actualizar el Slide-Up Drawer si existe en el DOM
+  const cardIndex = card.getAttribute('data-index');
+  const slideup = document.getElementById(`slideup-${cardIndex}`);
+  if (slideup) {
+    const actionGroup = slideup.querySelector('.slideup-action-group');
+    if (actionGroup) {
+      actionGroup.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${contacto?.whatsappUrl ? `
+              <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+            ` : ''}
+            ${contacto?.telLlamar ? `
+              <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                <i class="fa-solid fa-phone"></i> Llamar
+              </a>
+            ` : ''}
+            ${contacto?.enlace ? `
+              <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+              </a>
+            ` : ''}
+          </div>
+          <span class="slideup-cta-note" style="color: #22C55E;">
+            <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
+          </span>
+        </div>
+      `;
+    }
+  }
+}
+
+/**
+ * Desbloquea un lead llamando a /api/leads/unlock y descifrando el contacto en backend.
+ * @param {object} lead
+ * @param {number|undefined} index
+ */
+async function ejecutarDesbloqueoLead(lead, index) {
+  if (!sesionUsuario || !sesionUsuario.token) {
+    abrirModalCheckout(index, 'comprar');
+    return;
+  }
+
+  const selector = typeof index === 'number' ? `.bento-card[data-index="${index}"] .btn-unlock-lead` : null;
+  const btn = selector ? document.querySelector(selector) : (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"] button[data-action="contactar-whatsapp"]`) : null);
+  const textoOriginal = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/leads/unlock', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sesionUsuario.token}`
+      },
+      body: JSON.stringify({
+        leadId: lead.id,
+        contactoCifrado: lead.contacto_cifrado || '',
+        leadCity: lead.ciudad || lead.ubicacion || lead.barrio || ''
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
+        mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
+        abrirModalCheckout(index, 'comprar');
         return;
       }
-    } catch (e) {
-      console.warn('[Sesión] No se pudo reclamar por referencia:', e.message);
+      if (res.status === 402) {
+        mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
+        abrirModalCheckout(index, 'comprar');
+        return;
+      }
+      throw new Error(data.error || 'Error al desbloquear contacto');
     }
-  }
 
-  // 2. Restaurar sesión desde localStorage
-  const tokenGuardado = localStorage.getItem('hunter_pro_token');
-  if (tokenGuardado) {
+    sesionUsuario.credits = data.creditsRemaining;
+    if (data.token) {
+      localStorage.setItem('hunter_pro_token', data.token);
+      sesionUsuario.token = data.token;
+    }
+    if (Array.isArray(data.unlockedLeads)) {
+      sesionUsuario.unlockedLeads = data.unlockedLeads;
+    } else {
+      if (!sesionUsuario.unlockedLeads) sesionUsuario.unlockedLeads = [];
+      if (!sesionUsuario.unlockedLeads.includes(lead.id)) {
+        sesionUsuario.unlockedLeads.push(lead.id);
+      }
+    }
+    cacheContactosDesbloqueados[lead.id] = data.contacto;
     try {
-      const res = await fetch('/api/user/balance', {
-        headers: { 'Authorization': `Bearer ${tokenGuardado}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        sesionUsuario = { ...data, token: tokenGuardado };
-        actualizarBadgeVip();
-        sincronizarFiltroCiudadUsuario();
-      } else {
-        localStorage.removeItem('hunter_pro_token');
-        localStorage.removeItem('hunter_unlocked_contacts');
-        cacheContactosDesbloqueados = {};
-        sesionUsuario = null;
-        actualizarBadgeVip();
-      }
-    } catch (e) {
-      console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
-    }
-  }
-}
+      localStorage.setItem('hunter_unlocked_contacts', JSON.stringify(cacheContactosDesbloqueados));
+    } catch (e) {}
 
-/**
- * Actualiza visualmente el botón VIP del header y el botón de la barra móvil.
- */
-function actualizarBadgeVip() {
-  const btnHeader = document.getElementById('btnVipHeader');
-  const btnNavVip = document.getElementById('btnNavVip');
+    cerrarModalCheckout();
+    actualizarBadgeVip();
+    actualizarTarjetaEnElDOM(lead.id, data.contacto, index);
 
-  if (sesionUsuario) {
-    let htmlBadge = '';
-    let labelMovil = '';
-
-    if (sesionUsuario.plan === 'national') {
-      htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
-      labelMovil = 'VIP Nac.';
-    } else if (sesionUsuario.plan === 'city') {
-      const ciudad = sesionUsuario.planCity || 'Ciudad';
-      htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
-      labelMovil = 'VIP Ciudad';
+    let mensajeExito = '';
+    if (data.alreadyUnlocked) {
+      mensajeExito = '✅ Inmueble ya desbloqueado (Costo 0 créditos).';
+    } else if (data.planBenefit) {
+      mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
     } else {
-      const cr = Number(sesionUsuario.credits || 0);
-      htmlBadge = `<i class="fa-solid fa-bolt" style="color: #10B981;"></i><span class="vip-btn-text">⚡ ${cr} Créditos</span>`;
-      labelMovil = `${cr} Créditos`;
+      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`;
     }
+    mostrarNotificacionToast(mensajeExito);
 
-    if (btnHeader) btnHeader.innerHTML = htmlBadge;
-    if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
-      if (span) span.textContent = labelMovil;
-    }
-  } else {
-    if (btnHeader) {
-      btnHeader.innerHTML = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">Acceso VIP</span>';
-    }
-    if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
-      if (span) span.textContent = 'VIP';
+    // Eliminada la redirección automática a WhatsApp para mostrar el PIN primero
+    /* if (data.contacto?.whatsappUrl) {
+      window.open(data.contacto.whatsappUrl, '_blank');
+    } */
+  } catch (err) {
+    console.error('[Desbloqueo] Error:', err);
+    mostrarNotificacionToast(err.message || 'Error de conexión', 'error');
+  } finally {
+    if (btn) {
+      btn.innerHTML = textoOriginal;
+      btn.disabled = false;
     }
   }
 }
 
 /**
- * Sincroniza el filtro de ubicación del Omnibox con la ciudad del Plan Pro del usuario.
+ * Maneja el clic en "Chatear Propietario" de un inmueble previamente desbloqueado.
+ * @param {number} index
  */
-function sincronizarFiltroCiudadUsuario() {
-  if (sesionUsuario && sesionUsuario.plan === 'city' && sesionUsuario.planCity) {
-    const targetCity = String(sesionUsuario.planCity).trim();
-    if (targetCity) {
-      filtroCiudadActivo = targetCity;
+async function manejarContactoWhatsapp(index) {
+  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
+  const lead = datosActuales.leads[index];
 
-      const dropdownLocation = document.getElementById("cmdLocationDropdown");
-      const pillLocation = document.getElementById("cmdFilterLocation");
-      const labelLocation = document.getElementById("cmdFilterLocationLabel");
-
-      if (dropdownLocation) {
-        let matchItem = null;
-        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-          const itemCity = item.getAttribute("data-city") || "";
-          if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) {
-            matchItem = item;
-          }
-        });
-        if (matchItem) {
-          dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
-          matchItem.classList.add("active");
-          const spanText = matchItem.querySelector("span") ? matchItem.querySelector("span").textContent : targetCity;
-          if (labelLocation) labelLocation.textContent = spanText;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        } else if (labelLocation) {
-          labelLocation.textContent = targetCity;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        }
-      }
-      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
-      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
-      if (sideMenuSelect) {
-        let matchedVal = "";
-        for (const opt of sideMenuSelect.options) {
-          if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
-            matchedVal = opt.value;
-            break;
-          }
-        }
-        sideMenuSelect.value = matchedVal || targetCity;
-      }
-      if (sideMenuBadge) {
-        sideMenuBadge.textContent = targetCity;
-      }
-
-      if (typeof aplicarFiltrosOmnibox === 'function') {
-        aplicarFiltrosOmnibox();
-      }
-    }
+  const contacto = cacheContactosDesbloqueados[lead.id];
+  if (contacto?.whatsappUrl) {
+    window.open(contacto.whatsappUrl, '_blank');
+    return;
   }
+  if (contacto?.enlace) {
+    window.open(contacto.enlace, '_blank');
+    return;
+  }
+
+  await ejecutarDesbloqueoLead(lead, index);
 }
+
+// Variables de estado reactivo del Omnibox
+let filtroCiudadActivo = "";
+let filtroTratoDirectoActivo = false;
+let textoBusquedaActivo = "";
+
 
 /**
- * Muestra una notificación toast ejecutiva de alta gama con iluminación ambiental,
- * micro-barra de progreso interactiva, soporte de gestos táctiles y modo oscuro/claro.
- * Compatible con la referencia Sonner / Radix Luxury Toast.
- * 
- * @param {string} mensaje - Texto principal o detalle de la alerta
- * @param {'success'|'error'|'warning'|'info'|'vip'} [tipo='success'] - Tipo semántico de notificación
- * @param {string|{title?: string, duration?: number, actionText?: string, onAction?: Function}} [opciones] - Opciones o título manual
+ * 💳 MÓDULO DE CHECKOUT Y PASARELA WOMPI (modules/08-checkout.js)
+ * Modal de compra, selector de planes, orquestación del widget Wompi y verificación de firmas.
+ * Estándar Ecosistema Desmulta Finanzas.
  */
-function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
-  // Normalizar opciones
-  const opts = typeof opciones === 'string' ? { title: opciones } : (opciones || {});
-  let duracionMs = opts.duration || 4500;
-  let tipoFinal = tipo;
-  let titulo = opts.title || '';
-  let mensajeLimpio = String(mensaje || '').trim();
 
-  // Detección e interpretación inteligente de prefijos y emojis
-  if (mensajeLimpio.startsWith('👑')) {
-    tipoFinal = 'vip';
-    if (!titulo) titulo = 'Membresía VIP Pro';
-    mensajeLimpio = mensajeLimpio.replace(/^👑\s*/, '');
-  } else if (mensajeLimpio.startsWith('🎉')) {
-    if (!titulo) titulo = '¡Operación Exitosa!';
-    mensajeLimpio = mensajeLimpio.replace(/^🎉\s*/, '');
-  } else if (mensajeLimpio.startsWith('📍')) {
-    if (!titulo) titulo = 'Cobertura Regional';
-    mensajeLimpio = mensajeLimpio.replace(/^📍\s*/, '');
-  } else if (mensajeLimpio.startsWith('⚠️')) {
-    tipoFinal = 'warning';
-    if (!titulo) titulo = 'Aviso del Sistema';
-    mensajeLimpio = mensajeLimpio.replace(/^⚠️\s*/, '');
-  } else if (mensajeLimpio.startsWith('✅')) {
-    if (!titulo) titulo = 'Confirmación';
-    mensajeLimpio = mensajeLimpio.replace(/^✅\s*/, '');
-  } else if (mensajeLimpio.startsWith('❌')) {
-    tipoFinal = 'error';
-    if (!titulo) titulo = 'Acceso Restringido';
-    mensajeLimpio = mensajeLimpio.replace(/^❌\s*/, '');
-  }
-
-  // Títulos por defecto según el tipo si no se asignaron previamente
-  if (!titulo) {
-    if (tipoFinal === 'vip') titulo = 'Membresía VIP Pro';
-    else if (tipoFinal === 'error') titulo = 'Acción Requerida';
-    else if (tipoFinal === 'warning') titulo = 'Atención';
-    else if (tipoFinal === 'info') titulo = 'Información';
-    else titulo = 'Notificación Hunter Pro';
-  }
-
-  // Contenedor global de toasts
-  let container = document.getElementById('hunterToastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'hunterToastContainer';
-    container.className = 'hunter-toast-container';
-    container.setAttribute('aria-live', 'polite');
-    document.body.appendChild(container);
-  }
-
-  // Si ya hay un toast activo, cerramos el previo de inmediato para evitar sobrecargas
-  const toastsExistentes = container.querySelectorAll('.hunter-toast:not(.hunter-toast--closing)');
-  if (toastsExistentes.length >= 2) {
-    toastsExistentes[0].classList.add('hunter-toast--closing');
-    setTimeout(() => toastsExistentes[0].remove(), 280);
-  }
-
-  // Selector de Icono SVG de alta fidelidad según el tipo
-  let iconoSvg = '';
-  if (tipoFinal === 'vip') {
-    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"/></svg>`;
-  } else if (tipoFinal === 'error') {
-    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-  } else if (tipoFinal === 'warning') {
-    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-  } else if (tipoFinal === 'info') {
-    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-  } else {
-    // success por defecto
-    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
-  }
-
-  // Generar tarjeta toast
-  const toast = document.createElement('div');
-  toast.className = `hunter-toast hunter-toast--${tipoFinal}`;
-  toast.setAttribute('role', 'alert');
-
-  // Botón de acción opcional
-  let actionHtml = '';
-  if (opts.actionText) {
-    actionHtml = `<button type="button" class="hunter-toast-action-btn">${opts.actionText}</button>`;
-  }
-
-  const segundosTotal = Math.round(duracionMs / 1000);
-
-  toast.innerHTML = `
-    <div class="hunter-toast-glow"></div>
-    <div class="hunter-toast-inner">
-      <div class="hunter-toast-icon-wrapper">
-        ${iconoSvg}
-      </div>
-      <div class="hunter-toast-content">
-        <div class="hunter-toast-header">
-          <h4 class="hunter-toast-title">${titulo}</h4>
-          <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <p class="hunter-toast-description">${mensajeLimpio}</p>
-        ${actionHtml}
-      </div>
-    </div>
-    <div class="hunter-toast-footer">
-      <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
-      <div class="hunter-toast-progress-track">
-        <div class="hunter-toast-progress-bar" style="animation-duration: ${duracionMs}ms;"></div>
-      </div>
-    </div>
-  `;
-
-  container.appendChild(toast);
-
-  // Vincular acción opcional si se suministró callback
-  if (opts.onAction && typeof opts.onAction === 'function') {
-    const actionBtn = toast.querySelector('.hunter-toast-action-btn');
-    if (actionBtn) {
-      actionBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        opts.onAction();
-        cerrarToast();
-      });
-    }
-  }
-
-  // Función de cierre elegante
-  let cerrado = false;
-  function cerrarToast() {
-    if (cerrado) return;
-    cerrado = true;
-    toast.classList.add('hunter-toast--closing');
-    clearTimeout(timeoutId);
-    setTimeout(() => {
-      if (toast.parentNode) toast.remove();
-    }, 280);
-  }
-
-  // Botón de cierre superior
-  const closeBtn = toast.querySelector('.hunter-toast-close');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      cerrarToast();
-    });
-  }
-
-  // Lógica de temporizador interactivo con soporte para pausa en hover y touch
-  let tiempoRestante = duracionMs;
-  let tiempoInicio = Date.now();
-  let timeoutId = null;
-  const timerLabel = toast.querySelector('.hunter-toast-timer-label');
-
-  function iniciarTimer(ms) {
-    tiempoInicio = Date.now();
-    timeoutId = setTimeout(() => {
-      cerrarToast();
-    }, ms);
-  }
-
-  function pausarTimer() {
-    clearTimeout(timeoutId);
-    const transcurrido = Date.now() - tiempoInicio;
-    tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
-    toast.classList.add('hunter-toast--paused');
-    if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
-  }
-
-  function reanudarTimer() {
-    toast.classList.remove('hunter-toast--paused');
-    if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
-    iniciarTimer(tiempoRestante);
-  }
-
-  // Pausa en hover de escritorio
-  toast.addEventListener('mouseenter', pausarTimer);
-  toast.addEventListener('mouseleave', reanudarTimer);
-
-  // Gestos táctiles para móviles: pausa en toque y Swipe-Up para descartar
-  let touchStartY = 0;
-  let touchDiffY = 0;
-
-  toast.addEventListener('touchstart', (e) => {
-    touchStartY = e.touches[0].clientY;
-    pausarTimer();
-  }, { passive: true });
-
-  toast.addEventListener('touchmove', (e) => {
-    touchDiffY = e.touches[0].clientY - touchStartY;
-    if (touchDiffY < 0) {
-      // Arrastre hacia arriba
-      toast.style.transform = `translateY(${Math.max(touchDiffY, -80)}px) scale(${1 + touchDiffY / 500})`;
-      toast.style.opacity = `${1 + touchDiffY / 120}`;
-    }
-  }, { passive: true });
-
-  toast.addEventListener('touchend', () => {
-    if (touchDiffY < -40) {
-      // Gesto de swipe up confirmado: descartar
-      cerrarToast();
-    } else {
-      // Volver a posición original y reanudar
-      toast.style.transform = '';
-      toast.style.opacity = '';
-      reanudarTimer();
-    }
-    touchDiffY = 0;
-  }, { passive: true });
-
-  // Iniciar la cuenta regresiva inicial
-  iniciarTimer(duracionMs);
+/**
+ * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
+ */
+function cargarScriptWompi() {
+  if (document.getElementById("wompi-widget-script")) return;
+  const script = document.createElement("script");
+  script.id = "wompi-widget-script";
+  script.src = "https://checkout.wompi.co/widget.js";
+  script.async = true;
+  script.onload = () => {
+    wompiScriptCargado = true;
+    console.log("✅ Widget de Wompi cargado exitosamente.");
+  };
+  script.onerror = () => {
+    console.warn("⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
+  };
+  document.head.appendChild(script);
 }
+
 
 /**
  * Cambia la pestaña activa del modal de checkout.
@@ -1349,518 +1925,273 @@ async function ejecutarPagoWompi() {
   }
 }
 
+
 /**
- * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
+ * ✨ MÓDULO DE EFECTOS UI Y MICRO-INTERACCIONES (modules/09-ui-effects.js)
+ * Háptica táctil, ondas ripple, scroll reveal, parallax GPU y menú lateral off-canvas.
+ * Estándar Ecosistema Desmulta Frontend.
  */
-async function restaurarSesionConPin() {
-  const inputWa = document.getElementById('restoreWhatsappInput');
-  const inputPin = document.getElementById('restorePinInput');
-  const msgBox = document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnRestoreSession');
 
-  const celular = inputWa ? inputWa.value.trim() : '';
-  const pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
+/**
+ * Inicia el IntersectionObserver para revelar suavemente las tarjetas a medida que el usuario hace scroll.
+ */
+function iniciarScrollReveal() {
+  const cards = document.querySelectorAll(".bento-card:not(.skeleton-card)");
+  if (!cards.length) return;
 
-  if (!celular || !pin) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
-      msgBox.style.display = 'block';
-    }
+  if (!("IntersectionObserver" in window)) {
+    cards.forEach(card => card.classList.add("revealed"));
     return;
   }
 
-  if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
-    btn.disabled = true;
-  }
-
-  try {
-    const res = await fetch('/api/auth/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ celular, pin })
+  // Margen predictivo amplio: activa la tarjeta 350px antes de que entre a la pantalla
+  // para que esté completamente revelada cuando el usuario haga scroll en el teléfono
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.transitionDelay = '0s';
+        entry.target.classList.add("revealed");
+        observer.unobserve(entry.target);
+      }
     });
-
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || 'Credenciales incorrectas');
-    }
-
-    localStorage.setItem('hunter_pro_token', data.token);
-    sesionUsuario = { ...data.user, token: data.token };
-    actualizarBadgeVip();
-    sincronizarFiltroCiudadUsuario();
-    renderizarInterfaz(datosActuales);
-
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg success';
-      msgBox.textContent = `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
-      msgBox.style.display = 'block';
-    }
-
-    setTimeout(() => {
-      abrirModalCheckout(undefined, 'perfil');
-    }, 800);
-  } catch (err) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = err.message;
-      msgBox.style.display = 'block';
-    }
-  } finally {
-    if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos';
-      btn.disabled = false;
-    }
-  }
-}
-
-/**
- * Cierra la sesión activa del usuario.
- */
-function cerrarSesionUsuario() {
-  localStorage.removeItem('hunter_pro_token');
-  localStorage.removeItem('hunter_unlocked_contacts');
-  cacheContactosDesbloqueados = {};
-  sesionUsuario = null;
-  actualizarBadgeVip();
-  renderizarInterfaz(datosActuales);
-  cerrarModalCheckout();
-  mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
-}
-
-/**
- * Maneja el clic en "Desbloquear": si tiene créditos desbloquea directo, sino abre checkout.
- * @param {number} index
- */
-async function manejarClicDesbloquear(index) {
-  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
-  const lead = datosActuales.leads[index];
-  leadSeleccionado = lead;
-
-  const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
-  const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
-
-  if (sesionUsuario && (tieneCreditos || tienePlanActivo)) {
-    await ejecutarDesbloqueoLead(lead, index);
-  } else {
-    abrirModalCheckout(index, 'comprar');
-  }
-}
-
-/**
- * Actualiza quirúrgicamente una tarjeta en el DOM sin recargar la grilla ni parpadear.
- * @param {string} leadId
- * @param {object} contacto
- * @param {number|undefined} index
- */
-function actualizarTarjetaEnElDOM(leadId, contacto, index) {
-  const card = document.querySelector(`.bento-card[data-lead-id="${leadId}"]`) || 
-               (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"]`) : null);
-  if (!card) {
-    renderizarInterfaz(datosActuales);
-    return;
-  }
-
-  card.classList.add('card-unlocked');
-
-  // 1. Badge superior flotante de "Desbloqueado"
-  const floatingBadges = card.querySelector('.card-floating-badges');
-  if (floatingBadges) {
-    let unlockedBadge = floatingBadges.querySelector('.card-unlocked-badge');
-    if (!unlockedBadge) {
-      unlockedBadge = document.createElement('span');
-      unlockedBadge.className = 'card-unlocked-badge';
-      unlockedBadge.innerHTML = '<i class="fa-solid fa-unlock"></i> Desbloqueado';
-      const statusPill = floatingBadges.querySelector('.badge-status-pill');
-      if (statusPill) statusPill.remove();
-      floatingBadges.appendChild(unlockedBadge);
-    }
-  }
-
-  // 2. Barra de teléfono revelado en el cuerpo
-  const cardBody = card.querySelector('.card-body');
-  if (cardBody && contacto) {
-    let phoneBar = cardBody.querySelector('.card-contact-phone-bar');
-    if (!phoneBar) {
-      phoneBar = document.createElement('div');
-      phoneBar.className = 'card-contact-phone-bar';
-      phoneBar.style.cssText = 'margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;';
-      const specsPanel = cardBody.querySelector('.card-specs-panel');
-      if (specsPanel && specsPanel.parentNode) {
-        specsPanel.parentNode.insertBefore(phoneBar, specsPanel.nextSibling);
-      } else {
-        cardBody.appendChild(phoneBar);
-      }
-    }
-    phoneBar.innerHTML = `
-      <span><i class="fa-solid fa-phone" style="color: #10b981; margin-right: 6px;"></i> <strong style="color: #10b981; font-family: monospace;">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
-      ${contacto.portal ? `<span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">${escaparHtml(contacto.portal)}</span>` : ''}
-    `;
-  }
-
-  // 3. Botones de acción directa (WhatsApp, Llamar, Ver Anuncio)
-  const bottomRow = card.querySelector('.card-bottom-row');
-  if (bottomRow) {
-    const existingCluster = bottomRow.querySelector('.unlocked-action-cluster');
-    const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-lead');
-    const existingDirectBtn = bottomRow.querySelector('button[data-action="contactar-whatsapp"]');
-    
-    const cluster = existingCluster || document.createElement('div');
-    cluster.className = 'unlocked-action-cluster';
-    cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
-    cluster.innerHTML = `
-      ${contacto?.whatsappUrl ? `
-        <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i> WhatsApp
-        </a>
-      ` : ''}
-      ${contacto?.telLlamar ? `
-        <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
-          <i class="fa-solid fa-phone"></i> Llamar
-        </a>
-      ` : ''}
-      ${contacto?.enlace ? `
-        <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-        </a>
-      ` : ''}
-    `;
-
-    if (existingUnlockBtn) existingUnlockBtn.replaceWith(cluster);
-    else if (existingDirectBtn) existingDirectBtn.replaceWith(cluster);
-    else if (!existingCluster) bottomRow.appendChild(cluster);
-  }
-
-  // 4. Actualizar el Slide-Up Drawer si existe en el DOM
-  const cardIndex = card.getAttribute('data-index');
-  const slideup = document.getElementById(`slideup-${cardIndex}`);
-  if (slideup) {
-    const actionGroup = slideup.querySelector('.slideup-action-group');
-    if (actionGroup) {
-      actionGroup.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${contacto?.whatsappUrl ? `
-              <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-              </a>
-            ` : ''}
-            ${contacto?.telLlamar ? `
-              <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
-                <i class="fa-solid fa-phone"></i> Llamar
-              </a>
-            ` : ''}
-            ${contacto?.enlace ? `
-              <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-              </a>
-            ` : ''}
-          </div>
-          <span class="slideup-cta-note" style="color: #22C55E;">
-            <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
-          </span>
-        </div>
-      `;
-    }
-  }
-}
-
-/**
- * Desbloquea un lead llamando a /api/leads/unlock y descifrando el contacto en backend.
- * @param {object} lead
- * @param {number|undefined} index
- */
-async function ejecutarDesbloqueoLead(lead, index) {
-  if (!sesionUsuario || !sesionUsuario.token) {
-    abrirModalCheckout(index, 'comprar');
-    return;
-  }
-
-  const selector = typeof index === 'number' ? `.bento-card[data-index="${index}"] .btn-unlock-lead` : null;
-  const btn = selector ? document.querySelector(selector) : (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"] button[data-action="contactar-whatsapp"]`) : null);
-  const textoOriginal = btn ? btn.innerHTML : '';
-  if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
-    btn.disabled = true;
-  }
-
-  try {
-    const res = await fetch('/api/leads/unlock', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sesionUsuario.token}`
-      },
-      body: JSON.stringify({
-        leadId: lead.id,
-        contactoCifrado: lead.contacto_cifrado || '',
-        leadCity: lead.ciudad || lead.ubicacion || lead.barrio || ''
-      })
-    });
-
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
-        mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
-        abrirModalCheckout(index, 'comprar');
-        return;
-      }
-      if (res.status === 402) {
-        mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
-        abrirModalCheckout(index, 'comprar');
-        return;
-      }
-      throw new Error(data.error || 'Error al desbloquear contacto');
-    }
-
-    sesionUsuario.credits = data.creditsRemaining;
-    if (data.token) {
-      localStorage.setItem('hunter_pro_token', data.token);
-      sesionUsuario.token = data.token;
-    }
-    if (Array.isArray(data.unlockedLeads)) {
-      sesionUsuario.unlockedLeads = data.unlockedLeads;
-    } else {
-      if (!sesionUsuario.unlockedLeads) sesionUsuario.unlockedLeads = [];
-      if (!sesionUsuario.unlockedLeads.includes(lead.id)) {
-        sesionUsuario.unlockedLeads.push(lead.id);
-      }
-    }
-    cacheContactosDesbloqueados[lead.id] = data.contacto;
-    try {
-      localStorage.setItem('hunter_unlocked_contacts', JSON.stringify(cacheContactosDesbloqueados));
-    } catch (e) {}
-
-    cerrarModalCheckout();
-    actualizarBadgeVip();
-    actualizarTarjetaEnElDOM(lead.id, data.contacto, index);
-
-    let mensajeExito = '';
-    if (data.alreadyUnlocked) {
-      mensajeExito = '✅ Inmueble ya desbloqueado (Costo 0 créditos).';
-    } else if (data.planBenefit) {
-      mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
-    } else {
-      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`;
-    }
-    mostrarNotificacionToast(mensajeExito);
-
-    // Eliminada la redirección automática a WhatsApp para mostrar el PIN primero
-    /* if (data.contacto?.whatsappUrl) {
-      window.open(data.contacto.whatsappUrl, '_blank');
-    } */
-  } catch (err) {
-    console.error('[Desbloqueo] Error:', err);
-    mostrarNotificacionToast(err.message || 'Error de conexión', 'error');
-  } finally {
-    if (btn) {
-      btn.innerHTML = textoOriginal;
-      btn.disabled = false;
-    }
-  }
-}
-
-/**
- * Maneja el clic en "Chatear Propietario" de un inmueble previamente desbloqueado.
- * @param {number} index
- */
-async function manejarContactoWhatsapp(index) {
-  if (!datosActuales?.leads || !datosActuales.leads[index]) return;
-  const lead = datosActuales.leads[index];
-
-  const contacto = cacheContactosDesbloqueados[lead.id];
-  if (contacto?.whatsappUrl) {
-    window.open(contacto.whatsappUrl, '_blank');
-    return;
-  }
-  if (contacto?.enlace) {
-    window.open(contacto.enlace, '_blank');
-    return;
-  }
-
-  await ejecutarDesbloqueoLead(lead, index);
-}
-
-// Variables de estado reactivo del Omnibox
-let filtroCiudadActivo = "";
-let filtroTratoDirectoActivo = false;
-let textoBusquedaActivo = "";
-
-/**
- * Normaliza una cadena de texto para búsqueda flexible y tolerante a la escritura:
- * - Convierte a minúsculas
- * - Remueve diacríticos y acentos (á->a, é->e, í->i, ó->o, ú->u, ü->u)
- * - Mapea 'ñ' a 'n' para permitir que búsquedas sin eñe (dueno -> dueño) coincidan
- * - Sustituye caracteres de puntuación por espacios
- * - Colapsa espacios redundantes
- * @param {string} str
- * @returns {string}
- */
-function normalizarTextoBusqueda(str) {
-  if (!str) return "";
-  return String(str)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ñ/g, "n")
-    .replace(/[.,;:()\-–—_'"/\\#+!¿?¡]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/**
- * Diccionario de sinónimos, abreviaturas y variantes léxicas en Colombia
- * para búsquedas inmobiliarias y vehiculares de alta precisión.
- */
-const DICCIONARIO_TERMINOS = {
-  // Tipología Inmobiliaria
-  "apto": ["apartamento", "departamento", "apto"],
-  "aptos": ["apartamento", "departamento", "apto"],
-  "apartamento": ["apartamento", "apto"],
-  "apartamentos": ["apartamento", "apto"],
-  "ph": ["penthouse", "duplex", "ph"],
-  "penthouse": ["penthouse", "ph", "duplex"],
-  "duplex": ["duplex", "penthouse"],
-  "casa": ["casa", "quinta", "campestre", "chalet"],
-  "casas": ["casa", "quinta", "campestre"],
-  "lote": ["lote", "terreno", "campestre"],
-  "campestre": ["campestre", "quinta", "casa", "lote"],
-  "quinta": ["quinta", "campestre", "casa"],
-  // Distribución y Ambientes
-  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "alcobas": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "habitacion": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "habitaciones": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "hab": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
-  "cuarto": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
-  "bano": ["bano", "banos", "ducha"],
-  "banos": ["bano", "banos", "ducha"],
-  "garaje": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq", "cochera"],
-  "garajes": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parqueadero": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parqueaderos": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parq": ["garaje", "garajes", "parqueadero", "parqueaderos"],
-  // Trato Directo y Oportunidad
-  "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"],
-  "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"],
-  "propietario": ["propietario", "particular", "directo", "dueno"],
-  "particular": ["propietario", "particular", "directo", "dueno"],
-  "directo": ["directo", "dueno", "propietario", "particular"],
-  "rebaja": ["rebaja", "descuento", "ganga", "barato", "negociable", "oportunidad"],
-  "descuento": ["rebaja", "descuento", "ganga", "arbitraje"],
-  "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"],
-  "viaje": ["viaje", "motivo", "urgente"],
-  "urgente": ["urgente", "viaje", "motivo", "urgeme", "oportunidad"],
-  "arbitraje": ["arbitraje", "descuento", "mediana", "ganga"],
-  // Vehículos
-  "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"],
-  "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"],
-  "vehiculo": ["vehiculo", "carro", "camioneta", "auto"],
-  "camioneta": ["camioneta", "suv", "pickup", "pick-up", "4x4"],
-  "suv": ["suv", "camioneta", "4x4"],
-  "pickup": ["pickup", "pick-up", "camioneta", "4x4", "utilitaria"],
-  "sedan": ["sedan", "deportivo", "carro", "auto"],
-  "4x4": ["4x4", "camioneta", "suv", "pickup"],
-  // Ciudades / Sectores
-  "bogota": ["bogota", "rosales", "chico", "cundinamarca"],
-  "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
-  "cali": ["cali", "pance", "valle del lili", "valle"],
-  "cartagena": ["cartagena", "bocagrande", "bolivar"],
-  "pereira": ["pereira", "cerritos", "risaralda", "eje cafetero"],
-  "bucaramanga": ["bucaramanga", "floridablanca", "ruitoque", "santander"],
-  "floridablanca": ["floridablanca", "bucaramanga", "ruitoque"]
-};
-
-/**
- * Evalúa si una tarjeta coincide con la búsqueda del usuario:
- * - Divide la consulta en tokens
- * - Verifica coincidencia directa, sinónimos y prefijos de raíz
- * - Aplica límites de seguridad (máximo 80 caracteres)
- * @param {string} textoTarjetaNormalizado
- * @param {string} busquedaUsuario
- * @returns {boolean}
- */
-function coincideBusquedaInteligente(textoTarjetaNormalizado, busquedaUsuario) {
-  if (!busquedaUsuario) return true;
-  const queryLimpia = normalizarTextoBusqueda(busquedaUsuario.slice(0, 80));
-  if (!queryLimpia) return true;
-
-  const tokens = queryLimpia.split(" ").filter(t => t.length > 0);
-  if (tokens.length === 0) return true;
-
-  return tokens.every(token => {
-    // 1. Coincidencia directa como subcadena
-    if (textoTarjetaNormalizado.includes(token)) return true;
-
-    // 2. Coincidencia por sinónimos o variantes léxicas
-    const sinonimos = DICCIONARIO_TERMINOS[token];
-    if (sinonimos && sinonimos.some(s => textoTarjetaNormalizado.includes(s))) {
-      return true;
-    }
-
-    // 3. Tolerancia por prefijo (palabra parcial de al menos 4 caracteres)
-    if (token.length >= 4) {
-      const raiz = token.slice(0, token.length - 1);
-      if (textoTarjetaNormalizado.includes(raiz)) return true;
-    }
-
-    return false;
+  }, {
+    threshold: 0.01,
+    rootMargin: "350px 0px 250px 0px"
   });
+
+  cards.forEach(card => observer.observe(card));
 }
 
-/**
- * Aplica los filtros combinados (Omnibox de búsqueda libre inteligente, Ciudad y Trato Directo)
- * sobre la grilla de oportunidades Bento.
- */
-function aplicarFiltrosOmnibox() {
-  limiteVisible = 6;
-  if (datosActuales) {
-    renderizarInterfaz(datosActuales);
-  }
-}
+
 
 /**
- * Restablece todos los filtros del Omnibox a su estado por defecto.
+ * Sincroniza visualmente el icono y tooltip del conmutador de tema.
+ * @param {string} theme - 'dark' o 'light'
  */
-function restablecerTodosLosFiltros() {
-  textoBusquedaActivo = "";
-  filtroCiudadActivo = "";
-  filtroTratoDirectoActivo = false;
+function actualizarIconoTema(theme) {
+  const btnTheme = document.getElementById("btnThemeToggle");
+  const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
 
-  const omnibox = document.getElementById("omniboxSearch");
-  if (omnibox) omnibox.value = "";
-
-  const btnClear = document.getElementById("cmdSearchClear");
-  if (btnClear) btnClear.classList.remove("visible");
-
-  const labelLocation = document.getElementById("cmdFilterLocationLabel");
-  if (labelLocation) labelLocation.textContent = "Colombia (Todas)";
-
-  const pillLocation = document.getElementById("cmdFilterLocation");
-  if (pillLocation) {
-    pillLocation.classList.remove("active-filter", "open");
-    pillLocation.setAttribute("aria-expanded", "false");
-  }
-
-  const dropdown = document.getElementById("cmdLocationDropdown");
-  if (dropdown) {
-    dropdown.classList.remove("show");
-    dropdown.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-      if (item.getAttribute("data-city") === "") {
-        item.classList.add("active");
+  if (btnTheme) {
+    const icon = btnTheme.querySelector("i");
+    if (icon) {
+      if (theme === "light") {
+        icon.className = "fa-solid fa-moon";
+        btnTheme.title = "Cambiar a Modo Oscuro AMOLED";
       } else {
-        item.classList.remove("active");
+        icon.className = "fa-solid fa-sun";
+        btnTheme.title = "Cambiar a Modo Claro Arquitectónico";
+      }
+    }
+  }
+
+  if (btnThemeMobile) {
+    const iconM = btnThemeMobile.querySelector("i");
+    const spanM = btnThemeMobile.querySelector("span");
+    if (iconM) {
+      if (theme === "light") {
+        iconM.className = "fa-solid fa-moon";
+        if (spanM) spanM.textContent = "Noche";
+      } else {
+        iconM.className = "fa-solid fa-sun";
+        if (spanM) spanM.textContent = "Día";
+      }
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ✨ MOTOR DE MICRO-INTERACCIONES Y HÁPTICA
+   ═══════════════════════════════════════════════════ */
+function inicializarEfectosPremium() {
+  // 1. Motor Háptico (Vibración silenciosa nativa - Ajustado para motores más pesados)
+  const hapticLight = () => { if (navigator.vibrate) navigator.vibrate(30); };
+  const hapticHeavy = () => { if (navigator.vibrate) navigator.vibrate([30, 40, 30]); };
+
+  // 2. Efecto Onda (Ripple) y Sondeo de Clicks
+  document.body.addEventListener('click', (e) => {
+    // Detectar si el toque fue en un botón interactivo
+    const btn = e.target.closest('.btn-unlock-lead, .btn-wompi-pay, .slideup-cta-btn, .mobile-nav-btn, .btn-hero-cta, .btn-menu-pill');
+    
+    if (btn) {
+      // Diferenciar vibración según la importancia del botón
+      if (btn.classList.contains('btn-wompi-pay')) {
+        hapticHeavy();
+      } else {
+        hapticLight();
+      }
+
+      // Crear inyección de onda dinámica
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple-span';
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+
+      btn.classList.add('btn-ripple');
+      btn.appendChild(ripple);
+
+      // Limpiar el DOM tras terminar la animación
+      setTimeout(() => ripple.remove(), 500);
+    }
+  });
+
+  // 3. Comando Flotante Magnético (Sticky Glass)
+  const commandBar = document.querySelector('.command-bar-wrapper');
+  if (commandBar) {
+    // Usamos passive: true para no bloquear el hilo principal de scroll
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 15) {
+        commandBar.classList.add('is-scrolled');
+      } else {
+        commandBar.classList.remove('is-scrolled');
+      }
+    }, { passive: true });
+  }
+
+  // 4. Motor Parallax de Bajo Consumo
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        // Seleccionamos las imágenes renderizadas
+        const images = document.querySelectorAll('.carousel-img, .card-static-img');
+        const windowHeight = window.innerHeight;
+
+        images.forEach(img => {
+          const parent = img.closest('.bento-card');
+          if (parent) {
+            const rect = parent.getBoundingClientRect();
+            // Ejecutar física SOLO si la tarjeta está visible en pantalla
+            if (rect.top < windowHeight && rect.bottom > 0) {
+              // Calcular porcentaje de posición y mover de -7.5% a 7.5%
+              const yPos = ((rect.top / windowHeight) * 15) - 7.5; 
+              // translate3d activa el procesador gráfico (GPU) directamente
+              img.style.transform = `translate3d(0, ${yPos}%, 0)`;
+            }
+          }
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // 5. Lógica del Menú Lateral Móvil (Off-Canvas)
+  const sideMenu = document.getElementById('sideMenu');
+  const menuOverlay = document.getElementById('sideMenuOverlay') || document.getElementById('menuOverlay');
+  const btnCloseMenu = document.getElementById('btnCloseSideMenu') || document.getElementById('btnCloseMenu');
+  const btnNavMenuBottom = document.getElementById('btnNavMenuBottom');
+  const btnMenuTrigger = document.getElementById('btnMenuTrigger');
+
+  const abrirSideMenu = () => {
+    if (sideMenu && menuOverlay) {
+      sideMenu.classList.add('active');
+      menuOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (btnNavMenuBottom) btnNavMenuBottom.classList.add('active');
+    }
+  };
+
+  const cerrarSideMenu = () => {
+    if (sideMenu && menuOverlay) {
+      sideMenu.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      if (btnNavMenuBottom) btnNavMenuBottom.classList.remove('active');
+    }
+  };
+
+  if (btnNavMenuBottom) {
+    btnNavMenuBottom.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (sideMenu && sideMenu.classList.contains('active')) {
+        cerrarSideMenu();
+      } else {
+        abrirSideMenu();
       }
     });
   }
 
-  const pillType = document.getElementById("cmdFilterType");
-  if (pillType) pillType.classList.remove("active-filter");
+  if (btnMenuTrigger) {
+    btnMenuTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirSideMenu();
+    });
+  }
 
-  aplicarFiltrosOmnibox();
+  if (btnCloseMenu) {
+    btnCloseMenu.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarSideMenu();
+    });
+  }
+
+  if (menuOverlay) {
+    menuOverlay.addEventListener('click', cerrarSideMenu);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('active')) {
+      cerrarSideMenu();
+    }
+  });
+
+  // Vinculación de Enlaces de Navegación del Menú Lateral
+  const sideLinks = document.querySelectorAll('.side-menu-link[data-side]');
+  sideLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const action = link.getAttribute('data-side');
+      cerrarSideMenu();
+      sideLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      if (action === 'dashboard' || action === 'inmuebles') {
+        e.preventDefault();
+        const tabInm = document.querySelector('.cmd-niche-tab[data-dataset="./data/inmobiliario.json"]');
+        if (tabInm) tabInm.click();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (action === 'vehiculos') {
+        e.preventDefault();
+        const tabVeh = document.querySelector('.cmd-niche-tab[data-dataset="./data/vehiculos.json"]');
+        if (tabVeh) tabVeh.click();
+      } else if (action === 'vip') {
+        e.preventDefault();
+        abrirModalCheckout(0);
+      } else if (action === 'terminos') {
+        e.preventDefault();
+        const btnTerminos = document.getElementById('btnOpenTerminos');
+        if (btnTerminos) btnTerminos.click();
+      }
+    });
+  });
+
 }
+
+
+/**
+ * 🎯 MÓDULO DE LISTENERS Y EVENTOS (modules/10-listeners.js)
+ * Vinculación de eventos del DOM, atajos de teclado y orquestación de la UI.
+ * Estándar Ecosistema Desmulta.
+ */
+
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🌐 EXPOSICIÓN GLOBAL PARA COMPATIBILIDAD Y TESTING
+// ═════════════════════════════════════════════════════════════════════════
+window.moverCarrusel = moverCarrusel;
+window.irACarrusel = irACarrusel;
+window.abrirFichaTecnica = abrirFichaTecnica;
+window.cerrarFichaTecnica = cerrarFichaTecnica;
+window.abrirModalCheckout = abrirModalCheckout;
+window.aplicarFiltrosOmnibox = aplicarFiltrosOmnibox;
+
 
 /**
  * Configuración de listeners e interactividad.
@@ -2306,253 +2637,4 @@ function configurarListeners() {
     }
   });
 }
-
-/**
- * Sanitización de texto HTML para prevenir inyecciones.
- * @param {string} texto
- * @returns {string}
- */
-function escaparHtml(texto) {
-  if (!texto) return "";
-  return String(texto)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-/**
- * Formatea visualmente un precio con el símbolo $ separado sutilmente
- * de la cifra numérica, sin mostrar jamás la palabra 'COP'.
- * @param {string} precioStr - Cadena de precio (ej. "$ 1.250.000.000")
- * @returns {string} HTML estilizado con separación visual limpia
- */
-function formatearPrecioDisplay(precioStr) {
-  if (!precioStr) return '<span class="price-currency-sign">$</span> <span class="price-number">0</span>';
-  let str = String(precioStr).replace(/COP|USD|pesos/gi, '').trim();
-  if (str.startsWith('$')) {
-    str = str.substring(1).trim();
-  }
-  return `<span class="price-currency-sign">$</span> <span class="price-number">${escaparHtml(str)}</span>`;
-}
-
-/**
- * Sincroniza visualmente el icono y tooltip del conmutador de tema.
- * @param {string} theme - 'dark' o 'light'
- */
-function actualizarIconoTema(theme) {
-  const btnTheme = document.getElementById("btnThemeToggle");
-  const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
-
-  if (btnTheme) {
-    const icon = btnTheme.querySelector("i");
-    if (icon) {
-      if (theme === "light") {
-        icon.className = "fa-solid fa-moon";
-        btnTheme.title = "Cambiar a Modo Oscuro AMOLED";
-      } else {
-        icon.className = "fa-solid fa-sun";
-        btnTheme.title = "Cambiar a Modo Claro Arquitectónico";
-      }
-    }
-  }
-
-  if (btnThemeMobile) {
-    const iconM = btnThemeMobile.querySelector("i");
-    const spanM = btnThemeMobile.querySelector("span");
-    if (iconM) {
-      if (theme === "light") {
-        iconM.className = "fa-solid fa-moon";
-        if (spanM) spanM.textContent = "Noche";
-      } else {
-        iconM.className = "fa-solid fa-sun";
-        if (spanM) spanM.textContent = "Día";
-      }
-    }
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════
-// 🌐 EXPOSICIÓN GLOBAL PARA COMPATIBILIDAD Y TESTING
-// ═════════════════════════════════════════════════════════════════════════
-window.moverCarrusel = moverCarrusel;
-window.irACarrusel = irACarrusel;
-window.abrirFichaTecnica = abrirFichaTecnica;
-window.cerrarFichaTecnica = cerrarFichaTecnica;
-window.abrirModalCheckout = abrirModalCheckout;
-window.aplicarFiltrosOmnibox = aplicarFiltrosOmnibox;
-
-/* ═══════════════════════════════════════════════════
-   ✨ MOTOR DE MICRO-INTERACCIONES Y HÁPTICA
-   ═══════════════════════════════════════════════════ */
-function inicializarEfectosPremium() {
-  // 1. Motor Háptico (Vibración silenciosa nativa - Ajustado para motores más pesados)
-  const hapticLight = () => { if (navigator.vibrate) navigator.vibrate(30); };
-  const hapticHeavy = () => { if (navigator.vibrate) navigator.vibrate([30, 40, 30]); };
-
-  // 2. Efecto Onda (Ripple) y Sondeo de Clicks
-  document.body.addEventListener('click', (e) => {
-    // Detectar si el toque fue en un botón interactivo
-    const btn = e.target.closest('.btn-unlock-lead, .btn-wompi-pay, .slideup-cta-btn, .mobile-nav-btn, .btn-hero-cta, .btn-menu-pill');
-    
-    if (btn) {
-      // Diferenciar vibración según la importancia del botón
-      if (btn.classList.contains('btn-wompi-pay')) {
-        hapticHeavy();
-      } else {
-        hapticLight();
-      }
-
-      // Crear inyección de onda dinámica
-      const rect = btn.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const x = e.clientX - rect.left - size / 2;
-      const y = e.clientY - rect.top - size / 2;
-
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple-span';
-      ripple.style.width = ripple.style.height = `${size}px`;
-      ripple.style.left = `${x}px`;
-      ripple.style.top = `${y}px`;
-
-      btn.classList.add('btn-ripple');
-      btn.appendChild(ripple);
-
-      // Limpiar el DOM tras terminar la animación
-      setTimeout(() => ripple.remove(), 500);
-    }
-  });
-
-  // 3. Comando Flotante Magnético (Sticky Glass)
-  const commandBar = document.querySelector('.command-bar-wrapper');
-  if (commandBar) {
-    // Usamos passive: true para no bloquear el hilo principal de scroll
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 15) {
-        commandBar.classList.add('is-scrolled');
-      } else {
-        commandBar.classList.remove('is-scrolled');
-      }
-    }, { passive: true });
-  }
-
-  // 4. Motor Parallax de Bajo Consumo
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        // Seleccionamos las imágenes renderizadas
-        const images = document.querySelectorAll('.carousel-img, .card-static-img');
-        const windowHeight = window.innerHeight;
-
-        images.forEach(img => {
-          const parent = img.closest('.bento-card');
-          if (parent) {
-            const rect = parent.getBoundingClientRect();
-            // Ejecutar física SOLO si la tarjeta está visible en pantalla
-            if (rect.top < windowHeight && rect.bottom > 0) {
-              // Calcular porcentaje de posición y mover de -7.5% a 7.5%
-              const yPos = ((rect.top / windowHeight) * 15) - 7.5; 
-              // translate3d activa el procesador gráfico (GPU) directamente
-              img.style.transform = `translate3d(0, ${yPos}%, 0)`;
-            }
-          }
-        });
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-
-  // 5. Lógica del Menú Lateral Móvil (Off-Canvas)
-  const sideMenu = document.getElementById('sideMenu');
-  const menuOverlay = document.getElementById('sideMenuOverlay') || document.getElementById('menuOverlay');
-  const btnCloseMenu = document.getElementById('btnCloseSideMenu') || document.getElementById('btnCloseMenu');
-  const btnNavMenuBottom = document.getElementById('btnNavMenuBottom');
-  const btnMenuTrigger = document.getElementById('btnMenuTrigger');
-
-  const abrirSideMenu = () => {
-    if (sideMenu && menuOverlay) {
-      sideMenu.classList.add('active');
-      menuOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      if (btnNavMenuBottom) btnNavMenuBottom.classList.add('active');
-    }
-  };
-
-  const cerrarSideMenu = () => {
-    if (sideMenu && menuOverlay) {
-      sideMenu.classList.remove('active');
-      menuOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-      if (btnNavMenuBottom) btnNavMenuBottom.classList.remove('active');
-    }
-  };
-
-  if (btnNavMenuBottom) {
-    btnNavMenuBottom.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (sideMenu && sideMenu.classList.contains('active')) {
-        cerrarSideMenu();
-      } else {
-        abrirSideMenu();
-      }
-    });
-  }
-
-  if (btnMenuTrigger) {
-    btnMenuTrigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      abrirSideMenu();
-    });
-  }
-
-  if (btnCloseMenu) {
-    btnCloseMenu.addEventListener('click', (e) => {
-      e.preventDefault();
-      cerrarSideMenu();
-    });
-  }
-
-  if (menuOverlay) {
-    menuOverlay.addEventListener('click', cerrarSideMenu);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('active')) {
-      cerrarSideMenu();
-    }
-  });
-
-  // Vinculación de Enlaces de Navegación del Menú Lateral
-  const sideLinks = document.querySelectorAll('.side-menu-link[data-side]');
-  sideLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      const action = link.getAttribute('data-side');
-      cerrarSideMenu();
-      sideLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-
-      if (action === 'dashboard' || action === 'inmuebles') {
-        e.preventDefault();
-        const tabInm = document.querySelector('.cmd-niche-tab[data-dataset="./data/inmobiliario.json"]');
-        if (tabInm) tabInm.click();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (action === 'vehiculos') {
-        e.preventDefault();
-        const tabVeh = document.querySelector('.cmd-niche-tab[data-dataset="./data/vehiculos.json"]');
-        if (tabVeh) tabVeh.click();
-      } else if (action === 'vip') {
-        e.preventDefault();
-        abrirModalCheckout(0);
-      } else if (action === 'terminos') {
-        e.preventDefault();
-        const btnTerminos = document.getElementById('btnOpenTerminos');
-        if (btnTerminos) btnTerminos.click();
-      }
-    });
-  });
-
-}
+
