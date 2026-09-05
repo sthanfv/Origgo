@@ -272,11 +272,68 @@ function renderizarInterfaz(dataset) {
   const col1Nombre = config.columna_variable_1 || "Atributo 1";
   const col2Nombre = config.columna_variable_2 || "Atributo 2";
 
-  const leadsVisibles = leads.slice(0, limiteVisible);
-  const tieneMasLeads = leads.length > limiteVisible;
-  const restantes = leads.length - limiteVisible;
+  // 1. Filtrar leads por ciudad y búsqueda de texto ANTES de paginar
+  const leadsFiltrados = leads.filter(item => {
+    // A. Filtro por Ciudad
+    if (filtroCiudadActivo) {
+      const ciudadesObjetivo = filtroCiudadActivo.split("|").map(normalizarTextoBusqueda);
+      const itemCiudadNorm = normalizarTextoBusqueda(item.ciudad || "");
+      const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
+      const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
+      const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
+      const coincideCiudad = ciudadesObjetivo.some(c => 
+        itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
+      );
+      if (!coincideCiudad) return false;
+    }
+    // B. Filtro por Texto Libre
+    if (textoBusquedaActivo) {
+      const itemSearchText = normalizarTextoBusqueda(
+        `${item.titulo || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.detalles ? Object.values(item.detalles).join(' ') : ''}`
+      );
+      if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
+    }
+    return true;
+  });
 
-  let htmlContenido = leadsVisibles.map((item, index) => {
+  // Actualizar metadatos de la cabecera de catálogo con el conteo real filtrado
+  if (countEl) {
+    const sufijoCiudad = filtroCiudadActivo ? ` en ${filtroCiudadActivo}` : '';
+    countEl.textContent = `${leadsFiltrados.length} oportunidad${leadsFiltrados.length === 1 ? '' : 'es'} directa${leadsFiltrados.length === 1 ? '' : 's'}${sufijoCiudad}`;
+  }
+
+  // Estado vacío si no hay coincidencias
+  if (leadsFiltrados.length === 0) {
+    const ciudadTexto = filtroCiudadActivo ? ` en ${filtroCiudadActivo}` : '';
+    const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
+    const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
+    container.innerHTML = `
+      <div class="empty-catalog-state" id="emptyCatalogState" style="grid-column: 1/-1;">
+        <div class="empty-state-icon-box">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+        </div>
+        <div class="empty-state-content">
+          <h3 class="empty-state-title">Sin oportunidades en esta zona</h3>
+          <p class="empty-state-desc">No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.</p>
+        </div>
+        <button type="button" class="btn-empty-reset" id="btnResetFilters">
+          <i class="fa-solid fa-rotate-left"></i> Restablecer todos los filtros
+        </button>
+      </div>
+    `;
+    const btnReset = document.getElementById("btnResetFilters");
+    if (btnReset) {
+      btnReset.addEventListener("click", restablecerTodosLosFiltros);
+    }
+    return;
+  }
+
+  const leadsVisibles = leadsFiltrados.slice(0, limiteVisible);
+  const tieneMasLeads = leadsFiltrados.length > limiteVisible;
+  const restantes = leadsFiltrados.length - limiteVisible;
+
+  let htmlContenido = leadsVisibles.map((item) => {
+    const index = dataset.leads.indexOf(item);
     const claseUrgencia = item.urgencia_tipo || "urgente";
     const imgUrl = item.imagen || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80";
     const tieneMultiplesFotos = Array.isArray(item.imagenes) && item.imagenes.length > 1;
@@ -1598,76 +1655,9 @@ function coincideBusquedaInteligente(textoTarjetaNormalizado, busquedaUsuario) {
  * sobre la grilla de oportunidades Bento.
  */
 function aplicarFiltrosOmnibox() {
-  const container = document.getElementById("bentoGridContainer");
-  if (!container) return;
-
-  const cards = container.querySelectorAll(".bento-card:not(.skeleton-card)");
-  const emptyStateExistente = document.getElementById("emptyCatalogState");
-  if (emptyStateExistente) {
-    emptyStateExistente.remove();
-  }
-
-  let visibles = 0;
-
-  cards.forEach(card => {
-    const cardSearchText = card.getAttribute("data-search") || "";
-    const cardCiudadNorm = card.getAttribute("data-ciudad-norm") || "";
-    const cardBarrioNorm = card.getAttribute("data-barrio-norm") || "";
-
-    // 1. Filtro de Texto Inteligente (Multi-token, sin tildes, sinónimos)
-    const coincideTexto = coincideBusquedaInteligente(cardSearchText, textoBusquedaActivo);
-
-    // 2. Filtro de Ciudad seleccionada en Dropdown (Tolerante y Multi-Ciudad)
-    let coincideCiudad = true;
-    if (filtroCiudadActivo) {
-      const ciudadesObjetivo = filtroCiudadActivo.split("|").map(normalizarTextoBusqueda);
-      coincideCiudad = ciudadesObjetivo.some(c => 
-        cardCiudadNorm.includes(c) || cardBarrioNorm.includes(c) || cardSearchText.includes(c)
-      );
-    }
-
-    // 3. Filtro de Trato Directo (Todas las oportunidades del showcase son 100% FSBO de particulares)
-    const coincideTrato = true;
-
-    if (coincideTexto && coincideCiudad && coincideTrato) {
-      card.style.display = "";
-      visibles++;
-    } else {
-      card.style.display = "none";
-    }
-  });
-
-  // Actualizar contador del catálogo
-  const countEl = document.getElementById("catalogCountText");
-  if (countEl) {
-    countEl.textContent = `${visibles} oportunidad${visibles === 1 ? '' : 'es'} directa${visibles === 1 ? '' : 's'}`;
-  }
-
-  // Si no hay resultados visibles, inyectar el Empty State de lujo con botón de restablecimiento
-  if (visibles === 0 && cards.length > 0) {
-    const ciudadTexto = filtroCiudadActivo ? ` en ${filtroCiudadActivo.replace(/\|/g, ', ')}` : '';
-    const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
-    const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
-    const emptyStateHtml = `
-      <div class="empty-catalog-state" id="emptyCatalogState">
-        <div class="empty-state-icon-box">
-          <i class="fa-solid fa-filter-circle-xmark"></i>
-        </div>
-        <div class="empty-state-content">
-          <h3 class="empty-state-title">Sin oportunidades coincidentes</h3>
-          <p class="empty-state-desc">No se encontraron avisos que coincidan con los filtros aplicados${busquedaTexto}${ciudadTexto}. Intenta restablecer los criterios o buscar por otra zona.</p>
-        </div>
-        <button type="button" class="btn-empty-reset" id="btnResetFilters">
-          <i class="fa-solid fa-rotate-left"></i> Restablecer todos los filtros
-        </button>
-      </div>
-    `;
-    container.insertAdjacentHTML("beforeend", emptyStateHtml);
-
-    const btnReset = document.getElementById("btnResetFilters");
-    if (btnReset) {
-      btnReset.addEventListener("click", restablecerTodosLosFiltros);
-    }
+  limiteVisible = 6;
+  if (datosActuales) {
+    renderizarInterfaz(datosActuales);
   }
 }
 
