@@ -887,29 +887,35 @@ async function ejecutarPagoWompi() {
 
     if (typeof WidgetCheckout === 'undefined') {
       await new Promise((resolve) => {
-        cargarScriptWompi();
-        const check = setInterval(() => {
-          if (typeof WidgetCheckout !== 'undefined') {
-            clearInterval(check);
-            resolve();
-          }
-        }, 200);
-        setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+        const scriptId = 'wompi-widget-script';
+        if (!document.getElementById(scriptId)) {
+          const script = document.createElement('script');
+          script.id = scriptId;
+          script.src = 'https://checkout.wompi.co/widget.js';
+          script.async = true;
+          script.onload = () => resolve();
+          script.onerror = () => resolve();
+          document.body.appendChild(script);
+        } else {
+          const check = setInterval(() => {
+            if (typeof WidgetCheckout !== 'undefined') {
+              clearInterval(check);
+              resolve();
+            }
+          }, 100);
+          setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+        }
       });
     }
 
     if (typeof WidgetCheckout !== 'undefined') {
       const checkout = new WidgetCheckout({
-        currency: orderData.currency || 'COP',
+        currency: 'COP',
         amountInCents: orderData.amountInCents,
         reference: orderData.reference,
         publicKey: orderData.publicKey,
         signature: {
           integrity: orderData.signature
-        },
-        redirectUrl: `${window.location.origin}${window.location.pathname}?payment_ref=${orderData.reference}`,
-        customerData: {
-          phoneNumber: celular
         }
       });
 
@@ -949,7 +955,13 @@ async function ejecutarPagoWompi() {
     cerrarModalCheckout();
   } catch (err) {
     console.error('[Pago Wompi] Error:', err);
-    alert('Error al conectar con la pasarela: ' + err.message);
+    const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
+    if (errorBox) {
+      errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
+      errorBox.style.display = 'block';
+    } else {
+      mostrarNotificacionToast(`⚠️ ${mensajeError}`);
+    }
   } finally {
     if (btnPagar) {
       btnPagar.innerHTML = textoOriginal;
