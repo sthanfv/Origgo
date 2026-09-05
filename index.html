@@ -113,6 +113,57 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
+      <div class="cmd-filters-group">
+        <div class="cmd-filter-pill-dropdown-wrapper">
+          <button type="button" class="cmd-filter-pill" id="cmdFilterLocation" aria-expanded="false" title="Filtrar por ciudad">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="cmdFilterLocationLabel">Todas las Ciudades</span>
+            <i class="fa-solid fa-chevron-down cmd-dropdown-arrow"></i>
+          </button>
+          <div class="cmd-dropdown-menu" id="cmdLocationDropdown">
+            <div class="cmd-dropdown-item active" data-city="">
+              <i class="fa-solid fa-earth-americas"></i>
+              <span>Colombia (Todas)</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Santa Marta">
+              <i class="fa-solid fa-umbrella-beach"></i>
+              <span>Santa Marta</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Bogotá">
+              <i class="fa-solid fa-city"></i>
+              <span>Bogotá D.C.</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Medellín">
+              <i class="fa-solid fa-mountain-city"></i>
+              <span>Medellín / Envigado</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Cali">
+              <i class="fa-solid fa-tree-city"></i>
+              <span>Cali</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Barranquilla">
+              <i class="fa-solid fa-anchor"></i>
+              <span>Barranquilla</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Cartagena">
+              <i class="fa-solid fa-monument"></i>
+              <span>Cartagena</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Bucaramanga">
+              <i class="fa-solid fa-building"></i>
+              <span>Bucaramanga</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Pereira">
+              <i class="fa-solid fa-mug-hot"></i>
+              <span>Pereira / Eje Cafetero</span>
+            </div>
+            <div class="cmd-dropdown-item" data-city="Ibagué">
+              <i class="fa-solid fa-music"></i>
+              <span>Ibagué</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="cmd-niche-group" id="nicheSwitcher">
         <button class="cmd-niche-tab active" data-dataset="./data/inmobiliario.json">
           <i class="fa-solid fa-building"></i> Inmuebles Directos
@@ -593,6 +644,29 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
+
+    <!-- Bloque Móvil de Filtro por Ciudad -->
+    <div class="side-menu-city-block" style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); background: rgba(16, 185, 129, 0.05);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-location-dot"></i> Ciudad de Interés
+        </span>
+        <span id="sideMenuCityBadge" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 999px; background: rgba(16, 185, 129, 0.18); color: #34D399; font-weight: 700;">Todas</span>
+      </div>
+      <select id="sideMenuCitySelect" class="side-menu-city-select" aria-label="Filtrar por Ciudad" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 11px 12px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; outline: none; cursor: pointer;">
+        <option value="">🇨🇴 Colombia (Todas las Ciudades)</option>
+        <option value="Santa Marta">🏖️ Santa Marta</option>
+        <option value="Bogotá">🏛️ Bogotá D.C.</option>
+        <option value="Medellín">⛰️ Medellín / Envigado</option>
+        <option value="Cali">🌴 Cali</option>
+        <option value="Barranquilla">⚓ Barranquilla</option>
+        <option value="Cartagena">🏰 Cartagena</option>
+        <option value="Bucaramanga">🏢 Bucaramanga / Floridablanca</option>
+        <option value="Pereira">☕ Pereira / Eje Cafetero</option>
+        <option value="Ibagué">🎸 Ibagué</option>
+      </select>
+    </div>
+
     <nav class="side-menu-nav">
       <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard Principal</a>
       <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> Inmuebles Directos</a>

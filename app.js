@@ -749,6 +749,22 @@ function sincronizarFiltroCiudadUsuario() {
           if (pillLocation) pillLocation.classList.add("active-filter");
         }
       }
+      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
+      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
+      if (sideMenuSelect) {
+        let matchedVal = "";
+        for (const opt of sideMenuSelect.options) {
+          if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
+            matchedVal = opt.value;
+            break;
+          }
+        }
+        sideMenuSelect.value = matchedVal || targetCity;
+      }
+      if (sideMenuBadge) {
+        sideMenuBadge.textContent = targetCity;
+      }
+
       if (typeof aplicarFiltrosOmnibox === 'function') {
         aplicarFiltrosOmnibox();
       }
@@ -1856,6 +1872,12 @@ function configurarListeners() {
         const spanText = item.querySelector("span") ? item.querySelector("span").textContent : "Colombia (Todas)";
         if (labelLocation) labelLocation.textContent = spanText;
 
+        // Sincronizar con el selector del menú móvil si existe
+        const sideMenuSelect = document.getElementById("sideMenuCitySelect");
+        const sideMenuBadge = document.getElementById("sideMenuCityBadge");
+        if (sideMenuSelect) sideMenuSelect.value = cityValue;
+        if (sideMenuBadge) sideMenuBadge.textContent = cityValue || "Todas";
+
         pillLocation.classList.toggle("active-filter", cityValue !== "");
         dropdownLocation.classList.remove("show");
         pillLocation.classList.remove("open");
@@ -1876,6 +1898,48 @@ function configurarListeners() {
       }
     }
   });
+
+  // Selector de Ciudad en el Menú Lateral Móvil (Off-Canvas)
+  const sideMenuCitySelect = document.getElementById("sideMenuCitySelect");
+  const sideMenuCityBadge = document.getElementById("sideMenuCityBadge");
+  if (sideMenuCitySelect) {
+    sideMenuCitySelect.addEventListener("change", (e) => {
+      const cityVal = e.target.value || "";
+      filtroCiudadActivo = cityVal;
+
+      if (sideMenuCityBadge) {
+        sideMenuCityBadge.textContent = cityVal || "Todas";
+      }
+
+      // Sincronizar con la barra superior de comandos
+      if (labelLocation) {
+        labelLocation.textContent = cityVal ? (sideMenuCitySelect.options[sideMenuCitySelect.selectedIndex]?.text || cityVal) : "Todas las Ciudades";
+      }
+      if (pillLocation) {
+        pillLocation.classList.toggle("active-filter", cityVal !== "");
+      }
+      if (dropdownLocation) {
+        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+          const itemCity = item.getAttribute("data-city") || "";
+          item.classList.toggle("active", itemCity === cityVal);
+        });
+      }
+
+      aplicarFiltrosOmnibox();
+
+      // Cerrar el menú lateral para mostrar de inmediato la grilla filtrada
+      const sideMenu = document.getElementById('sideMenu');
+      const menuOverlay = document.getElementById('sideMenuOverlay') || document.getElementById('menuOverlay');
+      if (sideMenu && menuOverlay) {
+        sideMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      const nombreLimpio = cityVal ? cityVal : 'Colombia';
+      mostrarNotificacionToast(`📍 Mostrando oportunidades en ${nombreLimpio}`, 'info');
+    });
+  }
 
   // Filtro Conmutador de Trato Directo
   const pillType = document.getElementById("cmdFilterType");
