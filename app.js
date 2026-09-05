@@ -553,9 +553,23 @@ function iniciarScrollReveal() {
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
 async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-...)
+  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
   const urlParams = new URLSearchParams(window.location.search);
-  const paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  const wompiId = urlParams.get('id');
+
+  if (wompiId && !paymentRef) {
+    try {
+      const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
+      const dataVerify = await resVerify.json();
+      if (dataVerify.ok && dataVerify.reference) {
+        paymentRef = dataVerify.reference;
+      }
+    } catch (e) {
+      console.warn('[Sesión] Error al verificar Wompi ID:', e.message);
+    }
+  }
+
   if (paymentRef && paymentRef.startsWith('HNT-')) {
     try {
       const res = await fetch('/api/auth/session', {
@@ -1134,9 +1148,10 @@ async function ejecutarDesbloqueoLead(lead, index) {
         : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`
     );
 
-    if (data.contacto?.whatsappUrl) {
+    // Eliminada la redirección automática a WhatsApp para mostrar el PIN primero
+    /* if (data.contacto?.whatsappUrl) {
       window.open(data.contacto.whatsappUrl, '_blank');
-    }
+    } */
   } catch (err) {
     console.error('[Desbloqueo] Error:', err);
     mostrarNotificacionToast(err.message || 'Error de conexión', 'error');

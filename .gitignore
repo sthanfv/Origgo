@@ -8,4 +8,5 @@ Thumbs.db
 .env*.local
 *.pem
 serviceAccountKey*.json
+service-account*.json
 data/ledger_store.json
