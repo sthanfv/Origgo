@@ -830,64 +830,224 @@ function sincronizarFiltroCiudadUsuario() {
 }
 
 /**
- * Muestra una notificación toast elegante y flotante.
- * @param {string} mensaje
- * @param {'success'|'error'|'info'} tipo
+ * Muestra una notificación toast ejecutiva de alta gama con iluminación ambiental,
+ * micro-barra de progreso interactiva, soporte de gestos táctiles y modo oscuro/claro.
+ * Compatible con la referencia Sonner / Radix Luxury Toast.
+ * 
+ * @param {string} mensaje - Texto principal o detalle de la alerta
+ * @param {'success'|'error'|'warning'|'info'|'vip'} [tipo='success'] - Tipo semántico de notificación
+ * @param {string|{title?: string, duration?: number, actionText?: string, onAction?: Function}} [opciones] - Opciones o título manual
  */
-function mostrarNotificacionToast(mensaje, tipo = 'success') {
-  let toast = document.getElementById('hunterToastAlert');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'hunterToastAlert';
-    toast.style.cssText = `
-      position: fixed;
-      top: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      z-index: 100000;
-      padding: 0.85rem 1.45rem;
-      border-radius: 9999px;
-      font-family: var(--font-display);
-      font-size: 0.875rem;
-      font-weight: 800;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      opacity: 0;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      max-width: 90vw;
-      text-align: center;
-    `;
-    document.body.appendChild(toast);
+function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
+  // Normalizar opciones
+  const opts = typeof opciones === 'string' ? { title: opciones } : (opciones || {});
+  let duracionMs = opts.duration || 4500;
+  let tipoFinal = tipo;
+  let titulo = opts.title || '';
+  let mensajeLimpio = String(mensaje || '').trim();
+
+  // Detección e interpretación inteligente de prefijos y emojis
+  if (mensajeLimpio.startsWith('👑')) {
+    tipoFinal = 'vip';
+    if (!titulo) titulo = 'Membresía VIP Pro';
+    mensajeLimpio = mensajeLimpio.replace(/^👑\s*/, '');
+  } else if (mensajeLimpio.startsWith('🎉')) {
+    if (!titulo) titulo = '¡Operación Exitosa!';
+    mensajeLimpio = mensajeLimpio.replace(/^🎉\s*/, '');
+  } else if (mensajeLimpio.startsWith('📍')) {
+    if (!titulo) titulo = 'Cobertura Regional';
+    mensajeLimpio = mensajeLimpio.replace(/^📍\s*/, '');
+  } else if (mensajeLimpio.startsWith('⚠️')) {
+    tipoFinal = 'warning';
+    if (!titulo) titulo = 'Aviso del Sistema';
+    mensajeLimpio = mensajeLimpio.replace(/^⚠️\s*/, '');
+  } else if (mensajeLimpio.startsWith('✅')) {
+    if (!titulo) titulo = 'Confirmación';
+    mensajeLimpio = mensajeLimpio.replace(/^✅\s*/, '');
+  } else if (mensajeLimpio.startsWith('❌')) {
+    tipoFinal = 'error';
+    if (!titulo) titulo = 'Acceso Restringido';
+    mensajeLimpio = mensajeLimpio.replace(/^❌\s*/, '');
   }
 
-  if (tipo === 'error') {
-    toast.style.background = 'hsla(0, 84%, 18%, 0.95)';
-    toast.style.border = '1px solid #EF4444';
-    toast.style.color = '#FCA5A5';
-  } else if (tipo === 'info') {
-    toast.style.background = 'hsla(217, 50%, 15%, 0.95)';
-    toast.style.border = '1px solid #3B82F6';
-    toast.style.color = '#93C5FD';
+  // Títulos por defecto según el tipo si no se asignaron previamente
+  if (!titulo) {
+    if (tipoFinal === 'vip') titulo = 'Membresía VIP Pro';
+    else if (tipoFinal === 'error') titulo = 'Acción Requerida';
+    else if (tipoFinal === 'warning') titulo = 'Atención';
+    else if (tipoFinal === 'info') titulo = 'Información';
+    else titulo = 'Notificación Hunter Pro';
+  }
+
+  // Contenedor global de toasts
+  let container = document.getElementById('hunterToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'hunterToastContainer';
+    container.className = 'hunter-toast-container';
+    container.setAttribute('aria-live', 'polite');
+    document.body.appendChild(container);
+  }
+
+  // Si ya hay un toast activo, cerramos el previo de inmediato para evitar sobrecargas
+  const toastsExistentes = container.querySelectorAll('.hunter-toast:not(.hunter-toast--closing)');
+  if (toastsExistentes.length >= 2) {
+    toastsExistentes[0].classList.add('hunter-toast--closing');
+    setTimeout(() => toastsExistentes[0].remove(), 280);
+  }
+
+  // Selector de Icono SVG de alta fidelidad según el tipo
+  let iconoSvg = '';
+  if (tipoFinal === 'vip') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"/></svg>`;
+  } else if (tipoFinal === 'error') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  } else if (tipoFinal === 'warning') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  } else if (tipoFinal === 'info') {
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
   } else {
-    toast.style.background = 'hsla(166, 60%, 12%, 0.95)';
-    toast.style.border = '1px solid #10B981';
-    toast.style.color = '#A7F3D0';
+    // success por defecto
+    iconoSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
   }
 
-  toast.innerHTML = mensaje;
-  toast.style.opacity = '1';
-  toast.style.transform = 'translateX(-50%) translateY(0)';
+  // Generar tarjeta toast
+  const toast = document.createElement('div');
+  toast.className = `hunter-toast hunter-toast--${tipoFinal}`;
+  toast.setAttribute('role', 'alert');
 
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(-50%) translateY(-20px)';
-  }, 4200);
+  // Botón de acción opcional
+  let actionHtml = '';
+  if (opts.actionText) {
+    actionHtml = `<button type="button" class="hunter-toast-action-btn">${opts.actionText}</button>`;
+  }
+
+  const segundosTotal = Math.round(duracionMs / 1000);
+
+  toast.innerHTML = `
+    <div class="hunter-toast-glow"></div>
+    <div class="hunter-toast-inner">
+      <div class="hunter-toast-icon-wrapper">
+        ${iconoSvg}
+      </div>
+      <div class="hunter-toast-content">
+        <div class="hunter-toast-header">
+          <h4 class="hunter-toast-title">${titulo}</h4>
+          <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <p class="hunter-toast-description">${mensajeLimpio}</p>
+        ${actionHtml}
+      </div>
+    </div>
+    <div class="hunter-toast-footer">
+      <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
+      <div class="hunter-toast-progress-track">
+        <div class="hunter-toast-progress-bar" style="animation-duration: ${duracionMs}ms;"></div>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  // Vincular acción opcional si se suministró callback
+  if (opts.onAction && typeof opts.onAction === 'function') {
+    const actionBtn = toast.querySelector('.hunter-toast-action-btn');
+    if (actionBtn) {
+      actionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        opts.onAction();
+        cerrarToast();
+      });
+    }
+  }
+
+  // Función de cierre elegante
+  let cerrado = false;
+  function cerrarToast() {
+    if (cerrado) return;
+    cerrado = true;
+    toast.classList.add('hunter-toast--closing');
+    clearTimeout(timeoutId);
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 280);
+  }
+
+  // Botón de cierre superior
+  const closeBtn = toast.querySelector('.hunter-toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cerrarToast();
+    });
+  }
+
+  // Lógica de temporizador interactivo con soporte para pausa en hover y touch
+  let tiempoRestante = duracionMs;
+  let tiempoInicio = Date.now();
+  let timeoutId = null;
+  const timerLabel = toast.querySelector('.hunter-toast-timer-label');
+
+  function iniciarTimer(ms) {
+    tiempoInicio = Date.now();
+    timeoutId = setTimeout(() => {
+      cerrarToast();
+    }, ms);
+  }
+
+  function pausarTimer() {
+    clearTimeout(timeoutId);
+    const transcurrido = Date.now() - tiempoInicio;
+    tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
+    toast.classList.add('hunter-toast--paused');
+    if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
+  }
+
+  function reanudarTimer() {
+    toast.classList.remove('hunter-toast--paused');
+    if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
+    iniciarTimer(tiempoRestante);
+  }
+
+  // Pausa en hover de escritorio
+  toast.addEventListener('mouseenter', pausarTimer);
+  toast.addEventListener('mouseleave', reanudarTimer);
+
+  // Gestos táctiles para móviles: pausa en toque y Swipe-Up para descartar
+  let touchStartY = 0;
+  let touchDiffY = 0;
+
+  toast.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+    pausarTimer();
+  }, { passive: true });
+
+  toast.addEventListener('touchmove', (e) => {
+    touchDiffY = e.touches[0].clientY - touchStartY;
+    if (touchDiffY < 0) {
+      // Arrastre hacia arriba
+      toast.style.transform = `translateY(${Math.max(touchDiffY, -80)}px) scale(${1 + touchDiffY / 500})`;
+      toast.style.opacity = `${1 + touchDiffY / 120}`;
+    }
+  }, { passive: true });
+
+  toast.addEventListener('touchend', () => {
+    if (touchDiffY < -40) {
+      // Gesto de swipe up confirmado: descartar
+      cerrarToast();
+    } else {
+      // Volver a posición original y reanudar
+      toast.style.transform = '';
+      toast.style.opacity = '';
+      reanudarTimer();
+    }
+    touchDiffY = 0;
+  }, { passive: true });
+
+  // Iniciar la cuenta regresiva inicial
+  iniciarTimer(duracionMs);
 }
 
 /**

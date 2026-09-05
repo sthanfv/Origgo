@@ -4270,3 +4270,392 @@ main {
   }
 }
 
+/* ═════════════════════════════════════════════════════════════════════════
+   🔔 SISTEMA DE NOTIFICACIONES TOAST DE ALTA GAMA (SONNER / RADIX LUXURY)
+   • Morfología de tarjeta ejecutiva (border-radius: 16px)
+   • Iluminación ambiental superior (Ambient Glow) según tipo de evento
+   • Modo Oscuro (Glassmorphism esmeralda/noche) y Modo Claro (Porcelana Salvia)
+   • Barra de progreso animada interactiva con pausa al hover/touch
+   • Botón de cierre accesible y gestos de descarte táctil
+   ═════════════════════════════════════════════════════════════════════════ */
+
+.hunter-toast-container {
+  position: fixed;
+  top: max(1.25rem, env(safe-area-inset-top, 1.25rem));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: calc(100% - 2rem);
+  max-width: 440px;
+  pointer-events: none;
+}
+
+.hunter-toast {
+  position: relative;
+  width: 100%;
+  pointer-events: auto;
+  border-radius: 16px;
+  padding: 1rem 1.15rem 0.65rem 1.15rem;
+  background: hsla(170, 59%, 10%, 0.88);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid hsla(129, 48%, 87%, 0.14);
+  box-shadow: 
+    0 20px 45px -12px rgba(0, 0, 0, 0.75),
+    0 4px 16px -2px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 hsla(129, 48%, 87%, 0.15);
+  color: var(--color-text-white, #FFFFFF);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  cursor: default;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, filter 0.25s ease;
+  animation: hunterToastSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hunter-toast.hunter-toast--closing {
+  animation: hunterToastSlideOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Capa de iluminación ambiental (Ambient Glow) */
+.hunter-toast-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  pointer-events: none;
+  border-radius: 16px 16px 0 0;
+  z-index: 0;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+/* Variantes de iluminación ambiental */
+.hunter-toast--success .hunter-toast-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(16, 185, 129, 0.35), transparent 75%);
+}
+
+.hunter-toast--vip .hunter-toast-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(198, 167, 94, 0.40), transparent 75%);
+}
+
+.hunter-toast--warning .hunter-toast-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245, 158, 11, 0.35), transparent 75%);
+}
+
+.hunter-toast--error .hunter-toast-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(239, 68, 68, 0.35), transparent 75%);
+}
+
+.hunter-toast--info .hunter-toast-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(14, 165, 233, 0.35), transparent 75%);
+}
+
+/* Disposición interna */
+.hunter-toast-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+/* Insignia del Icono */
+.hunter-toast-icon-wrapper {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease;
+}
+
+.hunter-toast--success .hunter-toast-icon-wrapper {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #10B981;
+}
+
+.hunter-toast--vip .hunter-toast-icon-wrapper {
+  background: rgba(198, 167, 94, 0.18);
+  border-color: rgba(198, 167, 94, 0.45);
+  color: #C6A75E;
+}
+
+.hunter-toast--warning .hunter-toast-icon-wrapper {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #F59E0B;
+}
+
+.hunter-toast--error .hunter-toast-icon-wrapper {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #EF4444;
+}
+
+.hunter-toast--info .hunter-toast-icon-wrapper {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: #0EA5E9;
+}
+
+/* Contenido central */
+.hunter-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hunter-toast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.hunter-toast-title {
+  margin: 0;
+  font-family: var(--font-display, 'Lufga', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.hunter-toast-description {
+  margin: 0;
+  font-family: var(--font-body, 'Graphik', sans-serif);
+  font-size: 0.835rem;
+  line-height: 1.45;
+  color: var(--color-text-muted, #8EB69B);
+  word-break: break-word;
+}
+
+/* Botón de cierre minimalista */
+.hunter-toast-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.hunter-toast-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.hunter-toast-close:active {
+  transform: scale(0.92);
+}
+
+/* Botón de acción opcional */
+.hunter-toast-action-btn {
+  margin-top: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-display, 'Lufga', sans-serif);
+  font-size: 0.775rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hunter-toast-action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Footer con temporizador y barra de progreso */
+.hunter-toast-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.65rem;
+  padding-top: 0.35rem;
+}
+
+.hunter-toast-timer-label {
+  display: block;
+  font-size: 0.72rem;
+  font-family: var(--font-body, 'Graphik', sans-serif);
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.01em;
+}
+
+.hunter-toast-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.hunter-toast-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  animation: hunterToastProgress linear forwards;
+}
+
+.hunter-toast--paused .hunter-toast-progress-bar {
+  animation-play-state: paused !important;
+}
+
+.hunter-toast--success .hunter-toast-progress-bar {
+  background: linear-gradient(90deg, #10B981, #34D399);
+}
+
+.hunter-toast--vip .hunter-toast-progress-bar {
+  background: linear-gradient(90deg, #C6A75E, #E8DCC8);
+}
+
+.hunter-toast--warning .hunter-toast-progress-bar {
+  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+}
+
+.hunter-toast--error .hunter-toast-progress-bar {
+  background: linear-gradient(90deg, #EF4444, #F87171);
+}
+
+.hunter-toast--info .hunter-toast-progress-bar {
+  background: linear-gradient(90deg, #0EA5E9, #38BDF8);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   🏛️ ADAPTACIÓN A MODO CLARO (LIGHT THEME LUXURY)
+   ═════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] .hunter-toast {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(5, 31, 32, 0.12);
+  box-shadow: 
+    0 20px 45px -12px rgba(5, 31, 32, 0.15),
+    0 4px 16px -2px rgba(5, 31, 32, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="light"] .hunter-toast-title {
+  color: #0A110E;
+}
+
+[data-theme="light"] .hunter-toast-description {
+  color: #242E29;
+}
+
+[data-theme="light"] .hunter-toast-close {
+  color: rgba(10, 17, 14, 0.45);
+}
+
+[data-theme="light"] .hunter-toast-close:hover {
+  background: rgba(5, 31, 32, 0.08);
+  color: #0A110E;
+}
+
+[data-theme="light"] .hunter-toast-timer-label {
+  color: rgba(36, 46, 41, 0.6);
+}
+
+[data-theme="light"] .hunter-toast-progress-track {
+  background: rgba(5, 31, 32, 0.08);
+}
+
+[data-theme="light"] .hunter-toast-action-btn {
+  background: rgba(5, 31, 32, 0.06);
+  border-color: rgba(5, 31, 32, 0.12);
+  color: #0A110E;
+}
+
+[data-theme="light"] .hunter-toast-action-btn:hover {
+  background: rgba(5, 31, 32, 0.12);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   ✨ KEYFRAMES DE ENTRADA, SALIDA Y BARRA DE PROGRESO
+   ═════════════════════════════════════════════════════════════════════════ */
+@keyframes hunterToastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.92);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes hunterToastSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.94);
+    filter: blur(3px);
+  }
+}
+
+@keyframes hunterToastProgress {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+/* Responsive para pantallas móviles */
+@media (max-width: 640px) {
+  .hunter-toast-container {
+    width: calc(100% - 1.25rem);
+    top: max(0.85rem, env(safe-area-inset-top, 0.85rem));
+  }
+
+  .hunter-toast {
+    padding: 0.9rem 1rem 0.55rem 1rem;
+    border-radius: 14px;
+  }
+
+  .hunter-toast-title {
+    font-size: 0.9rem;
+  }
+
+  .hunter-toast-description {
+    font-size: 0.8rem;
+  }
+
+  .hunter-toast-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}
+
