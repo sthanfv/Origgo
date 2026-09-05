@@ -329,7 +329,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     else if (tipoFinal === 'error') titulo = 'Acción Requerida';
     else if (tipoFinal === 'warning') titulo = 'Atención';
     else if (tipoFinal === 'info') titulo = 'Información';
-    else titulo = 'Notificación Hunter Pro';
+    else titulo = 'Notificación Origgo';
   }
 
   // Contenedor global de toasts
@@ -2004,7 +2004,7 @@ async function ejecutarPagoWompi() {
     }
 
     // Fallback si la CDN de Wompi estuviera caída
-    const msg = encodeURIComponent(`Hola Hunter Pro, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
+    const msg = encodeURIComponent(`Hola Origgo, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
     window.open(`https://wa.me/573001234567?text=${msg}`, '_blank');
     cerrarModalCheckout();
   } catch (err) {
@@ -2670,11 +2670,11 @@ function configurarListeners() {
   const textosLegales = {
     terminos: {
       titulo: "Términos de Servicio y Exoneración de Responsabilidad",
-      html: "<p><strong>1. Naturaleza del Servicio y Cero Intermediación</strong><br>Hunter Pro Intelligence es una herramienta de software que indexa y clasifica información de ofertas publicadas abiertamente en internet. Hunter Pro NO es una agencia inmobiliaria, concesionario, entidad de corretaje, ni actúa como asesor financiero o legal. No cobramos comisiones ni participamos en acuerdos comerciales o pagos.</p><p><strong>2. Exoneración Total de Responsabilidad</strong><br>Hunter Pro no valida, certifica ni garantiza la veracidad, exactitud, vigencia, titularidad real, legalidad o estado físico o mecánico de los bienes listados. La negociación, desembolsos, revisión de títulos de propiedad, tradición, gravámenes o contratos es responsabilidad exclusiva, directa e indelegable del usuario y las partes interesadas. Hunter Pro queda expresamente eximido de cualquier daño, pérdida económica o disputa derivada de transacciones entre particulares.</p><p><strong>3. Cláusula Anti-Scraping Estricta</strong><br>Se prohíbe terminantemente la extracción automatizada, raspado web o minería de datos mediante bots, spiders o herramientas informáticas. La infracción facultará la revocación inmediata del acceso y las acciones judiciales pertinentes.</p>"
+      html: "<p><strong>1. Naturaleza del Servicio y Cero Intermediación</strong><br>Origgo es una herramienta de software que indexa y clasifica información de ofertas publicadas abiertamente en internet. Origgo NO es una agencia inmobiliaria, concesionario, entidad de corretaje, ni actúa como asesor financiero o legal. No cobramos comisiones ni participamos en acuerdos comerciales o pagos.</p><p><strong>2. Exoneración Total de Responsabilidad</strong><br>Origgo no valida, certifica ni garantiza la veracidad, exactitud, vigencia, titularidad real, legalidad o estado físico o mecánico de los bienes listados. La negociación, desembolsos, revisión de títulos de propiedad, tradición, gravámenes o contratos es responsabilidad exclusiva, directa e indelegable del usuario y las partes interesadas. Origgo queda expresamente eximido de cualquier daño, pérdida económica o disputa derivada de transacciones entre particulares.</p><p><strong>3. Cláusula Anti-Scraping Estricta</strong><br>Se prohíbe terminantemente la extracción automatizada, raspado web o minería de datos mediante bots, spiders o herramientas informáticas. La infracción facultará la revocación inmediata del acceso y las acciones judiciales pertinentes.</p>"
     },
     privacidad: {
       titulo: "Política de Privacidad y Tratamiento de Datos (Ley 1581)",
-      html: "<p><strong>1. Cumplimiento Normativo (Ley 1581 de 2012)</strong><br>En cumplimiento del régimen de protección de datos personales de Colombia, Hunter Pro garantiza los derechos de consulta, actualización y supresión de datos a los titulares.</p><p><strong>2. Origen Público de la Información y Desindexación</strong><br>Los números de contacto y datos de bienes corresponden a información divulgada voluntariamente por sus anunciantes en plataformas públicas. Nuestro software opera únicamente como motor indexador. Si usted es el titular de un inmueble o vehículo y desea desindexar su contacto o publicación de la terminal, puede solicitar la supresión inmediata a través de nuestro canal de soporte.</p><p><strong>3. Acceso Restringido</strong><br>Los datos de contacto se suministran exclusivamente a usuarios registrados bajo verificación para evitar usos indebidos o masivos.</p>"
+      html: "<p><strong>1. Cumplimiento Normativo (Ley 1581 de 2012)</strong><br>En cumplimiento del régimen de protección de datos personales de Colombia, Origgo garantiza los derechos de consulta, actualización y supresión de datos a los titulares.</p><p><strong>2. Origen Público de la Información y Desindexación</strong><br>Los números de contacto y datos de bienes corresponden a información divulgada voluntariamente por sus anunciantes en plataformas públicas. Nuestro software opera únicamente como motor indexador. Si usted es el titular de un inmueble o vehículo y desea desindexar su contacto o publicación de la terminal, puede solicitar la supresión inmediata a través de nuestro canal de soporte.</p><p><strong>3. Acceso Restringido</strong><br>Los datos de contacto se suministran exclusivamente a usuarios registrados bajo verificación para evitar usos indebidos o masivos.</p>"
     }
   };
 
@@ -2920,7 +2920,7 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
 
   if (elList) elList.innerHTML = itemsHtml;
   if (elCtaText) {
-    elCtaText.textContent = leadSeleccionado ? 'Ver Teléfono de Mi Inmueble' : 'Comenzar a Cazar Oportunidades';
+    elCtaText.textContent = leadSeleccionado ? 'Ver Teléfono de Mi Inmueble' : 'Explorar Oportunidades Directas';
   }
 
   modal.classList.add("active");

@@ -51,7 +51,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     else if (tipoFinal === 'error') titulo = 'Acción Requerida';
     else if (tipoFinal === 'warning') titulo = 'Atención';
     else if (tipoFinal === 'info') titulo = 'Información';
-    else titulo = 'Notificación Hunter Pro';
+    else titulo = 'Notificación Origgo';
   }
 
   // Contenedor global de toasts

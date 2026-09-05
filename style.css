@@ -344,157 +344,50 @@ body {
   will-change: transform, filter, stroke-opacity;
 }
 
-/* 1. Anillo de Radar Sonar: Rotación Continua Nítida en Sentido Horario */
+/* 1. Anillo Isotipo Origgo: Respiración Lumínica Áurea */
 .radar-sonar-ring {
-  animation: animRadarSonarClockwise 12s linear infinite;
+  animation: animOriggoAura 5s ease-in-out infinite;
 }
 
-@keyframes animRadarSonarClockwise {
-  0% {
-    transform: rotate(0deg);
+@keyframes animOriggoAura {
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(0.99);
   }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* 2. Puntas Angulares Cardinales: Calibración Cíclica Autónoma cada 6s (Expansión y Bloqueo) */
-.pointer-north {
-  animation: animCalibNorth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-}
-
-@keyframes animCalibNorth {
-  0%, 35%, 80%, 100% {
-    transform: translateY(0);
-  }
-  48% {
-    transform: translateY(-5px); /* Expansión hacia el Norte */
-  }
-  60% {
-    transform: translateY(0.8px); /* Rebote elástico de cerrojo */
-  }
-  70% {
-    transform: translateY(0);
+  50% {
+    opacity: 1;
+    transform: scale(1.01);
   }
 }
 
-.pointer-south {
-  animation: animCalibSouth 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+/* 2. Puntos Cardinales de Enfoque */
+.pointer-north, .pointer-south, .pointer-west, .pointer-east {
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
 }
 
-@keyframes animCalibSouth {
-  0%, 35%, 80%, 100% {
-    transform: translateY(0);
-  }
-  48% {
-    transform: translateY(5px); /* Expansión hacia el Sur */
-  }
-  60% {
-    transform: translateY(-0.8px); /* Rebote elástico */
-  }
-  70% {
-    transform: translateY(0);
-  }
-}
-
-.pointer-west {
-  animation: animCalibWest 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-}
-
-@keyframes animCalibWest {
-  0%, 35%, 80%, 100% {
-    transform: translateX(0);
-  }
-  48% {
-    transform: translateX(-5px); /* Expansión hacia el Oeste */
-  }
-  60% {
-    transform: translateX(0.8px); /* Rebote elástico */
-  }
-  70% {
-    transform: translateX(0);
-  }
-}
-
-.pointer-east {
-  animation: animCalibEast 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-}
-
-@keyframes animCalibEast {
-  0%, 35%, 80%, 100% {
-    transform: translateX(0);
-  }
-  48% {
-    transform: translateX(5px); /* Expansión hacia el Este */
-  }
-  60% {
-    transform: translateX(-0.8px); /* Rebote elástico */
-  }
-  70% {
-    transform: translateX(0);
-  }
-}
-
-/* 3. Anillos Concéntricos Medios: Contrarrotación de Enfoque Óptico cada 6s */
+/* 3. Anillos Concéntricos Medios */
 .radar-ring-mid {
-  animation: animCalibRingMid 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-}
-
-@keyframes animCalibRingMid {
-  0%, 32%, 80%, 100% {
-    transform: rotate(0deg);
-  }
-  48% {
-    transform: rotate(45deg); /* Giro a la derecha */
-  }
-  65% {
-    transform: rotate(-3deg);
-  }
-  72% {
-    transform: rotate(0deg);
-  }
+  opacity: 0.9;
 }
 
 .radar-ring-inner {
-  animation: animCalibRingInner 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  opacity: 0.95;
 }
 
-@keyframes animCalibRingInner {
-  0%, 32%, 80%, 100% {
-    transform: rotate(0deg);
-  }
-  48% {
-    transform: rotate(-45deg); /* Contragiro a la izquierda */
-  }
-  65% {
-    transform: rotate(3deg);
-  }
-  72% {
-    transform: rotate(0deg);
-  }
-}
-
-/* 4. Núcleo Óptico Central: Apertura Focal y Destello de Captación cada 6s */
+/* 4. Núcleo Óptico de Origen */
 .radar-core-lens {
-  animation: animCalibCoreLens 6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: animOriggoCore 5s ease-in-out infinite;
 }
 
-@keyframes animCalibCoreLens {
-  0%, 35%, 80%, 100% {
+@keyframes animOriggoCore {
+  0%, 100% {
     transform: scale(1);
     opacity: 0.85;
   }
-  48% {
-    transform: scale(1.35); /* Apertura de lente */
+  50% {
+    transform: scale(1.1);
     opacity: 1;
-  }
-  62% {
-    transform: scale(0.95);
-    opacity: 0.9;
-  }
-  70% {
-    transform: scale(1);
-    opacity: 0.85;
   }
 }
 
@@ -506,24 +399,51 @@ body {
 
 .brand-title {
   font-family: var(--font-display);
-  font-size: 1.42rem;
+  font-size: 1.52rem;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0;
 }
 
+.brand-initial-o {
+  color: #FFFFFF;
+  display: inline-block;
+  font-weight: 900;
+  animation: animOriggoO 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+[data-theme="light"] .brand-initial-o {
+  color: #0A110E;
+}
+
+.brand-letters-riggo {
+  display: inline-block;
+  background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  animation: animOriggoRiggo 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+[data-theme="light"] .brand-letters-riggo {
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Compatibilidad retroactiva */
 .brand-word-hunter {
   color: #FFFFFF;
   display: inline-block;
-  animation: animHunterReveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
 }
 
 [data-theme="light"] .brand-word-hunter {
-  color: #0A110E; /* Carbón Obsidiana Orgánico en Modo Claro */
+  color: #0A110E;
 }
 
 .brand-word-pro {
@@ -531,7 +451,6 @@ body {
   background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: animProReveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
 }
 
 [data-theme="light"] .brand-word-pro {
@@ -540,25 +459,25 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-@keyframes animHunterReveal {
+@keyframes animOriggoO {
   0% {
     opacity: 0;
-    transform: translateX(-16px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes animProReveal {
-  0% {
-    opacity: 0;
-    transform: translateX(16px) scale(0.94);
+    transform: translateX(-14px) scale(0.92);
   }
   100% {
     opacity: 1;
     transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes animOriggoRiggo {
+  0% {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 

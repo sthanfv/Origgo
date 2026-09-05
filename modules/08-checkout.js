@@ -380,7 +380,7 @@ async function ejecutarPagoWompi() {
     }
 
     // Fallback si la CDN de Wompi estuviera caída
-    const msg = encodeURIComponent(`Hola Hunter Pro, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
+    const msg = encodeURIComponent(`Hola Origgo, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
     window.open(`https://wa.me/573001234567?text=${msg}`, '_blank');
     cerrarModalCheckout();
   } catch (err) {

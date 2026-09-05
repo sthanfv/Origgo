@@ -1,9 +1,9 @@
 /**
- * ⚡ SERVICE WORKER PWA — HUNTER PRO INTELLIGENCE
+ * ⚡ SERVICE WORKER PWA — ORIGGO
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'hunter-pro-v17';
+const NOMBRE_CACHE = 'origgo-v1';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',

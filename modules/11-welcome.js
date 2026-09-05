@@ -136,7 +136,7 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
 
   if (elList) elList.innerHTML = itemsHtml;
   if (elCtaText) {
-    elCtaText.textContent = leadSeleccionado ? 'Ver Teléfono de Mi Inmueble' : 'Comenzar a Cazar Oportunidades';
+    elCtaText.textContent = leadSeleccionado ? 'Ver Teléfono de Mi Inmueble' : 'Explorar Oportunidades Directas';
   }
 
   modal.classList.add("active");

@@ -4,8 +4,8 @@
  */
 
 const PORTAL_CONFIG = {
-  nombrePlataforma: "Hunter Pro Intelligence",
-  tagline: "Terminal Privada de Oportunidades Directas y Arbitraje",
+  nombrePlataforma: "Origgo",
+  tagline: "Terminal de Oportunidades Directas y Arbitraje",
   moneda: "COP",
   precioMembresiaCop: 89000,
   precioMembresiaFormateado: "$ 89.000 / mes",
@@ -19,7 +19,7 @@ const PORTAL_CONFIG = {
   // Canales de contacto y soporte comercial
   contacto: {
     whatsapp: "573001234567",
-    mensajeWhatsapp: "Hola, deseo activar mi suscripción a la Terminal VIP de Hunter Pro."
+    mensajeWhatsapp: "Hola, deseo activar mi suscripción a la Terminal VIP de Origgo."
   }
 };
 
