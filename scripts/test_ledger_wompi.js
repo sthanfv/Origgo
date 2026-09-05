@@ -191,7 +191,55 @@ async function runTests() {
   assert.strictEqual(mockResUnlock2.data.creditsRemaining, 9, 'El saldo NO debe volver a restar');
   console.log('  ✅ Cero doble cobro verificado: el contacto ya desbloqueado se entrega a costo 0.');
 
-  console.log('\n🏆 [TEST SUITE] ¡Todos los 8 tests de integración pasaron al 100%!');
+  // TEST 9: Simulación de Lambda Fría en Vercel Serverless (Aislamiento Total / Stateless Rehydration)
+  console.log('▶ Test 9: Simulación de Lambda Fría en Vercel (Rehidratación Criptográfica Stateless)...');
+  const fs = require('fs');
+  const path = require('path');
+  const storePath = path.join(__dirname, '..', 'data', 'ledger_store.json');
+  // Simular contenedor frío nuevo donde el usuario aún no existe en el disco local
+  if (fs.existsSync(storePath)) {
+    fs.writeFileSync(storePath, JSON.stringify({ users: {}, transactions: {}, orders: {} }), 'utf8');
+  }
+
+  const tokenRecibido = mockResUnlock.data.token || userToken;
+  const mockReqCold = {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${tokenRecibido}`
+    },
+    body: {
+      leadId: 'lead-inm-cold-1',
+      contactoCifrado: cipherText
+    }
+  };
+  const mockResCold = createMockRes();
+  await unlockHandler(mockReqCold, mockResCold);
+
+  assert.strictEqual(mockResCold.statusCode, 200, 'El desbloqueo debe tener éxito aun en contenedor frío');
+  assert.strictEqual(mockResCold.data.ok, true);
+  assert.strictEqual(mockResCold.data.creditsRemaining, 8, 'Los créditos deben restar de 9 a 8');
+  assert.ok(mockResCold.data.token, 'Debe emitir un nuevo token JWT actualizado');
+  console.log('  ✅ Rehidratación criptográfica serverless confirmada: 0 dependencia de persistencia compartida.');
+
+  // TEST 10: Reclamación determinista por referencia sin orden previa en /tmp
+  console.log('▶ Test 10: Reclamo determinista de referencia post-pago...');
+  const testPhoneDeterministic = '320' + Math.floor(1000000 + Math.random() * 9000000);
+  const refDeterminista = `HNT-${testPhoneDeterministic}-10CR-${Date.now().toString(36)}-XYZ`;
+  const mockReqClaim = {
+    method: 'POST',
+    body: {
+      action: 'claim_reference',
+      reference: refDeterminista
+    }
+  };
+  const mockResClaim = createMockRes();
+  await sessionHandler(mockReqClaim, mockResClaim);
+
+  assert.strictEqual(mockResClaim.statusCode, 200);
+  assert.strictEqual(mockResClaim.data.user.credits, 10, 'Debe asignar 10 créditos por el código 10CR de la referencia');
+  console.log('  ✅ Reclamo determinista por referencia verificado con éxito (+10 créditos).');
+
+  console.log('\n🏆 [TEST SUITE] ¡Todos los 10 tests de integración y resiliencia serverless pasaron al 100%!');
 }
 
 runTests().catch((err) => {

@@ -34,7 +34,7 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ authenticated: false, error: 'Token inválido o expirado' });
     }
 
-    const user = await db.getUserByPhone(payload.phone);
+    const user = await db.getUserByPhone(payload.phone, payload);
     if (!user) {
       return res.status(404).json({ authenticated: false, error: 'Usuario no encontrado' });
     }
@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
         plan: user.plan,
         planCity: user.planCity,
         planExpiresAt: user.planExpiresAt,
-        unlockedLeads: user.unlockedLeads
+        unlockedLeads: user.unlockedLeads || []
       }
     });
   }
@@ -73,13 +73,29 @@ module.exports = async function handler(req, res) {
     // CASO 1: Reclamar sesión post-pago mediante referencia de orden
     if (action === 'claim_reference' && reference) {
       let celular = null;
+      let creditosAAcreditar = 1;
+      let planData = null;
+
       const order = await db.getPendingOrder(reference);
       if (order) {
         celular = order.celular;
+        creditosAAcreditar = order.creditos || 1;
+        if (order.tipo === 'suscripcion_ciudad') {
+          planData = { plan: 'city', city: order.ciudad, days: 30 };
+        } else if (order.tipo === 'suscripcion_nacional') {
+          planData = { plan: 'national', days: 30 };
+        }
       } else if (reference.startsWith('HNT-')) {
         const partes = reference.split('-');
         if (partes.length >= 2 && partes[1].length === 10 && /^\d+$/.test(partes[1])) {
           celular = partes[1];
+        }
+        if (partes.length >= 3) {
+          const code = partes[2];
+          if (code === '10CR') creditosAAcreditar = 10;
+          else if (code === 'VIPCIU') planData = { plan: 'city', days: 30 };
+          else if (code === 'VIPNAC') planData = { plan: 'national', days: 30 };
+          else creditosAAcreditar = 1;
         }
       }
 
@@ -90,10 +106,21 @@ module.exports = async function handler(req, res) {
       let user = await db.getUserByPhone(celular);
       if (!user) {
         const pinSuffix = db.cleanPhone(celular).substring(6) || '7489';
-        user = await db.addCredits(celular, 1, `HNT-${pinSuffix}`);
+        user = await db.addCredits(celular, creditosAAcreditar, `HNT-${pinSuffix}`, planData);
       }
 
-      const token = signJwt({ phone: user.phone, role: 'buyer' }, JWT_SECRET, 30);
+      // Token JWT con estado criptográfico enriquecido (Stateless Signed Token)
+      const token = signJwt({
+        phone: user.phone,
+        pin: user.pin,
+        credits: user.credits,
+        unlockedLeads: user.unlockedLeads || [],
+        plan: user.plan || 'free',
+        planCity: user.planCity || null,
+        planExpiresAt: user.planExpiresAt || null,
+        role: 'buyer'
+      }, JWT_SECRET, 30);
+
       return res.status(200).json({
         ok: true,
         token,
@@ -104,7 +131,7 @@ module.exports = async function handler(req, res) {
           plan: user.plan,
           planCity: user.planCity,
           planExpiresAt: user.planExpiresAt,
-          unlockedLeads: user.unlockedLeads
+          unlockedLeads: user.unlockedLeads || []
         }
       });
     }
@@ -122,7 +149,17 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const token = signJwt({ phone: user.phone, role: 'buyer' }, JWT_SECRET, 30);
+    // Token JWT con estado criptográfico enriquecido
+    const token = signJwt({
+      phone: user.phone,
+      pin: user.pin,
+      credits: user.credits,
+      unlockedLeads: user.unlockedLeads || [],
+      plan: user.plan || 'free',
+      planCity: user.planCity || null,
+      planExpiresAt: user.planExpiresAt || null,
+      role: 'buyer'
+    }, JWT_SECRET, 30);
 
     return res.status(200).json({
       ok: true,
@@ -134,7 +171,7 @@ module.exports = async function handler(req, res) {
         plan: user.plan,
         planCity: user.planCity,
         planExpiresAt: user.planExpiresAt,
-        unlockedLeads: user.unlockedLeads
+        unlockedLeads: user.unlockedLeads || []
       }
     });
   } catch (err) {

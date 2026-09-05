@@ -123,11 +123,15 @@ module.exports = async function handler(req, res) {
   let creditosAAcreditar = 0;
   let planData = null;
 
-  // Extracción determinista de celular desde la referencia HNT-[celular]-[timestamp]-[entropy]
-  if (!celular && reference && reference.startsWith('HNT-')) {
+  // Extracción determinista de celular y código de producto desde la referencia HNT-[celular]-[prodCode]-[timestamp]-[entropy]
+  let prodCodeFromRef = null;
+  if (reference && reference.startsWith('HNT-')) {
     const partes = reference.split('-');
     if (partes.length >= 2 && partes[1].length === 10 && /^\d+$/.test(partes[1])) {
-      celular = partes[1];
+      if (!celular) celular = partes[1];
+    }
+    if (partes.length >= 3) {
+      prodCodeFromRef = partes[2];
     }
   }
 
@@ -139,13 +143,17 @@ module.exports = async function handler(req, res) {
       planData = { plan: 'national', days: 30 };
     }
   } else {
-    // Si la lambda no compartió el /tmp de create-order, inferir por monto de transacción
+    // Inferencia resiliente por código en referencia o por monto en centavos
     const monto = transaction.amount_in_cents || 0;
-    if (monto === 500000) creditosAAcreditar = 1;
-    else if (monto === 3500000) creditosAAcreditar = 10;
-    else if (monto === 8900000) planData = { plan: 'city', days: 30 };
-    else if (monto === 14900000) planData = { plan: 'national', days: 30 };
-    else creditosAAcreditar = 1;
+    if (prodCodeFromRef === '10CR' || monto === 3500000) {
+      creditosAAcreditar = 10;
+    } else if (prodCodeFromRef === 'VIPCIU' || monto === 8900000) {
+      planData = { plan: 'city', days: 30 };
+    } else if (prodCodeFromRef === 'VIPNAC' || monto === 14900000) {
+      planData = { plan: 'national', days: 30 };
+    } else {
+      creditosAAcreditar = 1;
+    }
 
     if (!celular) {
       celular = transaction.customer_email || transaction.reference;

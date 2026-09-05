@@ -8,7 +8,7 @@
  */
 
 const db = require('../lib/db');
-const { verifyJwt, decryptLeadContact } = require('../lib/crypto');
+const { signJwt, verifyJwt, decryptLeadContact } = require('../lib/crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
 const LEADS_ENCRYPTION_KEY = process.env.LEADS_ENCRYPTION_KEY || 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c';
@@ -60,8 +60,8 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'leadId es requerido' });
     }
 
-    // 3. Ejecutar desbloqueo en el ledger
-    const resultado = await db.unlockLead(session.phone, leadId);
+    // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
+    const resultado = await db.unlockLead(session.phone, leadId, session);
 
     if (!resultado.success) {
       if (resultado.error === 'SALDO_INSUFICIENTE') {
@@ -91,11 +91,26 @@ module.exports = async function handler(req, res) {
     const mensajeWa = encodeURIComponent(`Hola, vi tu propiedad en Hunter Pro y me interesa comunicarme directamente con el propietario.`);
     const whatsappUrl = `https://wa.me/57${telLimpio.startsWith('57') ? telLimpio.substring(2) : telLimpio}?text=${mensajeWa}`;
 
+    // 5. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
+    const userPayload = resultado.user || {};
+    const newToken = signJwt({
+      phone: session.phone,
+      pin: userPayload.pin || session.pin,
+      credits: resultado.credits,
+      unlockedLeads: resultado.unlockedLeads || [],
+      plan: userPayload.plan || session.plan || 'free',
+      planCity: userPayload.planCity || session.planCity || null,
+      planExpiresAt: userPayload.planExpiresAt || session.planExpiresAt || null,
+      role: 'buyer'
+    }, JWT_SECRET, 30);
+
     return res.status(200).json({
       ok: true,
       leadId,
       alreadyUnlocked: resultado.alreadyUnlocked,
       creditsRemaining: resultado.credits,
+      unlockedLeads: resultado.unlockedLeads,
+      token: newToken,
       planBenefit: Boolean(resultado.planBenefit),
       contacto: {
         telefono,

@@ -79,9 +79,16 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Referencia única con celular y entropía (Stateless Architecture)
+    // Referencia única con celular, código de producto determinista y entropía (Stateless Architecture)
+    const productCodeMap = {
+      single_lead: '1CR',
+      pack_10_leads: '10CR',
+      subscription_city: 'VIPCIU',
+      subscription_national: 'VIPNAC'
+    };
+    const prodCode = productCodeMap[productType] || '1CR';
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const reference = `HNT-${normPhone}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
+    const reference = `HNT-${normPhone}-${prodCode}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
     const amountInCents = producto.montoCentavos;
     const currency = 'COP';
 

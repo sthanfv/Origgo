@@ -63,16 +63,35 @@ function cleanPhone(phone) {
 }
 
 /**
- * Obtiene un usuario por número de celular.
+ * Obtiene un usuario por número de celular, con rehidratación automática si viene de sesión válida.
  * @param {string} phone
+ * @param {object|null} fallbackData - Datos de respaldo provistos por JWT validado
  * @returns {Promise<object|null>}
  */
-async function getUserByPhone(phone) {
+async function getUserByPhone(phone, fallbackData = null) {
   const normPhone = cleanPhone(phone);
   if (!normPhone) return null;
 
   const store = readLocalStore();
-  const user = store.users[normPhone];
+  let user = store.users[normPhone];
+
+  // Rehidratación criptográfica si la lambda corre aislada y se cuenta con sesión verificada
+  if (!user && fallbackData && cleanPhone(fallbackData.phone) === normPhone) {
+    user = {
+      phone: normPhone,
+      pin: fallbackData.pin || `HNT-${normPhone.substring(6) || '7489'}`,
+      credits: Number(fallbackData.credits || 0),
+      plan: fallbackData.plan || 'free',
+      planCity: fallbackData.planCity || null,
+      planExpiresAt: fallbackData.planExpiresAt || null,
+      unlockedLeads: Array.isArray(fallbackData.unlockedLeads) ? fallbackData.unlockedLeads : [],
+      createdAt: fallbackData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    store.users[normPhone] = user;
+    writeLocalStore(store);
+  }
+
   if (!user) return null;
 
   return {
@@ -120,7 +139,7 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
   const store = readLocalStore();
   const existing = store.users[normPhone] || {
     phone: normPhone,
-    pin: pin || 'HNT-' + Math.floor(1000 + Math.random() * 9000),
+    pin: pin || 'HNT-' + (normPhone.substring(6) || Math.floor(1000 + Math.random() * 9000)),
     credits: 0,
     plan: 'free',
     planCity: null,
@@ -148,36 +167,67 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
 
 /**
  * Desbloquea un inmueble para un usuario descontando saldo solo si no estaba desbloqueado.
- * Garantiza cero doble cobro (idempotente).
+ * Garantiza cero doble cobro (idempotente) y rehidratación stateless en Vercel Serverless.
  * @param {string} phone - Celular del usuario
  * @param {string} leadId - ID único del lead (ej. "lead-inm-142")
- * @returns {Promise<object>} { success: boolean, alreadyUnlocked: boolean, credits: number, error?: string }
+ * @param {object|null} sessionData - Datos firmados de sesión JWT para rehidratación
+ * @returns {Promise<object>} { success: boolean, alreadyUnlocked: boolean, credits: number, unlockedLeads: string[], user: object, error?: string }
  */
-async function unlockLead(phone, leadId) {
+async function unlockLead(phone, leadId, sessionData = null) {
   const normPhone = cleanPhone(phone);
   if (!normPhone || !leadId) {
     return { success: false, error: 'DATOS_INVALIDOS' };
   }
 
   const store = readLocalStore();
-  const user = store.users[normPhone];
+  let user = store.users[normPhone];
+
+  // Rehidratación si la lambda corre en un contenedor efímero y recibe sesión JWT verificada
+  if (!user && sessionData && cleanPhone(sessionData.phone) === normPhone) {
+    user = {
+      phone: normPhone,
+      pin: sessionData.pin || `HNT-${normPhone.substring(6) || '7489'}`,
+      credits: Number(sessionData.credits || 0),
+      plan: sessionData.plan || 'free',
+      planCity: sessionData.planCity || null,
+      planExpiresAt: sessionData.planExpiresAt || null,
+      unlockedLeads: Array.isArray(sessionData.unlockedLeads) ? sessionData.unlockedLeads : [],
+      createdAt: new Date().toISOString()
+    };
+    store.users[normPhone] = user;
+  }
+
+  // Fallback si la sesión es válida pero el registro de usuario no estaba en el disco
   if (!user) {
-    return { success: false, error: 'USUARIO_NO_ENCONTRADO' };
+    user = {
+      phone: normPhone,
+      pin: `HNT-${normPhone.substring(6) || '7489'}`,
+      credits: 0,
+      plan: 'free',
+      planCity: null,
+      planExpiresAt: null,
+      unlockedLeads: [],
+      createdAt: new Date().toISOString()
+    };
+    store.users[normPhone] = user;
   }
 
   user.unlockedLeads = Array.isArray(user.unlockedLeads) ? user.unlockedLeads : [];
 
-  // 1. Si ya lo había desbloqueado antes: no cobrar de nuevo
+  // 1. Si ya lo había desbloqueado antes: no cobrar de nuevo (Cero Doble Cobro)
   if (user.unlockedLeads.includes(leadId)) {
     return {
       success: true,
       alreadyUnlocked: true,
-      credits: Number(user.credits || 0)
+      credits: Number(user.credits || 0),
+      unlockedLeads: user.unlockedLeads,
+      user
     };
   }
 
   // 2. Si tiene plan VIP Nacional activo (o Plan Ciudad vigente)
-  const hasActivePlan = user.plan === 'national' && user.planExpiresAt && new Date(user.planExpiresAt) > new Date();
+  const hasActivePlan = (user.plan === 'national' || user.plan === 'city') && 
+                        user.planExpiresAt && new Date(user.planExpiresAt) > new Date();
   if (hasActivePlan) {
     user.unlockedLeads.push(leadId);
     user.updatedAt = new Date().toISOString();
@@ -187,7 +237,9 @@ async function unlockLead(phone, leadId) {
       success: true,
       alreadyUnlocked: false,
       credits: Number(user.credits || 0),
-      planBenefit: true
+      unlockedLeads: user.unlockedLeads,
+      planBenefit: true,
+      user
     };
   }
 
@@ -197,7 +249,9 @@ async function unlockLead(phone, leadId) {
     return {
       success: false,
       error: 'SALDO_INSUFICIENTE',
-      credits: currentCredits
+      credits: currentCredits,
+      unlockedLeads: user.unlockedLeads,
+      user
     };
   }
 
@@ -210,7 +264,9 @@ async function unlockLead(phone, leadId) {
   return {
     success: true,
     alreadyUnlocked: false,
-    credits: user.credits
+    credits: user.credits,
+    unlockedLeads: user.unlockedLeads,
+    user
   };
 }
 

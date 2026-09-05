@@ -1110,12 +1110,21 @@ async function ejecutarDesbloqueoLead(lead, index) {
     }
 
     sesionUsuario.credits = data.creditsRemaining;
-    if (!sesionUsuario.unlockedLeads) sesionUsuario.unlockedLeads = [];
-    if (!sesionUsuario.unlockedLeads.includes(lead.id)) {
-      sesionUsuario.unlockedLeads.push(lead.id);
+    if (data.token) {
+      localStorage.setItem('hunter_pro_token', data.token);
+      sesionUsuario.token = data.token;
+    }
+    if (Array.isArray(data.unlockedLeads)) {
+      sesionUsuario.unlockedLeads = data.unlockedLeads;
+    } else {
+      if (!sesionUsuario.unlockedLeads) sesionUsuario.unlockedLeads = [];
+      if (!sesionUsuario.unlockedLeads.includes(lead.id)) {
+        sesionUsuario.unlockedLeads.push(lead.id);
+      }
     }
     cacheContactosDesbloqueados[lead.id] = data.contacto;
 
+    cerrarModalCheckout();
     actualizarBadgeVip();
     renderizarInterfaz(datosActuales);
 
