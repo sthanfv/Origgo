@@ -1,54 +1,65 @@
 # 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-05 15:27 (GMT-5)
+Última actualización: 2026-09-05 16:30 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Tipografía Lufga y Realce de la "O" Inicial en Oro Metálico Radiante**:
-   - Diagnóstico: Se requería que la palabra en la barra de navegación fuera texto real en tipografía oficial **Lufga** para preservar las animaciones cinemáticas nativas de entrada y hover, y que la "O" inicial tuviera un color distintivo de alto valor (dorado) para diferenciarla del cuerpo de la palabra ("riggo").
-   - Solución en `styles/02-base.css`:
-     - `.brand-title`: Configurado con `font-family: var(--font-display, 'Lufga', sans-serif)`, `font-weight: 900` (Extra-Bold/Black), `font-size: 1.58rem` y `letter-spacing: -0.025em`.
-     - `.brand-initial-o`: Estilizada con un degradado en oro de inversión puro: `linear-gradient(135deg, #FFF089 0%, #FBBF24 35%, #F59E0B 70%, #D97706 100%)`, `-webkit-background-clip: text`, `-webkit-text-fill-color: transparent`, `filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))` y animación de entrada cinemática `animOriggoO`. En modo claro utiliza oro profundo ambarino (`#D97706` a `#78350F`).
-     - `.brand-letters-riggo`: Mantiene el degradado esmeralda institucional (`#34D399` a `#10B981` y `#059669`) con la fuente Lufga y animación `animOriggoRiggo`.
-     - Microinteracción al `:hover`: Al pasar el cursor sobre `.brand-badge`, la "O" dorada escala suavemente a 1.1 con elevación y un fulgor de 16px, mientras las letras "riggo" adquieren un resplandor esmeralda.
+1. **Integración del Logotipo Oficial como "O" de la Palabra "Origgo" y Animación Letra por Letra**:
+   - Diagnóstico y Solicitud: El usuario solicitó eliminar el logo creado anteriormente que estaba separado a la izquierda, y en su lugar emplear el isotipo de la marca (la 'O' con el radar/flecha) directamente como la primera letra de la palabra "Origgo". La imagen debe permanecer quieta y estática, mientras las letras "r-i-g-g-o" se animan una por una secuencialmente de forma cinematográfica.
+   - Solución en `index.html` y `styles/02-base.css`:
+     - Se eliminó el isotipo exterior redundante que precedía al título.
+     - `.brand-title`: Contiene `.brand-logo-container.brand-initial-o-wrap` con la imagen `./assets/img/origgo-icon.svg` (36×36 px, estática, con sombra esmeralda `drop-shadow(0 0 10px rgba(16, 185, 129, 0.45))`).
+     - Cada letra de `.brand-letters-riggo` se maquetó como un `<span class="brand-letter" style="--char-i: 1..5;">` con animación escalonada `animLetterAppear` mediante retardo dinámico `animation-delay: calc(0.12s + var(--char-i) * 0.08s)`.
+     - Preservación de selectores críticos: Se mantuvieron `.brand-logo-container` y `.brand-iso-svg` con sus dimensiones intactas garantizando compatibilidad 100% con la suite DevSecOps.
 
-2. **Incorporación de Nuevos Activos Vectoriales SVG Oficiales**:
-   - Se procesaron y generaron los activos limpios en `assets/img/`:
-     - `origgo-logo.svg`: Logotipo completo horizontal en proporción 2.95:1 con viewBox ajustado al ras de las letras.
-     - `origgo-icon.svg`: Isotipo de la "O" con puntero de radar en proporción 1:1 cuadrada perfecta (424 × 424 px).
-     - `favicon.svg`: Actualizado con el isotipo oficial `origgo-icon.svg`.
-
-3. **Modularidad Desmulta y Suite DevSecOps**:
-   - Todos los 11 módulos JS y 15 módulos CSS permanecen estrictamente `< 500 líneas` (`styles/02-base.css` en 310 líneas, `styles/07-cards.css` en 423 líneas).
-   - Compilación con `scripts/build.js` y validación de 8 fases (`npm test`) aprobada al 100% con 0 errores.
+2. **Remediación de Vulnerabilidades de la Auditoría DevSecOps**:
+   - **Control de Acceso CORS Centralizado (`api/lib/cors.js`)**: Creado módulo con lista blanca estricta (`DOMINIOS_PERMITIDOS`: `origgo.vercel.app`, `origgo.online`, `www.origgo.online`, entornos locales) erradicando `Access-Control-Allow-Origin: *` en `api/auth/session.js`, `api/payments/create-order.js`, `api/leads/unlock.js`, `api/user/balance.js` y `api/payments/verify.js`.
+   - **Eliminación de CORS en Webhooks (`api/payments/webhook-wompi.js`)**: Al ser peticiones server-to-server bancarias, se removió la cabecera innecesaria y se aisló el fallback de firma exclusivamente para `process.env.NODE_ENV === 'test'`.
+   - **Generación Criptográficamente Segura de PIN (`api/lib/crypto.js`)**: Se erradicó la derivación del PIN a partir de los últimos 4 dígitos del celular. Ahora genera un PIN de 4 dígitos verdaderamente aleatorio mediante `crypto.randomInt(1000, 9999)` bajo estándar Zero-Trust.
+   - **Erradicación de Secretos Hardcodeados en Producción**: `JWT_SECRET` y `LEADS_ENCRYPTION_KEY` exigen estrictamente variables de entorno en producción tanto en `api/auth/session.js`, `api/leads/unlock.js` como en `api/user/balance.js`.
+   - **Aislamiento de Carga de Cuenta de Servicio (`api/lib/db.js`)**: Se condicionó la búsqueda del archivo `service-account.json` para que nunca se intente cargar en producción, exigiendo credenciales de entorno (`FIREBASE_SERVICE_ACCOUNT_BASE64`) o ADC.
+   - **Sanitización contra XSS (`modules/11-welcome.js`)**: Se envolvió la variable territorial `ciudad` con `escaparHtml()` en interpolaciones de `innerHTML`.
+   - **Content-Security-Policy (CSP) en `vercel.json`**: Se agregó cabecera `Content-Security-Policy` estricta para Vercel Edge.
+   - **Service Worker Versionado (`sw.js`)**: Se incrementó a `origgo-v2` y se actualizaron los recursos críticos para cachear exclusivamente activos minificados (`app.min.js`, `style.min.css`) e icono SVG.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Requerimiento del Usuario sobre Animación Tipográfica**: Se solicitó explícitamente escribir la palabra con la fuente Lufga en la barra de navegación para permitir animaciones de fábrica nativas, con la "O" en color dorado para máxima prestancia de lujo y contraste.
-- **Identidad de Marca Multicanal**: Disponer de los activos vectoriales limpios (SVG) tanto para favicon como para integraciones futuras en otras áreas de la plataforma.
+- **Unificación Visual de Marca**: El usuario requirió que el logo fuera parte intrínseca de la palabra, simplificando la barra de navegación y ofreciendo una animación tipográfica distintiva letra por letra.
+- **Blindaje DevSecOps Post-Auditoría**: Cumplimiento estricto del plan de remediación aprobado, cerrando vectores de ataque (CORS wildcard, predecibilidad de PIN, inyección XSS y exposición potencial de credenciales).
 
 ---
 
 ## 3. Archivos Afectados
 
-- `styles/02-base.css`: Estilos de `.brand-title`, `.brand-initial-o`, `.brand-letters-riggo` con Lufga y oro metálico (310 líneas).
-- `assets/img/origgo-logo.svg`: Activo SVG horizontal recortado.
-- `assets/img/origgo-icon.svg`: Activo SVG cuadrado 1:1 para isotipo.
-- `favicon.svg`: Icono oficial actualizado.
-- `style.css` y `style.min.css`: Recompilados (92.6 KB minificado).
-- `app.js` y `app.min.js`: Recompilados (109.7 KB minificado).
+- `index.html`: Integración del isotipo como 'O' y letras animables individuales de 'riggo'.
+- `styles/02-base.css`: Estilos de `.brand-title`, `.brand-initial-o-wrap`, `.brand-letter` y keyframes (334 líneas, < 500).
+- `api/lib/cors.js`: Nuevo módulo de CORS con lista blanca (40 líneas, < 500).
+- `api/lib/crypto.js`: PIN con `crypto.randomInt` (197 líneas).
+- `api/lib/db.js`: Aislamiento de carga de archivo de credenciales.
+- `api/auth/session.js`: CORS restringido y validación de `JWT_SECRET`.
+- `api/leads/unlock.js`: CORS restringido y eliminación de llaves residuales en producción.
+- `api/payments/create-order.js`: CORS restringido y validación de secretos de Wompi.
+- `api/payments/webhook-wompi.js`: Eliminación de CORS y aislamiento de fallback a test.
+- `api/payments/verify.js`: CORS restringido.
+- `api/user/balance.js`: CORS restringido y validación de `JWT_SECRET`.
+- `modules/11-welcome.js`: Sanitización con `escaparHtml()` (194 líneas).
+- `sw.js`: Versión `origgo-v2` y caché de minificados.
+- `vercel.json`: Cabecera CSP agregada.
+- `style.css` y `style.min.css`: Recompilados (92.5 KB minificado).
+- `app.js` y `app.min.js`: Recompilados (109.8 KB minificado).
 - `MEMORY.md`: Bitácora actualizada.
 
 ---
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Preservación del Ledger y Criptografía**: No se alteraron llaves AES-256-GCM ni tokens de sesión existentes para garantizar cero pérdida de datos durante la transición de marca.
-- **Continuidad de Selectores Críticos**: Se mantuvieron intactas las referencias a `.brand-iso-svg` y `.brand-logo-container` garantizando compatibilidad con la suite de auditoría DevSecOps.
+- **Animación Escalonada CSS Pura**: Se utilizó CSS Grid/Flexbox y variables CSS (`--char-i`) para la animación de entrada letra por letra sin añadir dependencias JS externas (peso 0 KB adicional).
+- **Inmutabilidad de Pruebas**: La suite de pruebas de 8 fases (`npm test`) se preservó funcionando al 100% (12/12 pruebas unitarias de pasarela y ledger aprobadas).
+- **Lista Blanca de Dominios**: Preparada proactivamente para el futuro dominio oficial `origgo.online` y `www.origgo.online`.
 
 ---
 
@@ -56,5 +67,5 @@
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
 - **Límite de Líneas**: Ningún archivo supera las 500 líneas en `modules/` ni en `styles/`.
-- **Identidad de Marca**: Origgo desplegado con elegancia tipográfica y animaciones reposadas.
-- **Seguridad**: AES-256-GCM, firma HMAC-SHA256 y hashing SHA-256 preservados intactos.
+- **Identidad de Marca**: Origgo desplegado con la "O" de radar estática y la animación letra por letra de "riggo".
+- **Seguridad**: AES-256-GCM, tokens JWT firmados, CORS con whitelist, CSP activo y generación de PIN aleatoria.

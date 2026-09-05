@@ -9,6 +9,7 @@
 const crypto = require('crypto');
 const db = require('../lib/db');
 const { checkRateLimit } = require('../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../lib/cors');
 
 if (process.env.NODE_ENV === 'production' && !process.env.WOMPI_INTEGRITY_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET es obligatorio en producción.');
@@ -43,10 +44,8 @@ const PRODUCT_CATALOG = {
 };
 
 module.exports = async function handler(req, res) {
-  // Configuración de cabeceras CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Configuración de cabeceras CORS seguras según whitelist
+  aplicarCorsSeguro(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

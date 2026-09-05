@@ -22,12 +22,12 @@ if (!getApps().length) {
     } catch (e) {
       console.warn('[db] Error decodificando FIREBASE_SERVICE_ACCOUNT_BASE64:', e.message);
     }
-  } else {
+  } else if (process.env.NODE_ENV !== 'production') {
     try {
       const serviceAccount = require('../../service-account.json');
       credential = cert(serviceAccount);
     } catch (e) {
-      console.warn('[db] Advertencia: No se encontró service-account.json local. Usando credenciales por defecto.', e.message);
+      // En desarrollo sin archivo local se usan credenciales por defecto del entorno
     }
   }
 

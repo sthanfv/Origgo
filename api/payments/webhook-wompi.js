@@ -15,8 +15,7 @@ const { generatePin } = require('../lib/crypto');
 const { checkRateLimit } = require('../lib/rate-limiter');
 
 module.exports = async function handler(req, res) {
-  // CORS y métodos
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Métodos permitidos para webhooks server-to-server
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Trace-Id');
 
@@ -86,8 +85,8 @@ module.exports = async function handler(req, res) {
     signaturesMatch = crypto.timingSafeEqual(bufReceived, bufExpected);
   }
 
-  // Fallback de firma para suite de pruebas si se usa llave local de test
-  if (!signaturesMatch && eventsSecret !== 'test_events_secret_hunter_2026') {
+  // Fallback de firma exclusivamente para suite automatizada de pruebas locales
+  if (process.env.NODE_ENV === 'test' && !signaturesMatch) {
     const fallbackExpected = crypto.createHash('sha256').update(propertiesValues + String(event.timestamp) + 'test_events_secret_hunter_2026').digest('hex');
     const bufFallback = Buffer.from(fallbackExpected);
     if (bufReceived.length === bufFallback.length) {

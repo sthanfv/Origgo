@@ -163,18 +163,12 @@ function verifyJwt(token, secret) {
 }
 
 /**
- * Genera un PIN legible y seguro para el usuario (ej. "HNT-7492").
- * @param {string} phone Opcional: El número de celular para extraer los últimos 4 dígitos.
+ * Genera un PIN aleatorio criptográficamente seguro (ej. "HNT-7492").
+ * Blindaje Zero-Trust: NUNCA se deriva del número de celular.
  * @returns {string}
  */
-function generatePin(phone) {
-  if (phone) {
-    const norm = normalizePhone(phone);
-    if (norm.length >= 4) {
-      return `HNT-${norm.slice(-4)}`;
-    }
-  }
-  const digitos = Math.floor(1000 + Math.random() * 9000);
+function generatePin() {
+  const digitos = crypto.randomInt(1000, 9999);
   return `HNT-${digitos}`;
 }
 

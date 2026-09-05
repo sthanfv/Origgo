@@ -59,15 +59,16 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
       </div>
     `;
   } else if (planTipo === 'subscription_city' || usuario?.plan === 'city') {
-    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudad.toUpperCase()}`;
+    const ciudadEscapada = typeof escaparHtml === 'function' ? escaparHtml(ciudad) : ciudad;
+    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudadEscapada.toUpperCase()}`;
     if (elTitle) elTitle.textContent = `¡Bienvenido al Plan Pro ${ciudad}!`;
     if (elSubtitle) elSubtitle.textContent = `Tu membresía territorial está activa. Desbloquea todos los contactos de ${ciudad} sin gastar créditos.`;
     itemsHtml = `
       <div class="benefit-item">
         <div class="benefit-icon-box"><i class="fa-solid fa-check"></i></div>
         <div class="benefit-content">
-          <strong class="benefit-title">Acceso Ilimitado 30 Días en ${ciudad}</strong>
-          <span class="benefit-desc">Todos los propietarios directos verificados en ${ciudad} sin consumir créditos.</span>
+          <strong class="benefit-title">Acceso Ilimitado 30 Días en ${ciudadEscapada}</strong>
+          <span class="benefit-desc">Todos los propietarios directos verificados en ${ciudadEscapada} sin consumir créditos.</span>
         </div>
       </div>
       <div class="benefit-item">

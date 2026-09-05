@@ -3,16 +3,15 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'origgo-v1';
+const NOMBRE_CACHE = 'origgo-v2';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
   './style.min.css',
-  './style.css',
-  './app.js',
+  './app.min.js',
   './manifest.json',
   './favicon.svg',
-  './assets/img/hunter_radar_logo.svg'
+  './assets/img/origgo-icon.svg'
 ];
 
 self.addEventListener('install', (evento) => {

@@ -9,13 +9,16 @@
 const db = require('../lib/db');
 const { verifyJwt } = require('../lib/crypto');
 const { checkRateLimit } = require('../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../lib/cors');
 
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232');
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232' : '');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Trace-Id');
+  aplicarCorsSeguro(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

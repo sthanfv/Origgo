@@ -64,28 +64,12 @@
     <div class="site-header-inner">
       <div class="header-spacer"></div>
 
-      <div class="brand-badge">
-        <div class="brand-logo-container">
-          <svg class="brand-iso-svg" width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#34D399" />
-                <stop offset="50%" stop-color="#10B981" />
-                <stop offset="100%" stop-color="#047857" />
-              </linearGradient>
-            </defs>
-            <circle cx="50" cy="50" r="48" stroke="url(#ringGrad)" stroke-width="1.5" stroke-dasharray="2 4" class="radar-sonar-ring" />
-            <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="1" class="radar-ring-mid" />
-            <circle cx="50" cy="50" r="28" stroke="#34D399" stroke-width="0.75" class="radar-ring-inner" />
-            <path d="M50 2 L50 12 M50 98 L50 88" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-north" />
-            <path d="M2 50 L12 50 M98 50 L88 50" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-east" />
-            <circle cx="50" cy="50" r="10" fill="url(#ringGrad)" fill-opacity="0.2" stroke="#10B981" stroke-width="1.5" class="radar-core-lens" />
-            <circle cx="50" cy="50" r="3" fill="#6EE7B7" class="radar-core-dot" />
-          </svg>
-        </div>
+      <div class="brand-badge" id="brandBadgeHeader">
         <div class="brand-text-block">
-          <h1 class="brand-title">
-            <span class="brand-initial-o">O</span><span class="brand-letters-riggo">riggo</span>
+          <h1 class="brand-title" aria-label="Origgo">
+            <span class="brand-logo-container brand-initial-o-wrap" aria-hidden="true">
+              <img src="./assets/img/origgo-icon.svg" alt="" class="brand-iso-svg brand-icon-o" width="36" height="36" />
+            </span><span class="brand-letters-riggo"><span class="brand-letter" style="--char-i: 1;">r</span><span class="brand-letter" style="--char-i: 2;">i</span><span class="brand-letter" style="--char-i: 3;">g</span><span class="brand-letter" style="--char-i: 4;">g</span><span class="brand-letter" style="--char-i: 5;">o</span></span>
           </h1>
         </div>
       </div>
