@@ -256,9 +256,3 @@ async function manejarContactoWhatsapp(index) {
 
   await ejecutarDesbloqueoLead(lead, index);
 }
-
-// Variables de estado reactivo del Omnibox
-let filtroCiudadActivo = "";
-let filtroTratoDirectoActivo = false;
-let textoBusquedaActivo = "";
-

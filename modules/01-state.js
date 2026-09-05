@@ -4,12 +4,6 @@
  * Estándar Ecosistema Desmulta DevSecOps.
  */
 
-/**
- * ⚡ MOTOR DE RENDERIZADO UNIVERSAL Y MODAL DE CHECKOUT WOMPI
- * Arquitectura Agnóstica al Contenido (Dynamic Key Mapping)
- * Ecosistema Ofertas Hunter Pro — Interfaz Dark Luxury Terminal v2.0
- */
-
 // Estado en memoria de la interfaz y sesión de usuario
 let datosActuales = null;
 let leadSeleccionado = null;
@@ -27,28 +21,10 @@ try {
   cacheContactosDesbloqueados = {};
 }
 
-// Inicialización al cargar el DOM
-document.addEventListener("DOMContentLoaded", async () => {
-  // Inicializar sesión persistente de usuario (JWT / PIN / Retorno de Wompi)
-  await inicializarSesionUsuario();
-
-  // Wompi se carga bajo demanda (Lazy Loading) al interactuar con acciones VIP
-  cargarDatos("./data/inmobiliario.json");
-  configurarListeners();
-  
-  // Activar Motor Premium de micro-interacciones (Ripple, Parallax, Háptica)
-  inicializarEfectosPremium();
-
-  // Registro de Service Worker para capacidades PWA e instalación en Android/iOS
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch((err) => {
-        console.warn("[PWA] Error registrando Service Worker:", err);
-      });
-    });
-  }
-});
-
+// Variables de estado reactivo del Omnibox y filtros
+let filtroCiudadActivo = "";
+let filtroTratoDirectoActivo = false;
+let textoBusquedaActivo = "";
 
 /**
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
@@ -213,7 +189,6 @@ function sincronizarFiltroCiudadUsuario() {
   }
 }
 
-
 /**
  * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
  */
@@ -294,4 +269,3 @@ function cerrarSesionUsuario() {
   cerrarModalCheckout();
   mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
 }
-

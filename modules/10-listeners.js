@@ -460,4 +460,29 @@ function configurarListeners() {
     }
   });
 }
-
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🚀 ARRANQUE DE LA APLICACIÓN AL CARGAR EL DOM
+// ═════════════════════════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", async () => {
+  // 1. Inicializar sesión persistente de usuario (JWT / PIN / Retorno de Wompi)
+  await inicializarSesionUsuario();
+
+  // 2. Cargar datos iniciales del catálogo inmobiliario
+  cargarDatos("./data/inmobiliario.json");
+
+  // 3. Registrar todos los event listeners de la interfaz
+  configurarListeners();
+  
+  // 4. Activar motor de micro-interacciones (Ripple, Parallax GPU, Háptica)
+  inicializarEfectosPremium();
+
+  // 5. Registro de Service Worker para capacidades PWA
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch((err) => {
+        console.warn("[PWA] Error registrando Service Worker:", err);
+      });
+    });
+  }
+});
