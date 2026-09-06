@@ -10,12 +10,11 @@
    - Diagnóstico: Al activar la cabecera `Content-Security-Policy`, la directiva `connect-src` no contemplaba los dominios externos de los que la aplicación obtiene imágenes de los inmuebles (`cdn2.infocasas.com.uy`, `images.unsplash.com`) ni los CDNs de fuentes (`fonts.googleapis.com`, `fonts.gstatic.com`, `cdnjs.cloudflare.com`). Adicionalmente, `sw.js` interceptaba indiscriminadamente peticiones de terceros sin tenerlas en caché, provocando rechazos de promesa con `TypeError: Failed to convert value to 'Response'` y bloqueos de red.
    - Solución en `vercel.json`, `index.html` y `sw.js`:
      - **CSP Ampliado**: Se incluyeron en `connect-src` todos los dominios necesarios: `https://checkout.wompi.co`, `https://*.wompi.co`, `https://fonts.googleapis.com`, `https://fonts.gstatic.com`, `https://cdnjs.cloudflare.com`, `https://images.unsplash.com`, `https://*.unsplash.com`, `https://cdn2.infocasas.com.uy` y `https://*.infocasas.com.uy`.
-     - **Service Worker Aislado (`sw.js`)**: Se condicionó el evento `fetch` a peticiones `same-origin` (`url.origin === self.location.origin`). Las imágenes y- **Estado:** 🟢 Producción / Refinamiento.
-- **Últimos Cambios:**
-  - Mitigación de errores CSP para FontAwesome y tipografías en `index.html` y `vercel.json`.
-  - Aumento de tamaño del logo (46px) y restauración de la animación en cascada para la palabra "riggo" (`02-base.css`).
-  - Eliminación del scroll infinito "Cargar más" en favor de una **Paginación Clásica** (anterior/siguiente) con 9 tarjetas por página (`06-cards.js`).
-  - Generación de guías de despliegue para dominio `.online`, entorno de producción Wompi y Google Search Console.ción Oficial de "riggo"**:
+- **Estado:** 🟢 Producción / Estable.
+- **Últimos Cambios (Resolución Crítica de Consola y Logo):**
+  - **Erradicación de `ReferenceError: tieneMasLeads is not defined`:** Se completó el reemplazo del bloque de renderizado residual en `modules/06-cards.js`, implementando limpiamente los controles de paginación `< Anterior | Siguiente >` gobernados por `totalPaginas` y `paginaActual`.
+  - **Restauración Definitiva de la Palabra "riggo":** Se corrigió la invisibilidad provocada por el `-webkit-background-clip: text` en spans hijos, restaurando la palabra completa en fuente Lufga con degradado esmeralda nítido y la animación cinemática suave `animOriggoRiggo` (`translateX(14px)` a `0`).
+  - **Limpieza de Advertencias de Consola:** Se eliminó la etiqueta `<link rel="preload">` redundante del archivo woff2 de AlexBrush en `index.html`, dejando la consola del navegador 100% limpia de errores y advertencias.
    - Diagnóstico: El usuario solicitó eliminar cualquier blur/brillo borroso artificial de la 'O' para preservar la pureza del logo original, y restaurar la animación cinemática suave de la palabra completa "riggo" tal como estaba originalmente (deslizamiento horizontal elegante con degradado esmeralda continuo).
    - Solución en `styles/02-base.css` e `index.html`:
      - `.brand-initial-o-wrap` y `.brand-icon-o`: `filter: none;` (cero blur, máxima nitidez y definición de imagen).

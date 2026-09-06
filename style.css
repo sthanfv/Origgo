@@ -454,13 +454,8 @@ body {
   color: #10B981;
   font-weight: 800;
   letter-spacing: -0.02em;
+  animation: animOriggoRiggo 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-}
-
-.brand-letters-riggo span {
-  display: inline-block;
-  opacity: 0;
-  animation: animOriggoRiggo 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 [data-theme="light"] .brand-letters-riggo {
@@ -477,11 +472,11 @@ body {
 @keyframes animOriggoRiggo {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.9);
+    transform: translateX(14px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0);
   }
 }
 
