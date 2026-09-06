@@ -722,6 +722,7 @@ function coincideBusquedaInteligente(textoTarjetaNormalizado, busquedaUsuario) {
  * sobre la grilla de oportunidades Bento.
  */
 function aplicarFiltrosOmnibox() {
+  paginaActual = 1;
   limiteVisible = 6;
   if (datosActuales) {
     renderizarInterfaz(datosActuales);

@@ -1,56 +1,54 @@
 # 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-05 17:55 (GMT-5)
+Última actualización: 2026-09-05 19:55 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Corrección de Conectividad CSP Multi-CDN y Estabilización del Service Worker**:
-   - Diagnóstico: Al activar la cabecera `Content-Security-Policy`, la directiva `connect-src` no contemplaba los dominios externos de los que la aplicación obtiene imágenes de los inmuebles (`cdn2.infocasas.com.uy`, `images.unsplash.com`) ni los CDNs de fuentes (`fonts.googleapis.com`, `fonts.gstatic.com`, `cdnjs.cloudflare.com`). Adicionalmente, `sw.js` interceptaba indiscriminadamente peticiones de terceros sin tenerlas en caché, provocando rechazos de promesa con `TypeError: Failed to convert value to 'Response'` y bloqueos de red.
-   - Solución en `vercel.json`, `index.html` y `sw.js`:
-     - **CSP Ampliado**: Se incluyeron en `connect-src` todos los dominios necesarios: `https://checkout.wompi.co`, `https://*.wompi.co`, `https://fonts.googleapis.com`, `https://fonts.gstatic.com`, `https://cdnjs.cloudflare.com`, `https://images.unsplash.com`, `https://*.unsplash.com`, `https://cdn2.infocasas.com.uy` y `https://*.infocasas.com.uy`.
-- **Estado:** 🟢 Producción / Estable.
-- **Últimos Cambios (Resolución Crítica de Consola y Logo):**
-  - **Erradicación de `ReferenceError: tieneMasLeads is not defined`:** Se completó el reemplazo del bloque de renderizado residual en `modules/06-cards.js`, implementando limpiamente los controles de paginación `< Anterior | Siguiente >` gobernados por `totalPaginas` y `paginaActual`.
-  - **Restauración Definitiva de la Palabra "riggo":** Se corrigió la invisibilidad provocada por el `-webkit-background-clip: text` en spans hijos, restaurando la palabra completa en fuente Lufga con degradado esmeralda nítido y la animación cinemática suave `animOriggoRiggo` (`translateX(14px)` a `0`).
-  - **Limpieza de Advertencias de Consola:** Se eliminó la etiqueta `<link rel="preload">` redundante del archivo woff2 de AlexBrush en `index.html`, dejando la consola del navegador 100% limpia de errores y advertencias.
-   - Diagnóstico: El usuario solicitó eliminar cualquier blur/brillo borroso artificial de la 'O' para preservar la pureza del logo original, y restaurar la animación cinemática suave de la palabra completa "riggo" tal como estaba originalmente (deslizamiento horizontal elegante con degradado esmeralda continuo).
-   - Solución en `styles/02-base.css` e `index.html`:
-     - `.brand-initial-o-wrap` y `.brand-icon-o`: `filter: none;` (cero blur, máxima nitidez y definición de imagen).
-     - `.brand-letters-riggo`: Restaurada como texto unificado en fuente Lufga con su degradado esmeralda institucional y la animación cinemática oficial `animOriggoRiggo` (`0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both`), deslizándose suavemente desde `translateX(14px)` a `translateX(0)`.
+1. **Corrección del Bug de Paginación en Filtros (`modules/04-filters.js`)**:
+   - Diagnóstico: Al aplicar filtros de búsqueda libre o seleccionar una ciudad mediante `aplicarFiltrosOmnibox()`, no se restablecía el estado `paginaActual = 1`. Si un usuario navegaba a una página superior (ej. página 3 o 5) y luego filtraba por una ciudad con pocos resultados (ej. 1 o 2 páginas), la vista quedaba desfasada, mostrando tarjetas fuera de rango o una lista vacía.
+   - Solución: Se incorporó la asignación explícita `paginaActual = 1;` al inicio de `aplicarFiltrosOmnibox()`. Ahora, cualquier búsqueda o cambio de filtro devuelve inmediatamente al usuario a la primera página de resultados.
+
+2. **Restauración de la Animación Cinemática Letra por Letra de "riggo" (`index.html` y `styles/02-base.css`)**:
+   - Diagnóstico: Al recargar la página, la animación de la palabra no era visible debido a que en el commit `e63df65` se había unificado la palabra en un solo bloque de texto y el motor de renderizado de WebKit/Blink presenta inconsistencias al animar transformaciones en contenedores con `-webkit-background-clip: text` y `-webkit-text-fill-color: transparent`.
+   - Solución: Se desagregó la palabra en spans individuales `<span class="brand-letter" style="--char-i: 1..5">` y se trasladó el degradado esmeralda con `-webkit-background-clip: text` directamente a la clase `.brand-letter`. Cada letra ahora anima su opacidad, escala y desplazamiento vertical de forma escalonada con `@keyframes animLetterAppear`, logrando una entrada fluida y llamativa sin pérdida de compatibilidad visual.
+
+3. **Recompilación y Limpieza de Estilos**:
+   - Se removieron keyframes residuales duplicados en `styles/02-base.css`.
+   - Se ejecutó el pipeline `node scripts/build.js` para regenerar `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+   - La suite de 8 fases `npm test` fue ejecutada y aprobada al 100% con 0 errores.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Estabilidad de Red y Prevención de Bloqueos**: Evitar que políticas de seguridad demasiado restrictivas bloqueen los feeds de fotografías de inmuebles y fuentes del portal.
-- **Preferencia Estética y Fidelidad de Marca**: Mantener el logotipo con bordes afilados y limpios sin filtros borrosos, y preservar el degradado continuo de la palabra "riggo" con su cinemática nativa.
+- **Experiencia de Usuario en Navegación**: Corregir la paginación rota para que los filtros muestren los resultados desde la primera página en cualquier circunstancia.
+- **Identidad Visual y Dinamismo**: Cumplir con la expectativa de que el isotipo mantenga su nitidez vectorial y que la palabra "riggo" cobre vida con una entrada cinemática letra por letra tras cada recarga.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `index.html`: CSP ampliado y unificación de `.brand-letters-riggo`.
-- `vercel.json`: Directiva `connect-src` multi-CDN en CSP.
-- `sw.js`: Versión `origgo-v3` con filtrado estricto `same-origin`.
-- `styles/02-base.css`: Supresión de `filter: drop-shadow`, nitidez pura en la 'O' y animación `animOriggoRiggo` (325 líneas, < 500).
-- `style.css` y `style.min.css`: Recompilados (92.3 KB minificado).
-- `app.js` y `app.min.js`: Recompilados (109.8 KB minificado).
-- `MEMORY.md`: Bitácora actualizada.
+- `modules/04-filters.js`: Inclusión de `paginaActual = 1;` en `aplicarFiltrosOmnibox()` (181 líneas, < 500).
+- `index.html`: Spans `.brand-letter` con índice de retardo `--char-i` (750 líneas).
+- `styles/02-base.css`: Definición de `.brand-letter` con degradado individual y `@keyframes animLetterAppear` (317 líneas, < 500).
+- `style.css` y `style.min.css`: Compilación sincronizada (92.3 KB minificado).
+- `app.js` y `app.min.js`: Compilación sincronizada (111.0 KB minificado).
+- `MEMORY.md`: Bitácora y memoria del sistema sincronizada.
 
 ---
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Aislamiento de Tráfico en Service Worker**: Delegar el tráfico cross-origin de imágenes directamente al subsistema de red del navegador garantiza cero latencia adicional en carruseles fotográficos y previene fallos por peticiones concurrentes de imágenes externas.
-- **Integridad DevSecOps**: La suite `npm test` continúa aprobada al 100% en sus 8 fases.
+- **Aislamiento de Animación en Inline-Block Hijos**: Aplicar el gradiente y el recorte de texto individualmente en cada letra resuelve el problema de composición del navegador y garantiza una animación limpia en pantallas de alta densidad (Retina/OLED) tanto en iOS como en Android y PC.
+- **Reseteo Determinista de Paginación**: Vincular `paginaActual = 1` al ciclo de filtrado evita estados inconsistentes sin necesidad de añadir lógica compleja en el módulo de tarjetas.
 
 ---
 
 ## 5. Estado Actual del Sistema
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
-- **Límite de Líneas**: Ningún archivo supera las 500 líneas en `modules/` ni en `styles/`.
-- **Identidad de Marca**: Origgo desplegado con la "O" de radar cristalina y la animación clásica suave de "riggo".
-- **Conectividad**: Imágenes externas y fuentes autorizadas plenamente en CSP.
+- **Límite de Líneas**: Todos los módulos de `modules/` y `styles/` cumplen estrictamente el estándar de menos de 500 líneas.
+- **Paginación**: Totalmente funcional y sincronizada con el motor de filtros.
+- **Identidad de Marca**: Isotipo nítido y animación cinemática letra por letra de Origgo activa y visible.
