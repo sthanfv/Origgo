@@ -333,42 +333,46 @@ function configurarListeners() {
 
   // Botón Restaurar Sesión por PIN
   const btnRestore = document.getElementById("btnRestoreSession");
-  if (btnRestore) {
-    btnRestore.addEventListener("click", restaurarSesionConPin);
+  if (btnRestore) btnRestore.addEventListener("click", restaurarSesionConPin);
+
+  // Autoservicio: Recuperación Automática por Referencia de Pago Wompi
+  const btnToggleRec = document.getElementById("btnToggleAutoRecovery");
+  if (btnToggleRec) {
+    btnToggleRec.addEventListener("click", () => {
+      const area = document.getElementById("recoveryContentArea");
+      const icon = document.getElementById("recoveryToggleIcon");
+      if (area) {
+        const visible = area.style.display !== "none";
+        area.style.display = visible ? "none" : "block";
+        if (icon) icon.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+      }
+    });
   }
+  const btnExecRec = document.getElementById("btnExecuteAutoRecovery");
+  if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
 
   // Botón Cerrar Sesión en Perfil
   const btnLogout = document.getElementById("btnLogoutSession");
-  if (btnLogout) {
-    btnLogout.addEventListener("click", cerrarSesionUsuario);
-  }
+  if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
 
   // Botón Comprar Más Créditos desde el Perfil
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
-  if (btnBuyMore) {
-    btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
-  }
+  if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
   // Botón VIP del Header
   const btnVipHeader = document.getElementById("btnVipHeader");
   if (btnVipHeader) {
     btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
     btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
-    btnVipHeader.addEventListener("click", () => {
-      abrirModalCheckout();
-    });
+    btnVipHeader.addEventListener("click", () => abrirModalCheckout());
   }
 
-
-  // ==========================================
   // MODAL LEGAL Y POLÍTICAS (LEY 1581)
-  // ==========================================
   const modalLegal = document.getElementById("modalLegalOverlay");
   const btnCloseLegal = document.getElementById("btnLegalCloseIcon");
   const btnCancelLegal = document.getElementById("btnLegalCancel");
   const legalTitle = document.getElementById("legalModalTitle");
   const legalContent = document.getElementById("legalContentBox");
-
   const btnTerminos = document.getElementById("btnOpenTerminos");
   const btnPrivacidad = document.getElementById("btnOpenPrivacidad");
 
@@ -396,23 +400,15 @@ function configurarListeners() {
   function cerrarModalLegal() {
     if (modalLegal) {
       modalLegal.style.opacity = "0";
-      setTimeout(() => {
-        modalLegal.style.display = "none";
-      }, 300);
+      setTimeout(() => { modalLegal.style.display = "none"; }, 300);
     }
   }
 
   if (btnTerminos) btnTerminos.addEventListener("click", () => abrirModalLegal('terminos'));
   if (btnPrivacidad) btnPrivacidad.addEventListener("click", () => abrirModalLegal('privacidad'));
-  
   if (btnCloseLegal) btnCloseLegal.addEventListener("click", cerrarModalLegal);
   if (btnCancelLegal) btnCancelLegal.addEventListener("click", cerrarModalLegal);
-  
-  if (modalLegal) {
-    modalLegal.addEventListener("click", (e) => {
-      if (e.target === modalLegal) cerrarModalLegal();
-    });
-  }
+  if (modalLegal) modalLegal.addEventListener("click", (e) => { if (e.target === modalLegal) cerrarModalLegal(); });
 
   // Conmutador y Persistencia de Modo Claro / Modo Oscuro AMOLED
   const btnTheme = document.getElementById("btnThemeToggle");

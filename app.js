@@ -278,6 +278,104 @@ function cerrarSesionUsuario() {
 }
 
 /**
+ * Autoservicio 100% automático para recuperar PIN y sesión de usuario mediante referencia de pago de Wompi.
+ */
+async function recuperarPinConReferencia() {
+  const inputRef = document.getElementById('recoveryReferenceInput');
+  const msgBox = document.getElementById('recoveryResultMsg');
+  const btn = document.getElementById('btnExecuteAutoRecovery');
+
+  const rawRef = inputRef ? inputRef.value.trim() : '';
+  if (!rawRef) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Ingresa la referencia de pago o el ID de transacción de tu recibo.';
+      msgBox.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando pago en Wompi...';
+    btn.disabled = true;
+  }
+
+  try {
+    let paymentRef = rawRef;
+
+    // Si el usuario ingresó un ID de transacción de Wompi (sin prefijo HNT-)
+    if (!paymentRef.startsWith('HNT-')) {
+      try {
+        const resVerify = await fetch(`/api/payments/verify?id=${encodeURIComponent(paymentRef)}`);
+        if (resVerify.ok) {
+          const dataVerify = await resVerify.json();
+          if (dataVerify.ok && dataVerify.reference) {
+            paymentRef = dataVerify.reference;
+          }
+        }
+      } catch (e) {
+        console.warn('[Recuperación] Fallo resolución de Wompi ID:', e.message);
+      }
+    }
+
+    const res = await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      throw new Error(data.message || data.error || 'No se encontró una transacción aprobada con esa referencia.');
+    }
+
+    // Persistir sesión y actualizar estado reactivo
+    localStorage.setItem('hunter_pro_token', data.token);
+    sesionUsuario = { ...data.user, token: data.token };
+    actualizarBadgeVip();
+    sincronizarFiltroCiudadUsuario();
+    renderizarInterfaz(datosActuales);
+
+    // Auto-completar inputs del formulario tradicional para transparencia visual
+    const inputWa = document.getElementById('restoreWhatsappInput');
+    const inputPin = document.getElementById('restorePinInput');
+    if (inputWa) inputWa.value = data.user.phone;
+    if (inputPin) inputPin.value = data.user.pin;
+
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg success';
+      msgBox.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 0.3rem;"><i class="fa-solid fa-circle-check"></i> ¡Acceso Restaurado Automáticamente!</div>
+        <div style="font-size: 0.84rem; line-height: 1.5;">
+          <strong>WhatsApp:</strong> +57 ${data.user.phone}<br>
+          <strong>Tu PIN Maestro:</strong> <span style="font-size: 1.05rem; font-weight: 800; color: var(--accent-emerald); letter-spacing: 1px;">${data.user.pin}</span><br>
+          <strong>Saldo Activo:</strong> ⚡ ${data.user.credits} Créditos
+        </div>
+      `;
+      msgBox.style.display = 'block';
+    }
+
+    mostrarNotificacionToast(`¡PIN recuperado con éxito! Bienvenido +57 ${data.user.phone}`, 'success');
+
+    setTimeout(() => {
+      abrirModalCheckout(undefined, 'perfil');
+    }, 1800);
+
+  } catch (err) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${err.message}`;
+      msgBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Validar Pago y Revelar mi PIN';
+      btn.disabled = false;
+    }
+  }
+}
+
+/**
  * 🔔 MÓDULO DE NOTIFICACIONES TOAST (modules/02-toast.js)
  * Notificaciones flotantes luxury glassmorphism con ambient glow, micro-barra y swipe gestures.
  * Estándar Ecosistema Desmulta UI/UX.
@@ -1334,17 +1432,15 @@ function renderizarInterfaz(dataset) {
   }).join("");
 
   if (totalPaginas > 1) {
+    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
+    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
     htmlContenido += `
       <div class="pagination-controls" style="grid-column: 1/-1; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 2rem; padding: 1rem 0;">
-        <button type="button" class="btn-pagination" id="btnPrevPage" ${paginaActual === 1 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''} style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          <i class="fa-solid fa-chevron-left"></i> Anterior
-        </button>
+        ${btnPrevHtml}
         <span style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted);">
           Página ${paginaActual} de ${totalPaginas}
         </span>
-        <button type="button" class="btn-pagination" id="btnNextPage" ${paginaActual === totalPaginas ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''} style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          Siguiente <i class="fa-solid fa-chevron-right"></i>
-        </button>
+        ${btnNextHtml}
       </div>
     `;
   }
@@ -2639,42 +2735,46 @@ function configurarListeners() {
 
   // Botón Restaurar Sesión por PIN
   const btnRestore = document.getElementById("btnRestoreSession");
-  if (btnRestore) {
-    btnRestore.addEventListener("click", restaurarSesionConPin);
+  if (btnRestore) btnRestore.addEventListener("click", restaurarSesionConPin);
+
+  // Autoservicio: Recuperación Automática por Referencia de Pago Wompi
+  const btnToggleRec = document.getElementById("btnToggleAutoRecovery");
+  if (btnToggleRec) {
+    btnToggleRec.addEventListener("click", () => {
+      const area = document.getElementById("recoveryContentArea");
+      const icon = document.getElementById("recoveryToggleIcon");
+      if (area) {
+        const visible = area.style.display !== "none";
+        area.style.display = visible ? "none" : "block";
+        if (icon) icon.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+      }
+    });
   }
+  const btnExecRec = document.getElementById("btnExecuteAutoRecovery");
+  if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
 
   // Botón Cerrar Sesión en Perfil
   const btnLogout = document.getElementById("btnLogoutSession");
-  if (btnLogout) {
-    btnLogout.addEventListener("click", cerrarSesionUsuario);
-  }
+  if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
 
   // Botón Comprar Más Créditos desde el Perfil
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
-  if (btnBuyMore) {
-    btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
-  }
+  if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
   // Botón VIP del Header
   const btnVipHeader = document.getElementById("btnVipHeader");
   if (btnVipHeader) {
     btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
     btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
-    btnVipHeader.addEventListener("click", () => {
-      abrirModalCheckout();
-    });
+    btnVipHeader.addEventListener("click", () => abrirModalCheckout());
   }
 
-
-  // ==========================================
   // MODAL LEGAL Y POLÍTICAS (LEY 1581)
-  // ==========================================
   const modalLegal = document.getElementById("modalLegalOverlay");
   const btnCloseLegal = document.getElementById("btnLegalCloseIcon");
   const btnCancelLegal = document.getElementById("btnLegalCancel");
   const legalTitle = document.getElementById("legalModalTitle");
   const legalContent = document.getElementById("legalContentBox");
-
   const btnTerminos = document.getElementById("btnOpenTerminos");
   const btnPrivacidad = document.getElementById("btnOpenPrivacidad");
 
@@ -2702,23 +2802,15 @@ function configurarListeners() {
   function cerrarModalLegal() {
     if (modalLegal) {
       modalLegal.style.opacity = "0";
-      setTimeout(() => {
-        modalLegal.style.display = "none";
-      }, 300);
+      setTimeout(() => { modalLegal.style.display = "none"; }, 300);
     }
   }
 
   if (btnTerminos) btnTerminos.addEventListener("click", () => abrirModalLegal('terminos'));
   if (btnPrivacidad) btnPrivacidad.addEventListener("click", () => abrirModalLegal('privacidad'));
-  
   if (btnCloseLegal) btnCloseLegal.addEventListener("click", cerrarModalLegal);
   if (btnCancelLegal) btnCancelLegal.addEventListener("click", cerrarModalLegal);
-  
-  if (modalLegal) {
-    modalLegal.addEventListener("click", (e) => {
-      if (e.target === modalLegal) cerrarModalLegal();
-    });
-  }
+  if (modalLegal) modalLegal.addEventListener("click", (e) => { if (e.target === modalLegal) cerrarModalLegal(); });
 
   // Conmutador y Persistencia de Modo Claro / Modo Oscuro AMOLED
   const btnTheme = document.getElementById("btnThemeToggle");

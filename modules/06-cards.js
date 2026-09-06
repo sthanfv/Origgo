@@ -455,17 +455,15 @@ function renderizarInterfaz(dataset) {
   }).join("");
 
   if (totalPaginas > 1) {
+    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
+    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
     htmlContenido += `
       <div class="pagination-controls" style="grid-column: 1/-1; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 2rem; padding: 1rem 0;">
-        <button type="button" class="btn-pagination" id="btnPrevPage" ${paginaActual === 1 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''} style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          <i class="fa-solid fa-chevron-left"></i> Anterior
-        </button>
+        ${btnPrevHtml}
         <span style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted);">
           Página ${paginaActual} de ${totalPaginas}
         </span>
-        <button type="button" class="btn-pagination" id="btnNextPage" ${paginaActual === totalPaginas ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''} style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          Siguiente <i class="fa-solid fa-chevron-right"></i>
-        </button>
+        ${btnNextHtml}
       </div>
     `;
   }

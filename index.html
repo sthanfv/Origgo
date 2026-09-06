@@ -534,11 +534,27 @@
 
           <div id="restoreStatusMsg" class="restore-status-msg" style="display: none;"></div>
 
-          <div class="pin-recovery-help" style="margin-top: 1.15rem; text-align: center; font-size: 0.8rem; color: var(--text-dim); border-top: 1px dashed var(--border-subtle); padding-top: 0.85rem;">
-            <p style="margin-bottom: 0.4rem; color: var(--text-muted); font-weight: 500;">¿Olvidaste tu PIN o el número con el que compraste?</p>
-            <a href="https://wa.me/573001234567?text=Hola%20Origgo%2C%20olvid%C3%A9%20el%20PIN%20de%20mi%20cuenta%20comprada.%20Solicito%20asistencia." target="_blank" rel="noopener noreferrer" style="color: var(--accent-emerald); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.85rem; border-radius: 9999px; background: hsla(166, 40%, 23%, 0.12); border: 1px solid var(--border-subtle); transition: all 0.2s ease;">
-              <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> Solicitar Asistencia por WhatsApp
-            </a>
+          <!-- Recuperación Automática por Comprobante / Referencia de Pago (100% Autoservicio) -->
+          <div class="auto-recovery-box" id="autoRecoveryBox" style="margin-top: 1.25rem; border-top: 1px dashed var(--border-subtle); padding-top: 1rem; text-align: left;">
+            <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery" style="width: 100%; background: none; border: none; padding: 0.4rem 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: var(--accent-emerald); font-size: 0.85rem; font-weight: 700;">
+              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu PIN? Recuperar automáticamente</span>
+              <i class="fa-solid fa-chevron-down" id="recoveryToggleIcon" style="transition: transform 0.2s ease;"></i>
+            </button>
+            <div id="recoveryContentArea" style="display: none; margin-top: 0.85rem; background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem;">
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                Ingresa la <strong>Referencia de Pago</strong> de tu compra (la encuentras en tu comprobante bancario o correo de confirmación de Wompi, ej: <code style="color: var(--accent-emerald);">HNT-3001234567-10CR-...</code> o ID de transacción). Nuestro sistema validará tu pago en tiempo real y restaurará tu PIN al instante.
+              </p>
+              <div class="checkout-form-group" style="margin-bottom: 0.75rem;">
+                <label for="recoveryReferenceInput" class="checkout-form-label" style="font-size: 0.78rem;">
+                  <i class="fa-solid fa-receipt"></i> Referencia de Pago o Transacción:
+                </label>
+                <input type="text" id="recoveryReferenceInput" class="checkout-text-input" placeholder="Ej: HNT-3001234567-10CR-... o ID Wompi" style="font-size: 0.85rem; font-family: monospace;" />
+              </div>
+              <button type="button" class="btn-confirm-wompi" id="btnExecuteAutoRecovery" style="padding: 10px 14px; font-size: 0.85rem; margin-top: 0.25rem;">
+                <i class="fa-solid fa-bolt"></i> Validar Pago y Revelar mi PIN
+              </button>
+              <div id="recoveryResultMsg" class="restore-status-msg" style="display: none; margin-top: 0.8rem;"></div>
+            </div>
           </div>
         </div>
       </div>
