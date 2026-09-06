@@ -1,8 +1,6 @@
 }
 
-.pricing-option-card.featured {
-  border-color: hsla(158, 64%, 52%, 0.4);
-}
+.pricing-option-card.featured { border-color: hsla(158, 64%, 52%, 0.4); }
 
 .featured-ribbon {
   position: absolute;
@@ -19,11 +17,7 @@
   box-shadow: 0 2px 8px var(--accent-emerald-glow);
 }
 
-.checkout-radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
+.checkout-radio { position: absolute; opacity: 0; pointer-events: none; }
 
 .option-header-row {
   display: flex;
@@ -62,22 +56,16 @@
   text-align: left;
 }
 
-.checkout-form-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+.checkout-form-label { font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem; }
 
 .checkout-input-wrapper {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   background: var(--glass-metrics-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 0.25rem 0.85rem;
+  padding: 0;
+  overflow: hidden;
   transition: all 0.2s ease;
 }
 
@@ -90,8 +78,12 @@
   font-size: 0.875rem;
   font-weight: 800;
   color: var(--accent-emerald);
-  padding-right: 0.5rem;
+  padding: 0.75rem 0.85rem;
   border-right: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  background: hsla(166, 40%, 23%, 0.12);
+  user-select: none;
 }
 
 .checkout-text-input {
@@ -102,13 +94,24 @@
   font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 700;
-  padding: 0.65rem 0.75rem;
+  padding: 0.75rem 0.85rem;
   outline: none;
+  width: 100%;
 }
 
-.checkout-text-input::placeholder {
-  color: var(--text-dim);
-  font-weight: 500;
+.checkout-text-input::placeholder { color: var(--text-dim); font-weight: 500; }
+
+.checkout-text-input:-webkit-autofill, .checkout-text-input:-webkit-autofill:hover, .checkout-text-input:-webkit-autofill:focus, .checkout-text-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #061B16 inset !important;
+  -webkit-text-fill-color: var(--text-main, #FFFFFF) !important;
+  caret-color: var(--text-main, #FFFFFF) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+[data-theme="light"] .checkout-text-input:-webkit-autofill, [data-theme="light"] .checkout-text-input:-webkit-autofill:hover, [data-theme="light"] .checkout-text-input:-webkit-autofill:focus, [data-theme="light"] .checkout-text-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  -webkit-text-fill-color: #0A110E !important;
+  caret-color: #0A110E !important;
 }
 
 .checkout-text-input.pin-input {
@@ -118,13 +121,10 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--glass-metrics-bg);
+  padding: 0.75rem;
 }
 
-.checkout-input-help {
-  font-size: 0.72rem;
-  color: var(--text-dim);
-  line-height: 1.35;
-}
+.checkout-input-help { font-size: 0.72rem; color: var(--text-dim); line-height: 1.35; }
 
 .btn-confirm-wompi,
 .btn-restore-session {
@@ -439,10 +439,7 @@
   transition: all 0.2s ease;
 }
 
-.btn-logout-session:hover {
-  color: #F87171;
-  border-color: #F87171;
-}
+.btn-logout-session:hover { color: #F87171; border-color: #F87171; }
 
 /* Tarjeta Desbloqueada y Botón WhatsApp Directo */
 .bento-card.card-unlocked {
@@ -469,11 +466,7 @@
   cursor: pointer;
 }
 
-.btn-whatsapp-direct:hover {
-  background: #16A34A;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45);
-}
+.btn-whatsapp-direct:hover { background: #16A34A; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45); }
 
 .card-unlocked-badge {
   display: inline-flex;
@@ -488,4 +481,3 @@
   border-radius: 9999px;
   text-transform: uppercase;
 }
-
