@@ -12,13 +12,49 @@ const { signJwt, verifyJwt, decryptLeadContact } = require('../../lib/crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { unlockLeadSchema, validateBody } = require('../../lib/validation');
+const { requireEnv } = require('../../lib/env');
+const { obtenerLeadPorId } = require('../../lib/leads');
 
-if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.LEADS_ENCRYPTION_KEY)) {
-  throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET y LEADS_ENCRYPTION_KEY son obligatorios en producción.');
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
+const LEADS_ENCRYPTION_KEY = requireEnv('LEADS_ENCRYPTION_KEY', {
+  testFallback: 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c'
+});
+
+const HOSTS_ANUNCIOS_PERMITIDOS = [
+  'fincaraiz.com.co',
+  'metrocuadrado.com',
+  'tucarro.com.co',
+  'mercadolibre.com.co'
+];
+
+function hostPermitido(hostname, hostsPermitidos) {
+  return hostsPermitidos.some(host => hostname === host || hostname.endsWith(`.${host}`));
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232' : '');
-const LEADS_ENCRYPTION_KEY = process.env.LEADS_ENCRYPTION_KEY || (process.env.NODE_ENV === 'test' ? 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c' : '');
+function sanitizarUrlServidor(urlRaw, hostsPermitidos) {
+  const valor = String(urlRaw || '').trim();
+  if (!valor) return null;
+
+  try {
+    const url = new URL(valor);
+    if (url.protocol !== 'https:') return null;
+    if (!hostPermitido(url.hostname.toLowerCase(), hostsPermitidos)) return null;
+    return url.href;
+  } catch (e) {
+    return null;
+  }
+}
+
+function ciudadLeadOficial(lead) {
+  return String(lead?.ciudad || lead?.ubicacion || lead?.barrio || '').trim();
+}
+
+function portalSeguro(portalRaw) {
+  const portal = String(portalRaw || 'fincaraiz').replace(/[^a-z0-9 ._-]/gi, '').trim();
+  return (portal || 'fincaraiz').slice(0, 40).toUpperCase();
+}
 
 module.exports = async function handler(req, res) {
   aplicarCorsSeguro(req, res);
@@ -75,8 +111,48 @@ module.exports = async function handler(req, res) {
 
     const { leadId, contactoCifrado, leadCity } = validation.data;
 
+    const leadCatalogo = obtenerLeadPorId(leadId);
+    const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
+    if (!leadCatalogo && !permiteContactoDePrueba) {
+      return res.status(404).json({
+        ok: false,
+        error: 'LEAD_NO_ENCONTRADO',
+        message: 'El lead solicitado no existe en el catálogo oficial.'
+      });
+    }
+
+    const contactoCifradoOficial = permiteContactoDePrueba ? contactoCifrado : (leadCatalogo?.contacto_cifrado || '');
+    const leadCityOficial = permiteContactoDePrueba && leadCity ? leadCity : ciudadLeadOficial(leadCatalogo);
+
+    if (!contactoCifradoOficial) {
+      return res.status(404).json({
+        ok: false,
+        error: 'CONTACTO_NO_DISPONIBLE',
+        message: 'Este lead no tiene contacto privado disponible para desbloqueo.'
+      });
+    }
+
+    // 3. Descifrar el contacto en memoria antes de tocar el ledger para evitar cargos fallidos
+    let contactoDescifrado = null;
+    const keysToTry = [LEADS_ENCRYPTION_KEY].filter(Boolean);
+
+    for (const k of keysToTry) {
+      try {
+        contactoDescifrado = decryptLeadContact(contactoCifradoOficial, k);
+        if (contactoDescifrado) break;
+      } catch (e) {}
+    }
+
+    if (!contactoDescifrado) {
+      return res.status(500).json({
+        ok: false,
+        error: 'CONTACTO_NO_DESCIFRABLE',
+        message: 'No fue posible descifrar el contacto del lead. No se descontaron créditos.'
+      });
+    }
+
     // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
-    const resultado = await db.unlockLead(session.phone, leadId, session, leadCity);
+    const resultado = await db.unlockLead(session.phone, leadId, session, leadCityOficial);
 
     if (!resultado.success) {
       if (resultado.error === 'PLAN_CIUDAD_DIFERENTE') {
@@ -98,24 +174,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ ok: false, error: resultado.error });
     }
 
-    // 4. Descifrar el contacto en memoria con AES-256-GCM (probando llaves activas)
-    let contactoDescifrado = null;
-    if (contactoCifrado) {
-      const keysToTry = [
-        LEADS_ENCRYPTION_KEY,
-        process.env.NODE_ENV !== 'production' ? '92eb1c43f7a6599258f0e16cbe7a24524bc9fc91f048680bd9dd7242969ee637' : null,
-        process.env.NODE_ENV !== 'production' ? 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c' : null
-      ].filter(Boolean);
-
-      for (const k of keysToTry) {
-        try {
-          contactoDescifrado = decryptLeadContact(contactoCifrado, k);
-          if (contactoDescifrado) break;
-        } catch (e) {}
-      }
-    }
-
-    // 5. Normalizar teléfono y enlace original del inmueble
+    // 4. Normalizar teléfono y enlace original del inmueble
     const rawTel = contactoDescifrado?.telefono || '';
     const telLimpio = rawTel.replace(/\D/g, '');
     const esCelularValido = !rawTel.includes('...') && telLimpio.length >= 10 && (telLimpio.startsWith('573') || telLimpio.startsWith('3'));
@@ -137,14 +196,13 @@ module.exports = async function handler(req, res) {
       telefonoDisplay = 'Disponible en Anuncio Original';
     }
 
-    const enlace = contactoDescifrado?.enlace || 'https://www.fincaraiz.com.co';
-    const portal = (contactoDescifrado?.portal || 'fincaraiz').toUpperCase();
+    const enlace = sanitizarUrlServidor(contactoDescifrado?.enlace, HOSTS_ANUNCIOS_PERMITIDOS) || 'https://www.fincaraiz.com.co';
+    const portal = portalSeguro(contactoDescifrado?.portal || leadCatalogo?.portal || leadCatalogo?.dataset);
 
     // 6. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
     const userPayload = resultado.user || {};
     const newToken = signJwt({
       phone: session.phone,
-      pin: userPayload.pin || session.pin,
       credits: resultado.credits,
       unlockedLeads: resultado.unlockedLeads || [],
       plan: userPayload.plan || session.plan || 'free',

@@ -1,4 +1,90 @@
 /**
+ * MÓDULO DE SEGURIDAD CLIENTE
+ * Helpers compartidos para sanitizar texto, teléfonos y URLs antes de pintar HTML.
+ */
+
+const HOSTS_ANUNCIOS_PERMITIDOS = [
+  'fincaraiz.com.co',
+  'metrocuadrado.com',
+  'tucarro.com.co',
+  'mercadolibre.com.co'
+];
+
+const HOSTS_WHATSAPP_PERMITIDOS = [
+  'wa.me',
+  'api.whatsapp.com',
+  'whatsapp.com'
+];
+
+/**
+ * Sanitización de texto HTML para prevenir inyecciones.
+ * @param {string} texto
+ * @returns {string}
+ */
+function escaparHtml(texto) {
+  if (!texto) return "";
+  return String(texto)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function hostPermitido(hostname, hostsPermitidos) {
+  return hostsPermitidos.some(host => hostname === host || hostname.endsWith(`.${host}`));
+}
+
+/**
+ * Sanitiza URLs controlables por datos/caché antes de insertarlas en atributos href.
+ * @param {string|null|undefined} urlRaw
+ * @param {string[]} hostsPermitidos
+ * @returns {string}
+ */
+function sanitizarUrlCliente(urlRaw, hostsPermitidos) {
+  const valor = String(urlRaw || '').trim();
+  if (!valor) return '';
+
+  try {
+    const url = new URL(valor, window.location.origin);
+    if (url.protocol !== 'https:') return '';
+    if (!hostPermitido(url.hostname.toLowerCase(), hostsPermitidos)) return '';
+    return escaparHtml(url.href);
+  } catch (e) {
+    return '';
+  }
+}
+
+/**
+ * Normaliza teléfonos a formato tel:+57XXXXXXXXXX sin caracteres de control.
+ * @param {string|null|undefined} telefonoRaw
+ * @returns {string}
+ */
+function sanitizarTelCliente(telefonoRaw) {
+  const valor = String(telefonoRaw || '').trim();
+  if (!valor) return '';
+  const limpio = valor.replace(/[^\d+]/g, '');
+  if (!/^\+?[0-9]{10,15}$/.test(limpio)) return '';
+  return escaparHtml(limpio.startsWith('+') ? limpio : `+${limpio}`);
+}
+
+/**
+ * Devuelve una copia segura del contacto antes de pintar enlaces o botones.
+ * @param {object|null|undefined} contacto
+ * @returns {object|null}
+ */
+function sanitizarContactoCliente(contacto) {
+  if (!contacto || typeof contacto !== 'object') return null;
+  return {
+    ...contacto,
+    whatsappUrl: sanitizarUrlCliente(contacto.whatsappUrl, HOSTS_WHATSAPP_PERMITIDOS),
+    enlace: sanitizarUrlCliente(contacto.enlace, HOSTS_ANUNCIOS_PERMITIDOS),
+    telLlamar: sanitizarTelCliente(contacto.telLlamar)
+  };
+}
+
+
+/**
  * 🧠 MÓDULO DE ESTADO Y SESIÓN (modules/01-state.js)
  * Gestión de estado global, persistencia en localStorage, sesión JWT, balance y membresías.
  * Estándar Ecosistema Desmulta DevSecOps.
@@ -13,24 +99,19 @@ let limiteVisible = 9; // Display 9 cards per page for a better grid
 let paginaActual = 1;
 
 // Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
-let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }
+let sesionUsuario = null; // { token, phone, credits, plan, planCity, unlockedLeads: [] }
 try {
   const tokenLocal = localStorage.getItem('hunter_pro_token');
-  const userLocal = localStorage.getItem('hunter_user_data');
-  if (tokenLocal && userLocal) {
-    sesionUsuario = { ...JSON.parse(userLocal), token: tokenLocal };
+  if (tokenLocal) {
+    sesionUsuario = { token: tokenLocal };
   }
+  localStorage.removeItem('hunter_user_data');
+  localStorage.removeItem('hunter_unlocked_contacts');
 } catch (e) {
   sesionUsuario = null;
 }
 
-let cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, telLlamar, esCelularValido, whatsappUrl, enlace, portal } }
-try {
-  const guardados = localStorage.getItem('hunter_unlocked_contacts');
-  if (guardados) cacheContactosDesbloqueados = JSON.parse(guardados);
-} catch (e) {
-  cacheContactosDesbloqueados = {};
-}
+let cacheContactosDesbloqueados = {};
 
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
@@ -43,8 +124,36 @@ let textoBusquedaActivo = "";
 async function inicializarSesionUsuario() {
   // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
   const urlParams = new URLSearchParams(window.location.search);
+  const recoveryToken = urlParams.get('recovery_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
   const wompiId = urlParams.get('id');
+
+  if (recoveryToken) {
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'recover_token', recoveryToken })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) {
+        throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
+      }
+      localStorage.setItem('hunter_pro_token', data.token);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      mostrarNotificacionToast('Sesión restaurada correctamente.', 'success', { title: 'Acceso recuperado', duration: 5000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    } catch (e) {
+      localStorage.removeItem('hunter_pro_token');
+      sesionUsuario = null;
+      mostrarNotificacionToast(e.message || 'El enlace de recuperación no es válido o expiró.', 'warning', { title: 'Recuperación no válida', duration: 7000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   if (wompiId && !paymentRef) {
     try {
@@ -62,26 +171,37 @@ async function inicializarSesionUsuario() {
 
   if (paymentRef && paymentRef.startsWith('HNT-')) {
     try {
+      const tokenGuardado = localStorage.getItem('hunter_pro_token');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {})
+        },
         body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
       });
       const dataText = await res.text();
       let data = null;
       try { data = JSON.parse(dataText); } catch (_) {}
+      if (data && data.requiresLogin) {
+        mostrarNotificacionToast(data.message || 'Pago acreditado. Inicia sesión con tu PIN.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
       if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
-        try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
+        const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
+        delete sesionUsuario.pin;
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
         const notif = typeof generarMensajeBienvenidaToast === 'function' 
           ? generarMensajeBienvenidaToast(sesionUsuario)
-          : { titulo: '🎉 ¡Pago confirmado!', mensaje: `Tu PIN es ${data.user.pin}.`, tipo: 'success' };
+          : { titulo: '🎉 ¡Pago confirmado!', mensaje: 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
         if (typeof abrirModalBienvenidaVIP === 'function') {
-          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, sesionUsuario);
+          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
         }
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -101,7 +221,6 @@ async function inicializarSesionUsuario() {
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
-        try { localStorage.setItem('hunter_user_data', JSON.stringify(data)); } catch (e) {}
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
       } else if (res.status === 401 || res.status === 403) {
@@ -133,7 +252,7 @@ function actualizarBadgeVip() {
       htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
       labelMovil = 'VIP Nac.';
     } else if (sesionUsuario.plan === 'city') {
-      const ciudad = sesionUsuario.planCity || 'Ciudad';
+      const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
       htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = 'VIP Ciudad';
     } else {
@@ -252,8 +371,8 @@ async function restaurarSesionConPin() {
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
-    try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
     sesionUsuario = { ...data.user, token: data.token };
+    delete sesionUsuario.pin;
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);
@@ -297,7 +416,7 @@ function cerrarSesionUsuario() {
 }
 
 /**
- * Autoservicio 100% automático para recuperar PIN mediante correo electrónico.
+ * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
  */
 async function recuperarPinConReferencia() {
   const inputEmail = document.getElementById('recoveryReferenceInput');
@@ -315,7 +434,7 @@ async function recuperarPinConReferencia() {
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando PIN...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando instrucciones...';
     btn.disabled = true;
   }
 
@@ -331,12 +450,12 @@ async function recuperarPinConReferencia() {
     if (msgBox) {
       if (response.ok) {
         msgBox.className = 'restore-status-msg success';
-        msgBox.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${result.message}`;
+        msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
         msgBox.style.display = 'block';
-        if (inputEmail) inputEmail.value = ''; // Limpiar el input
+        if (inputEmail) inputEmail.value = '';
       } else {
         msgBox.className = 'restore-status-msg error';
-        msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${result.message || result.error || 'No se encontró una cuenta asociada a ese correo.'}`;
+        msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
         msgBox.style.display = 'block';
       }
     }
@@ -349,11 +468,12 @@ async function recuperarPinConReferencia() {
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar PIN a mi Correo';
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar instrucciones';
       btn.disabled = false;
     }
   }
 }
+
 
 /**
  * 🔔 MÓDULO DE NOTIFICACIONES TOAST (modules/02-toast.js)
@@ -448,13 +568,17 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   toast.className = `hunter-toast hunter-toast--${tipoFinal}`;
   toast.setAttribute('role', 'alert');
 
-  // Botón de acción opcional
+  const segundosTotal = Math.round(duracionMs / 1000);
+  const escapeFn = typeof escaparHtml === 'function' ? escaparHtml : (t) => String(t || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const tituloSeguro = escapeFn(titulo);
+  const mensajeSeguro = escapeFn(mensajeLimpio);
+  const actionTextSeguro = opts.actionText ? escapeFn(opts.actionText) : '';
+
   let actionHtml = '';
   if (opts.actionText) {
-    actionHtml = `<button type="button" class="hunter-toast-action-btn">${opts.actionText}</button>`;
+    actionHtml = `<button type="button" class="hunter-toast-action-btn">${actionTextSeguro}</button>`;
   }
-
-  const segundosTotal = Math.round(duracionMs / 1000);
 
   toast.innerHTML = `
     <div class="hunter-toast-glow"></div>
@@ -464,12 +588,12 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       </div>
       <div class="hunter-toast-content">
         <div class="hunter-toast-header">
-          <h4 class="hunter-toast-title">${titulo}</h4>
+          <h4 class="hunter-toast-title">${tituloSeguro}</h4>
           <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <p class="hunter-toast-description">${mensajeLimpio}</p>
+        <p class="hunter-toast-description">${mensajeSeguro}</p>
         ${actionHtml}
       </div>
     </div>
@@ -590,14 +714,13 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
  * @returns {{ titulo: string, mensaje: string, tipo: string }}
  */
 function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = null) {
-  const pin = usuario?.pin || 'HNT-••••';
   const plan = usuario?.plan || 'free';
   const city = ciudad || usuario?.planCity || 'tu ciudad';
 
   if (plan === 'national' || tipoProducto === 'subscription_national') {
     return {
       titulo: '👑 ¡Élite Nacional Desbloqueada!',
-      mensaje: `¡Bienvenido al Plan Nacional VIP! Tu PIN es ${pin}. Acceso total en toda Colombia y radar de rebajas activado.`,
+      mensaje: '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
       tipo: 'vip'
     };
   }
@@ -605,7 +728,7 @@ function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = nu
   if (plan === 'city' || tipoProducto === 'subscription_city') {
     return {
       titulo: `👑 ¡Membresía Pro ${city} Activa!`,
-      mensaje: `¡Bienvenido! Tu PIN es ${pin}. Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
+      mensaje: `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
       tipo: 'vip'
     };
   }
@@ -613,17 +736,18 @@ function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = nu
   if (tipoProducto === 'pack_10_leads' || (usuario?.credits >= 10)) {
     return {
       titulo: '⭐ ¡Paquete Pro 10 Contactos Activo!',
-      mensaje: `¡Ahorro del 30% asegurado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
+      mensaje: `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
       tipo: 'success'
     };
   }
 
   return {
     titulo: '🎉 ¡Operación Exitosa!',
-    mensaje: `¡Pago aprobado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
+    mensaje: `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
     tipo: 'success'
   };
 }
+
 
 /**
  * 🌐 MÓDULO DE RED Y CLIENTE API (modules/03-api.js)
@@ -1037,21 +1161,6 @@ function cerrarFichaTecnica(index, event) {
  */
 
 /**
- * Sanitización de texto HTML para prevenir inyecciones.
- * @param {string} texto
- * @returns {string}
- */
-function escaparHtml(texto) {
-  if (!texto) return "";
-  return String(texto)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-/**
  * Formatea visualmente un precio con el símbolo $ separado sutilmente
  * de la cifra numérica, sin mostrar jamás la palabra 'COP'.
  * @param {string} precioStr - Cadena de precio (ej. "$ 1.250.000.000")
@@ -1296,6 +1405,7 @@ function renderizarInterfaz(dataset) {
 
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
     const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
+    const contactoSeguro = sanitizarContactoCliente(contacto);
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     return `
@@ -1372,18 +1482,18 @@ function renderizarInterfaz(dataset) {
 
             ${estaDesbloqueado ? `
               <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                ${contacto?.whatsappUrl ? `
-                  <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                ${contactoSeguro?.whatsappUrl ? `
+                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                   </a>
                 ` : ''}
-                ${contacto?.telLlamar ? `
-                  <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                ${contactoSeguro?.telLlamar ? `
+                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
-                ${contacto?.enlace ? `
-                  <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+                ${contactoSeguro?.enlace ? `
+                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                   </a>
                 ` : `
@@ -1450,18 +1560,18 @@ function renderizarInterfaz(dataset) {
                     </div>
                   </div>
                   <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    ${contacto?.whatsappUrl ? `
-                      <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                    ${contactoSeguro?.whatsappUrl ? `
+                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp
                       </a>
                     ` : ''}
-                    ${contacto?.telLlamar ? `
-                      <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                    ${contactoSeguro?.telLlamar ? `
+                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
                         <i class="fa-solid fa-phone"></i> Llamar
                       </a>
                     ` : ''}
-                    ${contacto?.enlace ? `
-                      <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                    ${contactoSeguro?.enlace ? `
+                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                       </a>
                     ` : `
@@ -1528,6 +1638,7 @@ function renderizarInterfaz(dataset) {
   iniciarScrollReveal();
 }
 
+
 /**
  * 🔓 MÓDULO DE DESBLOQUEO DE CONTACTOS (modules/07-unlock.js)
  * Desbloqueo atómico de propietarios, actualización de tarjeta en DOM y enlace a WhatsApp.
@@ -1569,6 +1680,9 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     renderizarInterfaz(datosActuales);
     return;
   }
+  const contactoSeguro = typeof sanitizarContactoCliente === 'function'
+    ? sanitizarContactoCliente(contacto)
+    : contacto;
 
   card.classList.add('card-unlocked');
 
@@ -1618,18 +1732,18 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     cluster.className = 'unlocked-action-cluster';
     cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
     cluster.innerHTML = `
-      ${contacto?.whatsappUrl ? `
-        <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+      ${contactoSeguro?.whatsappUrl ? `
+        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
-      ${contacto?.telLlamar ? `
-        <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+      ${contactoSeguro?.telLlamar ? `
+        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
-      ${contacto?.enlace ? `
-        <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+      ${contactoSeguro?.enlace ? `
+        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
         </a>
       ` : ''}
@@ -1649,18 +1763,18 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
       actionGroup.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${contacto?.whatsappUrl ? `
-              <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+            ${contactoSeguro?.whatsappUrl ? `
+              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
             ` : ''}
-            ${contacto?.telLlamar ? `
-              <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+            ${contactoSeguro?.telLlamar ? `
+              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
                 <i class="fa-solid fa-phone"></i> Llamar
               </a>
             ` : ''}
-            ${contacto?.enlace ? `
-              <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+            ${contactoSeguro?.enlace ? `
+              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
               </a>
             ` : ''}
@@ -1751,14 +1865,13 @@ async function ejecutarDesbloqueoLead(lead, index) {
         sesionUsuario.unlockedLeads.push(lead.id);
       }
     }
-    cacheContactosDesbloqueados[lead.id] = data.contacto;
-    try {
-      localStorage.setItem('hunter_unlocked_contacts', JSON.stringify(cacheContactosDesbloqueados));
-    } catch (e) {}
+    cacheContactosDesbloqueados[lead.id] = typeof sanitizarContactoCliente === 'function'
+      ? sanitizarContactoCliente(data.contacto)
+      : data.contacto;
 
     cerrarModalCheckout();
     actualizarBadgeVip();
-    actualizarTarjetaEnElDOM(lead.id, data.contacto, index);
+    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index);
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {
@@ -1800,17 +1913,21 @@ async function manejarContactoWhatsapp(index) {
   const lead = datosActuales.leads[index];
 
   const contacto = cacheContactosDesbloqueados[lead.id];
-  if (contacto?.whatsappUrl) {
-    window.open(contacto.whatsappUrl, '_blank');
+  const contactoSeguro = typeof sanitizarContactoCliente === 'function'
+    ? sanitizarContactoCliente(contacto)
+    : contacto;
+  if (contactoSeguro?.whatsappUrl) {
+    window.open(contactoSeguro.whatsappUrl, '_blank', 'noopener,noreferrer');
     return;
   }
-  if (contacto?.enlace) {
-    window.open(contacto.enlace, '_blank');
+  if (contactoSeguro?.enlace) {
+    window.open(contactoSeguro.enlace, '_blank', 'noopener,noreferrer');
     return;
   }
 
   await ejecutarDesbloqueoLead(lead, index);
 }
+
 
 /**
  * 💳 MÓDULO DE CHECKOUT Y PASARELA WOMPI (modules/08-checkout.js)
@@ -1818,6 +1935,26 @@ async function manejarContactoWhatsapp(index) {
  * y gestión de 3 pestañas de cuenta con perfil VIP enriquecido.
  * Estándar Ecosistema Desmulta Finanzas.
  */
+
+let pagoWompiEnProgreso = false;
+
+function generarIdempotencyKeyPago() {
+  const cryptoObj = window.crypto || window.msCrypto;
+  if (cryptoObj && typeof cryptoObj.randomUUID === 'function') {
+    return cryptoObj.randomUUID();
+  }
+
+  if (!cryptoObj || typeof cryptoObj.getRandomValues !== 'function') {
+    throw new Error('Tu navegador no permite crear una orden segura. Actualiza el navegador e intenta de nuevo.');
+  }
+
+  const bytes = new Uint8Array(16);
+  cryptoObj.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
 
 /**
  * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
@@ -1945,7 +2082,7 @@ function abrirModalCheckout(index, pestana = null) {
     const benefitsList = document.getElementById('userBenefitsList');
 
     if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
-    if (elPin) elPin.textContent = `PIN: ${sesionUsuario.pin}`;
+    if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
     if (inputWa) inputWa.value = sesionUsuario.phone;
 
     if (sesionUsuario.plan === 'national') {
@@ -1973,9 +2110,10 @@ function abrirModalCheckout(index, pestana = null) {
       }
     } else if (sesionUsuario.plan === 'city') {
       const cNom = sesionUsuario.planCity || 'Bogotá';
+      const cNomSeguro = escaparHtml(cNom);
       if (cardCredits) cardCredits.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNom})`;
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNomSeguro})`;
       if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = 'Acceso Ilimitado';
       if (elPlan) elPlan.textContent = `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
@@ -1990,7 +2128,7 @@ function abrirModalCheckout(index, pestana = null) {
       if (benefitsWrap) benefitsWrap.style.display = 'block';
       if (benefitsList) {
         benefitsList.innerHTML = `
-          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNom}.</li>
+          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li>
           <li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li>
           <li><i class="fa-solid fa-check"></i> Radar de nuevas oportunidades en tiempo real.</li>
         `;
@@ -2048,6 +2186,8 @@ function cerrarModalCheckout() {
  * Inicia la orden de pago y abre el widget oficial de Wompi con firma SHA256.
  */
 async function ejecutarPagoWompi() {
+  if (pagoWompiEnProgreso) return;
+
   const radio = document.querySelector('input[name="checkoutProduct"]:checked');
   const productType = radio ? radio.value : 'pack_10_leads';
   const inputWa = document.getElementById('checkoutWhatsappInput');
@@ -2101,15 +2241,26 @@ async function ejecutarPagoWompi() {
 
   const btnPagar = document.getElementById('btnConfirmWompi');
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
+  let idempotencyKey = '';
   if (btnPagar) {
     btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando firma criptográfica...';
     btnPagar.disabled = true;
   }
 
   try {
+    pagoWompiEnProgreso = true;
+    idempotencyKey = generarIdempotencyKeyPago();
+    const headersOrden = {
+      'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey
+    };
+    if (sesionUsuario?.token) {
+      headersOrden.Authorization = `Bearer ${sesionUsuario.token}`;
+    }
+
     const res = await fetch('/api/payments/create-order', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersOrden,
       body: JSON.stringify({ productType, celular, ciudad })
     });
 
@@ -2158,29 +2309,42 @@ async function ejecutarPagoWompi() {
         const trx = result?.transaction;
         if (trx && trx.status === 'APPROVED') {
           try {
+            const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
+            const headersClaim = { 'Content-Type': 'application/json' };
+            if (tokenGuardado) {
+              headersClaim.Authorization = `Bearer ${tokenGuardado}`;
+            }
+
             const claimRes = await fetch('/api/auth/session', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: headersClaim,
               body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
             });
             const claimText = await claimRes.text();
             let claimData = null;
             try { claimData = JSON.parse(claimText); } catch (_) { /* Respuesta no JSON */ }
+            if (claimRes.status === 202 && claimData?.requiresLogin) {
+              mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+              abrirModalCheckout(undefined, 'tengo-pin');
+              return;
+            }
             if (claimRes.ok && claimData && claimData.ok && claimData.token) {
               localStorage.setItem('hunter_pro_token', claimData.token);
+              const pinNuevo = claimData.user?.pin || null;
               sesionUsuario = { ...claimData.user, token: claimData.token };
+              delete sesionUsuario.pin;
               actualizarBadgeVip();
               sincronizarFiltroCiudadUsuario();
               renderizarInterfaz(datosActuales);
 
               const notif = typeof generarMensajeBienvenidaToast === 'function'
                 ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
-                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: `PIN: ${claimData.user.pin}`, tipo: 'success' };
+                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
               mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
 
               // Abrir modal de bienvenida y beneficios VIP
               if (typeof abrirModalBienvenidaVIP === 'function') {
-                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, sesionUsuario);
+                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
               }
 
               if (leadSeleccionado) {
@@ -2197,7 +2361,7 @@ async function ejecutarPagoWompi() {
 
     // Fallback si la CDN de Wompi estuviera caída
     const msg = encodeURIComponent(`Hola Origgo, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
-    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank');
+    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank', 'noopener,noreferrer');
     cerrarModalCheckout();
   } catch (err) {
     console.error('[Pago Wompi] Error:', err);
@@ -2209,6 +2373,7 @@ async function ejecutarPagoWompi() {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);
     }
   } finally {
+    pagoWompiEnProgreso = false;
     if (btnPagar) {
       btnPagar.innerHTML = textoOriginal;
       btnPagar.disabled = false;
@@ -2235,6 +2400,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 
 /**
  * ✨ MÓDULO DE EFECTOS UI Y MICRO-INTERACCIONES (modules/09-ui-effects.js)
@@ -3002,16 +3168,20 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
   const elSubtitle = document.getElementById("welcomeModalSubtitle");
   const elPhone = document.getElementById("welcomeUserPhone");
   const elPin = document.getElementById("welcomeUserPin");
+  const elCopyPin = document.getElementById("btnCopyPin");
   const elList = document.getElementById("welcomeBenefitsList");
   const elCtaText = document.getElementById("welcomeCtaText");
 
   const planTipo = planInfo?.tipo || usuario?.plan || 'single';
   const ciudad = planInfo?.ciudad || usuario?.planCity || 'tu ciudad';
-  const pin = usuario?.pin || 'HNT-••••';
+  const pin = usuario?.pin || '';
   const phone = usuario?.phone ? `+57 ${usuario.phone}` : '+57 ••••••••••';
 
   if (elPhone) elPhone.textContent = phone;
-  if (elPin) elPin.textContent = pin;
+  if (elPin) elPin.textContent = pin || 'PIN protegido';
+  if (elCopyPin) {
+    elCopyPin.style.display = pin ? 'inline-flex' : 'none';
+  }
 
   let itemsHtml = '';
 
@@ -3044,7 +3214,8 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
     `;
   } else if (planTipo === 'subscription_city' || usuario?.plan === 'city') {
     const ciudadEscapada = typeof escaparHtml === 'function' ? escaparHtml(ciudad) : ciudad;
-    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudadEscapada.toUpperCase()}`;
+    const ciudadMayusculaEscapada = typeof escaparHtml === 'function' ? escaparHtml(String(ciudad || '').toUpperCase()) : String(ciudad || '').toUpperCase();
+    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudadMayusculaEscapada}`;
     if (elTitle) elTitle.textContent = `¡Bienvenido al Plan Pro ${ciudad}!`;
     if (elSubtitle) elSubtitle.textContent = `Tu membresía territorial está activa. Desbloquea todos los contactos de ${ciudad} sin gastar créditos.`;
     itemsHtml = `

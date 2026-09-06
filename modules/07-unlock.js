@@ -39,6 +39,9 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     renderizarInterfaz(datosActuales);
     return;
   }
+  const contactoSeguro = typeof sanitizarContactoCliente === 'function'
+    ? sanitizarContactoCliente(contacto)
+    : contacto;
 
   card.classList.add('card-unlocked');
 
@@ -88,18 +91,18 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     cluster.className = 'unlocked-action-cluster';
     cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
     cluster.innerHTML = `
-      ${contacto?.whatsappUrl ? `
-        <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+      ${contactoSeguro?.whatsappUrl ? `
+        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
-      ${contacto?.telLlamar ? `
-        <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+      ${contactoSeguro?.telLlamar ? `
+        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
-      ${contacto?.enlace ? `
-        <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+      ${contactoSeguro?.enlace ? `
+        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
         </a>
       ` : ''}
@@ -119,18 +122,18 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
       actionGroup.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${contacto?.whatsappUrl ? `
-              <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+            ${contactoSeguro?.whatsappUrl ? `
+              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
             ` : ''}
-            ${contacto?.telLlamar ? `
-              <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+            ${contactoSeguro?.telLlamar ? `
+              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
                 <i class="fa-solid fa-phone"></i> Llamar
               </a>
             ` : ''}
-            ${contacto?.enlace ? `
-              <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+            ${contactoSeguro?.enlace ? `
+              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
               </a>
             ` : ''}
@@ -221,14 +224,13 @@ async function ejecutarDesbloqueoLead(lead, index) {
         sesionUsuario.unlockedLeads.push(lead.id);
       }
     }
-    cacheContactosDesbloqueados[lead.id] = data.contacto;
-    try {
-      localStorage.setItem('hunter_unlocked_contacts', JSON.stringify(cacheContactosDesbloqueados));
-    } catch (e) {}
+    cacheContactosDesbloqueados[lead.id] = typeof sanitizarContactoCliente === 'function'
+      ? sanitizarContactoCliente(data.contacto)
+      : data.contacto;
 
     cerrarModalCheckout();
     actualizarBadgeVip();
-    actualizarTarjetaEnElDOM(lead.id, data.contacto, index);
+    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index);
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {
@@ -270,12 +272,15 @@ async function manejarContactoWhatsapp(index) {
   const lead = datosActuales.leads[index];
 
   const contacto = cacheContactosDesbloqueados[lead.id];
-  if (contacto?.whatsappUrl) {
-    window.open(contacto.whatsappUrl, '_blank');
+  const contactoSeguro = typeof sanitizarContactoCliente === 'function'
+    ? sanitizarContactoCliente(contacto)
+    : contacto;
+  if (contactoSeguro?.whatsappUrl) {
+    window.open(contactoSeguro.whatsappUrl, '_blank', 'noopener,noreferrer');
     return;
   }
-  if (contacto?.enlace) {
-    window.open(contacto.enlace, '_blank');
+  if (contactoSeguro?.enlace) {
+    window.open(contactoSeguro.enlace, '_blank', 'noopener,noreferrer');
     return;
   }
 

@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const db = require('../../lib/db');
 const { generatePin } = require('../../lib/crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
+const { requireEnv } = require('../../lib/env');
 
 module.exports = async function handler(req, res) {
   // Métodos permitidos para webhooks server-to-server
@@ -70,7 +71,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  const eventsSecret = process.env.WOMPI_EVENTS_SECRET || 'test_events_Ywbmm47eiERZEHu4hRjTyyIzXe8EpEkc';
+  const eventsSecret = requireEnv('WOMPI_EVENTS_SECRET', { testFallback: 'test_events_local_suite' });
   const concatenatedValues = propertiesValues + String(event.timestamp) + eventsSecret;
 
   const expectedSignature = crypto.createHash('sha256').update(concatenatedValues).digest('hex');
@@ -200,11 +201,19 @@ module.exports = async function handler(req, res) {
 
   // 7. Generar PIN de usuario si es nuevo y acreditar saldo
   const customerEmail = transaction.customer_email ? transaction.customer_email.toLowerCase().trim() : null;
+  if (pendingOrder) {
+    pendingOrder.status = 'APPROVED';
+    pendingOrder.transactionId = transactionId;
+    pendingOrder.approvedAt = new Date().toISOString();
+    if (customerEmail) pendingOrder.email = customerEmail;
+    await db.savePendingOrder(reference, pendingOrder);
+  }
+
   const existingUser = await db.getUserByPhone(celular);
   const pin = existingUser ? existingUser.pin : generatePin();
 
   const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
-  console.log(`✅ [webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos. Saldo actual: ${usuarioActualizado.credits}. PIN: ${pin}. Correo: ${customerEmail || 'no-provisto'}`);
+  console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
 
   return res.status(200).json({
     ok: true,
@@ -212,7 +221,6 @@ module.exports = async function handler(req, res) {
     user: {
       phone: usuarioActualizado.phone,
       credits: usuarioActualizado.credits,
-      pin: usuarioActualizado.pin,
       plan: usuarioActualizado.plan
     }
   });

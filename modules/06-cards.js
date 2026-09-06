@@ -5,21 +5,6 @@
  */
 
 /**
- * Sanitización de texto HTML para prevenir inyecciones.
- * @param {string} texto
- * @returns {string}
- */
-function escaparHtml(texto) {
-  if (!texto) return "";
-  return String(texto)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-/**
  * Formatea visualmente un precio con el símbolo $ separado sutilmente
  * de la cifra numérica, sin mostrar jamás la palabra 'COP'.
  * @param {string} precioStr - Cadena de precio (ej. "$ 1.250.000.000")
@@ -264,6 +249,7 @@ function renderizarInterfaz(dataset) {
 
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
     const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
+    const contactoSeguro = sanitizarContactoCliente(contacto);
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     return `
@@ -340,18 +326,18 @@ function renderizarInterfaz(dataset) {
 
             ${estaDesbloqueado ? `
               <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                ${contacto?.whatsappUrl ? `
-                  <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                ${contactoSeguro?.whatsappUrl ? `
+                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                   </a>
                 ` : ''}
-                ${contacto?.telLlamar ? `
-                  <a href="tel:${contacto.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                ${contactoSeguro?.telLlamar ? `
+                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
-                ${contacto?.enlace ? `
-                  <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
+                ${contactoSeguro?.enlace ? `
+                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                   </a>
                 ` : `
@@ -418,18 +404,18 @@ function renderizarInterfaz(dataset) {
                     </div>
                   </div>
                   <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    ${contacto?.whatsappUrl ? `
-                      <a href="${contacto.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                    ${contactoSeguro?.whatsappUrl ? `
+                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp
                       </a>
                     ` : ''}
-                    ${contacto?.telLlamar ? `
-                      <a href="tel:${contacto.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                    ${contactoSeguro?.telLlamar ? `
+                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
                         <i class="fa-solid fa-phone"></i> Llamar
                       </a>
                     ` : ''}
-                    ${contacto?.enlace ? `
-                      <a href="${contacto.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                    ${contactoSeguro?.enlace ? `
+                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                       </a>
                     ` : `

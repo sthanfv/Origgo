@@ -15,14 +15,15 @@ const {
 } = require('../lib/validation');
 const { checkRateLimit, resetRateLimiter } = require('../lib/rate-limiter');
 
-function mockReqRes(ip, body = {}) {
+function mockReqRes(ip, body = {}, options = {}) {
   let statusCode = 200;
   let responseData = null;
 
   const req = {
     method: 'POST',
-    headers: { 'x-forwarded-for': ip },
-    body
+    headers: { 'x-forwarded-for': options.forwardedFor || ip },
+    body,
+    socket: { remoteAddress: ip }
   };
 
   const res = {
@@ -140,6 +141,26 @@ async function ejecutarPruebas() {
   });
   assert.strictEqual(permitidoOtraIp, true, 'Otra IP no debe verse bloqueada');
   console.log('  ✅ Aislamiento por IP verificado.');
+
+  // Cabeceras x-forwarded-for falsificadas no deben dividir el límite en servidor local
+  resetRateLimiter();
+  const { req: reqSpoof1, res: resSpoof1 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '201.1.1.1' });
+  const primeroSpoof = checkRateLimit(reqSpoof1, resSpoof1, {
+    prefix: 'spoof_guard',
+    maxRequests: 1,
+    windowMs: 60 * 1000
+  });
+  assert.strictEqual(primeroSpoof, true, 'La primera petición desde IP real local debe pasar');
+
+  const { req: reqSpoof2, res: resSpoof2 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '202.2.2.2' });
+  const segundoSpoof = checkRateLimit(reqSpoof2, resSpoof2, {
+    prefix: 'spoof_guard',
+    maxRequests: 1,
+    windowMs: 60 * 1000
+  });
+  assert.strictEqual(segundoSpoof, false, 'Cambiar x-forwarded-for no debe evadir el límite local');
+  assert.strictEqual(resSpoof2.getStatusCode(), 429, 'El spoof debe terminar en HTTP 429');
+  console.log('  ✅ Spoofing de x-forwarded-for bloqueado en entorno local.');
 
   console.log('🏆 [TEST SUITE] ¡Todas las pruebas unitarias pasaron al 100%!');
 }

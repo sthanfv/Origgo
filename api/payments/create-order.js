@@ -11,10 +11,12 @@ const db = require('../../lib/db');
 const { checkRateLimit } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { createOrderSchema, validateBody } = require('../../lib/validation');
+const { verifyJwt } = require('../../lib/crypto');
+const { requireEnv } = require('../../lib/env');
 
-if (process.env.NODE_ENV === 'production' && !process.env.WOMPI_INTEGRITY_SECRET) {
-  throw new Error('CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET es obligatorio en producción.');
-}
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
 
 // Diccionario oficial de productos y precios en centavos de peso (COP)
 const PRODUCT_CATALOG = {
@@ -82,6 +84,41 @@ module.exports = async function handler(req, res) {
 
     const { productType, celular: normPhone, ciudad } = validation.data;
 
+    const headers = req.headers || {};
+    const idempotencyKey = String(headers['idempotency-key'] || '').trim();
+    if (!idempotencyKey || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+      return res.status(400).json({ ok: false, error: 'IDEMPOTENCY_KEY_REQUERIDA' });
+    }
+
+    const ordenIdempotente = await db.getPendingOrderByIdempotencyKey(idempotencyKey);
+    if (ordenIdempotente) {
+      const publicKeyCached = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
+      const integritySecretCached = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
+      const integrityChainCached = `${ordenIdempotente.reference}${ordenIdempotente.amountInCents}${ordenIdempotente.currency || 'COP'}${integritySecretCached}`;
+      const signatureCached = crypto.createHash('sha256').update(integrityChainCached).digest('hex');
+      return res.status(200).json({
+        ok: true,
+        reference: ordenIdempotente.reference,
+        amountInCents: ordenIdempotente.amountInCents,
+        currency: ordenIdempotente.currency || 'COP',
+        signature: signatureCached,
+        publicKey: publicKeyCached,
+        productName: ordenIdempotente.productName,
+        idempotent: true
+      });
+    }
+
+    const bearer = (headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+    const sesionActual = bearer ? verifyJwt(bearer, JWT_SECRET) : null;
+    if (sesionActual?.phone && sesionActual.phone !== normPhone) {
+      return res.status(403).json({
+        ok: false,
+        error: 'CELULAR_NO_COINCIDE_CON_SESION',
+        message: 'El número de WhatsApp no coincide con la sesión activa.'
+      });
+    }
+    const cuentaExistente = await db.getUserByPhone(normPhone);
+
     const producto = PRODUCT_CATALOG[productType];
     if (!producto) {
       return res.status(400).json({ 
@@ -109,8 +146,8 @@ module.exports = async function handler(req, res) {
     const currency = 'COP';
 
     // Llaves oficiales de Wompi Sandbox del comercio
-    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_PQAm6bjXtS4ScbCpBU058xY0v1TPFXfA';
-    const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || 'test_integrity_2g8NUSOa7paHZDObHhpPlnIRszyxGfIq';
+    const publicKey = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
+    const integritySecret = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
 
     // Cálculo estricto de firma de integridad Wompi:
     // SHA256(reference + amountInCents + currency + integritySecret)
@@ -128,7 +165,9 @@ module.exports = async function handler(req, res) {
       ciudad: ciudadLimpia,
       tipo: producto.tipo,
       creditos: producto.creditos,
-      status: 'PENDING'
+      status: 'PENDING',
+      accountExistedAtOrderCreation: Boolean(cuentaExistente),
+      idempotencyKey
     });
 
     return res.status(200).json({

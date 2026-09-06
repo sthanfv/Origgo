@@ -91,13 +91,17 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   toast.className = `hunter-toast hunter-toast--${tipoFinal}`;
   toast.setAttribute('role', 'alert');
 
-  // Botón de acción opcional
+  const segundosTotal = Math.round(duracionMs / 1000);
+  const escapeFn = typeof escaparHtml === 'function' ? escaparHtml : (t) => String(t || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const tituloSeguro = escapeFn(titulo);
+  const mensajeSeguro = escapeFn(mensajeLimpio);
+  const actionTextSeguro = opts.actionText ? escapeFn(opts.actionText) : '';
+
   let actionHtml = '';
   if (opts.actionText) {
-    actionHtml = `<button type="button" class="hunter-toast-action-btn">${opts.actionText}</button>`;
+    actionHtml = `<button type="button" class="hunter-toast-action-btn">${actionTextSeguro}</button>`;
   }
-
-  const segundosTotal = Math.round(duracionMs / 1000);
 
   toast.innerHTML = `
     <div class="hunter-toast-glow"></div>
@@ -107,12 +111,12 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       </div>
       <div class="hunter-toast-content">
         <div class="hunter-toast-header">
-          <h4 class="hunter-toast-title">${titulo}</h4>
+          <h4 class="hunter-toast-title">${tituloSeguro}</h4>
           <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <p class="hunter-toast-description">${mensajeLimpio}</p>
+        <p class="hunter-toast-description">${mensajeSeguro}</p>
         ${actionHtml}
       </div>
     </div>
@@ -233,14 +237,13 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
  * @returns {{ titulo: string, mensaje: string, tipo: string }}
  */
 function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = null) {
-  const pin = usuario?.pin || 'HNT-••••';
   const plan = usuario?.plan || 'free';
   const city = ciudad || usuario?.planCity || 'tu ciudad';
 
   if (plan === 'national' || tipoProducto === 'subscription_national') {
     return {
       titulo: '👑 ¡Élite Nacional Desbloqueada!',
-      mensaje: `¡Bienvenido al Plan Nacional VIP! Tu PIN es ${pin}. Acceso total en toda Colombia y radar de rebajas activado.`,
+      mensaje: '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
       tipo: 'vip'
     };
   }
@@ -248,7 +251,7 @@ function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = nu
   if (plan === 'city' || tipoProducto === 'subscription_city') {
     return {
       titulo: `👑 ¡Membresía Pro ${city} Activa!`,
-      mensaje: `¡Bienvenido! Tu PIN es ${pin}. Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
+      mensaje: `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
       tipo: 'vip'
     };
   }
@@ -256,14 +259,14 @@ function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = nu
   if (tipoProducto === 'pack_10_leads' || (usuario?.credits >= 10)) {
     return {
       titulo: '⭐ ¡Paquete Pro 10 Contactos Activo!',
-      mensaje: `¡Ahorro del 30% asegurado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
+      mensaje: `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
       tipo: 'success'
     };
   }
 
   return {
     titulo: '🎉 ¡Operación Exitosa!',
-    mensaje: `¡Pago aprobado! Tu PIN es ${pin}. Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
+    mensaje: `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
     tipo: 'success'
   };
 }

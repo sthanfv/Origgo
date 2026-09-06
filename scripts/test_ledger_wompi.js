@@ -76,8 +76,23 @@ async function runTests() {
   // TEST 3: Crear Orden con Firma Wompi de Integridad
   console.log('▶ Test 3: Generación de orden de pago con firma de integridad SHA-256...');
   const testCelular = '315' + Math.floor(1000000 + Math.random() * 9000000);
+  const mockReqOrderSinIdempotencia = {
+    method: 'POST',
+    headers: {},
+    body: {
+      productType: 'pack_10_leads',
+      celular: testCelular
+    }
+  };
+  const mockResOrderSinIdempotencia = createMockRes();
+  await createOrderHandler(mockReqOrderSinIdempotencia, mockResOrderSinIdempotencia);
+  assert.strictEqual(mockResOrderSinIdempotencia.statusCode, 400);
+  assert.strictEqual(mockResOrderSinIdempotencia.data.error, 'IDEMPOTENCY_KEY_REQUERIDA');
+
+  const idempotencyKeyOrder = crypto.randomUUID();
   const mockReqOrder = {
     method: 'POST',
+    headers: { 'idempotency-key': idempotencyKeyOrder },
     body: {
       productType: 'pack_10_leads',
       celular: testCelular
@@ -92,12 +107,19 @@ async function runTests() {
   assert.ok(mockResOrder.data.signature.length === 64, 'La firma debe ser SHA256 (64 hex)');
   console.log('  ✅ Orden generada con referencia: ' + mockResOrder.data.reference);
 
+  const mockResOrderRepetida = createMockRes();
+  await createOrderHandler(mockReqOrder, mockResOrderRepetida);
+  assert.strictEqual(mockResOrderRepetida.statusCode, 200);
+  assert.strictEqual(mockResOrderRepetida.data.reference, mockResOrder.data.reference, 'La misma llave idempotente debe retornar la misma referencia');
+  assert.strictEqual(mockResOrderRepetida.data.idempotent, true, 'La respuesta repetida debe marcarse como idempotente');
+  console.log('  ✅ Idempotencia de creación de orden verificada contra doble clic.');
+
   // TEST 4: Simulación de Webhook Wompi con Firma HMAC Dinámica
   console.log('▶ Test 4: Procesamiento de Webhook Wompi con validación de firma...');
   const testRef = mockResOrder.data.reference;
   const transactionId = 'trx-test-' + Date.now();
   const timestamp = Math.floor(Date.now() / 1000);
-  const eventsSecret = process.env.WOMPI_EVENTS_SECRET || 'test_events_Ywbmm47eiERZEHu4hRjTyyIzXe8EpEkc';
+  const eventsSecret = process.env.WOMPI_EVENTS_SECRET || 'test_events_local_suite';
 
   const rawData = {
     transaction: {
@@ -133,8 +155,11 @@ async function runTests() {
   assert.strictEqual(mockResWeb.statusCode, 200);
   assert.strictEqual(mockResWeb.data.ok, true);
   assert.strictEqual(mockResWeb.data.user.credits, 10);
-  const userPin = mockResWeb.data.user.pin;
-  console.log(`  ✅ Webhook Wompi acreditó 10 créditos a ${testCelular}. PIN asignado: ${userPin}`);
+  assert.strictEqual(mockResWeb.data.user.pin, undefined, 'El webhook no debe exponer el PIN en la respuesta HTTP');
+  const userAfterWebhook = await db.getUserByPhone(testCelular);
+  const userPin = userAfterWebhook.pin;
+  assert.ok(userPin, 'El PIN queda almacenado internamente para login');
+  console.log(`  ✅ Webhook Wompi acreditó 10 créditos a ${testCelular} sin filtrar PIN.`);
 
   // TEST 5: Idempotencia en Webhook — El mismo evento no debe sumar créditos dos veces
   console.log('▶ Test 5: Idempotencia de Webhook contra doble acreditación...');
@@ -145,6 +170,45 @@ async function runTests() {
   const userAfterDup = await db.getUserByPhone(testCelular);
   assert.strictEqual(userAfterDup.credits, 10, 'Los créditos deben seguir en 10 (no 20)');
   console.log('  ✅ Idempotencia atómica confirmada: saldo protegido contra reintentos de red.');
+
+  // TEST 5b: Cuenta existente no debe recibir token por reference sin sesión/PIN
+  console.log('▶ Test 5b: Protección de cuenta existente en claim_reference...');
+  const existingPhone = '316' + Math.floor(1000000 + Math.random() * 9000000);
+  const existingUser = await db.addCredits(existingPhone, 1, null, null, 'existente@example.com');
+  const mockReqExistingOrder = {
+    method: 'POST',
+    headers: { 'idempotency-key': crypto.randomUUID() },
+    body: { productType: 'single_lead', celular: existingPhone }
+  };
+  const mockResExistingOrder = createMockRes();
+  await createOrderHandler(mockReqExistingOrder, mockResExistingOrder);
+  assert.strictEqual(mockResExistingOrder.statusCode, 200);
+
+  const existingOrder = await db.getPendingOrder(mockResExistingOrder.data.reference);
+  existingOrder.status = 'APPROVED';
+  await db.savePendingOrder(existingOrder.reference, existingOrder);
+
+  const mockReqClaimExisting = {
+    method: 'POST',
+    headers: {},
+    body: { action: 'claim_reference', reference: existingOrder.reference }
+  };
+  const mockResClaimExisting = createMockRes();
+  await sessionHandler(mockReqClaimExisting, mockResClaimExisting);
+  assert.strictEqual(mockResClaimExisting.statusCode, 202, 'Cuenta existente debe requerir login antes de emitir token');
+  assert.strictEqual(mockResClaimExisting.data.requiresLogin, true);
+  assert.strictEqual(mockResClaimExisting.data.token, undefined, 'No se debe emitir token sin sesión o PIN');
+
+  const mockReqClaimExistingPin = {
+    method: 'POST',
+    headers: {},
+    body: { action: 'claim_reference', reference: existingOrder.reference, pin: existingUser.pin }
+  };
+  const mockResClaimExistingPin = createMockRes();
+  await sessionHandler(mockReqClaimExistingPin, mockResClaimExistingPin);
+  assert.strictEqual(mockResClaimExistingPin.statusCode, 200);
+  assert.ok(mockResClaimExistingPin.data.token, 'El PIN válido sí permite recuperar sesión');
+  console.log('  ✅ Pago acreditado sin secuestrar sesión de cuentas existentes.');
 
   // TEST 6: Inicio de Sesión con WhatsApp y PIN (Tolerante con guion, sin guion y solo 4 dígitos)
   console.log('▶ Test 6: Autenticación con WhatsApp + PIN (Tolerancia total de formatos)...');
@@ -180,6 +244,25 @@ async function runTests() {
 
   const userToken = mockResLogin.data.token;
   console.log('  ✅ Autenticación tolerante exitosa: probado con HNT-XXXX, HNTXXXX y XXXX.');
+
+  // TEST 6b: Restauración por enlace temporal firmado sin filtrar PIN
+  console.log('▶ Test 6b: Restauración de sesión por token temporal de correo...');
+  const recoveryToken = signJwt({
+    purpose: 'recover_session',
+    phone: testCelular,
+    role: 'recovery'
+  }, jwtSecret, 15 / (24 * 60));
+  const mockReqRecoverToken = {
+    method: 'POST',
+    headers: {},
+    body: { action: 'recover_token', recoveryToken }
+  };
+  const mockResRecoverToken = createMockRes();
+  await sessionHandler(mockReqRecoverToken, mockResRecoverToken);
+  assert.strictEqual(mockResRecoverToken.statusCode, 200);
+  assert.ok(mockResRecoverToken.data.token, 'Debe emitir sesión con token temporal válido');
+  assert.strictEqual(mockResRecoverToken.data.user.pin, undefined, 'La restauración por correo no debe devolver PIN');
+  console.log('  ✅ Restauración temporal validada sin exponer credenciales permanentes.');
 
   // TEST 7: Desbloqueo de Inmueble y Descuento de 1 Crédito
   console.log('▶ Test 7: Desbloqueo de Inmueble con deducción de 1 crédito...');
@@ -339,7 +422,7 @@ async function runTests() {
   assert.strictEqual(mockResUnlockMedellin.data.error, 'PLAN_CIUDAD_DIFERENTE');
   console.log('  ✅ Plan Pro Ciudad validado: Ilimitado en Bogotá y blindado contra acceso en Medellín.');
 
-  console.log('\n🏆 [TEST SUITE] ¡Todos los 12 tests de integración, antifraude y resiliencia pasaron al 100%!');
+  console.log('\n🏆 [TEST SUITE] ¡Todos los tests de integración, antifraude, idempotencia y resiliencia pasaron al 100%!');
 }
 
 runTests().catch((err) => {

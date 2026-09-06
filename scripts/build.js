@@ -156,3 +156,55 @@ try {
 }
 
 console.log('🎉 [BUILD] Compilación y ensamblado completados con éxito.');
+
+// ═════════════════════════════════════════════════════════════════════════
+// 4. PAQUETE ESTÁTICO PÚBLICO (dist/) — sin secretos ni código de servidor
+// ═════════════════════════════════════════════════════════════════════════
+const DIST_DIR = path.join(ROOT_DIR, 'dist');
+
+function copiarArchivo(origenRel, destinoRel) {
+  const origen = path.join(ROOT_DIR, origenRel);
+  if (!fs.existsSync(origen)) return;
+  const destino = path.join(DIST_DIR, destinoRel || origenRel);
+  fs.mkdirSync(path.dirname(destino), { recursive: true });
+  fs.copyFileSync(origen, destino);
+}
+
+function copiarDirectorio(origenRel) {
+  const origen = path.join(ROOT_DIR, origenRel);
+  if (!fs.existsSync(origen)) return;
+  const destino = path.join(DIST_DIR, origenRel);
+  fs.mkdirSync(destino, { recursive: true });
+  for (const entrada of fs.readdirSync(origen, { withFileTypes: true })) {
+    const rel = path.join(origenRel, entrada.name);
+    if (entrada.isDirectory()) {
+      copiarDirectorio(rel);
+    } else if (entrada.name !== 'local_db.json' && entrada.name !== 'ledger_store.json') {
+      copiarArchivo(rel);
+    }
+  }
+}
+
+fs.rmSync(DIST_DIR, { recursive: true, force: true });
+fs.mkdirSync(DIST_DIR, { recursive: true });
+
+[
+  'index.html',
+  'style.css',
+  'style.min.css',
+  'app.js',
+  'app.min.js',
+  'config.js',
+  'sw.js',
+  'manifest.json',
+  'robots.txt',
+  'sitemap.xml',
+  'llms.txt',
+  'favicon.svg',
+  'google390e0a55723f2003.html'
+].forEach((f) => copiarArchivo(f));
+
+copiarDirectorio('assets');
+copiarDirectorio('data');
+
+console.log('✅ [BUILD] Paquete público copiado a dist/ (sin .env, api, lib, modules ni node_modules).');

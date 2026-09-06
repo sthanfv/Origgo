@@ -10,12 +10,11 @@ const db = require('../../lib/db');
 const { verifyJwt } = require('../../lib/crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
+const { requireEnv } = require('../../lib/env');
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-  throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');
-}
-
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232' : '');
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
 
 module.exports = async function handler(req, res) {
   aplicarCorsSeguro(req, res);
@@ -55,7 +54,6 @@ module.exports = async function handler(req, res) {
       ok: true,
       phone: user.phone,
       credits: user.credits,
-      pin: user.pin,
       plan: user.plan,
       planCity: user.planCity,
       planExpiresAt: user.planExpiresAt,

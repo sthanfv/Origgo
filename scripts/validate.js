@@ -37,6 +37,7 @@ async function ejecutarValidacionCompleta() {
     'lib/rate-limiter.js',
     'lib/validation.js',
     'lib/env.js',
+    'lib/leads.js',
     'lib/cors.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
@@ -160,6 +161,13 @@ async function ejecutarValidacionCompleta() {
     }
   }
 
+  try {
+    execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_security_hardening.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Servidor local bloquea fuentes, secretos, sourcemaps y dependencias privadas');
+  } catch (e) {
+    assert(false, `Fallo en test de hardening HTTP local: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 4. CONTRATOS DE DATOS JSON Y CIFRADO AES-256
   // ═════════════════════════════════════════════════════════════════════════
@@ -186,12 +194,12 @@ async function ejecutarValidacionCompleta() {
   }
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 5. SUITE AUTOMATIZADA WOMPI Y LEDGER (12/12 PRUEBAS)
+  // 5. SUITE AUTOMATIZADA WOMPI Y LEDGER
   // ═════════════════════════════════════════════════════════════════════════
   console.log('\n💳 [VALIDACIÓN 5/8] Suite Automatizada de Integración Wompi, Ledger y Validación Zod...');
   try {
     execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_ledger_wompi.js')}"`, { stdio: 'pipe' });
-    assert(true, '12/12 pruebas unitarias de pasarela Wompi, antifraude y ledger pasadas al 100%');
+    assert(true, 'Pruebas unitarias de pasarela Wompi, antifraude, idempotencia y ledger pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en suite de pruebas de Wompi: ${e.message}`);
   }
@@ -208,6 +216,9 @@ async function ejecutarValidacionCompleta() {
   // ═════════════════════════════════════════════════════════════════════════
   console.log('\n🛡️ [VALIDACIÓN 6/8] Auditoría Antifraude en Reclamo de Referencias (claim_reference)...');
   try {
+    if (!process.env.JWT_SECRET && process.env.NODE_ENV !== 'production') {
+      process.env.JWT_SECRET = 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
+    }
     const sessionHandler = require('../api/auth/session');
     let resStatus = 0;
     let resPayload = null;
@@ -217,7 +228,7 @@ async function ejecutarValidacionCompleta() {
       headers: { 'x-forwarded-for': '127.0.0.1' },
       body: {
         action: 'claim_reference',
-        reference: 'HNT-3119998888-VIPNAC-1750000000-invalida',
+        reference: 'INVALID-REFERENCE-3119998888',
         phone: '3119998888'
       }
     };
@@ -236,7 +247,7 @@ async function ejecutarValidacionCompleta() {
     };
 
     await sessionHandler(mockReq, mockRes);
-    const fueRechazado = (resStatus === 401 || resStatus === 403 || resStatus === 400);
+    const fueRechazado = (resStatus === 401 || resStatus === 403 || resStatus === 404 || resStatus === 400);
     assert(fueRechazado, `Reclamo de referencia fraudulenta rechazado con HTTP ${resStatus} (${resPayload?.error || 'OK'})`);
   } catch (err) {
     assert(false, `Error en prueba antifraude: ${err.message}`);

@@ -1,30 +1,49 @@
 /**
- * 🔐 ENDPOINT DE RECUPERACIÓN DE PIN POR CORREO ELECTRÓNICO (PRODUCCIÓN)
+ * 🔐 ENDPOINT DE RECUPERACIÓN DE ACCESO POR CORREO ELECTRÓNICO (PRODUCCIÓN)
  * Origgo Intelligence — Arquitectura DevSecOps
  * 
  * Flujo:
  * 1. Rate limiting estricto (máx 3 solicitudes/min por IP).
  * 2. Validación de formato de correo electrónico.
  * 3. Consulta estricta en base de datos (Firestore / Almacén Persistente).
- *    - Si no existe: Retorna HTTP 404 informando que no hay cuenta o compra asociada. CERO MOCKS.
- * 4. Despacho seguro mediante Resend API con plantilla ejecutiva de lujo y prestigio.
+ *    - Si no existe: Retorna respuesta genérica para evitar enumeración de cuentas.
+ * 4. Despacho mediante Resend API con plantilla institucional.
  * 5. Remitente interno institucional (Origgo Seguridad Interna).
- * 6. Reporte detallado de cualquier error de infraestructura o proveedor.
+ * 6. Errores de infraestructura encapsulados sin filtrar detalles al cliente.
  */
 
 const db = require('../../lib/db');
+const crypto = require('crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
 const { recoverPinSchema, validateBody } = require('../../lib/validation');
-require('../../lib/env');
+const { aplicarCorsSeguro } = require('../../lib/cors');
+const { signJwt } = require('../../lib/crypto');
+const { requireEnv } = require('../../lib/env');
+
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
+
+function resolverPortalUrlSeguro() {
+  const fallback = 'https://origgo.vercel.app';
+  const candidate = (process.env.APP_URL || fallback).trim();
+  try {
+    const url = new URL(candidate);
+    if (url.protocol === 'https:' || url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+      return url.origin;
+    }
+  } catch (e) {}
+  return fallback;
+}
 
 /**
  * Genera el cuerpo HTML de ultra prestigio y lujo arquitectónico para el correo electrónico.
  * Diseñado en MODO CLARO oficial de Origgo (Salvia Lino Porcelana y Esmeralda de Prestigio).
  * Compatible con todos los clientes de correo (Gmail, Apple Mail, Outlook, web) evitando colapsos.
  */
-function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
+function generarPlantillaLujo({ phone, email, recoveryUrl }) {
   const anio = new Date().getFullYear();
-  const urlDestino = portalUrl || 'https://origgo.vercel.app';
+  const urlDestino = recoveryUrl || 'https://origgo.vercel.app';
   const cleanPhone = String(phone || '').replace(/[^0-9]/g, '');
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -82,7 +101,7 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
   
   <!-- PREHEADER INVISIBLE ANTI-COLAPSO (Evita que Gmail muestre citas o texto recortado) -->
   <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 1px; line-height: 1px; color: #E4EEE7; opacity: 0;">
-    Tu PIN maestro de seguridad Origgo es ${pin} para la línea +57 ${phone}. Acceso confidencial garantizado a la terminal.
+    Tu acceso confidencial Origgo está listo. Abre este mensaje para restaurar tus credenciales de la terminal.
     &#847; &zwnj; &nbsp; &#8199; &shy; &#847; &zwnj; &nbsp; &#8199; &shy; &#847; &zwnj; &nbsp; &#8199; &shy; &#847; &zwnj; &nbsp; &#8199; &shy;
   </div>
 
@@ -134,7 +153,7 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
               </h2>
               
               <p class="text-muted" style="margin: 0 0 28px 0; font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; color: #2E3B35; text-align: center;">
-                Se ha procesado una solicitud formal de autenticación para la plataforma Origgo. A continuación se detallan las credenciales criptográficas vinculadas a tu cuenta activa:
+                Se ha procesado una solicitud formal de autenticación para la plataforma Origgo. Usa el enlace temporal de restauración para volver a tu cuenta sin exponer tu PIN permanente.
               </p>
 
               <!-- PANEL WHATSAPP VINCULADO (CERO AZUL, NÚMEROS LIMPIOS SIN MONOSPACE TOSCO) -->
@@ -152,23 +171,22 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
                 </tr>
               </table>
 
-              <!-- PANEL PIN MAESTRO DE ACCESO (ESTILO ESMERALDA Y PORCELANA) -->
+              <!-- PANEL DE ENLACE TEMPORAL DE RESTAURACIÓN -->
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background: linear-gradient(180deg, #F4F9F6 0%, #EBF4EE 100%); border: 1.5px solid #059669; border-radius: 16px; margin-bottom: 26px; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.08);">
                 <tr>
                   <td style="padding: 26px 20px; text-align: center;">
                     <span style="display: block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #047857; text-transform: uppercase; margin-bottom: 14px; font-family: 'Lufga', 'Plus Jakarta Sans', sans-serif;">
-                      🔑 TU PIN MAESTRO DE SEGURIDAD
+                      ENLACE TEMPORAL DE RESTAURACIÓN
                     </span>
                     
-                    <!-- Caja de exhibición del PIN (Números proporcionales limpios y estilizados) -->
                     <div style="background-color: #FFFFFF; border: 1.5px solid #10B981; border-radius: 12px; padding: 14px 28px; display: inline-block; margin: 0 auto; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.1);">
-                      <span style="font-size: 34px; font-weight: 800; letter-spacing: 5px; color: #047857; font-family: 'Lufga', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; display: block; line-height: 1; font-variant-numeric: tabular-nums;">
-                        ${pin}
-                      </span>
+                      <a href="${urlDestino}" target="_blank" style="font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #047857; font-family: 'Lufga', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; display: inline-block; line-height: 1.4; text-decoration: none; text-transform: uppercase;">
+                        Restaurar mi acceso seguro
+                      </a>
                     </div>
                     
                     <span style="display: block; font-size: 12px; color: #374640; margin-top: 14px; font-family: 'Inter', sans-serif;">
-                      Utiliza este PIN junto a tu celular para ingresar y restaurar tus créditos en la terminal.
+                      Este enlace expira en 15 minutos. Si no solicitaste esta restauración, ignora este mensaje.
                     </span>
                   </td>
                 </tr>
@@ -179,7 +197,7 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
                 <tr>
                   <td align="center">
                     <a href="${urlDestino}" target="_blank" style="background-color: #059669; color: #FFFFFF; font-family: 'Lufga', 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 1px; padding: 15px 32px; border-radius: 9999px; text-decoration: none; display: inline-block; text-transform: uppercase; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.25);">
-                      ENTRAR A MI TERMINAL ORIGGO &rarr;
+                      RESTAURAR MI TERMINAL ORIGGO &rarr;
                     </a>
                   </td>
                 </tr>
@@ -190,7 +208,7 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
                 <tr>
                   <td style="padding: 14px 18px;">
                     <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.5; color: #4B5563;">
-                      🛡️ <strong style="color: #991B1B;">Protocolo Anti-Fraude:</strong> Este PIN es de uso personal y confidencial. El equipo de Origgo jamás te solicitará tu PIN por correo, WhatsApp o llamada telefónica.
+                      🛡️ <strong style="color: #991B1B;">Protocolo Anti-Fraude:</strong> Este enlace es personal y temporal. El equipo de Origgo jamás te solicitará tu PIN por correo, WhatsApp o llamada telefónica.
                     </p>
                   </td>
                 </tr>
@@ -220,14 +238,13 @@ function generarPlantillaLujo({ phone, pin, email, portalUrl }) {
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  aplicarCorsSeguro(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // 🛡️ Rate Limiting estricto: Máximo 3 solicitudes de PIN por día (24h) por IP
+  // 🛡️ Rate Limiting estricto: Máximo 3 solicitudes de recuperación por día (24h) por IP
   const unDiaMs = 24 * 60 * 60 * 1000;
   if (!checkRateLimit(req, res, { 
     prefix: 'recover_pin_ip', 
@@ -256,17 +273,22 @@ module.exports = async function handler(req, res) {
 
   const normEmail = validation.data.email;
 
-  // 🛡️ Rate Limiting estricto por Correo: Máximo 3 solicitudes de PIN por día para la misma cuenta
+  // 🛡️ Rate Limiting estricto por Correo: Máximo 3 solicitudes de recuperación por día para la misma cuenta
   if (!checkRateLimit(req, res, { 
     prefix: 'recover_pin_email', 
     customKey: normEmail,
     maxRequests: 3, 
     windowMs: unDiaMs,
     error: 'LIMITE_DIARIO_EXCEDIDO',
-    message: `Has alcanzado el límite máximo de 3 solicitudes de recuperación de PIN por día para "${normEmail}". Esta medida protege tu cuenta contra abusos y spam.`
+    message: 'Has alcanzado el límite máximo de 3 solicitudes de recuperación de PIN por día para esta cuenta. Esta medida protege contra abusos y spam.'
   })) {
     return;
   }
+
+  const respuestaGenerica = {
+    ok: true,
+    message: 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.'
+  };
 
   try {
     // 1. Buscar en la base de datos real
@@ -283,45 +305,42 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // 3. Cero mock-ups: Si el usuario no existe en el sistema, informar honestamente
     if (!user || !user.pin) {
-      return res.status(404).json({
-        ok: false,
-        error: 'USUARIO_NO_REGISTRADO',
-        message: `No encontramos ninguna cuenta o compra asociada a "${normEmail}". Verifica que sea el mismo correo que ingresaste al pagar en Wompi o adquiere un plan.`
-      });
+      return res.status(202).json(respuestaGenerica);
     }
 
     // 4. Validar configuración del proveedor Resend
     const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
     if (!resendApiKey) {
-      return res.status(500).json({
-        ok: false,
-        error: 'CONFIGURACION_RESEND_FALTANTE',
-        message: 'El servidor de correo no tiene configurada la variable RESEND_API_KEY en el entorno.'
-      });
+      console.error('[recover] RESEND_API_KEY no configurada');
+      return res.status(202).json(respuestaGenerica);
     }
 
     // 5. Configurar remitente interno institucional (nunca onboarding@resend.dev)
     const remitenteInterno = (process.env.RESEND_FROM_EMAIL || 'Origgo Seguridad Interna <seguridad@resend.dev>').trim();
 
     // 6. Determinar URL pública del portal para el botón de acceso directo
-    const hostHeader = req.headers ? (req.headers['x-forwarded-host'] || req.headers.host) : null;
-    const protoHeader = req.headers ? (req.headers['x-forwarded-proto'] || 'https') : 'https';
-    const portalUrl = process.env.APP_URL || (hostHeader ? `${protoHeader}://${hostHeader}` : 'https://origgo.vercel.app');
+    const portalUrl = resolverPortalUrlSeguro();
+    const recoveryUrl = new URL(portalUrl);
+    const recoveryToken = signJwt({
+      purpose: 'recover_session',
+      phone: user.phone,
+      email: normEmail,
+      nonce: crypto.randomUUID(),
+      role: 'recovery'
+    }, JWT_SECRET, 15 / (24 * 60));
+    recoveryUrl.searchParams.set('recovery_token', recoveryToken);
 
     // 7. Generar plantilla HTML de ultra prestigio y lujo arquitectónico (Modo Claro Origgo)
     const htmlBody = generarPlantillaLujo({
       phone: user.phone,
-      pin: user.pin,
       email: normEmail,
-      portalUrl
+      recoveryUrl: recoveryUrl.href
     });
 
-    // 8. Asunto dinámico con sello de tiempo y referencia única para evitar que Gmail colapse en hilos de "..."
-    const refCode = (user.pin || '').replace(/[^a-zA-Z0-9]/g, '') || Math.floor(1000 + Math.random() * 9000);
     const horaDespacho = new Date().toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' });
-    const asuntoEmail = `🔑 PIN de Seguridad Origgo #${user.pin} · [Ref: ${refCode}-${horaDespacho}]`;
+    const refAleatoria = Math.floor(1000 + Math.random() * 9000);
+    const asuntoEmail = `Restauración de acceso Origgo · [Ref: ${refAleatoria}-${horaDespacho}]`;
 
     // 9. Enviar a través de la API oficial de Resend
     const resendResponse = await fetch('https://api.resend.com/emails', {
@@ -340,37 +359,13 @@ module.exports = async function handler(req, res) {
 
     if (!resendResponse.ok) {
       const errorText = await resendResponse.text();
-      let errorData = {};
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        errorData = { message: errorText };
-      }
-
-      console.error('[recover] Error reportado por Resend API:', resendResponse.status, errorData);
-
-      return res.status(502).json({
-        ok: false,
-        error: 'ERROR_DESPACHO_RESEND',
-        status: resendResponse.status,
-        message: `El proveedor de correo no pudo entregar el mensaje (${resendResponse.status}): ${errorData.message || 'Error de despacho'}.`
-      });
+      console.error('[recover] Error reportado por Resend API:', resendResponse.status, errorText.slice(0, 200));
     }
 
-    const dataDespacho = await resendResponse.json().catch(() => ({}));
-
-    return res.status(200).json({
-      ok: true,
-      message: `Hemos enviado tu PIN confidencial a ${normEmail}. Por favor revisa tu bandeja de entrada o carpeta de promociones/spam.`,
-      dispatchId: dataDespacho.id || null
-    });
+    return res.status(202).json(respuestaGenerica);
 
   } catch (error) {
     console.error('[recover] Error no controlado en recuperación:', error);
-    return res.status(500).json({
-      ok: false,
-      error: 'ERROR_INTERNO',
-      message: `Ocurrió un error inesperado al procesar la solicitud: ${error.message}`
-    });
+    return res.status(202).json(respuestaGenerica);
   }
 };

@@ -12,12 +12,39 @@ const { signJwt, verifyJwt } = require('../../lib/crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { sessionLoginSchema, validateBody } = require('../../lib/validation');
+const { requireEnv } = require('../../lib/env');
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-  throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
+
+function payloadUsuarioPublico(user, extras = {}) {
+  return {
+    phone: user.phone,
+    email: user.email || extras.email || null,
+    credits: user.credits,
+    plan: user.plan,
+    planCity: user.planCity,
+    planExpiresAt: user.planExpiresAt,
+    unlockedLeads: user.unlockedLeads || []
+  };
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232' : '');
+function cuentaExistiaAntesDelPago(order, user) {
+  if (!order) return Boolean(user);
+  if (typeof order.accountExistedAtOrderCreation === 'boolean') {
+    return order.accountExistedAtOrderCreation;
+  }
+  if (!user) return false;
+
+  const orderCreatedAt = Date.parse(order.createdAt || '');
+  const userCreatedAt = Date.parse(user.createdAt || '');
+  if (Number.isFinite(orderCreatedAt) && Number.isFinite(userCreatedAt)) {
+    return userCreatedAt <= orderCreatedAt;
+  }
+
+  return true;
+}
 
 module.exports = async function handler(req, res) {
   aplicarCorsSeguro(req, res);
@@ -28,7 +55,7 @@ module.exports = async function handler(req, res) {
 
   // GET: Verificar validez de token existente
   if (req.method === 'GET') {
-    const authHeader = req.headers.authorization || '';
+    const authHeader = (req.headers && req.headers.authorization) || '';
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
     if (!token) {
       return res.status(401).json({ authenticated: false, error: 'Token no proporcionado' });
@@ -46,15 +73,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       authenticated: true,
-      user: {
-        phone: user.phone,
-        credits: user.credits,
-        pin: user.pin,
-        plan: user.plan,
-        planCity: user.planCity,
-        planExpiresAt: user.planExpiresAt,
-        unlockedLeads: user.unlockedLeads || []
-      }
+      user: payloadUsuarioPublico(user)
     });
   }
 
@@ -73,7 +92,51 @@ module.exports = async function handler(req, res) {
     }
     body = body || {};
 
-    const { action, celular, pin, reference } = body;
+    const { action, celular, pin, reference, recoveryToken } = body;
+
+    // CASO 0: Restauración por enlace temporal firmado enviado al correo validado
+    if (action === 'recover_token') {
+      if (!checkRateLimit(req, res, { prefix: 'recover_token', maxRequests: 5, windowMs: 15 * 60 * 1000 })) {
+        return;
+      }
+
+      const payload = verifyJwt(String(recoveryToken || ''), JWT_SECRET);
+      if (!payload || payload.purpose !== 'recover_session' || !payload.phone) {
+        return res.status(401).json({
+          ok: false,
+          error: 'TOKEN_RECUPERACION_INVALIDO',
+          message: 'El enlace de recuperación no es válido o expiró.'
+        });
+      }
+
+      const user = await db.getUserByPhone(payload.phone);
+      const emailUsuario = String(user?.email || '').toLowerCase().trim();
+      const emailToken = String(payload.email || '').toLowerCase().trim();
+      if (!user || (emailUsuario && emailToken && emailUsuario !== emailToken)) {
+        return res.status(401).json({
+          ok: false,
+          error: 'TOKEN_RECUPERACION_INVALIDO',
+          message: 'El enlace de recuperación no es válido o expiró.'
+        });
+      }
+
+      const token = signJwt({
+        phone: user.phone,
+        email: user.email || emailToken || null,
+        credits: user.credits,
+        unlockedLeads: user.unlockedLeads || [],
+        plan: user.plan || 'free',
+        planCity: user.planCity || null,
+        planExpiresAt: user.planExpiresAt || null,
+        role: 'buyer'
+      }, JWT_SECRET, 30);
+
+      return res.status(200).json({
+        ok: true,
+        token,
+        user: payloadUsuarioPublico(user, { email: emailToken })
+      });
+    }
 
     // CASO 1: Reclamar sesión post-pago mediante referencia de orden verificada
     if (action === 'claim_reference' && reference) {
@@ -136,7 +199,7 @@ module.exports = async function handler(req, res) {
       if (!estaAprobada) {
         const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
         const wompiApiBase = isProd ? 'https://production.wompi.co/v1' : 'https://sandbox.wompi.co/v1';
-        const privateKey = process.env.WOMPI_PRIVATE_KEY || 'prv_test_VqZ7PqY5nI3d4Cp7vQfA6bJXtS4ScbCp';
+        const privateKey = requireEnv('WOMPI_PRIVATE_KEY', { testFallback: 'prv_test_local_suite' });
 
         try {
           const wompiRes = await fetch(`${wompiApiBase}/transactions?reference=${encodeURIComponent(reference)}`, {
@@ -179,6 +242,10 @@ module.exports = async function handler(req, res) {
         });
       }
 
+      let user = await db.getUserByPhone(celular);
+      const userPin = user ? user.pin : null;
+      const cuentaExistiaAlCrearOrden = cuentaExistiaAntesDelPago(order, user);
+
       // Idempotencia atómica contra doble reclamo de la misma referencia
       const primerReclamo = await db.recordTransaction(`claim_${reference}`, {
         reference,
@@ -186,9 +253,6 @@ module.exports = async function handler(req, res) {
         email: customerEmail || null,
         claimedAt: new Date().toISOString()
       });
-
-      let user = await db.getUserByPhone(celular);
-      const userPin = user ? user.pin : null;
 
       if (primerReclamo) {
         user = await db.addCredits(celular, creditosAAcreditar, userPin, planData, customerEmail);
@@ -198,11 +262,22 @@ module.exports = async function handler(req, res) {
         user = await db.addCredits(celular, 0, userPin, null, customerEmail);
       }
 
-      // Token JWT con estado criptográfico enriquecido (Stateless Signed Token)
+      const bearer = (((req.headers || {}).authorization) || '').replace(/^Bearer\s+/i, '').trim();
+      const sesionActual = bearer ? verifyJwt(bearer, JWT_SECRET) : null;
+      const pinValido = pin ? await db.getUserByPin(celular, pin) : null;
+      const puedeEmitirToken = !cuentaExistiaAlCrearOrden || sesionActual?.phone === celular || Boolean(pinValido);
+
+      if (!puedeEmitirToken) {
+        return res.status(202).json({
+          ok: true,
+          requiresLogin: true,
+          message: 'Pago acreditado. Para proteger la cuenta, inicia sesión con el PIN existente.'
+        });
+      }
+
       const token = signJwt({
         phone: user.phone,
         email: user.email || customerEmail || null,
-        pin: user.pin,
         credits: user.credits,
         unlockedLeads: user.unlockedLeads || [],
         plan: user.plan || 'free',
@@ -215,14 +290,8 @@ module.exports = async function handler(req, res) {
         ok: true,
         token,
         user: {
-          phone: user.phone,
-          email: user.email || customerEmail || null,
-          credits: user.credits,
-          pin: user.pin,
-          plan: user.plan,
-          planCity: user.planCity,
-          planExpiresAt: user.planExpiresAt,
-          unlockedLeads: user.unlockedLeads || []
+          ...payloadUsuarioPublico(user, { email: customerEmail }),
+          ...(!cuentaExistiaAlCrearOrden ? { pin: user.pin } : {})
         }
       });
     }
@@ -255,7 +324,6 @@ module.exports = async function handler(req, res) {
     // Token JWT con estado criptográfico enriquecido
     const token = signJwt({
       phone: user.phone,
-      pin: user.pin,
       credits: user.credits,
       unlockedLeads: user.unlockedLeads || [],
       plan: user.plan || 'free',
@@ -270,7 +338,6 @@ module.exports = async function handler(req, res) {
       user: {
         phone: user.phone,
         credits: user.credits,
-        pin: user.pin,
         plan: user.plan,
         planCity: user.planCity,
         planExpiresAt: user.planExpiresAt,

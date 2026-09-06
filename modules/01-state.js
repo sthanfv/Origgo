@@ -13,24 +13,19 @@ let limiteVisible = 9; // Display 9 cards per page for a better grid
 let paginaActual = 1;
 
 // Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
-let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }
+let sesionUsuario = null; // { token, phone, credits, plan, planCity, unlockedLeads: [] }
 try {
   const tokenLocal = localStorage.getItem('hunter_pro_token');
-  const userLocal = localStorage.getItem('hunter_user_data');
-  if (tokenLocal && userLocal) {
-    sesionUsuario = { ...JSON.parse(userLocal), token: tokenLocal };
+  if (tokenLocal) {
+    sesionUsuario = { token: tokenLocal };
   }
+  localStorage.removeItem('hunter_user_data');
+  localStorage.removeItem('hunter_unlocked_contacts');
 } catch (e) {
   sesionUsuario = null;
 }
 
-let cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, telLlamar, esCelularValido, whatsappUrl, enlace, portal } }
-try {
-  const guardados = localStorage.getItem('hunter_unlocked_contacts');
-  if (guardados) cacheContactosDesbloqueados = JSON.parse(guardados);
-} catch (e) {
-  cacheContactosDesbloqueados = {};
-}
+let cacheContactosDesbloqueados = {};
 
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
@@ -43,8 +38,36 @@ let textoBusquedaActivo = "";
 async function inicializarSesionUsuario() {
   // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
   const urlParams = new URLSearchParams(window.location.search);
+  const recoveryToken = urlParams.get('recovery_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
   const wompiId = urlParams.get('id');
+
+  if (recoveryToken) {
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'recover_token', recoveryToken })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) {
+        throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
+      }
+      localStorage.setItem('hunter_pro_token', data.token);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      mostrarNotificacionToast('Sesión restaurada correctamente.', 'success', { title: 'Acceso recuperado', duration: 5000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    } catch (e) {
+      localStorage.removeItem('hunter_pro_token');
+      sesionUsuario = null;
+      mostrarNotificacionToast(e.message || 'El enlace de recuperación no es válido o expiró.', 'warning', { title: 'Recuperación no válida', duration: 7000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   if (wompiId && !paymentRef) {
     try {
@@ -62,26 +85,37 @@ async function inicializarSesionUsuario() {
 
   if (paymentRef && paymentRef.startsWith('HNT-')) {
     try {
+      const tokenGuardado = localStorage.getItem('hunter_pro_token');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {})
+        },
         body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
       });
       const dataText = await res.text();
       let data = null;
       try { data = JSON.parse(dataText); } catch (_) {}
+      if (data && data.requiresLogin) {
+        mostrarNotificacionToast(data.message || 'Pago acreditado. Inicia sesión con tu PIN.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
       if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
-        try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
+        const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
+        delete sesionUsuario.pin;
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
         const notif = typeof generarMensajeBienvenidaToast === 'function' 
           ? generarMensajeBienvenidaToast(sesionUsuario)
-          : { titulo: '🎉 ¡Pago confirmado!', mensaje: `Tu PIN es ${data.user.pin}.`, tipo: 'success' };
+          : { titulo: '🎉 ¡Pago confirmado!', mensaje: 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
         if (typeof abrirModalBienvenidaVIP === 'function') {
-          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, sesionUsuario);
+          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
         }
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -101,7 +135,6 @@ async function inicializarSesionUsuario() {
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
-        try { localStorage.setItem('hunter_user_data', JSON.stringify(data)); } catch (e) {}
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
       } else if (res.status === 401 || res.status === 403) {
@@ -133,7 +166,7 @@ function actualizarBadgeVip() {
       htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
       labelMovil = 'VIP Nac.';
     } else if (sesionUsuario.plan === 'city') {
-      const ciudad = sesionUsuario.planCity || 'Ciudad';
+      const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
       htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = 'VIP Ciudad';
     } else {
@@ -252,8 +285,8 @@ async function restaurarSesionConPin() {
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
-    try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
     sesionUsuario = { ...data.user, token: data.token };
+    delete sesionUsuario.pin;
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);
@@ -297,7 +330,7 @@ function cerrarSesionUsuario() {
 }
 
 /**
- * Autoservicio 100% automático para recuperar PIN mediante correo electrónico.
+ * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
  */
 async function recuperarPinConReferencia() {
   const inputEmail = document.getElementById('recoveryReferenceInput');
@@ -315,7 +348,7 @@ async function recuperarPinConReferencia() {
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando PIN...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando instrucciones...';
     btn.disabled = true;
   }
 
@@ -331,12 +364,12 @@ async function recuperarPinConReferencia() {
     if (msgBox) {
       if (response.ok) {
         msgBox.className = 'restore-status-msg success';
-        msgBox.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${result.message}`;
+        msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
         msgBox.style.display = 'block';
-        if (inputEmail) inputEmail.value = ''; // Limpiar el input
+        if (inputEmail) inputEmail.value = '';
       } else {
         msgBox.className = 'restore-status-msg error';
-        msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${result.message || result.error || 'No se encontró una cuenta asociada a ese correo.'}`;
+        msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
         msgBox.style.display = 'block';
       }
     }
@@ -349,7 +382,7 @@ async function recuperarPinConReferencia() {
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar PIN a mi Correo';
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar instrucciones';
       btn.disabled = false;
     }
   }

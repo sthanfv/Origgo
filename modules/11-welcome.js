@@ -18,16 +18,20 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
   const elSubtitle = document.getElementById("welcomeModalSubtitle");
   const elPhone = document.getElementById("welcomeUserPhone");
   const elPin = document.getElementById("welcomeUserPin");
+  const elCopyPin = document.getElementById("btnCopyPin");
   const elList = document.getElementById("welcomeBenefitsList");
   const elCtaText = document.getElementById("welcomeCtaText");
 
   const planTipo = planInfo?.tipo || usuario?.plan || 'single';
   const ciudad = planInfo?.ciudad || usuario?.planCity || 'tu ciudad';
-  const pin = usuario?.pin || 'HNT-••••';
+  const pin = usuario?.pin || '';
   const phone = usuario?.phone ? `+57 ${usuario.phone}` : '+57 ••••••••••';
 
   if (elPhone) elPhone.textContent = phone;
-  if (elPin) elPin.textContent = pin;
+  if (elPin) elPin.textContent = pin || 'PIN protegido';
+  if (elCopyPin) {
+    elCopyPin.style.display = pin ? 'inline-flex' : 'none';
+  }
 
   let itemsHtml = '';
 
@@ -60,7 +64,8 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
     `;
   } else if (planTipo === 'subscription_city' || usuario?.plan === 'city') {
     const ciudadEscapada = typeof escaparHtml === 'function' ? escaparHtml(ciudad) : ciudad;
-    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudadEscapada.toUpperCase()}`;
+    const ciudadMayusculaEscapada = typeof escaparHtml === 'function' ? escaparHtml(String(ciudad || '').toUpperCase()) : String(ciudad || '').toUpperCase();
+    if (elPill) elPill.innerHTML = `<i class="fa-solid fa-crown"></i> PLAN PRO CIUDAD — ${ciudadMayusculaEscapada}`;
     if (elTitle) elTitle.textContent = `¡Bienvenido al Plan Pro ${ciudad}!`;
     if (elSubtitle) elSubtitle.textContent = `Tu membresía territorial está activa. Desbloquea todos los contactos de ${ciudad} sin gastar créditos.`;
     itemsHtml = `

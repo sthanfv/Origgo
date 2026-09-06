@@ -34,7 +34,7 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 const HOST = '0.0.0.0';
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -90,7 +90,11 @@ const server = http.createServer(async (req, res) => {
       req.on('end', async () => {
         try {
           if (bodyData && req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-            req.body = JSON.parse(bodyData);
+            try {
+              req.body = JSON.parse(bodyData);
+            } catch (e) {
+              return res.status(400).json({ error: 'JSON malformado' });
+            }
           } else if (bodyData) {
             req.body = bodyData;
           } else {
@@ -112,9 +116,9 @@ const server = http.createServer(async (req, res) => {
             res.status(500).json({ error: 'Handler inválido en endpoint' });
           }
         } catch (err) {
-          console.error(`[API Error] ${rutaRelativa}:`, err);
+          console.error(`[API Error] ${rutaRelativa}:`, err.message);
           if (!res.writableEnded) {
-            res.status(500).json({ error: err.message || 'Error interno del servidor' });
+            res.status(500).json({ error: 'Error interno del servidor' });
           }
         }
       });
@@ -133,6 +137,13 @@ const server = http.createServer(async (req, res) => {
     });
     return res.end('403 Acceso Denegado: Ruta fuera de los límites del servidor.');
   }
+
+  const rel = path.relative(__dirname, rutaArchivo);
+  const bloqueado = /(^|[\\/])(\.git|node_modules|api|lib|scripts|modules|\.husky)([\\/]|$)|(^|[\\/])(\.env.*|package(-lock)?\.json|firebase\.json|firestore\.rules|vercel\.json)|service-account.*\.json$|\.(md|map|pem)$|local_db\.json$/i;
+  if (rel.startsWith('..') || path.isAbsolute(rel) || bloqueado.test(rel)) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+    return res.end('404 No encontrado');
+  }
   
   fs.stat(rutaArchivo, (err, stats) => {
     if (err || !stats.isFile()) {
@@ -149,7 +160,6 @@ const server = http.createServer(async (req, res) => {
     // Cabeceras de seguridad DevSecOps
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Access-Control-Allow-Origin': '*',
       'X-Content-Type-Options': 'nosniff',
       'X-XSS-Protection': '1; mode=block',
       'Referrer-Policy': 'strict-origin-when-cross-origin',

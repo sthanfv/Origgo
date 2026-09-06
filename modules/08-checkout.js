@@ -5,6 +5,26 @@
  * Estándar Ecosistema Desmulta Finanzas.
  */
 
+let pagoWompiEnProgreso = false;
+
+function generarIdempotencyKeyPago() {
+  const cryptoObj = window.crypto || window.msCrypto;
+  if (cryptoObj && typeof cryptoObj.randomUUID === 'function') {
+    return cryptoObj.randomUUID();
+  }
+
+  if (!cryptoObj || typeof cryptoObj.getRandomValues !== 'function') {
+    throw new Error('Tu navegador no permite crear una orden segura. Actualiza el navegador e intenta de nuevo.');
+  }
+
+  const bytes = new Uint8Array(16);
+  cryptoObj.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 /**
  * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
  */
@@ -131,7 +151,7 @@ function abrirModalCheckout(index, pestana = null) {
     const benefitsList = document.getElementById('userBenefitsList');
 
     if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
-    if (elPin) elPin.textContent = `PIN: ${sesionUsuario.pin}`;
+    if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
     if (inputWa) inputWa.value = sesionUsuario.phone;
 
     if (sesionUsuario.plan === 'national') {
@@ -159,9 +179,10 @@ function abrirModalCheckout(index, pestana = null) {
       }
     } else if (sesionUsuario.plan === 'city') {
       const cNom = sesionUsuario.planCity || 'Bogotá';
+      const cNomSeguro = escaparHtml(cNom);
       if (cardCredits) cardCredits.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNom})`;
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNomSeguro})`;
       if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = 'Acceso Ilimitado';
       if (elPlan) elPlan.textContent = `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
@@ -176,7 +197,7 @@ function abrirModalCheckout(index, pestana = null) {
       if (benefitsWrap) benefitsWrap.style.display = 'block';
       if (benefitsList) {
         benefitsList.innerHTML = `
-          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNom}.</li>
+          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li>
           <li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li>
           <li><i class="fa-solid fa-check"></i> Radar de nuevas oportunidades en tiempo real.</li>
         `;
@@ -234,6 +255,8 @@ function cerrarModalCheckout() {
  * Inicia la orden de pago y abre el widget oficial de Wompi con firma SHA256.
  */
 async function ejecutarPagoWompi() {
+  if (pagoWompiEnProgreso) return;
+
   const radio = document.querySelector('input[name="checkoutProduct"]:checked');
   const productType = radio ? radio.value : 'pack_10_leads';
   const inputWa = document.getElementById('checkoutWhatsappInput');
@@ -287,15 +310,26 @@ async function ejecutarPagoWompi() {
 
   const btnPagar = document.getElementById('btnConfirmWompi');
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
+  let idempotencyKey = '';
   if (btnPagar) {
     btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando firma criptográfica...';
     btnPagar.disabled = true;
   }
 
   try {
+    pagoWompiEnProgreso = true;
+    idempotencyKey = generarIdempotencyKeyPago();
+    const headersOrden = {
+      'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey
+    };
+    if (sesionUsuario?.token) {
+      headersOrden.Authorization = `Bearer ${sesionUsuario.token}`;
+    }
+
     const res = await fetch('/api/payments/create-order', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersOrden,
       body: JSON.stringify({ productType, celular, ciudad })
     });
 
@@ -344,29 +378,42 @@ async function ejecutarPagoWompi() {
         const trx = result?.transaction;
         if (trx && trx.status === 'APPROVED') {
           try {
+            const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
+            const headersClaim = { 'Content-Type': 'application/json' };
+            if (tokenGuardado) {
+              headersClaim.Authorization = `Bearer ${tokenGuardado}`;
+            }
+
             const claimRes = await fetch('/api/auth/session', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: headersClaim,
               body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
             });
             const claimText = await claimRes.text();
             let claimData = null;
             try { claimData = JSON.parse(claimText); } catch (_) { /* Respuesta no JSON */ }
+            if (claimRes.status === 202 && claimData?.requiresLogin) {
+              mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+              abrirModalCheckout(undefined, 'tengo-pin');
+              return;
+            }
             if (claimRes.ok && claimData && claimData.ok && claimData.token) {
               localStorage.setItem('hunter_pro_token', claimData.token);
+              const pinNuevo = claimData.user?.pin || null;
               sesionUsuario = { ...claimData.user, token: claimData.token };
+              delete sesionUsuario.pin;
               actualizarBadgeVip();
               sincronizarFiltroCiudadUsuario();
               renderizarInterfaz(datosActuales);
 
               const notif = typeof generarMensajeBienvenidaToast === 'function'
                 ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
-                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: `PIN: ${claimData.user.pin}`, tipo: 'success' };
+                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
               mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
 
               // Abrir modal de bienvenida y beneficios VIP
               if (typeof abrirModalBienvenidaVIP === 'function') {
-                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, sesionUsuario);
+                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
               }
 
               if (leadSeleccionado) {
@@ -383,7 +430,7 @@ async function ejecutarPagoWompi() {
 
     // Fallback si la CDN de Wompi estuviera caída
     const msg = encodeURIComponent(`Hola Origgo, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
-    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank');
+    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank', 'noopener,noreferrer');
     cerrarModalCheckout();
   } catch (err) {
     console.error('[Pago Wompi] Error:', err);
@@ -395,6 +442,7 @@ async function ejecutarPagoWompi() {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);
     }
   } finally {
+    pagoWompiEnProgreso = false;
     if (btnPagar) {
       btnPagar.innerHTML = textoOriginal;
       btnPagar.disabled = false;
