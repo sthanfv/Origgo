@@ -3,12 +3,14 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'origgo-v3';
+const NOMBRE_CACHE = 'origgo-v4';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
   './style.min.css',
+  './app.js',
   './app.min.js',
+  './data/inmobiliario.json',
   './manifest.json',
   './favicon.svg',
   './assets/img/origgo-icon.svg'
@@ -38,9 +40,8 @@ self.addEventListener('fetch', (evento) => {
 
   const url = new URL(evento.request.url);
 
-  // Las peticiones a CDNs externos (imágenes de portales, fuentes, pasarelas)
-  // deben ser gestionadas nativamente por el navegador sin intervención del SW
-  if (url.origin !== self.location.origin) return;
+  // Las peticiones a APIs serverless y CDNs externos deben ir directo a la red
+  if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
 
   // Estrategia Cache-First con revalidación en red para recursos locales
   evento.respondWith(

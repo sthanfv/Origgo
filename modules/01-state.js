@@ -12,8 +12,18 @@ const carruselIndices = {};
 let limiteVisible = 9; // Display 9 cards per page for a better grid
 let paginaActual = 1;
 
-// Estado del ledger de créditos y usuario autenticado
+// Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
 let sesionUsuario = null; // { token, phone, credits, pin, plan, planCity, unlockedLeads: [] }
+try {
+  const tokenLocal = localStorage.getItem('hunter_pro_token');
+  const userLocal = localStorage.getItem('hunter_user_data');
+  if (tokenLocal && userLocal) {
+    sesionUsuario = { ...JSON.parse(userLocal), token: tokenLocal };
+  }
+} catch (e) {
+  sesionUsuario = null;
+}
+
 let cacheContactosDesbloqueados = {}; // { [leadId]: { telefono, telLlamar, esCelularValido, whatsappUrl, enlace, portal } }
 try {
   const guardados = localStorage.getItem('hunter_unlocked_contacts');
@@ -58,6 +68,7 @@ async function inicializarSesionUsuario() {
       const data = await res.json();
       if (data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
+        try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
         sesionUsuario = { ...data.user, token: data.token };
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
@@ -76,7 +87,7 @@ async function inicializarSesionUsuario() {
     }
   }
 
-  // 2. Restaurar sesión desde localStorage
+  // 2. Revalidar sesión persistente en segundo plano desde el servidor
   const tokenGuardado = localStorage.getItem('hunter_pro_token');
   if (tokenGuardado) {
     try {
@@ -86,10 +97,12 @@ async function inicializarSesionUsuario() {
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
+        try { localStorage.setItem('hunter_user_data', JSON.stringify(data)); } catch (e) {}
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
-      } else {
+      } else if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('hunter_pro_token');
+        localStorage.removeItem('hunter_user_data');
         localStorage.removeItem('hunter_unlocked_contacts');
         cacheContactosDesbloqueados = {};
         sesionUsuario = null;
@@ -235,6 +248,7 @@ async function restaurarSesionConPin() {
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
+    try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
     sesionUsuario = { ...data.user, token: data.token };
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
@@ -268,6 +282,7 @@ async function restaurarSesionConPin() {
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
+  localStorage.removeItem('hunter_user_data');
   localStorage.removeItem('hunter_unlocked_contacts');
   cacheContactosDesbloqueados = {};
   sesionUsuario = null;
@@ -331,6 +346,7 @@ async function recuperarPinConReferencia() {
 
     // Persistir sesión y actualizar estado reactivo
     localStorage.setItem('hunter_pro_token', data.token);
+    try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
     sesionUsuario = { ...data.user, token: data.token };
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();

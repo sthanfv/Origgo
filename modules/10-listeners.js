@@ -458,20 +458,22 @@ function configurarListeners() {
 }
 
 // ═════════════════════════════════════════════════════════════════════════
-// 🚀 ARRANQUE DE LA APLICACIÓN AL CARGAR EL DOM
+// 🚀 ARRANQUE DE LA APLICACIÓN AL CARGAR EL DOM (NON-BLOCKING STARTUP)
 // ═════════════════════════════════════════════════════════════════════════
-document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Inicializar sesión persistente de usuario (JWT / PIN / Retorno de Wompi)
-  await inicializarSesionUsuario();
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Inmediato (0ms): Registrar todos los event listeners de la interfaz
+  configurarListeners();
 
-  // 2. Cargar datos iniciales del catálogo inmobiliario
+  // 2. Inmediato (0ms): Activar micro-interacciones (Ripple, Parallax GPU, Háptica)
+  inicializarEfectosPremium();
+
+  // 3. Inmediato (0ms): Cargar catálogo inmobiliario sin esperar la red externa
   cargarDatos("./data/inmobiliario.json");
 
-  // 3. Registrar todos los event listeners de la interfaz
-  configurarListeners();
-  
-  // 4. Activar motor de micro-interacciones (Ripple, Parallax GPU, Háptica)
-  inicializarEfectosPremium();
+  // 4. Segundo plano asíncrono: Revalidar sesión persistente (JWT / PIN / Wompi)
+  inicializarSesionUsuario().catch((err) => {
+    console.warn("[Sesión] Fallo en verificación de segundo plano:", err.message);
+  });
 
   // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {

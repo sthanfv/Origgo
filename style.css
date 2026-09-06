@@ -2517,6 +2517,7 @@ main {
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   display: none;
+  pointer-events: none;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -2539,6 +2540,7 @@ main {
 
 .modal-backdrop.active {
   display: flex;
+  pointer-events: auto;
   justify-content: center;
   align-items: flex-start; /* Crucial: inicia arriba para que NUNCA recorte el encabezado ni el botón X */
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -3929,11 +3931,13 @@ main {
   z-index: 1050;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: all 0.3s ease;
 }
 .menu-overlay.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .side-menu {
