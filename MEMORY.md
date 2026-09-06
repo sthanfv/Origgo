@@ -40,6 +40,16 @@
    - Creación y ejecución de `scripts/test_validation_ratelimit.js` validando esquemas Zod y límites de recuperación.
    - Integración formal en la Fase 5 del pipeline `npm test`.
 
+8. **Resolución del Fallo de Despliegue en Vercel (`package.json`)**:
+   - Diagnóstico: Husky en el hook de ciclo de vida `"prepare": "husky"` provocaba el colapso del despliegue en Vercel durante `npm install` (`command not found: husky` / `exit code 127`), ya que Vercel ejecuta en modo producción o sin `devDependencies`.
+   - Solución: Se condicionó el script `prepare` para ejecutarse exclusivamente en entornos de desarrollo local (`!process.env.CI && process.env.NODE_ENV !== 'production'`), garantizando despliegue 100% limpio y exitoso en Vercel.
+
+9. **Corrección Tipográfica en Llave Pública Wompi Sandbox (`config.js`, `api/payments/create-order.js`, `.env`)**:
+   - Se sincronizó la llave pública oficial de Wompi Sandbox (`pub_test_PQAm6bjXtS4ScbCpBU058xY0v1TPFXfA`), corrigiendo la sustitución accidental de la `j` minúscula y el número `1` para habilitar el checkout sin fricciones.
+
+10. **Erradicación de Advertencias de Git (`.gitattributes`)**:
+   - Se incorporó `.gitattributes` con normalización `* text=auto eol=lf` para eliminar cualquier aviso de conversión de saltos de línea CRLF/LF en entornos Windows.
+
 ---
 
 ## 2. ¿Por qué cambió?

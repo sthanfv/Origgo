@@ -109,7 +109,7 @@ module.exports = async function handler(req, res) {
     const currency = 'COP';
 
     // Llaves oficiales de Wompi Sandbox del comercio
-    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_PQAm6bJXtS4ScbCpBU058xY0vlTPFXfA';
+    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_PQAm6bjXtS4ScbCpBU058xY0v1TPFXfA';
     const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || 'test_integrity_2g8NUSOa7paHZDObHhpPlnIRszyxGfIq';
 
     // Cálculo estricto de firma de integridad Wompi:
