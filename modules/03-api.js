@@ -27,15 +27,18 @@ async function cargarDatos(rutaJson) {
     renderizarInterfaz(json);
     aplicarFiltrosOmnibox();
   } catch (err) {
-    console.error("Error cargando dataset:", err);
+    registrarLogDesarrollo('error', 'Error cargando dataset:', err);
     if (container) {
+      const detalleError = typeof escaparHtml === 'function'
+        ? escaparHtml(err.message)
+        : String(err.message || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       container.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: #F43F5E;">
-          <p style="font-weight: 800; font-size: 1.1rem;">Error de conexión con la terminal de datos.</p>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">${err.message}</p>
+        <div class="error-state-msg">
+          <p class="error-state-title">Error de conexión con la terminal de datos.</p>
+          <p class="error-state-detail">${detalleError}</p>
         </div>
       `;
     }
   }
 }
-
+

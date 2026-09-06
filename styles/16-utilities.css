@@ -1,0 +1,30 @@
+/* Utilidades visuales finales para evitar estilos embebidos en plantillas. */
+.is-hidden { display: none; }
+.checkout-form-group-top { margin-top: 16px; }
+.checkout-form-group-compact { margin-bottom: 0.75rem; }
+.checkout-form-label-compact { font-size: 0.78rem; }
+.checkout-icon-city { color: #6366F1; }
+.checkout-icon-whatsapp { color: #22C55E; }
+.checkout-icon-key { color: #F59E0B; }
+.checkout-select-input { cursor: pointer; }
+.pin-uppercase { text-transform: uppercase; }
+.checkout-input-compact { font-size: 0.85rem; }
+.auto-recovery-box { margin-top: 1.25rem; border-top: 1px dashed var(--border-subtle); padding-top: 1rem; text-align: left; }
+.btn-toggle-recovery { width: 100%; background: none; border: none; padding: 0.4rem 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: var(--accent-emerald); font-size: 0.85rem; font-weight: 700; }
+.recovery-toggle-icon { transition: transform 0.2s ease; }
+.recovery-toggle-icon.is-open { transform: rotate(180deg); }
+.recovery-content-area { margin-top: 0.85rem; background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem; }
+.recovery-help-text { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4; }
+.btn-recovery-submit { padding: 10px 14px; font-size: 0.85rem; margin-top: 0.25rem; }
+.restore-status-recovery-result { margin-top: 0.8rem; }
+.user-benefits-toggle-wrap { margin-top: 0.45rem; }
+.legal-content-box-compact { max-height: 400px; text-align: left; font-size: 0.85rem; margin: 1rem 0; padding-right: 0.5rem; }
+.side-menu-brand-title { font-size: 1.3rem; }
+.side-menu-city-block { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); background: rgba(16, 185, 129, 0.05); }
+.side-menu-city-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.side-menu-city-label { font-size: 0.75rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
+.side-menu-city-badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 999px; background: rgba(16, 185, 129, 0.18); color: #34D399; font-weight: 700; }
+.side-menu-city-select { width: 100%; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 11px 12px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; outline: none; cursor: pointer; }
+.side-menu-icon-vip { color: #F59E0B; }
+.side-menu-icon-whatsapp { color: #22C55E; }
+.side-menu-footnote { font-size: 0.75rem; color: var(--text-muted); text-align: center; }

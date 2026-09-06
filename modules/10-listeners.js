@@ -347,9 +347,11 @@ function configurarListeners() {
       const area = document.getElementById("recoveryContentArea");
       const icon = document.getElementById("recoveryToggleIcon");
       if (area) {
-        const visible = area.style.display !== "none";
+        const visible = area.classList.contains("is-open") || area.style.display === "block";
         area.style.display = visible ? "none" : "block";
-        if (icon) icon.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+        area.classList.toggle("is-open", !visible);
+        area.classList.toggle("is-hidden", visible);
+        if (icon) icon.classList.toggle("is-open", !visible);
       }
     });
   }
@@ -482,14 +484,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4. Segundo plano asíncrono: Revalidar sesión persistente (JWT / PIN / Wompi)
   inicializarSesionUsuario().catch((err) => {
-    console.warn("[Sesión] Fallo en verificación de segundo plano:", err.message);
+    registrarLogDesarrollo('warn', "[Sesión] Fallo en verificación de segundo plano:", err.message);
   });
 
   // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("./sw.js").catch((err) => {
-        console.warn("[PWA] Error registrando Service Worker:", err);
+        registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err);
       });
     });
   }

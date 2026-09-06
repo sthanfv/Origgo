@@ -192,3 +192,35 @@ Pruebas:
 - `styles/07-cards.css` añade jerarquía visual al botón, destello accesible y compatibilidad con `prefers-reduced-motion`.
 - `modules/05-carousel.js` agrega deslizamiento táctil con umbral horizontal y cancelación ante scroll vertical.
 - `npm test` valida sintaxis, CSS, cabeceras, cifrado, idempotencia, antifraude y modularidad.
+
+## 8. Estilos embebidos y consola visible en producción
+
+**Hallazgo:** Las plantillas del frontend mezclaban estructura con diseño mediante `style="..."`, y los diagnósticos de pago, sesión y Wompi podían quedar visibles en la consola del navegador.
+
+**Gravedad:** Media
+
+**Vector de Ataque y Flujo de Reproducción Paso a Paso:**
+1. Abrir el sitio en navegador y usar herramientas de desarrollo.
+2. Inspeccionar tarjetas, modal de checkout, recuperación y menú lateral.
+3. Detectar estilos embebidos difíciles de auditar y mensajes de consola con nombres internos de flujos de sesión o pagos.
+4. En un escenario de error, observar detalles técnicos que no deberían mostrarse a usuarios finales.
+
+**Impacto en el Negocio:** Mayor costo de mantenimiento visual, riesgo de inconsistencias entre tema claro/oscuro y exposición innecesaria de pistas técnicas sobre integraciones críticas.
+
+**Código de Remediación Exacto:**
+- `modules/00-security.js` centraliza el registro seguro:
+
+```js
+function registrarLogDesarrollo(nivel, ...args) {
+  if (!esEntornoDesarrolloCliente()) return;
+  const metodo = ['log', 'info', 'warn', 'error', 'debug'].includes(nivel) ? nivel : 'log';
+  const consola = window.console;
+  if (consola && typeof consola[metodo] === 'function') consola[metodo](...args);
+}
+```
+
+- `modules/01-state.js`, `modules/03-api.js`, `modules/07-unlock.js`, `modules/08-checkout.js`, `modules/10-listeners.js` y `modules/11-welcome.js` reemplazan `console.*` directo por `registrarLogDesarrollo`.
+- `modules/06-cards.js`, `modules/07-unlock.js`, `modules/08-checkout.js` e `index.html` reemplazan estilos embebidos por clases CSS.
+- `styles/16-utilities.css` concentra utilidades de ocultación inicial, iconos, recovery, selector móvil de ciudad y ajustes compactos.
+- `modules/02-toast.js` mueve la duración de la barra de progreso a la API de animación del navegador, eliminando `style="animation-duration: ..."`.
+- Pruebas puntuales: búsqueda sin resultados de `style="..."` en `index.html`, `modules/`, `dist/index.html` y `dist/app.js`; consola silenciosa validada en host de producción simulado.

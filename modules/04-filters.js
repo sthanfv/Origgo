@@ -233,7 +233,7 @@ function sincronizarDropdownCiudades(leads) {
         <div class="cmd-dropdown-item ${esActivo ? "active" : ""}" data-city="${escaparHtml(ciudad)}">
           <i class="${icon}"></i>
           <span>${escaparHtml(ciudad)}</span>
-          <span class="city-lead-count" style="font-size: 0.72rem; opacity: 0.6; margin-left: auto; margin-right: 4px;">(${cant})</span>
+          <span class="city-lead-count city-count-badge">(${cant})</span>
           <i class="fa-solid fa-check item-check"></i>
         </div>
       `;

@@ -82,3 +82,34 @@ function sanitizarContactoCliente(contacto) {
     telLlamar: sanitizarTelCliente(contacto.telLlamar)
   };
 }
+
+function esEntornoDesarrolloCliente() {
+  try {
+    const host = window.location.hostname;
+    return window.location.protocol === 'file:' ||
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '::1' ||
+      window.location.search.includes('debug=origgo');
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Registra diagnósticos solo en entornos de desarrollo para mantener F12 limpio en producción.
+ * @param {'log'|'info'|'warn'|'error'|'debug'} nivel
+ * @param {...unknown} args
+ */
+function registrarLogDesarrollo(nivel, ...args) {
+  if (!esEntornoDesarrolloCliente()) return;
+  try {
+    const metodo = ['log', 'info', 'warn', 'error', 'debug'].includes(nivel) ? nivel : 'log';
+    const consola = window.console;
+    if (consola && typeof consola[metodo] === 'function') {
+      consola[metodo](...args);
+    }
+  } catch (e) {
+    // Sin acción: el registro nunca debe afectar la experiencia del usuario.
+  }
+}

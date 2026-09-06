@@ -28,11 +28,11 @@
   transform: translateY(16px) scale(0.99);
   opacity: 0;
   will-change: transform, box-shadow, opacity;
-  transition: 
-    opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
-    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
-    border-color 0.3s ease, 
+  transition:
+    opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
     background-color 0.3s ease;
   transition-delay: var(--enter-delay, 0s);
 }
@@ -51,6 +51,10 @@
   user-select: none;
   border-color: var(--border-subtle);
 }
+
+.enter-delay-soft,
+.skeleton-delay-1 { --enter-delay: 0.08s; }
+.skeleton-delay-2 { --enter-delay: 0.16s; }
 
 .skeleton-shimmer {
   background: linear-gradient(
@@ -232,4 +236,4 @@
   color: #2E3B35;
   border: 1px solid hsla(166, 40%, 23%, 0.2);
 }
-
+

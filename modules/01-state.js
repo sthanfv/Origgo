@@ -79,7 +79,7 @@ async function inicializarSesionUsuario() {
         paymentRef = dataVerify.reference;
       }
     } catch (e) {
-      console.warn('[Sesión] Error al verificar Wompi ID:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message);
     }
   }
 
@@ -121,7 +121,7 @@ async function inicializarSesionUsuario() {
         return;
       }
     } catch (e) {
-      console.warn('[Sesión] No se pudo reclamar por referencia:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message);
     }
   }
 
@@ -146,7 +146,7 @@ async function inicializarSesionUsuario() {
         actualizarBadgeVip();
       }
     } catch (e) {
-      console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] Fallo al verificar balance persistente:', e.message);
     }
   }
 }
@@ -163,11 +163,11 @@ function actualizarBadgeVip() {
     let labelMovil = '';
 
     if (sesionUsuario.plan === 'national') {
-      htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
+      htmlBadge = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP Nacional</span>';
       labelMovil = 'VIP Nac.';
     } else if (sesionUsuario.plan === 'city') {
       const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
-      htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
+      htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = 'VIP Ciudad';
     } else {
       const cr = Number(sesionUsuario.credits || 0);
@@ -340,7 +340,7 @@ async function recuperarPinConReferencia() {
   const email = inputEmail ? inputEmail.value.trim() : '';
   if (!email || !email.includes('@')) {
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
       msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor, ingresa un correo electrónico válido.';
       msgBox.style.display = 'block';
     }
@@ -363,20 +363,20 @@ async function recuperarPinConReferencia() {
 
     if (msgBox) {
       if (response.ok) {
-        msgBox.className = 'restore-status-msg success';
+        msgBox.className = 'restore-status-msg restore-status-recovery-result success';
         msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
         msgBox.style.display = 'block';
         if (inputEmail) inputEmail.value = '';
       } else {
-        msgBox.className = 'restore-status-msg error';
+        msgBox.className = 'restore-status-msg restore-status-recovery-result error';
         msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
         msgBox.style.display = 'block';
       }
     }
   } catch (error) {
-    console.error('[Recuperación] Error:', error);
+    registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
       msgBox.innerHTML = '<i class="fa-solid fa-network-wired"></i> Error de conexión. Intenta de nuevo.';
       msgBox.style.display = 'block';
     }

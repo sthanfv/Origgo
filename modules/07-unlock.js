@@ -66,7 +66,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     if (!phoneBar) {
       phoneBar = document.createElement('div');
       phoneBar.className = 'card-contact-phone-bar';
-      phoneBar.style.cssText = 'margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;';
       const specsPanel = cardBody.querySelector('.card-specs-panel');
       if (specsPanel && specsPanel.parentNode) {
         specsPanel.parentNode.insertBefore(phoneBar, specsPanel.nextSibling);
@@ -96,12 +95,12 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
         </a>
       ` : ''}
       ${contactoSeguro?.whatsappUrl ? `
-        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
       ${contactoSeguro?.telLlamar ? `
-        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="Llamar al dueño" aria-label="Llamar al propietario directo">
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
@@ -124,25 +123,25 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     const actionGroup = slideup.querySelector('.slideup-action-group');
     if (actionGroup) {
       actionGroup.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="slideup-unlocked-layout">
+          <div class="slideup-unlocked-row">
             ${contactoSeguro?.whatsappUrl ? `
-              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
             ` : ''}
             ${contactoSeguro?.telLlamar ? `
-              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                 <i class="fa-solid fa-phone"></i> Llamar
               </a>
             ` : ''}
             ${contactoSeguro?.enlace ? `
-              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="Ver anuncio original del propietario directo" aria-label="Ver anuncio original del propietario directo">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
               </a>
             ` : ''}
           </div>
-          <span class="slideup-cta-note" style="color: #22C55E;">
+          <span class="slideup-cta-note slideup-cta-note-ok">
             <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
           </span>
         </div>
@@ -247,7 +246,7 @@ async function ejecutarDesbloqueoLead(lead, index) {
     }
     mostrarNotificacionToast(mensajeExito);
   } catch (err) {
-    console.error('[Desbloqueo] Error:', err);
+    registrarLogDesarrollo('error', '[Desbloqueo] Error:', err);
     const esErrorRed = !navigator.onLine || err.name === 'TypeError' || String(err.message || '').toLowerCase().includes('failed to fetch') || String(err.message || '').toLowerCase().includes('network');
     if (esErrorRed) {
       mostrarNotificacionToast('📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');

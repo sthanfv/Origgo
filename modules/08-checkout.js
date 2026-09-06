@@ -36,10 +36,10 @@ function cargarScriptWompi() {
   script.async = true;
   script.onload = () => {
     wompiScriptCargado = true;
-    console.log("✅ Widget de Wompi cargado exitosamente.");
+    registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente.");
   };
   script.onerror = () => {
-    console.warn("⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
+    registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
   };
   document.head.appendChild(script);
 }
@@ -108,21 +108,21 @@ function abrirModalCheckout(index, pestana = null) {
       elSummary.innerHTML = `
         ${imgHtml}
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Inmueble:</span>
-          <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.titulo)}</strong>
+          <span class="modal-summary-label">Inmueble:</span>
+          <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong>
         </div>
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Ubicación:</span>
-          <span style="color: var(--text-muted);">${escaparHtml(leadSeleccionado.ubicacion)}</span>
+          <span class="modal-summary-label">Ubicación:</span>
+          <span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span>
         </div>
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Precio Publicado:</span>
-          <strong style="color: var(--accent-emerald); font-size: 1.15rem;">${escaparHtml(leadSeleccionado.precio)}</strong>
+          <span class="modal-summary-label">Precio Publicado:</span>
+          <strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong>
         </div>
         ${leadSeleccionado.precio_m2 ? `
-          <div class="modal-summary-item" style="border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem;">
-            <span style="color: var(--text-muted);">Valor Unitario:</span>
-            <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
+          <div class="modal-summary-item modal-summary-divider">
+            <span class="modal-summary-label">Valor Unitario:</span>
+            <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
           </div>
         ` : ''}
       `;
@@ -271,6 +271,7 @@ async function ejecutarPagoWompi() {
   if (!celular || celular.length < 10) {
     if (errorBox) {
       errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567';
+      errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     }
     if (inputWrapper) {
@@ -285,6 +286,7 @@ async function ejecutarPagoWompi() {
   }
 
   if (errorBox) {
+    errorBox.classList.add('is-hidden');
     errorBox.style.display = 'none';
   }
 
@@ -297,6 +299,7 @@ async function ejecutarPagoWompi() {
     if (!ciudad) {
       if (cityError) {
         cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor selecciona la ciudad de cobertura para tu membresía.';
+        cityError.classList.remove('is-hidden');
         cityError.style.display = 'block';
       }
       if (selectCity) {
@@ -305,7 +308,10 @@ async function ejecutarPagoWompi() {
       }
       return;
     }
-    if (cityError) cityError.style.display = 'none';
+    if (cityError) {
+      cityError.classList.add('is-hidden');
+      cityError.style.display = 'none';
+    }
   }
 
   const btnPagar = document.getElementById('btnConfirmWompi');
@@ -421,7 +427,7 @@ async function ejecutarPagoWompi() {
               }
             }
           } catch (errClaim) {
-            console.warn('[Wompi Callback] Error reclamando sesión:', errClaim);
+            registrarLogDesarrollo('warn', '[Wompi Callback] Error reclamando sesión:', errClaim);
           }
         }
       });
@@ -433,10 +439,11 @@ async function ejecutarPagoWompi() {
     window.open(`https://wa.me/573001234567?text=${msg}`, '_blank', 'noopener,noreferrer');
     cerrarModalCheckout();
   } catch (err) {
-    console.error('[Pago Wompi] Error:', err);
+    registrarLogDesarrollo('error', '[Pago Wompi] Error:', err);
     const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
     if (errorBox) {
       errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
+      errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     } else {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);

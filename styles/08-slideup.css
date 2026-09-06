@@ -357,3 +357,92 @@
   background: #065F46;
 }
 
+/* ═══════════════════════════════════════════════════
+   CLASES UTILITARIAS PARA BOTONES DE CONTACTO (REEMPLAZAN ESTILOS EMBEBIDOS)
+   ═══════════════════════════════════════════════════ */
+
+/* Botón de llamada telefónica en tarjetas y drawer */
+.btn-call-direct {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+  padding: 7px 9px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+[data-theme="light"] .btn-call-direct {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563EB;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+/* Botón de WhatsApp compacto en tarjetas desbloqueadas */
+.btn-whatsapp-compact {
+  text-decoration: none;
+  padding: 7px 10px;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Contenedor flex para botones del drawer desbloqueado */
+.slideup-unlocked-layout { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.slideup-unlocked-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Estilos para botones principales dentro del drawer desbloqueado */
+.slideup-cta-btn.cta-flex { flex: 1; min-width: 120px; justify-content: center; text-decoration: none; }
+.slideup-cta-btn.cta-flex-sm { flex: 1; min-width: 100px; justify-content: center; text-decoration: none; }
+.slideup-cta-btn.cta-call { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none; }
+.slideup-cta-btn.cta-neutral { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none; }
+.slideup-cta-note-ok { color: #22C55E; }
+
+/* Contenedor de teléfono revelado en tarjeta desbloqueada */
+.unlocked-phone-box {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.unlocked-phone-label { font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+.unlocked-phone-number { font-size: 1.05rem; font-weight: 700; color: #fff; font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+[data-theme="light"] .unlocked-phone-number { color: var(--text-main); }
+
+/* Controles de paginación */
+.pagination-controls { grid-column: 1/-1; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 2rem; padding: 1rem 0; }
+.btn-pagination { background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.btn-pagination:hover { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+.pagination-info { font-size: 0.92rem; font-weight: 700; color: var(--text-muted); }
+
+/* Skeleton loading para tarjetas */
+.skeleton-body { padding: 1.25rem; gap: 0.85rem; }
+.skeleton-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.75rem; }
+.skeleton-line-sm { width: 45%; height: 14px; }
+.skeleton-line-lg { width: 80%; height: 22px; }
+.skeleton-line-price { width: 45%; height: 26px; }
+.skeleton-btn-ph { width: 38%; height: 38px; }
+.skeleton-box-data { height: 64px; border-radius: 1.25rem; }
+
+/* Estado vacío del catálogo */
+.empty-state-msg { grid-column: 1/-1; text-align: center; padding: 5rem 1rem; color: var(--text-muted); }
+.empty-state-msg p { font-weight: 700; }
+
+/* Mensaje de error de conexión */
+.error-state-msg { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: #F43F5E; }
+.error-state-title { font-weight: 800; font-size: 1.1rem; }
+.error-state-detail { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+/* Contador de leads por ciudad en dropdown */
+.city-count-badge { font-size: 0.72rem; opacity: 0.6; margin-left: auto; margin-right: 4px; }
+
+/* Resumen del inmueble en modal de checkout */
+.modal-summary-label { color: var(--text-muted); }
+.modal-summary-value { color: var(--text-main); }
+.modal-summary-price { color: var(--accent-emerald); font-size: 1.15rem; }
+.modal-summary-divider { border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem; }

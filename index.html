@@ -63,7 +63,7 @@
           <h1 class="brand-title" aria-label="Origgo">
             <span class="brand-logo-container brand-initial-o-wrap" aria-hidden="true">
               <img src="./assets/img/origgo-icon.svg" alt="" class="brand-iso-svg brand-icon-o" width="46" height="46" />
-            </span><span class="brand-letters-riggo"><span class="brand-letter" style="--char-i: 1;">r</span><span class="brand-letter" style="--char-i: 2;">i</span><span class="brand-letter" style="--char-i: 3;">g</span><span class="brand-letter" style="--char-i: 4;">g</span><span class="brand-letter" style="--char-i: 5;">o</span></span>
+            </span><span class="brand-letters-riggo"><span class="brand-letter brand-letter-1">r</span><span class="brand-letter brand-letter-2">i</span><span class="brand-letter brand-letter-3">g</span><span class="brand-letter brand-letter-4">g</span><span class="brand-letter brand-letter-5">o</span></span>
           </h1>
         </div>
       </div>
@@ -350,7 +350,7 @@
 
       <!-- Pestañas de Navegación del Modal -->
       <div class="checkout-tabs-bar" id="checkoutTabsBar">
-        <button type="button" class="checkout-tab-btn vip-tab" id="tabBtnMiCuenta" data-tab="mi-cuenta" style="display: none;">
+        <button type="button" class="checkout-tab-btn vip-tab is-hidden" id="tabBtnMiCuenta" data-tab="mi-cuenta">
           <i class="fa-solid fa-crown"></i> Mi Membresía
         </button>
         <button type="button" class="checkout-tab-btn active" id="tabBtnComprar" data-tab="comprar">
@@ -415,12 +415,12 @@
         </div>
 
         <!-- Selector de Ciudad Obligatorio (Solo para Plan Pro Ciudad) -->
-        <div class="checkout-form-group" id="groupCitySelect" style="display: none; margin-top: 16px;">
+        <div class="checkout-form-group checkout-form-group-top is-hidden" id="groupCitySelect">
           <label for="checkoutCitySelect" class="checkout-form-label">
-            <i class="fa-solid fa-location-dot" style="color: #6366F1;"></i> Ciudad de Cobertura Ilimitada (Plan Pro):
+            <i class="fa-solid fa-location-dot checkout-icon-city"></i> Ciudad de Cobertura Ilimitada (Plan Pro):
           </label>
           <div class="checkout-input-wrapper">
-            <select id="checkoutCitySelect" class="checkout-text-input" style="background: var(--bg-card, #1e293b); color: inherit; cursor: pointer; border: 1px solid var(--border, #334155); border-radius: 8px; width: 100%; padding: 10px 14px;">
+            <select id="checkoutCitySelect" class="checkout-text-input checkout-select-input">
               <option value="">-- Selecciona tu ciudad --</option>
               <option value="Bogotá">Bogotá D.C.</option>
               <option value="Medellín">Medellín y Área Metropolitana</option>
@@ -434,7 +434,7 @@
               <option value="Santa Marta">Santa Marta</option>
             </select>
           </div>
-          <div id="checkoutCityError" class="checkout-inline-error" style="display: none; color: #EF4444; font-size: 0.85rem; margin-top: 6px;"></div>
+          <div id="checkoutCityError" class="checkout-inline-error is-hidden"></div>
           <span class="checkout-input-help">Tu membresía desbloqueará sin límite todos los contactos directos de la ciudad elegida durante 30 días.</span>
         </div>
 
@@ -452,7 +452,7 @@
         <!-- Formulario de Celular para asociar créditos -->
         <div class="checkout-form-group" id="groupWhatsappInput">
           <label for="checkoutWhatsappInput" class="checkout-form-label">
-            <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> WhatsApp de Autenticación (10 dígitos):
+            <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> WhatsApp de Autenticación (10 dígitos):
           </label>
           <div class="checkout-input-wrapper" id="checkoutInputWrapper">
             <span class="checkout-input-prefix">+57</span>
@@ -468,7 +468,7 @@
             />
           </div>
           <!-- Mensaje de error visual en línea (reemplaza a los alerts) -->
-          <div id="checkoutPhoneError" class="checkout-inline-error" style="display: none;"></div>
+          <div id="checkoutPhoneError" class="checkout-inline-error is-hidden"></div>
           <span class="checkout-input-help">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
         </div>
 
@@ -492,7 +492,7 @@
 
           <div class="checkout-form-group">
             <label for="restoreWhatsappInput" class="checkout-form-label">
-              <i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> WhatsApp Registrado:
+              <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> WhatsApp Registrado:
             </label>
             <div class="checkout-input-wrapper">
               <span class="checkout-input-prefix">+57</span>
@@ -511,15 +511,14 @@
 
           <div class="checkout-form-group">
             <label for="restorePinInput" class="checkout-form-label">
-              <i class="fa-solid fa-key" style="color: #F59E0B;"></i> PIN de Seguridad:
+              <i class="fa-solid fa-key checkout-icon-key"></i> PIN de Seguridad:
             </label>
             <input 
               type="text" 
               id="restorePinInput" 
-              class="checkout-text-input pin-input" 
+              class="checkout-text-input pin-input pin-uppercase"
               placeholder="Ej: HNT-7489 o 7489" 
               maxlength="12" 
-              style="text-transform: uppercase;" 
               autocomplete="one-time-code" 
               autocapitalize="characters" 
               spellcheck="false" 
@@ -530,38 +529,37 @@
             <i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos
           </button>
 
-          <div id="restoreStatusMsg" class="restore-status-msg" style="display: none;"></div>
+          <div id="restoreStatusMsg" class="restore-status-msg is-hidden"></div>
 
           <!-- Recuperación Automática por Correo Electrónico (100% Autoservicio) -->
-          <div class="auto-recovery-box" id="autoRecoveryBox" style="margin-top: 1.25rem; border-top: 1px dashed var(--border-subtle); padding-top: 1rem; text-align: left;">
-            <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery" style="width: 100%; background: none; border: none; padding: 0.4rem 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: var(--accent-emerald); font-size: 0.85rem; font-weight: 700;">
+          <div class="auto-recovery-box" id="autoRecoveryBox">
+            <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery">
               <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu PIN? Restaurar por Correo</span>
-              <i class="fa-solid fa-chevron-down" id="recoveryToggleIcon" style="transition: transform 0.2s ease;"></i>
+              <i class="fa-solid fa-chevron-down recovery-toggle-icon" id="recoveryToggleIcon"></i>
             </button>
-            <div id="recoveryContentArea" style="display: none; margin-top: 0.85rem; background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem;">
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+            <div id="recoveryContentArea" class="recovery-content-area is-hidden">
+              <p class="recovery-help-text">
                 Ingresa el <strong>Correo Electrónico</strong> que utilizaste durante tu pago en Wompi. Te enviaremos instrucciones de recuperación si la cuenta existe.
               </p>
-              <div class="checkout-form-group" style="margin-bottom: 0.75rem;">
-                <label for="recoveryReferenceInput" class="checkout-form-label" style="font-size: 0.78rem;">
+              <div class="checkout-form-group checkout-form-group-compact">
+                <label for="recoveryReferenceInput" class="checkout-form-label checkout-form-label-compact">
                   <i class="fa-solid fa-envelope"></i> Correo Electrónico de Compra:
                 </label>
                 <input 
                   type="email" 
                   id="recoveryReferenceInput" 
-                  class="checkout-text-input" 
+                  class="checkout-text-input checkout-input-compact"
                   placeholder="Ej: tu-correo@email.com" 
                   inputmode="email" 
                   autocomplete="email" 
                   autocapitalize="none" 
                   spellcheck="false" 
-                  style="font-size: 0.85rem;" 
                 />
               </div>
-              <button type="button" class="btn-confirm-wompi" id="btnExecuteAutoRecovery" style="padding: 10px 14px; font-size: 0.85rem; margin-top: 0.25rem;">
+              <button type="button" class="btn-confirm-wompi btn-recovery-submit" id="btnExecuteAutoRecovery">
                 <i class="fa-solid fa-paper-plane"></i> Enviar instrucciones
               </button>
-              <div id="recoveryResultMsg" class="restore-status-msg" style="display: none; margin-top: 0.8rem;"></div>
+              <div id="recoveryResultMsg" class="restore-status-msg restore-status-recovery-result is-hidden"></div>
             </div>
           </div>
         </div>
@@ -581,7 +579,7 @@
           </div>
 
           <div class="user-credits-card" id="userCreditsCard">
-            <div id="userMembershipBadgeWrap" style="display: none;">
+            <div id="userMembershipBadgeWrap" class="is-hidden">
               <span class="user-membership-badge" id="userMembershipBadge">
                 <i class="fa-solid fa-crown"></i> Plan Pro Ciudad
               </span>
@@ -590,11 +588,11 @@
             <div class="user-credits-value" id="userActiveCredits">⚡ 10 Créditos</div>
             <p class="user-plan-status" id="userActivePlan">Plan Estándar por Créditos</p>
 
-            <div id="userExtraCreditsWrap" style="display: none;">
+            <div id="userExtraCreditsWrap" class="is-hidden">
               <span class="user-extra-credits-pill" id="userExtraCreditsPill">⚡ +0 Créditos en bolsa</span>
             </div>
 
-            <div id="userBenefitsToggleWrap" style="display: none; margin-top: 0.45rem;">
+            <div id="userBenefitsToggleWrap" class="user-benefits-toggle-wrap is-hidden">
               <button type="button" class="user-benefits-toggle-btn" id="btnToggleUserBenefits">
                 <i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía
               </button>
@@ -689,7 +687,7 @@
       </div>
       <h2 class="modal-title" id="legalModalTitle">Título del Documento</h2>
       
-      <div class="legal-content-box" id="legalContentBox" style="max-height: 400px; overflow-y: auto; text-align: left; font-size: 0.85rem; color: var(--text-muted); margin: 1rem 0; padding-right: 0.5rem;">
+      <div class="legal-content-box legal-content-box-compact" id="legalContentBox">
         <!-- El contenido se inyecta por JS -->
       </div>
       
@@ -727,7 +725,7 @@
   <aside class="side-menu" id="sideMenu">
     <div class="side-menu-header">
       <div class="brand-text-block">
-        <h2 class="brand-title" style="font-size: 1.3rem;">
+        <h2 class="brand-title side-menu-brand-title">
           <span class="brand-initial-o">O</span><span class="brand-letters-riggo">riggo</span>
         </h2>
       </div>
@@ -737,14 +735,14 @@
     </div>
 
     <!-- Bloque Móvil de Filtro por Ciudad -->
-    <div class="side-menu-city-block" style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); background: rgba(16, 185, 129, 0.05);">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-        <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+    <div class="side-menu-city-block">
+      <div class="side-menu-city-head">
+        <span class="side-menu-city-label">
           <i class="fa-solid fa-location-dot"></i> Ciudad de Interés
         </span>
-        <span id="sideMenuCityBadge" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 999px; background: rgba(16, 185, 129, 0.18); color: #34D399; font-weight: 700;">Todas</span>
+        <span id="sideMenuCityBadge" class="side-menu-city-badge">Todas</span>
       </div>
-      <select id="sideMenuCitySelect" class="side-menu-city-select" aria-label="Filtrar por Ciudad" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 11px 12px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; outline: none; cursor: pointer;">
+      <select id="sideMenuCitySelect" class="side-menu-city-select" aria-label="Filtrar por Ciudad">
         <option value="">🇨🇴 Colombia (Todas las Ciudades)</option>
         <option value="Santa Marta">🏖️ Santa Marta</option>
         <option value="Bogotá">🏛️ Bogotá D.C.</option>
@@ -762,12 +760,12 @@
       <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard Principal</a>
       <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> Inmuebles Directos</a>
       <a href="#" class="side-menu-link" data-side="vehiculos"><i class="fa-solid fa-car"></i> Vehículos con Margen</a>
-      <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown" style="color: #F59E0B;"></i> Desbloqueo VIP</a>
-      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp" style="color: #22C55E;"></i> Soporte VIP WhatsApp</a>
+      <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown side-menu-icon-vip"></i> Desbloqueo VIP</a>
+      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp side-menu-icon-whatsapp"></i> Soporte VIP WhatsApp</a>
       <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> Términos & Exoneración</a>
     </nav>
     <div class="side-menu-footer">
-      <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Origgo v1.0<br>Terminal de Oportunidades Directas</p>
+      <p class="side-menu-footnote">Origgo v1.0<br>Terminal de Oportunidades Directas</p>
     </div>
   </aside>
   <div class="menu-overlay" id="sideMenuOverlay"></div>

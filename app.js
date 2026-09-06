@@ -83,6 +83,37 @@ function sanitizarContactoCliente(contacto) {
   };
 }
 
+function esEntornoDesarrolloCliente() {
+  try {
+    const host = window.location.hostname;
+    return window.location.protocol === 'file:' ||
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '::1' ||
+      window.location.search.includes('debug=origgo');
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Registra diagnósticos solo en entornos de desarrollo para mantener F12 limpio en producción.
+ * @param {'log'|'info'|'warn'|'error'|'debug'} nivel
+ * @param {...unknown} args
+ */
+function registrarLogDesarrollo(nivel, ...args) {
+  if (!esEntornoDesarrolloCliente()) return;
+  try {
+    const metodo = ['log', 'info', 'warn', 'error', 'debug'].includes(nivel) ? nivel : 'log';
+    const consola = window.console;
+    if (consola && typeof consola[metodo] === 'function') {
+      consola[metodo](...args);
+    }
+  } catch (e) {
+    // Sin acción: el registro nunca debe afectar la experiencia del usuario.
+  }
+}
+
 
 /**
  * 🧠 MÓDULO DE ESTADO Y SESIÓN (modules/01-state.js)
@@ -165,7 +196,7 @@ async function inicializarSesionUsuario() {
         paymentRef = dataVerify.reference;
       }
     } catch (e) {
-      console.warn('[Sesión] Error al verificar Wompi ID:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message);
     }
   }
 
@@ -207,7 +238,7 @@ async function inicializarSesionUsuario() {
         return;
       }
     } catch (e) {
-      console.warn('[Sesión] No se pudo reclamar por referencia:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message);
     }
   }
 
@@ -232,7 +263,7 @@ async function inicializarSesionUsuario() {
         actualizarBadgeVip();
       }
     } catch (e) {
-      console.warn('[Sesión] Fallo al verificar balance persistente:', e.message);
+      registrarLogDesarrollo('warn', '[Sesión] Fallo al verificar balance persistente:', e.message);
     }
   }
 }
@@ -249,11 +280,11 @@ function actualizarBadgeVip() {
     let labelMovil = '';
 
     if (sesionUsuario.plan === 'national') {
-      htmlBadge = '<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP Nacional</span>';
+      htmlBadge = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP Nacional</span>';
       labelMovil = 'VIP Nac.';
     } else if (sesionUsuario.plan === 'city') {
       const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
-      htmlBadge = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
+      htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = 'VIP Ciudad';
     } else {
       const cr = Number(sesionUsuario.credits || 0);
@@ -426,7 +457,7 @@ async function recuperarPinConReferencia() {
   const email = inputEmail ? inputEmail.value.trim() : '';
   if (!email || !email.includes('@')) {
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
       msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor, ingresa un correo electrónico válido.';
       msgBox.style.display = 'block';
     }
@@ -449,20 +480,20 @@ async function recuperarPinConReferencia() {
 
     if (msgBox) {
       if (response.ok) {
-        msgBox.className = 'restore-status-msg success';
+        msgBox.className = 'restore-status-msg restore-status-recovery-result success';
         msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
         msgBox.style.display = 'block';
         if (inputEmail) inputEmail.value = '';
       } else {
-        msgBox.className = 'restore-status-msg error';
+        msgBox.className = 'restore-status-msg restore-status-recovery-result error';
         msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
         msgBox.style.display = 'block';
       }
     }
   } catch (error) {
-    console.error('[Recuperación] Error:', error);
+    registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
       msgBox.innerHTML = '<i class="fa-solid fa-network-wired"></i> Error de conexión. Intenta de nuevo.';
       msgBox.style.display = 'block';
     }
@@ -600,12 +631,19 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     <div class="hunter-toast-footer">
       <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
       <div class="hunter-toast-progress-track">
-        <div class="hunter-toast-progress-bar" style="animation-duration: ${duracionMs}ms;"></div>
+        <div class="hunter-toast-progress-bar"></div>
       </div>
     </div>
   `;
 
   container.appendChild(toast);
+  const progressBar = toast.querySelector('.hunter-toast-progress-bar');
+  const animacionProgreso = progressBar && typeof progressBar.animate === 'function'
+    ? progressBar.animate(
+      [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }],
+      { duration: duracionMs, easing: 'linear', fill: 'forwards' }
+    )
+    : null;
 
   // Vincular acción opcional si se suministró callback
   if (opts.onAction && typeof opts.onAction === 'function') {
@@ -625,6 +663,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     if (cerrado) return;
     cerrado = true;
     toast.classList.add('hunter-toast--closing');
+    if (animacionProgreso) animacionProgreso.cancel();
     clearTimeout(timeoutId);
     setTimeout(() => {
       if (toast.parentNode) toast.remove();
@@ -644,6 +683,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   let tiempoRestante = duracionMs;
   let tiempoInicio = Date.now();
   let timeoutId = null;
+  let estaPausado = false;
   const timerLabel = toast.querySelector('.hunter-toast-timer-label');
 
   function iniciarTimer(ms) {
@@ -654,15 +694,21 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   }
 
   function pausarTimer() {
+    if (cerrado || estaPausado) return;
+    estaPausado = true;
     clearTimeout(timeoutId);
     const transcurrido = Date.now() - tiempoInicio;
     tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
     toast.classList.add('hunter-toast--paused');
+    if (animacionProgreso) animacionProgreso.pause();
     if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
   }
 
   function reanudarTimer() {
+    if (cerrado || !estaPausado) return;
+    estaPausado = false;
     toast.classList.remove('hunter-toast--paused');
+    if (animacionProgreso && animacionProgreso.playState !== 'finished') animacionProgreso.play();
     if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
     iniciarTimer(tiempoRestante);
   }
@@ -778,17 +824,21 @@ async function cargarDatos(rutaJson) {
     renderizarInterfaz(json);
     aplicarFiltrosOmnibox();
   } catch (err) {
-    console.error("Error cargando dataset:", err);
+    registrarLogDesarrollo('error', 'Error cargando dataset:', err);
     if (container) {
+      const detalleError = typeof escaparHtml === 'function'
+        ? escaparHtml(err.message)
+        : String(err.message || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       container.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: #F43F5E;">
-          <p style="font-weight: 800; font-size: 1.1rem;">Error de conexión con la terminal de datos.</p>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">${err.message}</p>
+        <div class="error-state-msg">
+          <p class="error-state-title">Error de conexión con la terminal de datos.</p>
+          <p class="error-state-detail">${detalleError}</p>
         </div>
       `;
     }
   }
 }
+
 
 
 /**
@@ -1026,7 +1076,7 @@ function sincronizarDropdownCiudades(leads) {
         <div class="cmd-dropdown-item ${esActivo ? "active" : ""}" data-city="${escaparHtml(ciudad)}">
           <i class="${icon}"></i>
           <span>${escaparHtml(ciudad)}</span>
-          <span class="city-lead-count" style="font-size: 0.72rem; opacity: 0.6; margin-left: auto; margin-right: 4px;">(${cant})</span>
+          <span class="city-lead-count city-count-badge">(${cant})</span>
           <i class="fa-solid fa-check item-check"></i>
         </div>
       `;
@@ -1228,15 +1278,15 @@ function formatearPrecioDisplay(precioStr) {
  */
 function generarHtmlSkeletons() {
   return Array(3).fill(0).map((_, i) => `
-    <article class="bento-card skeleton-card" style="--enter-delay: ${i * 0.08}s;">
+    <article class="bento-card skeleton-card skeleton-delay-${i}">
       <div class="skeleton-media skeleton-shimmer"></div>
-      <div class="card-body" style="padding: 1.25rem; gap: 0.85rem;">
-        <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 14px;"></div>
-        <div class="skeleton-line skeleton-shimmer" style="width: 80%; height: 22px;"></div>
-        <div class="skeleton-box skeleton-shimmer" style="height: 64px; border-radius: 1.25rem;"></div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.75rem;">
-          <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 26px;"></div>
-          <div class="skeleton-btn skeleton-shimmer" style="width: 38%; height: 38px;"></div>
+      <div class="card-body skeleton-body">
+        <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
+        <div class="skeleton-line skeleton-shimmer skeleton-line-lg"></div>
+        <div class="skeleton-box skeleton-shimmer skeleton-box-data"></div>
+        <div class="skeleton-footer">
+          <div class="skeleton-line skeleton-shimmer skeleton-line-price"></div>
+          <div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div>
         </div>
       </div>
     </article>
@@ -1298,8 +1348,8 @@ function renderizarInterfaz(dataset) {
 
   if (leads.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
-        <p style="font-weight: 700;">No hay oportunidades activas registradas en este momento.</p>
+      <div class="empty-state-msg">
+        <p>No hay oportunidades activas registradas en este momento.</p>
       </div>
     `;
     return;
@@ -1344,7 +1394,7 @@ function renderizarInterfaz(dataset) {
     const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
     const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
     container.innerHTML = `
-      <div class="empty-catalog-state" id="emptyCatalogState" style="grid-column: 1/-1;">
+      <div class="empty-catalog-state" id="emptyCatalogState">
         <div class="empty-state-icon-box">
           <i class="fa-solid fa-filter-circle-xmark"></i>
         </div>
@@ -1426,8 +1476,7 @@ function renderizarInterfaz(dataset) {
       "Operación": esVehiculo ? "Venta Directa Particular" : "Venta Directa con Propietario"
     };
 
-    // Solo las 2 primeras tarjetas del viewport inicial llevan un retardo sutil de 0.08s
-    const enterDelay = index < 2 ? (index * 0.08) : 0;
+    const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
 
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
     const corpusBruto = [
@@ -1456,7 +1505,7 @@ function renderizarInterfaz(dataset) {
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     return `
-      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
+      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''} ${claseRetrasoEntrada}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}">
         <!-- Cabecera Fotográfica con Fusión Degradada -->
         <div class="card-media-wrapper" data-action="abrir-ficha" data-index="${index}">
           ${mediaHtml}
@@ -1535,12 +1584,12 @@ function renderizarInterfaz(dataset) {
                   </a>
                 ` : ''}
                 ${contactoSeguro?.whatsappUrl ? `
-                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                   </a>
                 ` : ''}
                 ${contactoSeguro?.telLlamar ? `
-                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
@@ -1598,37 +1647,37 @@ function renderizarInterfaz(dataset) {
             <!-- Grupo de Acción: Botón principal y micro-garantía -->
             <div class="slideup-action-group">
               ${estaDesbloqueado ? `
-                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-                  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px 12px;">
-                    <div style="font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+                <div class="slideup-unlocked-layout">
+                  <div class="unlocked-phone-box">
+                    <div class="unlocked-phone-label">
                       <i class="fa-solid fa-unlock"></i> Datos de Contacto Desbloqueados
                     </div>
-                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: 'Lufga', 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums;">
+                    <div class="unlocked-phone-number">
                       ${contacto?.telefono ? escaparHtml(contacto.telefono) : 'Consultando contacto...'}
                     </div>
                   </div>
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <div class="slideup-unlocked-row">
                     ${contactoSeguro?.whatsappUrl ? `
-                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp
                       </a>
                     ` : ''}
                     ${contactoSeguro?.telLlamar ? `
-                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                         <i class="fa-solid fa-phone"></i> Llamar
                       </a>
                     ` : ''}
                     ${contactoSeguro?.enlace ? `
-                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="Ver anuncio original del propietario directo" aria-label="Ver anuncio original del propietario directo">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                       </a>
                     ` : `
-                      <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
+                      <button class="slideup-cta-btn btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto directo" aria-label="Revelar contacto directo">
                         <i class="fa-solid fa-unlock"></i> Revelar Contacto Directo
                       </button>
                     `}
                   </div>
-                  <span class="slideup-cta-note" style="color: #22C55E;">
+                  <span class="slideup-cta-note slideup-cta-note-ok">
                     <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
                   </span>
                 </div>
@@ -1648,12 +1697,12 @@ function renderizarInterfaz(dataset) {
   }).join("");
 
   if (totalPaginas > 1) {
-    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
-    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
+    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" aria-label="Ir a la página anterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
+    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" aria-label="Ir a la página siguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
     htmlContenido += `
-      <div class="pagination-controls" style="grid-column: 1/-1; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 2rem; padding: 1rem 0;">
+      <div class="pagination-controls">
         ${btnPrevHtml}
-        <span style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted);">
+        <span class="pagination-info">
           Página ${paginaActual} de ${totalPaginas}
         </span>
         ${btnNextHtml}
@@ -1764,7 +1813,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     if (!phoneBar) {
       phoneBar = document.createElement('div');
       phoneBar.className = 'card-contact-phone-bar';
-      phoneBar.style.cssText = 'margin-top: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;';
       const specsPanel = cardBody.querySelector('.card-specs-panel');
       if (specsPanel && specsPanel.parentNode) {
         specsPanel.parentNode.insertBefore(phoneBar, specsPanel.nextSibling);
@@ -1794,12 +1842,12 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
         </a>
       ` : ''}
       ${contactoSeguro?.whatsappUrl ? `
-        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
       ${contactoSeguro?.telLlamar ? `
-        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="Llamar al dueño" aria-label="Llamar al propietario directo">
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
@@ -1822,25 +1870,25 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     const actionGroup = slideup.querySelector('.slideup-action-group');
     if (actionGroup) {
       actionGroup.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="slideup-unlocked-layout">
+          <div class="slideup-unlocked-row">
             ${contactoSeguro?.whatsappUrl ? `
-              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
             ` : ''}
             ${contactoSeguro?.telLlamar ? `
-              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                 <i class="fa-solid fa-phone"></i> Llamar
               </a>
             ` : ''}
             ${contactoSeguro?.enlace ? `
-              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="Ver anuncio original del propietario directo" aria-label="Ver anuncio original del propietario directo">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
               </a>
             ` : ''}
           </div>
-          <span class="slideup-cta-note" style="color: #22C55E;">
+          <span class="slideup-cta-note slideup-cta-note-ok">
             <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
           </span>
         </div>
@@ -1945,7 +1993,7 @@ async function ejecutarDesbloqueoLead(lead, index) {
     }
     mostrarNotificacionToast(mensajeExito);
   } catch (err) {
-    console.error('[Desbloqueo] Error:', err);
+    registrarLogDesarrollo('error', '[Desbloqueo] Error:', err);
     const esErrorRed = !navigator.onLine || err.name === 'TypeError' || String(err.message || '').toLowerCase().includes('failed to fetch') || String(err.message || '').toLowerCase().includes('network');
     if (esErrorRed) {
       mostrarNotificacionToast('📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
@@ -2028,10 +2076,10 @@ function cargarScriptWompi() {
   script.async = true;
   script.onload = () => {
     wompiScriptCargado = true;
-    console.log("✅ Widget de Wompi cargado exitosamente.");
+    registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente.");
   };
   script.onerror = () => {
-    console.warn("⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
+    registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
   };
   document.head.appendChild(script);
 }
@@ -2100,21 +2148,21 @@ function abrirModalCheckout(index, pestana = null) {
       elSummary.innerHTML = `
         ${imgHtml}
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Inmueble:</span>
-          <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.titulo)}</strong>
+          <span class="modal-summary-label">Inmueble:</span>
+          <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong>
         </div>
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Ubicación:</span>
-          <span style="color: var(--text-muted);">${escaparHtml(leadSeleccionado.ubicacion)}</span>
+          <span class="modal-summary-label">Ubicación:</span>
+          <span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span>
         </div>
         <div class="modal-summary-item">
-          <span style="color: var(--text-muted);">Precio Publicado:</span>
-          <strong style="color: var(--accent-emerald); font-size: 1.15rem;">${escaparHtml(leadSeleccionado.precio)}</strong>
+          <span class="modal-summary-label">Precio Publicado:</span>
+          <strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong>
         </div>
         ${leadSeleccionado.precio_m2 ? `
-          <div class="modal-summary-item" style="border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem;">
-            <span style="color: var(--text-muted);">Valor Unitario:</span>
-            <strong style="color: var(--text-main);">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
+          <div class="modal-summary-item modal-summary-divider">
+            <span class="modal-summary-label">Valor Unitario:</span>
+            <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
           </div>
         ` : ''}
       `;
@@ -2263,6 +2311,7 @@ async function ejecutarPagoWompi() {
   if (!celular || celular.length < 10) {
     if (errorBox) {
       errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567';
+      errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     }
     if (inputWrapper) {
@@ -2277,6 +2326,7 @@ async function ejecutarPagoWompi() {
   }
 
   if (errorBox) {
+    errorBox.classList.add('is-hidden');
     errorBox.style.display = 'none';
   }
 
@@ -2289,6 +2339,7 @@ async function ejecutarPagoWompi() {
     if (!ciudad) {
       if (cityError) {
         cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor selecciona la ciudad de cobertura para tu membresía.';
+        cityError.classList.remove('is-hidden');
         cityError.style.display = 'block';
       }
       if (selectCity) {
@@ -2297,7 +2348,10 @@ async function ejecutarPagoWompi() {
       }
       return;
     }
-    if (cityError) cityError.style.display = 'none';
+    if (cityError) {
+      cityError.classList.add('is-hidden');
+      cityError.style.display = 'none';
+    }
   }
 
   const btnPagar = document.getElementById('btnConfirmWompi');
@@ -2413,7 +2467,7 @@ async function ejecutarPagoWompi() {
               }
             }
           } catch (errClaim) {
-            console.warn('[Wompi Callback] Error reclamando sesión:', errClaim);
+            registrarLogDesarrollo('warn', '[Wompi Callback] Error reclamando sesión:', errClaim);
           }
         }
       });
@@ -2425,10 +2479,11 @@ async function ejecutarPagoWompi() {
     window.open(`https://wa.me/573001234567?text=${msg}`, '_blank', 'noopener,noreferrer');
     cerrarModalCheckout();
   } catch (err) {
-    console.error('[Pago Wompi] Error:', err);
+    registrarLogDesarrollo('error', '[Pago Wompi] Error:', err);
     const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
     if (errorBox) {
       errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
+      errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     } else {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);
@@ -3061,9 +3116,11 @@ function configurarListeners() {
       const area = document.getElementById("recoveryContentArea");
       const icon = document.getElementById("recoveryToggleIcon");
       if (area) {
-        const visible = area.style.display !== "none";
+        const visible = area.classList.contains("is-open") || area.style.display === "block";
         area.style.display = visible ? "none" : "block";
-        if (icon) icon.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+        area.classList.toggle("is-open", !visible);
+        area.classList.toggle("is-hidden", visible);
+        if (icon) icon.classList.toggle("is-open", !visible);
       }
     });
   }
@@ -3196,14 +3253,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4. Segundo plano asíncrono: Revalidar sesión persistente (JWT / PIN / Wompi)
   inicializarSesionUsuario().catch((err) => {
-    console.warn("[Sesión] Fallo en verificación de segundo plano:", err.message);
+    registrarLogDesarrollo('warn', "[Sesión] Fallo en verificación de segundo plano:", err.message);
   });
 
   // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("./sw.js").catch((err) => {
-        console.warn("[PWA] Error registrando Service Worker:", err);
+        registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err);
       });
     });
   }
@@ -3402,7 +3459,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnCopy.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar';
           }, 2000);
         } catch (e) {
-          console.warn('[Clipboard] Error copiando PIN:', e);
+          registrarLogDesarrollo('warn', '[Clipboard] Error copiando PIN:', e);
         }
       }
     });

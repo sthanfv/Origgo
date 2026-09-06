@@ -25,15 +25,15 @@ function formatearPrecioDisplay(precioStr) {
  */
 function generarHtmlSkeletons() {
   return Array(3).fill(0).map((_, i) => `
-    <article class="bento-card skeleton-card" style="--enter-delay: ${i * 0.08}s;">
+    <article class="bento-card skeleton-card skeleton-delay-${i}">
       <div class="skeleton-media skeleton-shimmer"></div>
-      <div class="card-body" style="padding: 1.25rem; gap: 0.85rem;">
-        <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 14px;"></div>
-        <div class="skeleton-line skeleton-shimmer" style="width: 80%; height: 22px;"></div>
-        <div class="skeleton-box skeleton-shimmer" style="height: 64px; border-radius: 1.25rem;"></div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.75rem;">
-          <div class="skeleton-line skeleton-shimmer" style="width: 45%; height: 26px;"></div>
-          <div class="skeleton-btn skeleton-shimmer" style="width: 38%; height: 38px;"></div>
+      <div class="card-body skeleton-body">
+        <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
+        <div class="skeleton-line skeleton-shimmer skeleton-line-lg"></div>
+        <div class="skeleton-box skeleton-shimmer skeleton-box-data"></div>
+        <div class="skeleton-footer">
+          <div class="skeleton-line skeleton-shimmer skeleton-line-price"></div>
+          <div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div>
         </div>
       </div>
     </article>
@@ -95,8 +95,8 @@ function renderizarInterfaz(dataset) {
 
   if (leads.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
-        <p style="font-weight: 700;">No hay oportunidades activas registradas en este momento.</p>
+      <div class="empty-state-msg">
+        <p>No hay oportunidades activas registradas en este momento.</p>
       </div>
     `;
     return;
@@ -141,7 +141,7 @@ function renderizarInterfaz(dataset) {
     const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
     const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
     container.innerHTML = `
-      <div class="empty-catalog-state" id="emptyCatalogState" style="grid-column: 1/-1;">
+      <div class="empty-catalog-state" id="emptyCatalogState">
         <div class="empty-state-icon-box">
           <i class="fa-solid fa-filter-circle-xmark"></i>
         </div>
@@ -223,8 +223,7 @@ function renderizarInterfaz(dataset) {
       "Operación": esVehiculo ? "Venta Directa Particular" : "Venta Directa con Propietario"
     };
 
-    // Solo las 2 primeras tarjetas del viewport inicial llevan un retardo sutil de 0.08s
-    const enterDelay = index < 2 ? (index * 0.08) : 0;
+    const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
 
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
     const corpusBruto = [
@@ -253,7 +252,7 @@ function renderizarInterfaz(dataset) {
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     return `
-      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}" style="--enter-delay: ${enterDelay}s;">
+      <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''} ${claseRetrasoEntrada}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}">
         <!-- Cabecera Fotográfica con Fusión Degradada -->
         <div class="card-media-wrapper" data-action="abrir-ficha" data-index="${index}">
           ${mediaHtml}
@@ -332,12 +331,12 @@ function renderizarInterfaz(dataset) {
                   </a>
                 ` : ''}
                 ${contactoSeguro?.whatsappUrl ? `
-                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
+                  <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                   </a>
                 ` : ''}
                 ${contactoSeguro?.telLlamar ? `
-                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; padding: 7px 9px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Llamar al dueño">
+                  <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
@@ -395,37 +394,37 @@ function renderizarInterfaz(dataset) {
             <!-- Grupo de Acción: Botón principal y micro-garantía -->
             <div class="slideup-action-group">
               ${estaDesbloqueado ? `
-                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-                  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px 12px;">
-                    <div style="font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+                <div class="slideup-unlocked-layout">
+                  <div class="unlocked-phone-box">
+                    <div class="unlocked-phone-label">
                       <i class="fa-solid fa-unlock"></i> Datos de Contacto Desbloqueados
                     </div>
-                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: 'Lufga', 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums;">
+                    <div class="unlocked-phone-number">
                       ${contacto?.telefono ? escaparHtml(contacto.telefono) : 'Consultando contacto...'}
                     </div>
                   </div>
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <div class="slideup-unlocked-row">
                     ${contactoSeguro?.whatsappUrl ? `
-                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct" style="flex: 1; min-width: 120px; justify-content: center; text-decoration: none;">
+                      <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp
                       </a>
                     ` : ''}
                     ${contactoSeguro?.telLlamar ? `
-                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn" style="flex: 1; min-width: 100px; justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none;">
+                      <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="Llamar al dueño" aria-label="Llamar al propietario directo">
                         <i class="fa-solid fa-phone"></i> Llamar
                       </a>
                     ` : ''}
                     ${contactoSeguro?.enlace ? `
-                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn" style="flex: 1; min-width: 120px; justify-content: center; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none;">
+                      <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="Ver anuncio original del propietario directo" aria-label="Ver anuncio original del propietario directo">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
                       </a>
                     ` : `
-                      <button class="slideup-cta-btn btn-whatsapp-direct" style="width: 100%; justify-content: center;" data-action="contactar-whatsapp" data-index="${index}">
+                      <button class="slideup-cta-btn btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto directo" aria-label="Revelar contacto directo">
                         <i class="fa-solid fa-unlock"></i> Revelar Contacto Directo
                       </button>
                     `}
                   </div>
-                  <span class="slideup-cta-note" style="color: #22C55E;">
+                  <span class="slideup-cta-note slideup-cta-note-ok">
                     <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
                   </span>
                 </div>
@@ -445,12 +444,12 @@ function renderizarInterfaz(dataset) {
   }).join("");
 
   if (totalPaginas > 1) {
-    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
-    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" style="background: var(--glass-metrics-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
+    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" aria-label="Ir a la página anterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
+    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" aria-label="Ir a la página siguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
     htmlContenido += `
-      <div class="pagination-controls" style="grid-column: 1/-1; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 2rem; padding: 1rem 0;">
+      <div class="pagination-controls">
         ${btnPrevHtml}
-        <span style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted);">
+        <span class="pagination-info">
           Página ${paginaActual} de ${totalPaginas}
         </span>
         ${btnNextHtml}

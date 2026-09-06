@@ -123,12 +123,19 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     <div class="hunter-toast-footer">
       <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
       <div class="hunter-toast-progress-track">
-        <div class="hunter-toast-progress-bar" style="animation-duration: ${duracionMs}ms;"></div>
+        <div class="hunter-toast-progress-bar"></div>
       </div>
     </div>
   `;
 
   container.appendChild(toast);
+  const progressBar = toast.querySelector('.hunter-toast-progress-bar');
+  const animacionProgreso = progressBar && typeof progressBar.animate === 'function'
+    ? progressBar.animate(
+      [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }],
+      { duration: duracionMs, easing: 'linear', fill: 'forwards' }
+    )
+    : null;
 
   // Vincular acción opcional si se suministró callback
   if (opts.onAction && typeof opts.onAction === 'function') {
@@ -148,6 +155,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     if (cerrado) return;
     cerrado = true;
     toast.classList.add('hunter-toast--closing');
+    if (animacionProgreso) animacionProgreso.cancel();
     clearTimeout(timeoutId);
     setTimeout(() => {
       if (toast.parentNode) toast.remove();
@@ -167,6 +175,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   let tiempoRestante = duracionMs;
   let tiempoInicio = Date.now();
   let timeoutId = null;
+  let estaPausado = false;
   const timerLabel = toast.querySelector('.hunter-toast-timer-label');
 
   function iniciarTimer(ms) {
@@ -177,15 +186,21 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   }
 
   function pausarTimer() {
+    if (cerrado || estaPausado) return;
+    estaPausado = true;
     clearTimeout(timeoutId);
     const transcurrido = Date.now() - tiempoInicio;
     tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
     toast.classList.add('hunter-toast--paused');
+    if (animacionProgreso) animacionProgreso.pause();
     if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
   }
 
   function reanudarTimer() {
+    if (cerrado || !estaPausado) return;
+    estaPausado = false;
     toast.classList.remove('hunter-toast--paused');
+    if (animacionProgreso && animacionProgreso.playState !== 'finished') animacionProgreso.play();
     if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
     iniciarTimer(tiempoRestante);
   }

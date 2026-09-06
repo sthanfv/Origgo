@@ -25,11 +25,11 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 hunter-portal-showcase/
 ├── index.html                  # Maquetación principal con Bento Grid y Modal de Checkout
 ├── style.css                   # Hoja de estilos ensamblada deterministamente
-├── style.min.css               # Hoja de estilos compilada y balanceada (97.3 KB, -28%)
+├── style.min.css               # Hoja de estilos compilada y balanceada (102.9 KB, -27%)
 ├── app.js                      # Controlador orquestador del frontend
 ├── app.min.js                  # Script compilado y minificado (-13%)
 ├── config.js                   # Configuración y llaves públicas de cliente
-├── dist/                       # Paquete público generado para despliegue sin código interno
+├── dist/                       # Paquete público generado por build e ignorado por Git
 ├── package.json                # Dependencias, scripts de build y tests
 ├── README.md                   # Documentación técnica completa
 ├── MEMORY.md                   # Bitácora de memoria persistente del sistema
@@ -64,7 +64,8 @@ hunter-portal-showcase/
 │   ├── 12-sidebar.css          # Menú lateral off-canvas
 │   ├── 13-footer.css           # Footer institucional y legal
 │   ├── 14-toast.css            # Notificaciones toast con ambient glow
-│   └── 15-welcome-modal.css    # Modal inicial de bienvenida
+│   ├── 15-welcome-modal.css    # Modal inicial de bienvenida
+│   └── 16-utilities.css        # Utilidades visuales finales sin estilos embebidos
 ├── lib/                        # Librerías privadas compartidas por funciones serverless
 │   ├── cors.js                 # CORS estricto para API e idempotencia
 │   ├── crypto.js               # Cifrado AES-256-GCM, tokens JWT y comparación constante
@@ -127,7 +128,7 @@ npm test
 
 Fases evaluadas en cada commit y push:
 1. **Sintaxis de JavaScript**: 29 archivos validados con `node --check` (lambdas en `api/`, librerías privadas en `lib/`, submódulos en `modules/` y compilados).
-2. **Integridad y balance CSS**: 15 submódulos verificados, balance de llaves y selectores críticos.
+2. **Integridad y balance CSS**: 16 submódulos verificados, balance de llaves y selectores críticos.
 3. **Marcado HTML y Seguridad OWASP**: Doctype, meta tags, recursos físicos y cabeceras de seguridad en `vercel.json`.
 4. **Contratos de datos JSON**: Validación de estructura AES-256 (`iv:tag:cipher`) en 52 oportunidades.
 5. **Suite de integración Wompi, ledger y esquemas Zod**: Pruebas al 100% de pasarela, idempotencia, rate limiting, recuperación por enlace firmado y contratos Zod.
@@ -141,4 +142,5 @@ Fases evaluadas en cada commit y push:
 
 1. Clonar el repositorio y configurar variables en Vercel.
 2. Los endpoints dentro de `api/` se despliegan automáticamente como funciones Serverless de Node.js.
-3. Las páginas estáticas y recursos optimizados se sirven desde Vercel Edge CDN con compresión Brotli y cabeceras OWASP.
+3. Las páginas estáticas y recursos optimizados se sirven desde `dist/`, generado por `npm run build` sin copiar `.env`, `api/`, `lib/`, `modules/` ni dependencias privadas.
+4. `dist/` no se versiona en Git; se genera en cada build porque `vercel.json` usa `"outputDirectory": "dist"` para evitar exponer código interno desde la raíz del proyecto.

@@ -87,26 +87,31 @@ Para garantizar un mantenimiento ágil y prevenir la creación de archivos gigan
 ### 4.1 Módulos JavaScript (`modules/`):
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
-| `00-security.js` | Escape HTML, sanitización de URL, teléfono y contacto cliente. | 85 |
+| `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 116 |
 | `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage` y recuperación por token. | 390 |
-| `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 273 |
-| `03-api.js` | Cliente HTTP centralizado, generación de `x-trace-id` y carga de datasets. | 41 |
+| `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 288 |
+| `03-api.js` | Cliente HTTP centralizado, generación de `x-trace-id` y carga segura de datasets. | 45 |
 | `04-filters.js` | Normalización de texto fonético, omnibox y filtrado de ciudades. | 256 |
 | `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 152 |
-| `06-cards.js` | Renderizado Bento Grid, skeletons, botón seguro de anuncio y precios. | 494 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 289 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 472 |
+| `06-cards.js` | Renderizado Bento Grid, skeletons, botón seguro de anuncio y precios. | 493 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 292 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 479 |
 | `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 248 |
-| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 496 |
+| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 499 |
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 199 |
 
 ### 4.2 Módulos CSS (`styles/`):
-Divididos en 15 submódulos semánticos (`01-tokens.css` a `15-welcome-modal.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (97.3 KB, -28% de peso).
+Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (102.9 KB, -27% de peso).
 
 ### 4.3 Tarjetas, carruseles y enlaces seguros
 - Los carruseles aceptan navegación por flechas, puntos y deslizamiento táctil con umbral horizontal para evitar colisiones con el scroll vertical.
 - El botón `Ver Anuncio` solo se renderiza desde `sanitizarContactoCliente(contacto)`, por lo que los enlaces deben usar `https` y hosts permitidos antes de llegar al DOM.
 - Los estados desbloqueados muestran WhatsApp, llamada y anuncio original sin persistir el contacto en `localStorage`.
+
+### 4.4 Higiene de interfaz y consola
+- Las plantillas del frontend no generan atributos `style="..."`; los detalles visuales viven en clases CSS y en `styles/16-utilities.css` para utilidades finales.
+- Los diagnósticos de cliente pasan por `registrarLogDesarrollo`, activo en `localhost`, `file:` o `?debug=origgo`, y silencioso en producción.
+- `dist/` se conserva como paquete público deliberado del build, ignorado por Git, porque `vercel.json` lo usa como salida de despliegue y evita publicar `api/`, `lib/` o `modules/`.
 
 ---
 

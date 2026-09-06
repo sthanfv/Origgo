@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnCopy.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar';
           }, 2000);
         } catch (e) {
-          console.warn('[Clipboard] Error copiando PIN:', e);
+          registrarLogDesarrollo('warn', '[Clipboard] Error copiando PIN:', e);
         }
       }
     });
