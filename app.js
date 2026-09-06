@@ -477,7 +477,7 @@ async function recuperarPinConReferencia() {
 
 /**
  * 🔔 MÓDULO DE NOTIFICACIONES TOAST (modules/02-toast.js)
- * Notificaciones flotantes luxury glassmorphism con ambient glow, micro-barra y swipe gestures.
+ * Notificaciones flotantes con acabado premium, ambient glow, micro-barra y gestos de deslizamiento.
  * Estándar Ecosistema Desmulta UI/UX.
  */
 
@@ -691,7 +691,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
 
   toast.addEventListener('touchend', () => {
     if (touchDiffY < -40) {
-      // Gesto de swipe up confirmado: descartar
+      // Gesto de deslizamiento hacia arriba confirmado: descartar
       cerrarToast();
     } else {
       // Volver a posición original y reanudar
@@ -1064,11 +1064,11 @@ function sincronizarDropdownCiudades(leads) {
 function moverCarrusel(cardIndex, delta, totalFotos, event) {
   if (event) event.stopPropagation();
   if (typeof carruselIndices[cardIndex] !== 'number') carruselIndices[cardIndex] = 0;
-  
+
   const actual = carruselIndices[cardIndex];
   const nuevo = (actual + delta + totalFotos) % totalFotos;
   carruselIndices[cardIndex] = nuevo;
-  
+
   actualizarVistaCarrusel(cardIndex, nuevo);
 }
 
@@ -1092,7 +1092,7 @@ function irACarrusel(cardIndex, targetIndex, event) {
 function actualizarVistaCarrusel(cardIndex, activeIndex) {
   const track = document.getElementById(`carousel-${cardIndex}`);
   if (!track) return;
-  
+
   const slides = track.querySelectorAll('.carousel-slide');
   slides.forEach((slide, sIdx) => {
     if (sIdx === activeIndex) {
@@ -1152,6 +1152,53 @@ function cerrarFichaTecnica(index, event) {
   const overlay = document.getElementById(`slideup-${index}`);
   if (overlay) overlay.classList.remove('active');
 }
+
+/**
+ * Inicializa gestos táctiles en carruseles sin interferir con el scroll vertical.
+ * @param {HTMLElement} trackEl
+ * @param {number} cardIndex
+ * @param {number} totalFotos
+ */
+function habilitarSwipeTactilCarrusel(trackEl, cardIndex, totalFotos) {
+  if (!trackEl || trackEl.dataset.deslizamientoConfigurado === "true" || totalFotos <= 1) return;
+  trackEl.dataset.deslizamientoConfigurado = "true";
+
+  let startX = 0;
+  let startY = 0;
+  let isSwiping = false;
+
+  trackEl.addEventListener("touchstart", (event) => {
+    if (!event.touches || event.touches.length !== 1) return;
+    startX = event.touches[0].clientX;
+    startY = event.touches[0].clientY;
+    isSwiping = true;
+  }, { passive: true });
+
+  trackEl.addEventListener("touchmove", (event) => {
+    if (!isSwiping || !event.touches || event.touches.length !== 1) return;
+    const diffY = Math.abs(event.touches[0].clientY - startY);
+    const diffX = Math.abs(event.touches[0].clientX - startX);
+
+    if (diffY > diffX && diffY > 15) {
+      isSwiping = false;
+    }
+  }, { passive: true });
+
+  trackEl.addEventListener("touchend", (event) => {
+    if (!isSwiping) return;
+    isSwiping = false;
+    const touch = event.changedTouches ? event.changedTouches[0] : null;
+    if (!touch) return;
+
+    const diffX = touch.clientX - startX;
+    const diffY = Math.abs(touch.clientY - startY);
+
+    if (Math.abs(diffX) >= 35 && Math.abs(diffX) > diffY) {
+      moverCarrusel(cardIndex, diffX < 0 ? 1 : -1, totalFotos);
+    }
+  }, { passive: true });
+}
+
 
 
 /**
@@ -1270,7 +1317,7 @@ function renderizarInterfaz(dataset) {
       const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
       const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
       const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
-      const coincideCiudad = ciudadesObjetivo.some(c => 
+      const coincideCiudad = ciudadesObjetivo.some(c =>
         itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
       );
       if (!coincideCiudad) return false;
@@ -1344,7 +1391,7 @@ function renderizarInterfaz(dataset) {
               `}
             </div>
           `).join('')}
-          
+
           <!-- Flechas de navegación (Aparecen en Hover) -->
           <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="Foto Anterior">
             <i class="fa-solid fa-chevron-left"></i>
@@ -1481,7 +1528,12 @@ function renderizarInterfaz(dataset) {
             </div>
 
             ${estaDesbloqueado ? `
-              <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              <div class="unlocked-action-cluster">
+                ${contactoSeguro?.enlace ? `
+                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="Ver anuncio original del propietario directo">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                  </a>
+                ` : ''}
                 ${contactoSeguro?.whatsappUrl ? `
                   <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -1492,15 +1544,11 @@ function renderizarInterfaz(dataset) {
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
-                ${contactoSeguro?.enlace ? `
-                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-                  </a>
-                ` : `
+                ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `
                   <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
                     <i class="fa-solid fa-unlock"></i> Revelar Contacto
                   </button>
-                `}
+                ` : ''}
               </div>
             ` : `
               <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
@@ -1547,7 +1595,7 @@ function renderizarInterfaz(dataset) {
               </p>
             </div>
 
-            <!-- Grupo de Acción: Botón CTA y Micro-Garantía -->
+            <!-- Grupo de Acción: Botón principal y micro-garantía -->
             <div class="slideup-action-group">
               ${estaDesbloqueado ? `
                 <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
@@ -1636,6 +1684,15 @@ function renderizarInterfaz(dataset) {
 
   // Activar el Scroll Reveal progresivo con inercia para scroll móvil
   iniciarScrollReveal();
+
+  container.querySelectorAll('.carousel-track').forEach((track) => {
+    const card = track.closest('.bento-card');
+    const cardIndex = Number.parseInt(card?.getAttribute('data-index') || '', 10);
+    const totalFotos = track.querySelectorAll('.carousel-slide').length;
+    if (typeof habilitarSwipeTactilCarrusel === 'function' && Number.isFinite(cardIndex) && totalFotos > 1) {
+      habilitarSwipeTactilCarrusel(track, cardIndex, totalFotos);
+    }
+  });
 }
 
 
@@ -1727,11 +1784,15 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     const existingCluster = bottomRow.querySelector('.unlocked-action-cluster');
     const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-lead');
     const existingDirectBtn = bottomRow.querySelector('button[data-action="contactar-whatsapp"]');
-    
+
     const cluster = existingCluster || document.createElement('div');
     cluster.className = 'unlocked-action-cluster';
-    cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
     cluster.innerHTML = `
+      ${contactoSeguro?.enlace ? `
+        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="Ver anuncio original del propietario directo">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+        </a>
+      ` : ''}
       ${contactoSeguro?.whatsappUrl ? `
         <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -1742,10 +1803,10 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
-      ${contactoSeguro?.enlace ? `
-        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-        </a>
+      ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `
+        <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
+          <i class="fa-solid fa-unlock"></i> Revelar Contacto
+        </button>
       ` : ''}
     `;
 
@@ -2761,7 +2822,7 @@ function configurarListeners() {
     });
   }
 
-  // Desplazamiento Suave al Catálogo desde el Hero CTA
+  // Desplazamiento suave al catálogo desde el botón principal del hero
   const btnHeroCta = document.getElementById("btnHeroCta");
   if (btnHeroCta) {
     btnHeroCta.addEventListener("click", () => {
@@ -3147,6 +3208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 
 /**
  * 👑 MÓDULO DE ONBOARDING Y BIENVENIDA VIP (modules/11-welcome.js)

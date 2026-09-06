@@ -14,11 +14,11 @@
 function moverCarrusel(cardIndex, delta, totalFotos, event) {
   if (event) event.stopPropagation();
   if (typeof carruselIndices[cardIndex] !== 'number') carruselIndices[cardIndex] = 0;
-  
+
   const actual = carruselIndices[cardIndex];
   const nuevo = (actual + delta + totalFotos) % totalFotos;
   carruselIndices[cardIndex] = nuevo;
-  
+
   actualizarVistaCarrusel(cardIndex, nuevo);
 }
 
@@ -42,7 +42,7 @@ function irACarrusel(cardIndex, targetIndex, event) {
 function actualizarVistaCarrusel(cardIndex, activeIndex) {
   const track = document.getElementById(`carousel-${cardIndex}`);
   if (!track) return;
-  
+
   const slides = track.querySelectorAll('.carousel-slide');
   slides.forEach((slide, sIdx) => {
     if (sIdx === activeIndex) {
@@ -102,4 +102,50 @@ function cerrarFichaTecnica(index, event) {
   const overlay = document.getElementById(`slideup-${index}`);
   if (overlay) overlay.classList.remove('active');
 }
-
+
+/**
+ * Inicializa gestos táctiles en carruseles sin interferir con el scroll vertical.
+ * @param {HTMLElement} trackEl
+ * @param {number} cardIndex
+ * @param {number} totalFotos
+ */
+function habilitarSwipeTactilCarrusel(trackEl, cardIndex, totalFotos) {
+  if (!trackEl || trackEl.dataset.deslizamientoConfigurado === "true" || totalFotos <= 1) return;
+  trackEl.dataset.deslizamientoConfigurado = "true";
+
+  let startX = 0;
+  let startY = 0;
+  let isSwiping = false;
+
+  trackEl.addEventListener("touchstart", (event) => {
+    if (!event.touches || event.touches.length !== 1) return;
+    startX = event.touches[0].clientX;
+    startY = event.touches[0].clientY;
+    isSwiping = true;
+  }, { passive: true });
+
+  trackEl.addEventListener("touchmove", (event) => {
+    if (!isSwiping || !event.touches || event.touches.length !== 1) return;
+    const diffY = Math.abs(event.touches[0].clientY - startY);
+    const diffX = Math.abs(event.touches[0].clientX - startX);
+
+    if (diffY > diffX && diffY > 15) {
+      isSwiping = false;
+    }
+  }, { passive: true });
+
+  trackEl.addEventListener("touchend", (event) => {
+    if (!isSwiping) return;
+    isSwiping = false;
+    const touch = event.changedTouches ? event.changedTouches[0] : null;
+    if (!touch) return;
+
+    const diffX = touch.clientX - startX;
+    const diffY = Math.abs(touch.clientY - startY);
+
+    if (Math.abs(diffX) >= 35 && Math.abs(diffX) > diffY) {
+      moverCarrusel(cardIndex, diffX < 0 ? 1 : -1, totalFotos);
+    }
+  }, { passive: true });
+}
+

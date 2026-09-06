@@ -1778,6 +1778,9 @@ main {
   position: relative;
   width: 100%;
   height: 100%;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .carousel-slide {
@@ -2100,6 +2103,8 @@ main {
 }
 
 .btn-unlock-lead {
+  position: relative;
+  overflow: hidden;
   height: 44px;
   padding: 0 1.15rem;
   border-radius: 0.95rem;
@@ -2120,10 +2125,34 @@ main {
   white-space: nowrap;
 }
 
+.btn-unlock-lead::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
+  transform: skewX(-22deg);
+  pointer-events: none;
+  animation: prestigeSheen 4.2s infinite ease-in-out;
+}
+
+@keyframes prestigeSheen {
+  0%, 65% { left: -120%; }
+  85%, 100% { left: 170%; }
+}
+
 .btn-unlock-lead:hover {
   background-color: var(--accent-emerald-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.btn-unlock-lead:hover::after {
+  animation: none;
+  left: 170%;
+  transition: left 0.65s ease;
 }
 
 .btn-unlock-lead.closed {
@@ -2137,6 +2166,14 @@ main {
   background: var(--border-subtle);
   color: var(--text-main);
   transform: translateY(-1px);
+}
+
+.btn-unlock-lead.closed::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-unlock-lead::after { animation: none; display: none; }
 }
 
 
@@ -2192,6 +2229,42 @@ main {
   border-color: hsla(166, 40%, 23%, 0.25);
   color: #065F46;
 }
+
+.unlocked-action-cluster {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-view-ad-direct {
+  height: 44px;
+  padding: 0 1.15rem;
+  border-radius: 0.95rem;
+  background: var(--color-surface-hover, hsla(166, 40%, 18%, 0.7));
+  border: 1px solid var(--accent-emerald);
+  color: var(--accent-emerald) !important;
+  font-family: var(--font-display);
+  font-size: 0.775rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 hsla(129, 48%, 87%, 0.12);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.btn-view-ad-direct:hover { background: var(--accent-emerald); color: #041B12 !important; transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-emerald-glow); }
+.btn-view-ad-direct i { color: inherit; transition: transform 0.2s ease; }
+.btn-view-ad-direct:hover i { transform: translate(2px, -2px); }
+[data-theme="light"] .btn-view-ad-direct { background: #FFFFFF; border-color: #059669; color: #059669 !important; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15); }
+[data-theme="light"] .btn-view-ad-direct:hover { background: #059669; color: #FFFFFF !important; }
+
 
 
 /* ═══════════════════════════════════════════════════
@@ -2395,7 +2468,7 @@ main {
   color: #2E3B35;
 }
 
-/* Grupo de Acción: Botón CTA y Micro-Garantía */
+/* Grupo de Acción: Botón principal y micro-garantía */
 .slideup-action-group {
   display: flex;
   flex-direction: column;
@@ -2552,6 +2625,7 @@ main {
 [data-theme="light"] .btn-empty-reset:hover {
   background: #065F46;
 }
+
 
 /* ═══════════════════════════════════════════════════
    MODAL DE CHECKOUT WOMPI (Glassmorphic Desmulta Shield)
@@ -5309,7 +5383,7 @@ main {
   line-height: 1.35;
 }
 
-/* Botón CTA Principal de Bienvenida */
+/* Botón principal de bienvenida */
 .btn-welcome-cta {
   position: relative;
   z-index: 2;

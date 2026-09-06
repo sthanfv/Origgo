@@ -172,3 +172,23 @@ Prueba integrada: `scripts/test_ledger_wompi.js` cubre idempotencia de orden, we
 Pruebas:
 - `npm audit --omit=dev`: 0 vulnerabilidades.
 - `npm test`: 8 fases DevSecOps completas.
+
+## 7. Seguimiento QA de tarjetas y enlaces desbloqueados
+
+**Hallazgo:** La copia visual local aportaba una jerarquía más clara para el botón “Ver Anuncio” y deslizamiento táctil en carruseles, pero esos retoques debían integrarse sin volver a leer enlaces crudos desde el dataset o cachés manipulables.
+
+**Gravedad:** Baja
+
+**Vector de Ataque y Flujo de Reproducción Paso a Paso:**
+1. Desbloquear una tarjeta con contacto.
+2. Manipular `contacto.enlace` en memoria con un esquema no permitido, por ejemplo `javascript:alert(1)`.
+3. Forzar re-render de tarjetas.
+4. Confirmar que el botón “Ver Anuncio” no se renderiza si el enlace no pasa por `sanitizarContactoCliente(contacto)`.
+
+**Impacto en el Negocio:** Evita que un retoque visual reabra vectores de redirección maliciosa o XSS en un flujo de alto valor comercial.
+
+**Código de Remediación Exacto:**
+- `modules/06-cards.js` y `modules/07-unlock.js` renderizan `btn-view-ad-direct` únicamente desde `contactoSeguro.enlace`.
+- `styles/07-cards.css` añade jerarquía visual al botón, destello accesible y compatibilidad con `prefers-reduced-motion`.
+- `modules/05-carousel.js` agrega deslizamiento táctil con umbral horizontal y cancelación ante scroll vertical.
+- `npm test` valida sintaxis, CSS, cabeceras, cifrado, idempotencia, antifraude y modularidad.

@@ -35,7 +35,7 @@ A diferencia de las aplicaciones web tradicionales monolíticas, este sistema es
                                                  │ Peticiones Entrantes
                                                  ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ CAPA 2: RATE LIMITING & MITIGACIÓN ANTI-DDOS (api/lib/rate-limiter.js)                         │
+│ CAPA 2: RATE LIMITING & MITIGACIÓN ANTI-DDOS (lib/rate-limiter.js)                             │
 │  • Ventana deslizante en memoria por IP y clave secundaria (celular).                         │
 │  • Límites estrictos: 12 órdenes/min, 8 logins PIN/15 min, 30 unlocks/min, 60 webhooks/min.   │
 │  • Cabeceras de trazabilidad: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After.          │
@@ -53,7 +53,7 @@ A diferencia de las aplicaciones web tradicionales monolíticas, este sistema es
                                                  │ Operaciones Criptográficas y Datos
                                                  ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ CAPA 4: PERSISTENCIA Y RESILIENCIA CON BACKOFF EXPONENCIAL (api/lib/db.js)                     │
+│ CAPA 4: PERSISTENCIA Y RESILIENCIA CON BACKOFF EXPONENCIAL (lib/db.js)                         │
 │  • Google Cloud Firestore: Modo primario de producción con soporte multi-región.               │
 │  • Fallback Transaccional: Archivo transaccional local atómico para entornos serverless.       │
 │  • Circuit Breaker & Retry: withRetry() con 3 intentos, backoff exponencial y jitter aleatorio.│
@@ -71,7 +71,7 @@ A diferencia de las aplicaciones web tradicionales monolíticas, este sistema es
 
 ### 3.2 Erradicación Total del Bypass de PIN
 - **Problema previo**: Se permitía autenticar como usuario si el PIN coincidía con los últimos 4 dígitos del celular.
-- **Solución implementada**: Eliminación total del fallback. La autenticación exige el PIN aleatorio criptográfico de 4 dígitos generado al momento del registro, o el token JWT firmado con HMAC-SHA256.
+- **Solución implementada**: Eliminación total del fallback. La autenticación exige PIN aleatorio criptográfico de 4 dígitos solo para cuentas existentes, sesión JWT vigente o enlace temporal firmado de recuperación. El PIN no se inserta en JWT ni se envía por correo.
 
 ### 3.3 Tolerancia a Fallos de Red y Caos (Exponential Backoff + Jitter)
 Toda interacción crítica con la capa de base de datos se ejecuta a través del envoltorio `withRetry`:
@@ -87,19 +87,26 @@ Para garantizar un mantenimiento ágil y prevenir la creación de archivos gigan
 ### 4.1 Módulos JavaScript (`modules/`):
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
-| `01-state.js` | Estado global reactivo, JWT en `localStorage`, login PIN y planes VIP. | 297 |
-| `02-toast.js` | Notificaciones flotantes luxury con ambient glow, micro-barra y swipe. | 227 |
+| `00-security.js` | Escape HTML, sanitización de URL, teléfono y contacto cliente. | 85 |
+| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage` y recuperación por token. | 390 |
+| `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 273 |
 | `03-api.js` | Cliente HTTP centralizado, generación de `x-trace-id` y carga de datasets. | 41 |
-| `04-filters.js` | Normalización de texto fonético, omnibox y filtrado de ciudades. | 180 |
-| `05-carousel.js`| Carruseles fotográficos táctiles y drawer slide-up de detalles. | 105 |
-| `06-cards.js` | Renderizado Bento Grid, skeletons, badges y formateo de precios. | 481 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 264 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes y widget checkout. | 325 |
+| `04-filters.js` | Normalización de texto fonético, omnibox y filtrado de ciudades. | 256 |
+| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 152 |
+| `06-cards.js` | Renderizado Bento Grid, skeletons, botón seguro de anuncio y precios. | 494 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 289 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 472 |
 | `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 248 |
-| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 463 |
+| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 496 |
+| `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 199 |
 
 ### 4.2 Módulos CSS (`styles/`):
-Divididos en 14 submódulos semánticos (`01-tokens.css` a `14-toast.css`), todos inferiores a 475 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (80.6 KB, -30% de peso).
+Divididos en 15 submódulos semánticos (`01-tokens.css` a `15-welcome-modal.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (97.3 KB, -28% de peso).
+
+### 4.3 Tarjetas, carruseles y enlaces seguros
+- Los carruseles aceptan navegación por flechas, puntos y deslizamiento táctil con umbral horizontal para evitar colisiones con el scroll vertical.
+- El botón `Ver Anuncio` solo se renderiza desde `sanitizarContactoCliente(contacto)`, por lo que los enlaces deben usar `https` y hosts permitidos antes de llegar al DOM.
+- Los estados desbloqueados muestran WhatsApp, llamada y anuncio original sin persistir el contacto en `localStorage`.
 
 ---
 

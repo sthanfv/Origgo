@@ -1,6 +1,6 @@
 /**
  * 🔔 MÓDULO DE NOTIFICACIONES TOAST (modules/02-toast.js)
- * Notificaciones flotantes luxury glassmorphism con ambient glow, micro-barra y swipe gestures.
+ * Notificaciones flotantes con acabado premium, ambient glow, micro-barra y gestos de deslizamiento.
  * Estándar Ecosistema Desmulta UI/UX.
  */
 
@@ -214,7 +214,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
 
   toast.addEventListener('touchend', () => {
     if (touchDiffY < -40) {
-      // Gesto de swipe up confirmado: descartar
+      // Gesto de deslizamiento hacia arriba confirmado: descartar
       cerrarToast();
     } else {
       // Volver a posición original y reanudar

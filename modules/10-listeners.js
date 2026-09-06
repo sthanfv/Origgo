@@ -108,7 +108,7 @@ function configurarListeners() {
     });
   }
 
-  // Desplazamiento Suave al Catálogo desde el Hero CTA
+  // Desplazamiento suave al catálogo desde el botón principal del hero
   const btnHeroCta = document.getElementById("btnHeroCta");
   if (btnHeroCta) {
     btnHeroCta.addEventListener("click", () => {

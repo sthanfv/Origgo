@@ -199,7 +199,7 @@
   color: #2E3B35;
 }
 
-/* Grupo de Acción: Botón CTA y Micro-Garantía */
+/* Grupo de Acción: Botón principal y micro-garantía */
 .slideup-action-group {
   display: flex;
   flex-direction: column;
@@ -356,4 +356,4 @@
 [data-theme="light"] .btn-empty-reset:hover {
   background: #065F46;
 }
-
+

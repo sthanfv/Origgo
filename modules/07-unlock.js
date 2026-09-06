@@ -86,11 +86,15 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     const existingCluster = bottomRow.querySelector('.unlocked-action-cluster');
     const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-lead');
     const existingDirectBtn = bottomRow.querySelector('button[data-action="contactar-whatsapp"]');
-    
+
     const cluster = existingCluster || document.createElement('div');
     cluster.className = 'unlocked-action-cluster';
-    cluster.style.cssText = 'display: flex; gap: 6px; align-items: center; flex-wrap: wrap;';
     cluster.innerHTML = `
+      ${contactoSeguro?.enlace ? `
+        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="Ver anuncio original del propietario directo">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+        </a>
+      ` : ''}
       ${contactoSeguro?.whatsappUrl ? `
         <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -101,10 +105,10 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
           <i class="fa-solid fa-phone"></i> Llamar
         </a>
       ` : ''}
-      ${contactoSeguro?.enlace ? `
-        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-        </a>
+      ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `
+        <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
+          <i class="fa-solid fa-unlock"></i> Revelar Contacto
+        </button>
       ` : ''}
     `;
 

@@ -1,94 +1,62 @@
-# 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
+# MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-06 13:40 (GMT-5)
-
----
-
-## 1. ¿Qué cambió?
-
-1. **Migración Segura y Adaptación desde Entorno de Pruebas**:
-   - Se descartaron por completo las envolturas de desarrollo de Vite/React/AI Studio, manteniendo la arquitectura pura Vanilla JS + Vercel Serverless.
-   - Se preservaron intactos los secretos criptográficos maestros en reposo (`LEADS_ENCRYPTION_KEY`, `JWT_SECRET`).
-
-2. **Capa de Validación Robusta con Zod en Endpoints Serverless**:
-   - Integración de esquemas de validación Zod para teléfonos colombianos (`3XXXXXXXXX`), emails RFC 5322, PINs de 4 dígitos, tipos de plan y montos en todos los handlers de `api/`.
-   - Manejo centralizado de variables de entorno mediante `lib/env.js`.
-
-3. **Recuperación Segura de PIN vía Correo Electrónico (`api/auth/recover.js`)**:
-   - Despacho transaccional del PIN de 4 dígitos mediante Resend API con plantilla HTML corporativa de Origgo.
-   - Protección contra abusos mediante limitación de tasa diaria en memoria (máximo 3 recuperaciones por día por usuario/IP).
-   - Formulario reactivo en el modal de inicio de sesión.
-
-4. **Mejoras en Capa de Persistencia y Ledger (`lib/db.js`)**:
-   - Nuevas funciones `getUserByEmail(email)` y `getPendingOrderByEmail(email)`.
-   - Compatibilidad robusta en inicialización de Firestore tolerando claves privadas PEM escapadas, en Base64 o JSON crudo.
-   - Registro de `customer_email` en transacciones y ledger.
-
-5. **Experiencia de Usuario, Rendimiento y Branding Unificado (Origgo)**:
-   - **Eliminación de Vestigios del Branding Pasado**: Isotipo SVG oficial de Origgo en footer, menú lateral, modal de bienvenida y PWA. Erradicación física de `assets/img/hunter_radar_logo.svg`.
-   - **Kerning y Tipografía Óptica en Footer (`styles/13-footer.css`)**: Margen derecho del contenedor `.brand-initial-o-wrap` ajustado a `4px` para separar la "O" de "riggo" con lectura armónica sin superposición.
-   - **Unificación de Ícono de Créditos (`modules/01-state.js`)**: Eliminación del ícono `<i class="fa-solid fa-bolt">` pequeño duplicado en el badge de créditos del header (`btnVipHeader`), dejando únicamente el rayo emoji dorado `⚡ ${cr} Créditos`.
-   - **Conmutación Atómica de Tema sin Congelamiento (*Zero-Jank*)**: Eliminación de transiciones globales `*`.
-   - **Sincronización Dinámica de Filtros por Ciudad**: Dropdown de ciudades desde catálogo cargado con `DICCIONARIO_TERMINOS`.
-   - **Anti-Rebote en Desbloqueo de Leads**: Conjunto `desbloqueosEnProgreso` para evitar peticiones duplicadas.
-   - **Parseo Defensivo No-JSON**: Protección ante respuestas HTML inesperadas de CDN.
-
-6. **PWA y Caché del Service Worker**:
-   - Elevación del Service Worker a `origgo-v5` con precaché optimizado y bypass de endpoints `/api/*`.
-   - `manifest.json` apuntando a `./assets/img/origgo-icon.svg`.
-
-7. **Ampliación de la Suite DevSecOps de 8 Fases (`scripts/validate.js`)**:
-   - Creación y ejecución de `scripts/test_validation_ratelimit.js`.
-   - Integración formal en la Fase 5 del pipeline `npm test`.
-
-8. **Resolución Definitiva del Fallo de Despliegue en Vercel**:
-   - `api/lib/` reubicado a `lib/` en la raíz del proyecto para evitar que Vercel intente exponer helpers como funciones serverless.
-   - Script `"prepare": "husky"` retirado de `package.json` para evitar fallo por falta de devDependencies en Vercel.
-
-9. **Consola F12 Limpia de Advertencias (0 Errores / 0 Warnings)**:
-   - Retiro de la directiva `frame-ancestors` en el tag `<meta http-equiv="Content-Security-Policy">` de `index.html`, erradicando el error en rojo del navegador (`directive 'frame-ancestors' is ignored when delivered via a <meta> element`). La directiva se mantiene en cabeceras HTTP en `vercel.json` (`X-Frame-Options: DENY`).
-
-10. **Auditoría de Seguridad de Datos en F12 y Cero Fuga de Información**:
-    - Todos los datos sensibles de leads (`contacto_cifrado`) viajan cifrados bajo el estándar militar AES-256-GCM.
-    - Los teléfonos públicos permanecen enmascarados (`573 ••• ••••`).
-    - Cero números en claro en `data/inmobiliario.json`.
-    - Desencriptación delegada exclusivamente al backend seguro (`/api/leads/unlock`), validando saldo de créditos en Firestore antes de despachar el dato.
-    - Cero secretos expuestos en `window` ni en `console.log`.
-
-11. **Limpieza de Archivos Obsoletos y Configuración de npm**:
-    - Eliminación de scripts temporales `scripts/split_modules.js` y `scripts/split_styles.js`.
-    - Creación de `.npmrc` (`loglevel=error`, `fund=false`, `audit=false`) para evitar advertencias de paquetes deprecados de terceros durante instalaciones.
+Última actualización: 2026-09-06 17:30 (GMT-5)
 
 ---
 
-## 2. ¿Por qué cambió?
+## 1. Qué cambió
 
-- **Requerimiento del Usuario**: Separar la "O" de "riggo" en el footer, remover el ícono de rayo pequeño duplicado en los créditos, eliminar cualquier error/advertencia en la consola F12 y garantizar blindaje absoluto contra robo o scraping de datos.
-- **Estándar DevSecOps y Código Limpio**: 0 advertencias en consola de navegación y en pipelines de construcción.
-
----
-
-## 3. Archivos Afectados
-
-- `styles/13-footer.css`: Ajuste de `margin-right: 4px` en `.footer-brand-title .brand-initial-o-wrap`.
-- `modules/01-state.js`: Eliminación del `<i class="fa-solid fa-bolt">` duplicado en `actualizarBadgeVip()`.
-- `index.html`: Eliminación de `frame-ancestors` en etiqueta `<meta>` de Content-Security-Policy.
-- `scripts/split_modules.js` y `scripts/split_styles.js`: Archivos huérfanos eliminados físicamente.
-- `.npmrc`: Archivo de configuración creado para silenciar avisos de paquetes de terceros.
-- `style.css`, `style.min.css`, `app.js`, `app.min.js`: Compilados y sincronizados.
-- `MEMORY.md`: Bitácora actualizada.
+1. Se integraron los retoques visuales de tarjetas provenientes de la copia local ubicada en `C:\Users\Sthan\Escritorio\origgo-—-terminal-de-oportunidades-directas-y-arbitraje`.
+2. Se añadió deslizamiento táctil a los carruseles de tarjetas con umbral horizontal, cancelación ante desplazamiento vertical y protección contra inicialización duplicada.
+3. Se elevó la jerarquía visual del botón `Ver Anuncio` en tarjetas desbloqueadas mediante la clase `btn-view-ad-direct`.
+4. Se mantuvo la sanitización de enlaces cliente: el botón de anuncio solo se renderiza desde `contactoSeguro.enlace`, generado por `sanitizarContactoCliente(contacto)`.
+5. Se agregó microinteracción de destello al botón `Desbloquear`, desactivada para oportunidades cerradas y para usuarios con `prefers-reduced-motion`.
+6. Se recompilaron los artefactos públicos `app.js`, `app.min.js`, `style.css`, `style.min.css` y el paquete `dist/`.
+7. Se sincronizó documentación en `README.md`, `ARCHITECTURE.md` y `docs/REPORTE_AUDITORIA_DEVSECOPS_REMEDIACIONES.md` para reflejar la arquitectura real tras las remediaciones DevSecOps.
 
 ---
 
-## 4. Decisiones Técnicas Tomadas
+## 2. Por qué cambió
 
-- **CSP Nivel 3 W3C Compliance**: La directiva `frame-ancestors` solo es válida en encabezados HTTP. Al removerla de `<meta>` se elimina la advertencia de Chrome/Edge sin comprometer la protección contra Clickjacking (gestionada por `X-Frame-Options: DENY` en `vercel.json`).
-- **Seguridad por Diseño (Privacy by Design)**: Los datos de contacto permanecen sellados con AES-256-GCM en reposo y en tránsito hacia el cliente, desbloqueables únicamente mediante transacción verificada en el backend.
+- El usuario pidió continuar la aplicación de correcciones de auditoría y trasladar retoques visuales hechos por un compañero en una copia local del mismo repositorio.
+- La copia local contenía mejoras útiles en tarjetas, pero no podía copiarse completa porque parte de su estado era anterior al endurecimiento de seguridad ya aplicado.
+- Se eligió importar solo los cambios visuales compatibles y adaptarlos al flujo seguro actual para no reabrir exposición de enlaces, contactos ni lógica de desbloqueo.
 
 ---
 
-## 5. Estado Actual del Sistema
+## 3. Archivos afectados
 
-- **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
-- **Consola F12**: 0 errores, 0 advertencias de CSP.
-- **Git Repository**: Preparado para commit y sincronización en rama principal (`main`).
+- `modules/05-carousel.js`: nueva función `habilitarSwipeTactilCarrusel`.
+- `modules/06-cards.js`: renderizado inicial del botón `Ver Anuncio` seguro y activación de deslizamiento por tarjeta.
+- `modules/07-unlock.js`: actualización inmediata de tarjetas desbloqueadas con el mismo botón seguro y sin estilos embebidos duplicados.
+- `modules/02-toast.js` y `modules/10-listeners.js`: comentarios técnicos normalizados a español.
+- `styles/07-cards.css`: estilos táctiles de carrusel, microinteracción del botón de desbloqueo y nuevo botón `btn-view-ad-direct`.
+- `styles/08-slideup.css` y `styles/15-welcome-modal.css`: comentarios CSS normalizados a español.
+- `app.js` y `app.min.js`: artefactos JavaScript regenerados.
+- `style.css` y `style.min.css`: artefactos CSS regenerados.
+- `dist/`: paquete público regenerado por `scripts/build.js` sin carpetas privadas.
+- `README.md`: estructura, módulos, salida `dist/`, recuperación por enlace temporal y conteos actualizados.
+- `ARCHITECTURE.md`: rutas `lib/`, módulos actuales, lineamientos de tarjetas y enlaces seguros.
+- `docs/REPORTE_AUDITORIA_DEVSECOPS_REMEDIACIONES.md`: seguimiento QA de tarjetas y enlaces desbloqueados.
+
+---
+
+## 4. Decisiones técnicas tomadas
+
+- No se copió el repositorio local completo para evitar revertir endurecimientos ya validados en autenticación, pagos, CORS, secretos, build y exposición estática.
+- El botón `Ver Anuncio` se ubicó antes de WhatsApp y llamada, siguiendo la intención visual de la copia local, pero sin usar `contacto.enlace` crudo.
+- El gesto táctil se implementó con listeners pasivos y sin `preventDefault`, preservando el scroll vertical móvil.
+- Los nuevos estilos se compactaron para respetar la regla interna de modularidad: ningún archivo en `modules/` ni `styles/` puede superar 500 líneas.
+- La documentación se corrigió para eliminar rutas antiguas de librerías privadas y referencias al mecanismo anterior de recuperación.
+
+---
+
+## 5. Estado actual del sistema
+
+- `npm run build`: aprobado.
+- `npm run lint`: aprobado, 8 fases DevSecOps completas; `modules/07-unlock.js` quedó en 293 líneas.
+- `npm run typecheck --if-present`: aprobado sin script TypeScript definido.
+- `npm audit --omit=dev`: 0 vulnerabilidades.
+- `npm test`: aprobado, incluye build y validación completa.
+- Estado de seguridad cliente: sin persistencia de PIN ni contactos desbloqueados en `localStorage`; enlaces de contacto renderizados desde sanitización central.
+- Estado visual: tarjetas desbloqueadas muestran botón de anuncio con mayor jerarquía y carruseles con deslizamiento táctil.

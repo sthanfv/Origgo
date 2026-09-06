@@ -114,7 +114,7 @@ function renderizarInterfaz(dataset) {
       const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
       const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
       const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
-      const coincideCiudad = ciudadesObjetivo.some(c => 
+      const coincideCiudad = ciudadesObjetivo.some(c =>
         itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
       );
       if (!coincideCiudad) return false;
@@ -188,7 +188,7 @@ function renderizarInterfaz(dataset) {
               `}
             </div>
           `).join('')}
-          
+
           <!-- Flechas de navegación (Aparecen en Hover) -->
           <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="Foto Anterior">
             <i class="fa-solid fa-chevron-left"></i>
@@ -325,7 +325,12 @@ function renderizarInterfaz(dataset) {
             </div>
 
             ${estaDesbloqueado ? `
-              <div class="unlocked-action-cluster" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              <div class="unlocked-action-cluster">
+                ${contactoSeguro?.enlace ? `
+                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="Ver anuncio original del propietario directo">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+                  </a>
+                ` : ''}
                 ${contactoSeguro?.whatsappUrl ? `
                   <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" style="text-decoration: none; padding: 7px 10px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;" title="Chatear por WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -336,15 +341,11 @@ function renderizarInterfaz(dataset) {
                     <i class="fa-solid fa-phone"></i> Llamar
                   </a>
                 ` : ''}
-                ${contactoSeguro?.enlace ? `
-                  <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-portal-direct" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); padding: 7px 9px; border-radius: 8px; font-weight: 600; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Ver Anuncio Original en Portal">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
-                  </a>
-                ` : `
+                ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `
                   <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
                     <i class="fa-solid fa-unlock"></i> Revelar Contacto
                   </button>
-                `}
+                ` : ''}
               </div>
             ` : `
               <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
@@ -391,7 +392,7 @@ function renderizarInterfaz(dataset) {
               </p>
             </div>
 
-            <!-- Grupo de Acción: Botón CTA y Micro-Garantía -->
+            <!-- Grupo de Acción: Botón principal y micro-garantía -->
             <div class="slideup-action-group">
               ${estaDesbloqueado ? `
                 <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
@@ -480,4 +481,13 @@ function renderizarInterfaz(dataset) {
 
   // Activar el Scroll Reveal progresivo con inercia para scroll móvil
   iniciarScrollReveal();
+
+  container.querySelectorAll('.carousel-track').forEach((track) => {
+    const card = track.closest('.bento-card');
+    const cardIndex = Number.parseInt(card?.getAttribute('data-index') || '', 10);
+    const totalFotos = track.querySelectorAll('.carousel-slide').length;
+    if (typeof habilitarSwipeTactilCarrusel === 'function' && Number.isFinite(cardIndex) && totalFotos > 1) {
+      habilitarSwipeTactilCarrusel(track, cardIndex, totalFotos);
+    }
+  });
 }
