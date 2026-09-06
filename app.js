@@ -1049,9 +1049,11 @@ function renderizarInterfaz(dataset) {
     return;
   }
 
-  const leadsVisibles = leadsFiltrados.slice(0, limiteVisible);
-  const tieneMasLeads = leadsFiltrados.length > limiteVisible;
-  const restantes = leadsFiltrados.length - limiteVisible;
+  const totalPaginas = Math.ceil(leadsFiltrados.length / limiteVisible);
+  if (paginaActual > totalPaginas && totalPaginas > 0) paginaActual = totalPaginas;
+  const startIndex = (paginaActual - 1) * limiteVisible;
+  const endIndex = startIndex + limiteVisible;
+  const leadsVisibles = leadsFiltrados.slice(startIndex, endIndex);
 
   let htmlContenido = leadsVisibles.map((item) => {
     const index = dataset.leads.indexOf(item);

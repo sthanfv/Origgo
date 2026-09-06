@@ -10,9 +10,12 @@
    - Diagnóstico: Al activar la cabecera `Content-Security-Policy`, la directiva `connect-src` no contemplaba los dominios externos de los que la aplicación obtiene imágenes de los inmuebles (`cdn2.infocasas.com.uy`, `images.unsplash.com`) ni los CDNs de fuentes (`fonts.googleapis.com`, `fonts.gstatic.com`, `cdnjs.cloudflare.com`). Adicionalmente, `sw.js` interceptaba indiscriminadamente peticiones de terceros sin tenerlas en caché, provocando rechazos de promesa con `TypeError: Failed to convert value to 'Response'` y bloqueos de red.
    - Solución en `vercel.json`, `index.html` y `sw.js`:
      - **CSP Ampliado**: Se incluyeron en `connect-src` todos los dominios necesarios: `https://checkout.wompi.co`, `https://*.wompi.co`, `https://fonts.googleapis.com`, `https://fonts.gstatic.com`, `https://cdnjs.cloudflare.com`, `https://images.unsplash.com`, `https://*.unsplash.com`, `https://cdn2.infocasas.com.uy` y `https://*.infocasas.com.uy`.
-     - **Service Worker Aislado (`sw.js`)**: Se condicionó el evento `fetch` a peticiones `same-origin` (`url.origin === self.location.origin`). Las imágenes y estilos de CDNs externos ahora pasan directamente por la red del navegador sin interferencia del Service Worker, erradicando los errores de promesa. Se actualizó la versión de caché a `origgo-v3`.
-
-2. **Purificación Visual del Isotipo y Restauración de la Animación Oficial de "riggo"**:
+     - **Service Worker Aislado (`sw.js`)**: Se condicionó el evento `fetch` a peticiones `same-origin` (`url.origin === self.location.origin`). Las imágenes y- **Estado:** 🟢 Producción / Refinamiento.
+- **Últimos Cambios:**
+  - Mitigación de errores CSP para FontAwesome y tipografías en `index.html` y `vercel.json`.
+  - Aumento de tamaño del logo (46px) y restauración de la animación en cascada para la palabra "riggo" (`02-base.css`).
+  - Eliminación del scroll infinito "Cargar más" en favor de una **Paginación Clásica** (anterior/siguiente) con 9 tarjetas por página (`06-cards.js`).
+  - Generación de guías de despliegue para dominio `.online`, entorno de producción Wompi y Google Search Console.ción Oficial de "riggo"**:
    - Diagnóstico: El usuario solicitó eliminar cualquier blur/brillo borroso artificial de la 'O' para preservar la pureza del logo original, y restaurar la animación cinemática suave de la palabra completa "riggo" tal como estaba originalmente (deslizamiento horizontal elegante con degradado esmeralda continuo).
    - Solución en `styles/02-base.css` e `index.html`:
      - `.brand-initial-o-wrap` y `.brand-icon-o`: `filter: none;` (cero blur, máxima nitidez y definición de imagen).
