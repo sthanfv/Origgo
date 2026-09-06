@@ -32,18 +32,18 @@ async function ejecutarValidacionCompleta() {
     'app.min.js',
     'sw.js',
     'config.js',
-    'scripts/build.js',
-    'api/lib/crypto.js',
-    'api/lib/db.js',
-    'api/lib/rate-limiter.js',
+    'lib/crypto.js',
+    'lib/db.js',
+    'lib/rate-limiter.js',
+    'lib/validation.js',
+    'lib/env.js',
+    'lib/cors.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/auth/session.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
-    'api/user/balance.js',
-    'api/lib/validation.js',
-    'api/lib/env.js'
+    'api/user/balance.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -247,7 +247,7 @@ async function ejecutarValidacionCompleta() {
   // ═════════════════════════════════════════════════════════════════════════
   console.log('\n🔐 [VALIDACIÓN 7/8] Auditoría de Seguridad: Erradicación Total de Bypass de PIN...');
   try {
-    const db = require('../api/lib/db');
+    const db = require(path.join(ROOT_DIR, 'lib', 'db'));
     const testPhone = '3119998877';
     const secretPin = '9412';
     const fakePinBypass = '8877'; // Últimos 4 dígitos del celular
@@ -259,8 +259,8 @@ async function ejecutarValidacionCompleta() {
     assert(user.pin === secretPin, `PIN registrado en ledger coincide con secreto seguro (${user.pin})`);
     assert(user.pin !== fakePinBypass, 'PIN del usuario no coincide con el número de celular');
 
-    // Comprobar que en el código de db.js NO exista ningún fallback a slice(-4)
-    const dbCode = fs.readFileSync(path.join(ROOT_DIR, 'api', 'lib', 'db.js'), 'utf8');
+    // Comprobar que en el código de lib/db.js NO exista ningún fallback a slice(-4)
+    const dbCode = fs.readFileSync(path.join(ROOT_DIR, 'lib', 'db.js'), 'utf8');
     const tieneBypass = dbCode.includes('slice(-4)') || dbCode.includes('phoneClean.slice');
     assert(!tieneBypass, 'Verificación estricta: Cero fallbacks de autenticación por últimos dígitos en db.js');
   } catch (err) {

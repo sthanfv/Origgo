@@ -7,11 +7,11 @@
  * Retorna un token JWT firmado de 30 días para navegación persistente.
  */
 
-const db = require('../lib/db');
-const { signJwt, verifyJwt } = require('../lib/crypto');
-const { checkRateLimit } = require('../lib/rate-limiter');
-const { aplicarCorsSeguro } = require('../lib/cors');
-const { sessionLoginSchema, validateBody } = require('../lib/validation');
+const db = require('../../lib/db');
+const { signJwt, verifyJwt } = require('../../lib/crypto');
+const { checkRateLimit } = require('../../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../../lib/cors');
+const { sessionLoginSchema, validateBody } = require('../../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');

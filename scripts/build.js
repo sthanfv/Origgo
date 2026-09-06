@@ -119,7 +119,7 @@ if (fs.existsSync(MODULES_DIR)) {
   for (const f of jsFiles) {
     const filePath = path.join(MODULES_DIR, f);
     try {
-      execSync('node --check ' + filePath);
+      execSync(`node --check "${filePath}"`);
     } catch (e) {
       console.error(`❌ [BUILD] Error de sintaxis en módulo ${f}:`, e.message);
       process.exit(1);

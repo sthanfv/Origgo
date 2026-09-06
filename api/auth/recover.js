@@ -12,10 +12,10 @@
  * 6. Reporte detallado de cualquier error de infraestructura o proveedor.
  */
 
-const db = require('../lib/db');
-const { checkRateLimit } = require('../lib/rate-limiter');
-const { recoverPinSchema, validateBody } = require('../lib/validation');
-require('../lib/env');
+const db = require('../../lib/db');
+const { checkRateLimit } = require('../../lib/rate-limiter');
+const { recoverPinSchema, validateBody } = require('../../lib/validation');
+require('../../lib/env');
 
 /**
  * Genera el cuerpo HTML de ultra prestigio y lujo arquitectónico para el correo electrónico.

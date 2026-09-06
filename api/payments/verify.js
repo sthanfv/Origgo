@@ -1,5 +1,5 @@
 const https = require('https');
-const { aplicarCorsSeguro } = require('../lib/cors');
+const { aplicarCorsSeguro } = require('../../lib/cors');
 
 module.exports = async function handler(req, res) {
   aplicarCorsSeguro(req, res);

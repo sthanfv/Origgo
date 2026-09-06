@@ -10,9 +10,9 @@
  */
 
 const crypto = require('crypto');
-const db = require('../lib/db');
-const { generatePin } = require('../lib/crypto');
-const { checkRateLimit } = require('../lib/rate-limiter');
+const db = require('../../lib/db');
+const { generatePin } = require('../../lib/crypto');
+const { checkRateLimit } = require('../../lib/rate-limiter');
 
 module.exports = async function handler(req, res) {
   // Métodos permitidos para webhooks server-to-server

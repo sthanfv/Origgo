@@ -12,8 +12,8 @@ const {
   createOrderSchema, 
   unlockLeadSchema, 
   validateBody 
-} = require('../api/lib/validation');
-const { checkRateLimit, resetRateLimiter } = require('../api/lib/rate-limiter');
+} = require('../lib/validation');
+const { checkRateLimit, resetRateLimiter } = require('../lib/rate-limiter');
 
 function mockReqRes(ip, body = {}) {
   let statusCode = 200;

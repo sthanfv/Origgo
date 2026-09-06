@@ -7,15 +7,15 @@ process.env.NODE_ENV = 'test';
 
 const assert = require('assert');
 const crypto = require('crypto');
-const db = require('../api/lib/db');
-const { resetRateLimiter } = require('../api/lib/rate-limiter');
+const db = require('../lib/db');
+const { resetRateLimiter } = require('../lib/rate-limiter');
 const { 
   encryptLeadContact, 
   decryptLeadContact, 
   signJwt, 
   verifyJwt, 
   generatePin 
-} = require('../api/lib/crypto');
+} = require('../lib/crypto');
 
 const webhookHandler = require('../api/payments/webhook-wompi');
 const createOrderHandler = require('../api/payments/create-order');

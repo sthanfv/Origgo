@@ -6,10 +6,10 @@
  * ya desbloqueados por el usuario para renderizado instantáneo en el frontend.
  */
 
-const db = require('../lib/db');
-const { verifyJwt } = require('../lib/crypto');
-const { checkRateLimit } = require('../lib/rate-limiter');
-const { aplicarCorsSeguro } = require('../lib/cors');
+const db = require('../../lib/db');
+const { verifyJwt } = require('../../lib/crypto');
+const { checkRateLimit } = require('../../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../../lib/cors');
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');

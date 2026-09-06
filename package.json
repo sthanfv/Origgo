@@ -9,8 +9,7 @@
     "build": "node scripts/build.js",
     "lint": "node scripts/validate.js",
     "validate": "node scripts/validate.js",
-    "test": "npm run build && npm run validate",
-    "prepare": "node -e \"if (!process.env.CI && process.env.NODE_ENV !== 'production') { try { require('child_process').execSync('husky', { stdio: 'inherit' }); } catch (e) {} }\""
+    "test": "npm run build && npm run validate"
   },
   "keywords": [
     "real-estate",

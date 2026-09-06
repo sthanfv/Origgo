@@ -7,11 +7,11 @@
  * y descifra en memoria el teléfono y enlace real utilizando AES-256-GCM.
  */
 
-const db = require('../lib/db');
-const { signJwt, verifyJwt, decryptLeadContact } = require('../lib/crypto');
-const { checkRateLimit } = require('../lib/rate-limiter');
-const { aplicarCorsSeguro } = require('../lib/cors');
-const { unlockLeadSchema, validateBody } = require('../lib/validation');
+const db = require('../../lib/db');
+const { signJwt, verifyJwt, decryptLeadContact } = require('../../lib/crypto');
+const { checkRateLimit } = require('../../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../../lib/cors');
+const { unlockLeadSchema, validateBody } = require('../../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.LEADS_ENCRYPTION_KEY)) {
   throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET y LEADS_ENCRYPTION_KEY son obligatorios en producción.');

@@ -7,10 +7,10 @@
  */
 
 const crypto = require('crypto');
-const db = require('../lib/db');
-const { checkRateLimit } = require('../lib/rate-limiter');
-const { aplicarCorsSeguro } = require('../lib/cors');
-const { createOrderSchema, validateBody } = require('../lib/validation');
+const db = require('../../lib/db');
+const { checkRateLimit } = require('../../lib/rate-limiter');
+const { aplicarCorsSeguro } = require('../../lib/cors');
+const { createOrderSchema, validateBody } = require('../../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && !process.env.WOMPI_INTEGRITY_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET es obligatorio en producción.');
