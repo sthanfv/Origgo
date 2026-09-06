@@ -39,8 +39,11 @@ async function ejecutarValidacionCompleta() {
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/auth/session.js',
+    'api/auth/recover.js',
     'api/leads/unlock.js',
-    'api/user/balance.js'
+    'api/user/balance.js',
+    'api/lib/validation.js',
+    'api/lib/env.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -185,12 +188,19 @@ async function ejecutarValidacionCompleta() {
   // ═════════════════════════════════════════════════════════════════════════
   // 5. SUITE AUTOMATIZADA WOMPI Y LEDGER (12/12 PRUEBAS)
   // ═════════════════════════════════════════════════════════════════════════
-  console.log('\n💳 [VALIDACIÓN 5/8] Suite Automatizada de Integración Wompi y Ledger...');
+  console.log('\n💳 [VALIDACIÓN 5/8] Suite Automatizada de Integración Wompi, Ledger y Validación Zod...');
   try {
     execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_ledger_wompi.js')}"`, { stdio: 'pipe' });
     assert(true, '12/12 pruebas unitarias de pasarela Wompi, antifraude y ledger pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en suite de pruebas de Wompi: ${e.message}`);
+  }
+
+  try {
+    execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_validation_ratelimit.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de esquemas Zod y Rate Limiting diario pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en suite de validación Zod y rate limiting: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

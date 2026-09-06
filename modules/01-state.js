@@ -49,8 +49,10 @@ async function inicializarSesionUsuario() {
   if (wompiId && !paymentRef) {
     try {
       const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
-      const dataVerify = await resVerify.json();
-      if (dataVerify.ok && dataVerify.reference) {
+      const textVerify = await resVerify.text();
+      let dataVerify = null;
+      try { dataVerify = JSON.parse(textVerify); } catch (_) {}
+      if (resVerify.ok && dataVerify && dataVerify.ok && dataVerify.reference) {
         paymentRef = dataVerify.reference;
       }
     } catch (e) {
@@ -65,8 +67,10 @@ async function inicializarSesionUsuario() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
       });
-      const data = await res.json();
-      if (data.ok && data.token) {
+      const dataText = await res.text();
+      let data = null;
+      try { data = JSON.parse(dataText); } catch (_) {}
+      if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
         try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
         sesionUsuario = { ...data.user, token: data.token };
@@ -293,99 +297,59 @@ function cerrarSesionUsuario() {
 }
 
 /**
- * Autoservicio 100% automático para recuperar PIN y sesión de usuario mediante referencia de pago de Wompi.
+ * Autoservicio 100% automático para recuperar PIN mediante correo electrónico.
  */
 async function recuperarPinConReferencia() {
-  const inputRef = document.getElementById('recoveryReferenceInput');
+  const inputEmail = document.getElementById('recoveryReferenceInput');
   const msgBox = document.getElementById('recoveryResultMsg');
   const btn = document.getElementById('btnExecuteAutoRecovery');
 
-  const rawRef = inputRef ? inputRef.value.trim() : '';
-  if (!rawRef) {
+  const email = inputEmail ? inputEmail.value.trim() : '';
+  if (!email || !email.includes('@')) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
-      msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Ingresa la referencia de pago o el ID de transacción de tu recibo.';
+      msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor, ingresa un correo electrónico válido.';
       msgBox.style.display = 'block';
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando pago en Wompi...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando PIN...';
     btn.disabled = true;
   }
 
   try {
-    let paymentRef = rawRef;
-
-    // Si el usuario ingresó un ID de transacción de Wompi (sin prefijo HNT-)
-    if (!paymentRef.startsWith('HNT-')) {
-      try {
-        const resVerify = await fetch(`/api/payments/verify?id=${encodeURIComponent(paymentRef)}`);
-        if (resVerify.ok) {
-          const dataVerify = await resVerify.json();
-          if (dataVerify.ok && dataVerify.reference) {
-            paymentRef = dataVerify.reference;
-          }
-        }
-      } catch (e) {
-        console.warn('[Recuperación] Fallo resolución de Wompi ID:', e.message);
-      }
-    }
-
-    const res = await fetch('/api/auth/session', {
+    const response = await fetch('/api/auth/recover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
+      body: JSON.stringify({ email })
     });
 
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      throw new Error(data.message || data.error || 'No se encontró una transacción aprobada con esa referencia.');
-    }
-
-    // Persistir sesión y actualizar estado reactivo
-    localStorage.setItem('hunter_pro_token', data.token);
-    try { localStorage.setItem('hunter_user_data', JSON.stringify(data.user)); } catch (e) {}
-    sesionUsuario = { ...data.user, token: data.token };
-    actualizarBadgeVip();
-    sincronizarFiltroCiudadUsuario();
-    renderizarInterfaz(datosActuales);
-
-    // Auto-completar inputs del formulario tradicional para transparencia visual
-    const inputWa = document.getElementById('restoreWhatsappInput');
-    const inputPin = document.getElementById('restorePinInput');
-    if (inputWa) inputWa.value = data.user.phone;
-    if (inputPin) inputPin.value = data.user.pin;
+    const result = await response.json();
 
     if (msgBox) {
-      msgBox.className = 'restore-status-msg success';
-      msgBox.innerHTML = `
-        <div style="font-weight: 700; margin-bottom: 0.3rem;"><i class="fa-solid fa-circle-check"></i> ¡Acceso Restaurado Automáticamente!</div>
-        <div style="font-size: 0.84rem; line-height: 1.5;">
-          <strong>WhatsApp:</strong> +57 ${data.user.phone}<br>
-          <strong>Tu PIN Maestro:</strong> <span style="font-size: 1.05rem; font-weight: 800; color: var(--accent-emerald); letter-spacing: 1px;">${data.user.pin}</span><br>
-          <strong>Saldo Activo:</strong> ⚡ ${data.user.credits} Créditos
-        </div>
-      `;
-      msgBox.style.display = 'block';
+      if (response.ok) {
+        msgBox.className = 'restore-status-msg success';
+        msgBox.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${result.message}`;
+        msgBox.style.display = 'block';
+        if (inputEmail) inputEmail.value = ''; // Limpiar el input
+      } else {
+        msgBox.className = 'restore-status-msg error';
+        msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${result.message || result.error || 'No se encontró una cuenta asociada a ese correo.'}`;
+        msgBox.style.display = 'block';
+      }
     }
-
-    mostrarNotificacionToast(`¡PIN recuperado con éxito! Bienvenido +57 ${data.user.phone}`, 'success');
-
-    setTimeout(() => {
-      abrirModalCheckout(undefined, 'perfil');
-    }, 1800);
-
-  } catch (err) {
+  } catch (error) {
+    console.error('[Recuperación] Error:', error);
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
-      msgBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${err.message}`;
+      msgBox.innerHTML = '<i class="fa-solid fa-network-wired"></i> Error de conexión. Intenta de nuevo.';
       msgBox.style.display = 'block';
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Validar Pago y Revelar mi PIN';
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar PIN a mi Correo';
       btn.disabled = false;
     }
   }

@@ -199,11 +199,12 @@ module.exports = async function handler(req, res) {
   }
 
   // 7. Generar PIN de usuario si es nuevo y acreditar saldo
+  const customerEmail = transaction.customer_email ? transaction.customer_email.toLowerCase().trim() : null;
   const existingUser = await db.getUserByPhone(celular);
   const pin = existingUser ? existingUser.pin : generatePin();
 
-  const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData);
-  console.log(`✅ [webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos. Saldo actual: ${usuarioActualizado.credits}. PIN: ${pin}`);
+  const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
+  console.log(`✅ [webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos. Saldo actual: ${usuarioActualizado.credits}. PIN: ${pin}. Correo: ${customerEmail || 'no-provisto'}`);
 
   return res.status(200).json({
     ok: true,

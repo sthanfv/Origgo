@@ -11,6 +11,7 @@ const db = require('../lib/db');
 const { signJwt, verifyJwt, decryptLeadContact } = require('../lib/crypto');
 const { checkRateLimit } = require('../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../lib/cors');
+const { unlockLeadSchema, validateBody } = require('../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.LEADS_ENCRYPTION_KEY)) {
   throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET y LEADS_ENCRYPTION_KEY son obligatorios en producción.');
@@ -62,12 +63,17 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ error: 'JSON malformado' });
       }
     }
-    body = body || {};
 
-    const { leadId, contactoCifrado, leadCity } = body;
-    if (!leadId) {
-      return res.status(400).json({ error: 'leadId es requerido' });
+    // 🛡️ Validación estricta con Zod
+    const validation = validateBody(unlockLeadSchema, body);
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: validation.message,
+        issues: validation.issues 
+      });
     }
+
+    const { leadId, contactoCifrado, leadCity } = validation.data;
 
     // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
     const resultado = await db.unlockLead(session.phone, leadId, session, leadCity);

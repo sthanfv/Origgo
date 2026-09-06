@@ -1,68 +1,104 @@
 # 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-05 21:03 (GMT-5)
+Última actualización: 2026-09-06 12:25 (GMT-5)
 
 ---
 
 ## 1. ¿Qué cambió?
 
-1. **Erradicación del Bloqueo de Interacción en el Arranque / Refresco (`modules/10-listeners.js`)**:
-   - Diagnóstico: En el evento `DOMContentLoaded`, la ejecución comenzaba con `await inicializarSesionUsuario();` de forma síncrona/bloqueante. Cuando se refrescaba la página o tras un despliegue de nueva versión, la función serverless de Vercel y Firestore experimentaban *Cold Start* (3 a 10 segundos). Durante ese tiempo de latencia de red, `configurarListeners()` y `cargarDatos()` NO se ejecutaban. La pantalla mostraba el catálogo inerte o vacío y ningún botón ni enlace era clickeable hasta que la petición HTTP finalizaba.
-   - Solución: Se desacopló por completo el ciclo de arranque:
-     - `configurarListeners()` e `inicializarEfectosPremium()` se ejecutan de manera síncrona en el milisegundo 0 (`0ms`). Todos los botones y controles del DOM responden al instante.
-     - `cargarDatos("./data/inmobiliario.json")` se dispara de inmediato sin esperar a la red externa, renderizando las 52 tarjetas del catálogo en <20ms desde CDN/caché.
-     - `inicializarSesionUsuario()` pasa a ejecutarse en segundo plano asíncrono sin bloquear el hilo principal ni la interactividad de la interfaz.
+1. **Migración Segura y Adaptación desde Entorno de Pruebas**:
+   - Se descartaron por completo las envolturas de desarrollo de Vite/React/AI Studio (`src/App.tsx`, `vite.config.ts`, `data/local_db.json`, `bun.lock`), manteniendo la arquitectura pura Vanilla JS + Vercel Serverless.
+   - Se preservaron intactos los secretos criptográficos maestros en reposo (`LEADS_ENCRYPTION_KEY`, `JWT_SECRET`).
 
-2. **Restauración Síncrona Instantánea de Sesión con Patrón Stale-While-Revalidate (`modules/01-state.js`)**:
-   - Diagnóstico: Aunque el usuario tuviera su token en `localStorage`, la UI permanecía sin estado de usuario hasta que el servidor respondía el balance.
-   - Solución: Se introdujo la persistencia de datos de usuario (`hunter_user_data`) en `localStorage`. Al arrancar el script, la sesión se restaura de inmediato (0ms) en memoria, permitiendo pintar el badge VIP y los créditos al instante. La petición a `/api/user/balance` revalida silenciosamente en segundo plano sin interrumpir al usuario.
+2. **Capa de Validación Robusta con Zod en Endpoints Serverless (`api/lib/validation.js`)**:
+   - Integración de esquemas de validación Zod para teléfonos colombianos (`3XXXXXXXXX`), emails RFC 5322, PINs de 4 dígitos, tipos de plan y montos en `api/payments/create-order.js`, `api/payments/webhook-wompi.js`, `api/auth/session.js`, `api/leads/unlock.js` y `api/auth/recover.js`.
+   - Manejo centralizado de variables de entorno mediante `api/lib/env.js`.
 
-3. **Blindaje de Puntero en Overlays y Modales (`styles/09-checkout-modal.css` y `styles/12-sidebar.css`)**:
-   - Se añadió `pointer-events: none;` por defecto a `.modal-backdrop` y `.menu-overlay`, activando `pointer-events: auto;` única y exclusivamente cuando tienen la clase `.active`. Esto previene de forma determinista que capas invisibles o en transición intercepten eventos de clic.
+3. **Recuperación Segura de PIN vía Correo Electrónico (`api/auth/recover.js`)**:
+   - Despacho transaccional del PIN de 4 dígitos mediante Resend API con plantilla HTML corporativa de Origgo.
+   - Protección contra abusos mediante limitación de tasa diaria en memoria (máximo 3 recuperaciones por día por usuario/IP).
+   - Formulario reactivo en el modal de inicio de sesión (`index.html`, `modules/01-state.js`, `modules/10-listeners.js`).
 
-4. **Optimización del Service Worker (`sw.js`) y Actualización de Caché de App (`index.html`)**:
-   - Se actualizó el Service Worker a la versión `origgo-v4`, añadiendo el dataset `./data/inmobiliario.json` a los recursos críticos de precaché y añadiendo bypass inmediato (`url.pathname.startsWith('/api/')`) para que las llamadas serverless nunca pasen por el caché estático del SW.
-   - Se actualizó la versión del script en `index.html` a `app.js?v=20260905-2.7.0`.
+4. **Mejoras en Capa de Persistencia y Ledger (`api/lib/db.js`)**:
+   - Nuevas funciones `getUserByEmail(email)` y `getPendingOrderByEmail(email)`.
+   - Compatibilidad robusta en inicialización de Firestore tolerando claves privadas PEM escapadas (`\n`), codificadas en Base64 o JSON crudo.
+   - Registro de `customer_email` en transacciones y ledger.
 
-5. **Mantenimiento Estricto de Límites de Línea (< 500 líneas)**:
-   - `modules/01-state.js`: 392 líneas.
-   - `modules/10-listeners.js`: 486 líneas.
-   - `styles/09-checkout-modal.css`: 453 líneas.
-   - `styles/12-sidebar.css`: 252 líneas.
-   - Los 26 submódulos permanecen dentro del umbral estricto (< 500).
+5. **Experiencia de Usuario, Rendimiento y Branding Unificado (Origgo)**:
+   - **Eliminación de Vestigios del Branding Pasado**: Sustitución definitiva del logo de la brújula/radar por el isotipo SVG oficial de Origgo en el footer, menú lateral, modal de bienvenida y PWA. Erradicación física del archivo obsoleto `assets/img/hunter_radar_logo.svg`.
+   - **Kerning y Tipografía Óptica en Footer (`styles/13-footer.css`)**: Implementación de `.footer-brand-title` con espaciado óptico (`margin-right: -2px`) y tipografía continua para la identidad "Origgo".
+   - **Conmutación Atómica de Tema sin Congelamiento (*Zero-Jank*)**: Retiro de transiciones globales `*` en `styles/01-tokens.css` y congelamiento transitorio de transiciones durante la alternancia en `modules/10-listeners.js`.
+   - **Sincronización Dinámica de Filtros por Ciudad (`modules/04-filters.js` y `modules/06-cards.js`)**: Sincronización automática de dropdowns de ciudades a partir del catálogo cargado, enriquecida con `DICCIONARIO_TERMINOS`.
+   - **Anti-Rebote en Desbloqueo de Leads (`modules/07-unlock.js`)**: Conjunto `desbloqueosEnProgreso` para evitar peticiones duplicadas y estados de carga en el Drawer.
+   - **Parseo Defensivo No-JSON (`modules/01-state.js`, `modules/08-checkout.js`)**: Protección ante respuestas con contenido HTML inesperado (páginas de error de CDN).
+
+6. **PWA y Caché del Service Worker**:
+   - Elevación del Service Worker a `origgo-v5` con precaché optimizado y bypass de endpoints `/api/*`.
+   - Actualización de `manifest.json` apuntando a `./assets/img/origgo-icon.svg`.
+
+7. **Ampliación de la Suite DevSecOps de 8 Fases (`scripts/validate.js`)**:
+   - Creación y ejecución de `scripts/test_validation_ratelimit.js` validando esquemas Zod y límites de recuperación.
+   - Integración formal en la Fase 5 del pipeline `npm test`.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Eliminación de la Congelación de UI**: Garantizar que el usuario pueda cliquear e interactuar con la web desde el primer instante en que el DOM está listo, sin retrasos de 5 a 10 segundos causados por cold-starts serverless o revalidaciones de red.
-- **Resiliencia y Velocidad Peribérica**: El catálogo estático y los listeners no deben depender de la disponibilidad inmediata de APIs de usuario para estar operativos.
+- **Requerimiento del Usuario**: Integrar de manera segura y probada las funcionalidades desarrolladas en el entorno de pruebas, erradicando vestigios del branding antiguo en el footer y garantizando el correcto funcionamiento del backend.
+- **Seguridad en Tiempo de Ejecución**: Blindar las APIs serverless contra inyecciones y cargas malformadas mediante validación de tipos Zod.
+- **Retención y Recuperación de Usuarios**: Brindar un mecanismo amigable y seguro para que los usuarios puedan recuperar su PIN olvidado mediante su correo electrónico registrado.
+- **Excelencia Visual y Fluidez**: Eliminar los retrasos de renderizado al alternar temas y proporcionar una identidad de marca 100% coherente bajo el nombre Origgo.
 
 ---
 
 ## 3. Archivos Afectados
 
-- `modules/10-listeners.js`: Arranque no bloqueante en `DOMContentLoaded` (486 líneas).
-- `modules/01-state.js`: Restauración instantánea Stale-While-Revalidate con `hunter_user_data` (392 líneas).
-- `styles/09-checkout-modal.css`: Blindaje `pointer-events: none` en backdrop inactivo (453 líneas).
-- `styles/12-sidebar.css`: Blindaje `pointer-events: none` en overlay de menú inactivo (252 líneas).
-- `sw.js`: Service Worker v4 con precaché de catálogo y bypass de `/api/` (61 líneas).
-- `index.html`: Versionamiento de bundle a v2.7.0 (773 líneas).
-- `app.js` y `app.min.js`: Compilación sincronizada (115.8 KB minificado).
-- `style.css` y `style.min.css`: Hojas de estilos sincronizadas (93.3 KB minificado).
-- `MEMORY.md`: Bitácora técnica actualizada.
+- `package.json` y `package-lock.json`: Adición de la dependencia `zod`.
+- `api/lib/validation.js`: Esquemas de validación Zod para todas las cargas de entrada.
+- `api/lib/env.js`: Helper para lectura normalizada de variables de entorno.
+- `api/lib/rate-limiter.js`: Soporte para respuestas personalizadas en rate limiters.
+- `api/auth/recover.js`: Endpoint serverless de despacho de PIN por email vía Resend.
+- `api/auth/session.js`: Validación con Zod y registro de `customer_email`.
+- `api/payments/create-order.js`: Validación con Zod y persistencia de email.
+- `api/payments/webhook-wompi.js`: Validación con Zod de payloads de webhook.
+- `api/leads/unlock.js`: Validación con Zod de parámetros de desbloqueo.
+- `api/lib/db.js`: Soporte de búsqueda por email y resiliencia en credenciales Firestore.
+- `modules/01-state.js`: Lógica de recuperación de PIN y parseo defensivo no-JSON.
+- `modules/04-filters.js`: Sincronización de ciudades y diccionario de términos.
+- `modules/06-cards.js`: Enlace a sincronización de ciudades e iconos vehiculares.
+- `modules/07-unlock.js`: Anti-rebote y feedback visual en desbloqueo.
+- `modules/08-checkout.js`: Parseo defensivo en respuestas de checkout.
+- `modules/10-listeners.js`: Delegación de eventos, sanitización y conmutación instantánea de tema.
+- `styles/01-tokens.css`: Eliminación de transiciones globales perjudiciales para el rendimiento.
+- `styles/04-command-bar.css`: Ajustes de contraste en autocompletado y selección.
+- `styles/11-mobile.css`: Bordes redondeados y glassmorphism en navegación móvil inferior.
+- `styles/13-footer.css`: Tipografía continua y alineación óptica del footer Origgo.
+- `index.html`: Formulario de recuperación de PIN, isotipo Origgo unificado y atributos de accesibilidad.
+- `manifest.json`: Icono PWA actualizado a Origgo.
+- `sw.js`: Caché elevado a `origgo-v5`.
+- `scripts/test_validation_ratelimit.js`: Suite de pruebas automatizadas Zod y rate limiting.
+- `scripts/validate.js`: Fases 1 y 5 actualizadas en la suite DevSecOps.
+- `server.js`: Enrutamiento local de endpoints `/api/*` con telemetría.
+- `.env.example`: Sincronización de variables de entorno de Resend API y URL.
+- `README.md`: Documentación técnica sincronizada.
+- `MEMORY.md`: Bitácora persistente actualizada.
+- `app.js`, `app.min.js`, `style.css`, `style.min.css`: Compilación sincronizada en producción.
 
 ---
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Non-blocking Hydration**: Desacoplar listeners y carga de catálogo de la sesión de usuario asegura Time to Interactive (TTI) < 100ms independientemente del estado del servidor.
-- **Stale-While-Revalidate Local**: La lectura síncrona de `hunter_user_data` evita saltos de interfaz (*layout shifts*) y permite renderizar inmediatamente el estado VIP.
+- **Validación Estricta Zod en la Frontera**: Cualquier payload mal formado es rechazado con HTTP 400 antes de ejecutar lógica criptográfica o consultar la base de datos.
+- **Recuperación con Rate Limit Diario**: La recuperación de PIN limita los despachos a 3 por día para prevenir spam y sobrecostos en Resend.
+- **Cero Mutación de Secretos Criptográficos**: Se mantuvieron estrictamente los valores de `LEADS_ENCRYPTION_KEY` y `JWT_SECRET` originales del proyecto en producción.
+- **Compilación Modular Determinista**: Se mantuvo la modularización estricta por debajo de 500 líneas en los 11 módulos JS y 15 módulos CSS.
 
 ---
 
 ## 5. Estado Actual del Sistema
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
-- **Interactividad**: 100% clickeable de inmediato desde el milisegundo 0. Cero congelamiento tras refresco o nueva versión.
-- **Modularidad**: Todos los módulos de `modules/` y `styles/` cumplen estrictamente el estándar de menos de 500 líneas.
+- **Compilación de Producción**: `style.min.css` (95.5 KB, -28%) y `app.min.js` (120.1 KB, -12%) compilados y balanceados.
+- **Seguridad OWASP**: Cero secretos expuestos, HSTS, X-Content-Type: nosniff, Frame: DENY, criptografía AES-256-GCM y firmas HMAC validadas.
+- **Git Repository**: Preparado para commit y sincronización en rama principal (`main`).
+

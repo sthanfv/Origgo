@@ -65,6 +65,11 @@ function renderizarInterfaz(dataset) {
   const config = dataset.config || {};
   const leads = dataset.leads || [];
 
+  // Sincronizar dinámicamente las ciudades con el dataset activo
+  if (typeof sincronizarDropdownCiudades === 'function') {
+    sincronizarDropdownCiudades(leads);
+  }
+
   // Actualizar textos de cabecera dinámicos
   const elTitle = document.getElementById("heroTitle");
   const elSubtitle = document.getElementById("heroSubtitle");
@@ -379,7 +384,7 @@ function renderizarInterfaz(dataset) {
             <div class="slideup-specs-grid">
               ${Object.entries(detalles).map(([k, v]) => {
                 const kLow = k.toLowerCase();
-                const iconClass = kLow.includes('estrato') ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('superficie')) ? 'fa-ruler-combined' : kLow.includes('hab') ? 'fa-bed' : kLow.includes('baño') ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero')) ? 'fa-square-parking' : kLow.includes('contacto') ? 'fa-user-shield' : 'fa-circle-info';
+                const iconClass = kLow.includes('estrato') ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('superficie')) ? 'fa-ruler-combined' : kLow.includes('hab') ? 'fa-bed' : kLow.includes('baño') ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero')) ? 'fa-square-parking' : (kLow.includes('kilómet') || kLow.includes('km')) ? 'fa-gauge-high' : kLow.includes('transmisi') ? 'fa-gears' : kLow.includes('motor') ? 'fa-car-battery' : kLow.includes('placa') ? 'fa-id-card' : (kLow.includes('año') || kLow.includes('modelo')) ? 'fa-calendar-days' : kLow.includes('contacto') ? 'fa-user-shield' : 'fa-circle-info';
                 const vNorm = String(v || 'N/A').replace(/\b1 espacios\b/gi, '1 espacio').replace(/\b1 alcobas\b/gi, '1 alcoba').replace(/\b1 completos\b/gi, '1 completo');
                 return `
                   <div class="slideup-spec-card">
@@ -396,9 +401,7 @@ function renderizarInterfaz(dataset) {
                 <i class="fa-solid fa-shield-halved"></i> ${esVehiculo ? 'Trato Directo con el Dueño' : 'Trato Directo con el Propietario'}
               </div>
               <p class="trust-desc">
-                ${esVehiculo 
-                  ? 'Vehículo publicado directamente por su dueño. Sin intermediarios ni comisiones de concesionario, listo para negociar por llamada o WhatsApp.' 
-                  : 'Propiedad publicada directamente por su dueño. Sin inmobiliarias ni comisiones intermedias, lista para negociar por llamada o WhatsApp.'}
+                ${esVehiculo ? 'Vehículo publicado directamente por su dueño. Sin intermediarios ni comisiones de concesionario, listo para negociar por llamada o WhatsApp.' : 'Propiedad publicada directamente por su dueño. Sin inmobiliarias ni comisiones intermedias, lista para negociar por llamada o WhatsApp.'}
               </p>
             </div>
 
@@ -410,7 +413,7 @@ function renderizarInterfaz(dataset) {
                     <div style="font-size: 0.75rem; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
                       <i class="fa-solid fa-unlock"></i> Datos de Contacto Desbloqueados
                     </div>
-                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: monospace;">
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: 'Lufga', 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums;">
                       ${contacto?.telefono ? escaparHtml(contacto.telefono) : 'Consultando contacto...'}
                     </div>
                   </div>

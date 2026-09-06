@@ -4,6 +4,9 @@
  * Estándar Ecosistema Desmulta Seguridad.
  */
 
+// Registro de operaciones de desbloqueo en progreso para evitar dobles clics o peticiones concurrentes
+const desbloqueosEnProgreso = new Set();
+
 /**
  * Maneja el clic en "Desbloquear": si tiene créditos desbloquea directo, sino abre checkout.
  * @param {number} index
@@ -151,6 +154,13 @@ async function ejecutarDesbloqueoLead(lead, index) {
     abrirModalCheckout(index, 'comprar');
     return;
   }
+  if (!lead || !lead.id) return;
+
+  // 🛡️ Protección anti-rebote: evitar peticiones concurrentes para el mismo lead
+  if (desbloqueosEnProgreso.has(lead.id)) {
+    return;
+  }
+  desbloqueosEnProgreso.add(lead.id);
 
   const selector = typeof index === 'number' ? `.bento-card[data-index="${index}"] .btn-unlock-lead` : null;
   const btn = selector ? document.querySelector(selector) : (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"] button[data-action="contactar-whatsapp"]`) : null);
@@ -158,6 +168,15 @@ async function ejecutarDesbloqueoLead(lead, index) {
   if (btn) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
     btn.disabled = true;
+  }
+
+  // Deshabilitar también el botón dentro de la Ficha Técnica (Drawer) si está abierta
+  const slideup = typeof index === 'number' ? document.getElementById(`slideup-${index}`) : null;
+  const slideupBtn = slideup ? slideup.querySelector('.slideup-cta-btn[data-action="slideup-cta"]') : null;
+  const slideupTextoOriginal = slideupBtn ? slideupBtn.innerHTML : '';
+  if (slideupBtn) {
+    slideupBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
+    slideupBtn.disabled = true;
   }
 
   try {
@@ -213,25 +232,31 @@ async function ejecutarDesbloqueoLead(lead, index) {
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {
-      mensajeExito = '✅ Inmueble ya desbloqueado (Costo 0 créditos).';
+      mensajeExito = '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
     } else if (data.planBenefit) {
       mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
     } else {
-      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} créditos.`;
+      const palabraCredito = data.creditsRemaining === 1 ? 'crédito' : 'créditos';
+      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
     }
     mostrarNotificacionToast(mensajeExito);
-
-    // Eliminada la redirección automática a WhatsApp para mostrar el PIN primero
-    /* if (data.contacto?.whatsappUrl) {
-      window.open(data.contacto.whatsappUrl, '_blank');
-    } */
   } catch (err) {
     console.error('[Desbloqueo] Error:', err);
-    mostrarNotificacionToast(err.message || 'Error de conexión', 'error');
+    const esErrorRed = !navigator.onLine || err.name === 'TypeError' || String(err.message || '').toLowerCase().includes('failed to fetch') || String(err.message || '').toLowerCase().includes('network');
+    if (esErrorRed) {
+      mostrarNotificacionToast('📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
+    } else {
+      mostrarNotificacionToast(err.message || 'Error de conexión durante el desbloqueo', 'error');
+    }
   } finally {
+    desbloqueosEnProgreso.delete(lead.id);
     if (btn) {
       btn.innerHTML = textoOriginal;
       btn.disabled = false;
+    }
+    if (slideupBtn) {
+      slideupBtn.innerHTML = slideupTextoOriginal;
+      slideupBtn.disabled = false;
     }
   }
 }

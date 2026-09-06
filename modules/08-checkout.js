@@ -349,8 +349,10 @@ async function ejecutarPagoWompi() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
             });
-            const claimData = await claimRes.json();
-            if (claimData.ok && claimData.token) {
+            const claimText = await claimRes.text();
+            let claimData = null;
+            try { claimData = JSON.parse(claimText); } catch (_) { /* Respuesta no JSON */ }
+            if (claimRes.ok && claimData && claimData.ok && claimData.token) {
               localStorage.setItem('hunter_pro_token', claimData.token);
               sesionUsuario = { ...claimData.user, token: claimData.token };
               actualizarBadgeVip();

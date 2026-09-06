@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const db = require('../lib/db');
 const { checkRateLimit } = require('../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../lib/cors');
+const { createOrderSchema, validateBody } = require('../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && !process.env.WOMPI_INTEGRITY_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET es obligatorio en producción.');
@@ -69,30 +70,23 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ error: 'Cuerpo de solicitud JSON inválido.' });
       }
     }
-    body = body || {};
 
-    const { productType, celular, ciudad } = body;
+    // 🛡️ Validación estricta con Zod
+    const validation = validateBody(createOrderSchema, body);
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: validation.message,
+        issues: validation.issues 
+      });
+    }
+
+    const { productType, celular: normPhone, ciudad } = validation.data;
 
     const producto = PRODUCT_CATALOG[productType];
     if (!producto) {
       return res.status(400).json({ 
         error: 'Tipo de producto inválido.',
         productosValidos: Object.keys(PRODUCT_CATALOG)
-      });
-    }
-
-    if (productType === 'subscription_city') {
-      if (!ciudad || typeof ciudad !== 'string' || !ciudad.trim()) {
-        return res.status(400).json({ 
-          error: 'Debe seleccionar una ciudad para activar el Plan Pro Ciudad.' 
-        });
-      }
-    }
-
-    const normPhone = db.cleanPhone(celular);
-    if (!normPhone || normPhone.length < 10) {
-      return res.status(400).json({ 
-        error: 'Debe ingresar un número de celular de WhatsApp válido (10 dígitos).' 
       });
     }
 

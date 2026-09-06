@@ -178,4 +178,78 @@ function restablecerTodosLosFiltros() {
 
   aplicarFiltrosOmnibox();
 }
-
+
+/**
+ * Extrae de forma reactiva y única todas las ciudades presentes en el dataset activo
+ * y reconstruye tanto el menú desplegable táctico (desktop) como el selector off-canvas (móvil).
+ * Si la base de datos incorpora nuevas oportunidades (ej. Cúcuta, Ibagué, etc.), se integran de inmediato.
+ * @param {Array} leads
+ */
+function sincronizarDropdownCiudades(leads) {
+  if (!Array.isArray(leads) || leads.length === 0) return;
+
+  const conteoPorCiudad = {};
+  leads.forEach(l => {
+    let c = (l.ciudad || l.ubicacion || "").trim();
+    if (!c) return;
+    if (c.includes(",")) {
+      const partes = c.split(",");
+      c = partes[partes.length - 1].trim();
+    }
+    const cNorm = c.charAt(0).toUpperCase() + c.slice(1);
+    conteoPorCiudad[cNorm] = (conteoPorCiudad[cNorm] || 0) + 1;
+  });
+
+  const ciudadesOrdenadas = Object.keys(conteoPorCiudad).sort((a, b) => a.localeCompare(b, "es"));
+
+  // 1. Dropdown Desktop en la Barra de Comandos
+  const dropdown = document.getElementById("cmdLocationDropdown");
+  if (dropdown) {
+    let html = `
+      <div class="cmd-dropdown-item ${filtroCiudadActivo === "" ? "active" : ""}" data-city="">
+        <i class="fa-solid fa-earth-americas"></i>
+        <span>Colombia (Todas)</span>
+        <i class="fa-solid fa-check item-check"></i>
+      </div>
+    `;
+
+    ciudadesOrdenadas.forEach(ciudad => {
+      const cLow = ciudad.toLowerCase();
+      let icon = "fa-solid fa-location-dot";
+      if (cLow.includes("bogot")) icon = "fa-solid fa-city";
+      else if (cLow.includes("medell") || cLow.includes("antioquia") || cLow.includes("envigado")) icon = "fa-solid fa-mountain-city";
+      else if (cLow.includes("cali")) icon = "fa-solid fa-tree-city";
+      else if (cLow.includes("barranquilla")) icon = "fa-solid fa-anchor";
+      else if (cLow.includes("cartagena") || cLow.includes("santa marta")) icon = "fa-solid fa-umbrella-beach";
+      else if (cLow.includes("bucaramanga") || cLow.includes("floridablanca")) icon = "fa-solid fa-building";
+      else if (cLow.includes("pereira") || cLow.includes("armenia") || cLow.includes("manizales")) icon = "fa-solid fa-mug-hot";
+      else if (cLow.includes("cucuta") || cLow.includes("cúcuta")) icon = "fa-solid fa-landmark";
+      else if (cLow.includes("ibagu")) icon = "fa-solid fa-music";
+
+      const esActivo = filtroCiudadActivo && filtroCiudadActivo.toLowerCase() === ciudad.toLowerCase();
+      const cant = conteoPorCiudad[ciudad];
+
+      html += `
+        <div class="cmd-dropdown-item ${esActivo ? "active" : ""}" data-city="${escaparHtml(ciudad)}">
+          <i class="${icon}"></i>
+          <span>${escaparHtml(ciudad)}</span>
+          <span class="city-lead-count" style="font-size: 0.72rem; opacity: 0.6; margin-left: auto; margin-right: 4px;">(${cant})</span>
+          <i class="fa-solid fa-check item-check"></i>
+        </div>
+      `;
+    });
+
+    dropdown.innerHTML = html;
+  }
+
+  // 2. Selector Móvil en el Menú Lateral Off-Canvas
+  const sideSelect = document.getElementById("sideMenuCitySelect");
+  if (sideSelect) {
+    let selHtml = `<option value="">Todas las Ciudades</option>`;
+    ciudadesOrdenadas.forEach(ciudad => {
+      const sel = filtroCiudadActivo && filtroCiudadActivo.toLowerCase() === ciudad.toLowerCase() ? "selected" : "";
+      selHtml += `<option value="${escaparHtml(ciudad)}" ${sel}>${escaparHtml(ciudad)} (${conteoPorCiudad[ciudad]})</option>`;
+    });
+    sideSelect.innerHTML = selHtml;
+  }
+}

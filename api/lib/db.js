@@ -1,46 +1,209 @@
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const path = require('path');
+const fs = require('fs');
 const { generatePin } = require('./crypto');
 
-// Inicialización de Firebase Admin SDK
-if (!getApps().length) {
-  let credential;
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      const parsed = typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string'
-        ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-        : process.env.FIREBASE_SERVICE_ACCOUNT;
-      credential = cert(parsed);
-    } catch (e) {
-      console.warn('[db] Error parseando FIREBASE_SERVICE_ACCOUNT:', e.message);
+// Inicialización resiliente de Firebase Admin SDK
+let db = null;
+let usersRef = null;
+let transactionsRef = null;
+let ordersRef = null;
+
+try {
+  if (!getApps().length) {
+    let credential;
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      const rawSa = typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string'
+        ? process.env.FIREBASE_SERVICE_ACCOUNT.trim()
+        : '';
+      
+      if (typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'object') {
+        try {
+          credential = cert(process.env.FIREBASE_SERVICE_ACCOUNT);
+        } catch (e) {
+          console.warn('[db] Error cargando objeto FIREBASE_SERVICE_ACCOUNT:', e.message);
+        }
+      } else if (rawSa.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(rawSa);
+          const normalized = {
+            projectId: parsed.project_id || parsed.projectId || 'hunter-pro-showcase',
+            clientEmail: parsed.client_email || parsed.clientEmail || parsed.correo_cliente || 'firebase-adminsdk-fbsvc@hunter-pro-showcase.iam.gserviceaccount.com',
+            privateKey: (parsed.private_key || parsed.clave_privada || '').replace(/\\n/g, '\n')
+          };
+          if (normalized.privateKey && normalized.clientEmail) {
+            credential = cert(normalized);
+          } else {
+            credential = cert(parsed);
+          }
+          console.log('[db] Conexión autenticada a Firebase Firestore establecida con éxito.');
+        } catch (e) {
+          console.warn('[db] Error parseando JSON en FIREBASE_SERVICE_ACCOUNT:', e.message);
+        }
+      } else if (rawSa.startsWith('-----BEGIN')) {
+        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || 'firebase-adminsdk-fbsvc@hunter-pro-showcase.iam.gserviceaccount.com';
+        const projectId = process.env.FIREBASE_PROJECT_ID || 'hunter-pro-showcase';
+        if (clientEmail) {
+          try {
+            credential = cert({
+              projectId,
+              clientEmail,
+              privateKey: rawSa.replace(/\\n/g, '\n')
+            });
+            console.log('[db] Conexión autenticada a Firebase Firestore (hunter-pro-showcase) establecida con éxito.');
+          } catch (e) {
+            console.warn('[db] Error inicializando credencial desde PEM:', e.message);
+          }
+        } else {
+          console.info('[db] FIREBASE_SERVICE_ACCOUNT requiere el correo de la cuenta de servicio.');
+        }
+      } else {
+        // Intentar decodificar como Base64
+        try {
+          const decoded = Buffer.from(rawSa, 'base64').toString('utf8');
+          if (decoded.trim().startsWith('{')) {
+            credential = cert(JSON.parse(decoded));
+          }
+        } catch (e) {
+          console.warn('[db] Formato no reconocido para FIREBASE_SERVICE_ACCOUNT. Usando almacenamiento seguro en memoria.');
+        }
+      }
+    } else if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+      try {
+        const serviceAccountJson = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
+        credential = cert(JSON.parse(serviceAccountJson));
+      } catch (e) {
+        console.warn('[db] Error decodificando FIREBASE_SERVICE_ACCOUNT_BASE64:', e.message);
+      }
+    } else if (process.env.NODE_ENV !== 'production') {
+      try {
+        const serviceAccount = require('../../service-account.json');
+        credential = cert(serviceAccount);
+      } catch (e) {
+        // En desarrollo sin archivo local
+      }
     }
-  } else if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
-    try {
-      const serviceAccountJson = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
-      credential = cert(JSON.parse(serviceAccountJson));
-    } catch (e) {
-      console.warn('[db] Error decodificando FIREBASE_SERVICE_ACCOUNT_BASE64:', e.message);
-    }
-  } else if (process.env.NODE_ENV !== 'production') {
-    try {
-      const serviceAccount = require('../../service-account.json');
-      credential = cert(serviceAccount);
-    } catch (e) {
-      // En desarrollo sin archivo local se usan credenciales por defecto del entorno
+
+    if (credential) {
+      initializeApp({
+        credential: credential,
+        projectId: 'hunter-pro-showcase'
+      });
     }
   }
 
-  initializeApp({
-    credential: credential,
-    projectId: 'hunter-pro-showcase'
-  });
+  if (getApps().length) {
+    db = getFirestore();
+    usersRef = db.collection('users');
+    transactionsRef = db.collection('transactions');
+    ordersRef = db.collection('orders');
+  }
+} catch (e) {
+  console.warn('[db] Firebase no configurado o sin credenciales activas:', e.message);
 }
 
-const db = getFirestore();
-const usersRef = db.collection('users');
-const transactionsRef = db.collection('transactions');
-const ordersRef = db.collection('orders');
+// Almacenamiento seguro en memoria para pruebas locales y fallback sin credenciales
+if (!db) {
+  const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
+
+  function cargarAlmacenLocal() {
+    try {
+      if (fs.existsSync(LOCAL_DB_PATH)) {
+        const raw = fs.readFileSync(LOCAL_DB_PATH, 'utf8');
+        const parsed = JSON.parse(raw);
+        return {
+          users: new Map(Object.entries(parsed.users || {})),
+          transactions: new Map(Object.entries(parsed.transactions || {})),
+          orders: new Map(Object.entries(parsed.orders || {}))
+        };
+      }
+    } catch (e) {
+      console.warn('[db] Error leyendo local_db.json:', e.message);
+    }
+    return {
+      users: new Map(),
+      transactions: new Map(),
+      orders: new Map()
+    };
+  }
+
+  const memoryStore = cargarAlmacenLocal();
+
+  function guardarAlmacenLocal() {
+    try {
+      const obj = {
+        users: Object.fromEntries(memoryStore.users),
+        transactions: Object.fromEntries(memoryStore.transactions),
+        orders: Object.fromEntries(memoryStore.orders)
+      };
+      fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(obj, null, 2), 'utf8');
+    } catch (e) {
+      // Ignorar en entornos de sólo lectura
+    }
+  }
+
+  function createMemoryCollection(collectionName) {
+    const store = memoryStore[collectionName];
+    return {
+      doc(id) {
+        return {
+          id: String(id),
+          async get() {
+            const val = store.get(String(id));
+            return {
+              exists: Boolean(val),
+              data: () => (val ? JSON.parse(JSON.stringify(val)) : null)
+            };
+          },
+          async set(data) {
+            store.set(String(id), JSON.parse(JSON.stringify(data)));
+            guardarAlmacenLocal();
+          }
+        };
+      },
+      where(field, op, expectedVal) {
+        return {
+          limit(n) {
+            return {
+              async get() {
+                const results = [];
+                for (const item of store.values()) {
+                  if (op === '==' && item[field] === expectedVal) {
+                    results.push({ data: () => JSON.parse(JSON.stringify(item)) });
+                    if (results.length >= n) break;
+                  }
+                }
+                return {
+                  empty: results.length === 0,
+                  docs: results
+                };
+              }
+            };
+          }
+        };
+      }
+    };
+  }
+
+  db = {
+    async runTransaction(updateFunction) {
+      const transaction = {
+        async get(docRef) {
+          return await docRef.get();
+        },
+        set(docRef, data) {
+          docRef.set(data);
+        }
+      };
+      return await updateFunction(transaction);
+    }
+  };
+
+  usersRef = createMemoryCollection('users');
+  transactionsRef = createMemoryCollection('transactions');
+  ordersRef = createMemoryCollection('orders');
+}
 
 function cleanPhone(phone) {
   if (!phone) return '';
@@ -74,7 +237,7 @@ async function withRetry(operacion, maxIntentos = 3) {
 
 async function getUserByPhone(phone) {
   const normPhone = cleanPhone(phone);
-  if (!normPhone) return null;
+  if (!normPhone || !usersRef) return null;
 
   return await withRetry(async () => {
     const doc = await usersRef.doc(normPhone).get();
@@ -140,7 +303,38 @@ function calcularExpiracionMesCalendario(fechaInicio = new Date(), meses = 1) {
   return d.toISOString();
 }
 
-async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) {
+async function getUserByEmail(email) {
+  if (!email || typeof email !== 'string' || !usersRef) return null;
+  const normEmail = email.toLowerCase().trim();
+  
+  return await withRetry(async () => {
+    // Buscar directamente en la colección de usuarios por correo
+    const snapshot = await usersRef.where('email', '==', normEmail).limit(1).get();
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data();
+    }
+    // Si no está directamente, verificar si existe una orden con este correo para vincularlo
+    if (ordersRef) {
+      const orderSnap = await ordersRef.where('email', '==', normEmail).limit(1).get();
+      if (!orderSnap.empty) {
+        const order = orderSnap.docs[0].data();
+        if (order && order.celular) {
+          const normCel = cleanPhone(order.celular);
+          const userDoc = await usersRef.doc(normCel).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            userData.email = normEmail;
+            await usersRef.doc(normCel).set(userData);
+            return userData;
+          }
+        }
+      }
+    }
+    return null;
+  });
+}
+
+async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null, email = null) {
   const normPhone = cleanPhone(phone);
   if (!normPhone) throw new Error('Número de teléfono inválido');
 
@@ -167,6 +361,7 @@ async function addCredits(phone, creditsToAdd = 0, pin = null, planData = null) 
 
     existing.credits = Math.max(0, Number(existing.credits || 0) + Number(creditsToAdd));
     if (pin) existing.pin = pin;
+    if (email) existing.email = email.toLowerCase().trim();
 
     if (planData && planData.plan) {
       existing.plan = planData.plan;
@@ -326,14 +521,26 @@ async function getPendingOrder(reference) {
   });
 }
 
+async function getPendingOrderByEmail(email) {
+  if (!email || typeof email !== 'string' || !ordersRef) return null;
+  const normEmail = email.toLowerCase().trim();
+  return await withRetry(async () => {
+    const snapshot = await ordersRef.where('email', '==', normEmail).limit(1).get();
+    if (snapshot.empty) return null;
+    return snapshot.docs[0].data();
+  });
+}
+
 module.exports = {
   getUserByPhone,
   getUserByPin,
+  getUserByEmail,
   addCredits,
   unlockLead,
   isTransactionProcessed,
   recordTransaction,
   savePendingOrder,
   getPendingOrder,
+  getPendingOrderByEmail,
   cleanPhone
 };

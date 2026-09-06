@@ -98,8 +98,8 @@ function checkRateLimit(req, res, opciones = {}) {
       }
       res.status(429).json({
         ok: false,
-        error: 'TOO_MANY_REQUESTS',
-        message: `Límite de peticiones excedido. Por favor intenta de nuevo en ${secondsToReset} segundos.`,
+        error: opciones.error || 'TOO_MANY_REQUESTS',
+        message: opciones.message || opciones.customMessage || `Límite de peticiones excedido. Por favor intenta de nuevo en ${secondsToReset} segundos.`,
         retryAfterSeconds: secondsToReset
       });
     }

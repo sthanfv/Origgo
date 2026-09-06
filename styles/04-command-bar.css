@@ -243,8 +243,10 @@
 }
 
 .cmd-search-input {
+  flex: 1;
+  min-width: 0;
   width: 100%;
-  background: transparent;
+  background: transparent !important;
   border: none;
   outline: none;
   font-family: var(--font-body);
@@ -258,6 +260,41 @@
 
 .cmd-search-input::placeholder {
   color: var(--text-dim);
+}
+
+/* Erradicación estricta del parche blanco/celeste de autocompletado del navegador */
+.cmd-search-input:-webkit-autofill,
+.cmd-search-input:-webkit-autofill:hover,
+.cmd-search-input:-webkit-autofill:focus,
+.cmd-search-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px hsla(170, 59%, 11%, 0.95) inset !important;
+  box-shadow: 0 0 0 1000px hsla(170, 59%, 11%, 0.95) inset !important;
+  -webkit-text-fill-color: var(--text-main, #E2E8F0) !important;
+  caret-color: var(--text-main, #E2E8F0) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  background: transparent !important;
+}
+
+[data-theme="light"] .cmd-search-input:-webkit-autofill,
+[data-theme="light"] .cmd-search-input:-webkit-autofill:hover,
+[data-theme="light"] .cmd-search-input:-webkit-autofill:focus,
+[data-theme="light"] .cmd-search-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  -webkit-text-fill-color: #0A110E !important;
+  caret-color: #0A110E !important;
+  background: transparent !important;
+}
+
+/* Selección de texto armonizada con el color esmeralda de la marca */
+.cmd-search-input::selection {
+  background: hsla(160, 84%, 39%, 0.35);
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .cmd-search-input::selection {
+  background: hsla(160, 84%, 39%, 0.25);
+  color: #022C22;
 }
 
 /* Botón Limpiar Búsqueda (Cruz rápida) */

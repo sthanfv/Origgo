@@ -11,6 +11,7 @@ const db = require('../lib/db');
 const { signJwt, verifyJwt } = require('../lib/crypto');
 const { checkRateLimit } = require('../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../lib/cors');
+const { sessionLoginSchema, validateBody } = require('../lib/validation');
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   throw new Error('CONFIGURACION_INSEGURA: JWT_SECRET es obligatorio en producción.');
@@ -128,6 +129,7 @@ module.exports = async function handler(req, res) {
 
       // 🛡️ BLINDAJE FINANCIERO: Verificar que la transacción esté confirmada
       let estaAprobada = order && order.status === 'APPROVED';
+      let customerEmail = (order && order.email) || null;
 
       // Si la orden no está aún marcada aprobada en base de datos local (latencia de webhook),
       // consultamos la API oficial de Wompi de forma server-to-server
@@ -148,8 +150,12 @@ module.exports = async function handler(req, res) {
               const montoPagado = Number(trx.amount_in_cents || 0);
               if (expectedAmountInCents === 0 || montoPagado >= expectedAmountInCents) {
                 estaAprobada = true;
+                if (trx.customer_email) {
+                  customerEmail = trx.customer_email.toLowerCase().trim();
+                }
                 if (order) {
                   order.status = 'APPROVED';
+                  if (customerEmail) order.email = customerEmail;
                   await db.savePendingOrder(reference, order);
                 }
               }
@@ -177,6 +183,7 @@ module.exports = async function handler(req, res) {
       const primerReclamo = await db.recordTransaction(`claim_${reference}`, {
         reference,
         celular,
+        email: customerEmail || null,
         claimedAt: new Date().toISOString()
       });
 
@@ -184,14 +191,17 @@ module.exports = async function handler(req, res) {
       const userPin = user ? user.pin : null;
 
       if (primerReclamo) {
-        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData);
+        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData, customerEmail);
       } else if (!user) {
-        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData);
+        user = await db.addCredits(celular, creditosAAcreditar, userPin, planData, customerEmail);
+      } else if (customerEmail && !user.email) {
+        user = await db.addCredits(celular, 0, userPin, null, customerEmail);
       }
 
       // Token JWT con estado criptográfico enriquecido (Stateless Signed Token)
       const token = signJwt({
         phone: user.phone,
+        email: user.email || customerEmail || null,
         pin: user.pin,
         credits: user.credits,
         unlockedLeads: user.unlockedLeads || [],
@@ -206,6 +216,7 @@ module.exports = async function handler(req, res) {
         token,
         user: {
           phone: user.phone,
+          email: user.email || customerEmail || null,
           credits: user.credits,
           pin: user.pin,
           plan: user.plan,
@@ -217,17 +228,24 @@ module.exports = async function handler(req, res) {
     }
 
     // CASO 2: Inicio de sesión con WhatsApp + PIN
-    const normPhone = db.cleanPhone(celular);
-    if (!normPhone || !pin) {
-      return res.status(400).json({ error: 'Debe ingresar su número de WhatsApp y su PIN de seguridad.' });
+    // 🛡️ Validación estricta con Zod
+    const loginValidation = validateBody(sessionLoginSchema, { celular, pin });
+    if (!loginValidation.success) {
+      return res.status(400).json({ 
+        error: loginValidation.message,
+        issues: loginValidation.issues 
+      });
     }
+
+    const normPhone = loginValidation.data.celular;
+    const cleanPin = loginValidation.data.pin;
 
     // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP
     if (!checkRateLimit(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone })) {
       return;
     }
 
-    const user = await db.getUserByPin(normPhone, pin);
+    const user = await db.getUserByPin(normPhone, cleanPin);
     if (!user) {
       return res.status(401).json({ 
         error: 'Credenciales inválidas. Verifique el número de WhatsApp y el PIN.' 

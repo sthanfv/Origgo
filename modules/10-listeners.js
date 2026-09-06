@@ -164,31 +164,31 @@ function configurarListeners() {
       pillLocation.setAttribute("aria-expanded", String(isOpen));
     });
 
-    dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-      item.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const cityValue = item.getAttribute("data-city") || "";
-        filtroCiudadActivo = cityValue;
+    dropdownLocation.addEventListener("click", (e) => {
+      const item = e.target.closest(".cmd-dropdown-item");
+      if (!item) return;
+      e.stopPropagation();
+      const cityValue = item.getAttribute("data-city") || "";
+      filtroCiudadActivo = cityValue;
 
-        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
+      dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
 
-        const spanText = item.querySelector("span") ? item.querySelector("span").textContent : "Colombia (Todas)";
-        if (labelLocation) labelLocation.textContent = spanText;
+      const spanText = item.querySelector("span") ? item.querySelector("span").textContent : "Colombia (Todas)";
+      if (labelLocation) labelLocation.textContent = spanText;
 
-        // Sincronizar con el selector del menú móvil si existe
-        const sideMenuSelect = document.getElementById("sideMenuCitySelect");
-        const sideMenuBadge = document.getElementById("sideMenuCityBadge");
-        if (sideMenuSelect) sideMenuSelect.value = cityValue;
-        if (sideMenuBadge) sideMenuBadge.textContent = cityValue || "Todas";
+      // Sincronizar con el selector del menú móvil si existe
+      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
+      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
+      if (sideMenuSelect) sideMenuSelect.value = cityValue;
+      if (sideMenuBadge) sideMenuBadge.textContent = cityValue || "Todas";
 
-        pillLocation.classList.toggle("active-filter", cityValue !== "");
-        dropdownLocation.classList.remove("show");
-        pillLocation.classList.remove("open");
-        pillLocation.setAttribute("aria-expanded", "false");
+      pillLocation.classList.toggle("active-filter", cityValue !== "");
+      dropdownLocation.classList.remove("show");
+      pillLocation.classList.remove("open");
+      pillLocation.setAttribute("aria-expanded", "false");
 
-        aplicarFiltrosOmnibox();
-      });
+      aplicarFiltrosOmnibox();
     });
   }
 
@@ -320,16 +320,21 @@ function configurarListeners() {
     btnPagar.addEventListener("click", ejecutarPagoWompi);
   }
 
-  // Limpieza de error en tiempo real al escribir WhatsApp
+  // Sanitización y limpieza de error en tiempo real para inputs numéricos
   const inputWaReal = document.getElementById("checkoutWhatsappInput");
   if (inputWaReal) {
-    inputWaReal.addEventListener("input", () => {
+    inputWaReal.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
       const errBox = document.getElementById("checkoutPhoneError");
       if (errBox) errBox.style.display = "none";
       const wrapper = document.getElementById("checkoutInputWrapper");
       if (wrapper) wrapper.classList.remove("input-error-shake");
     });
   }
+  const inputRestoreWa = document.getElementById("restoreWhatsappInput");
+  if (inputRestoreWa) inputRestoreWa.addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, ''); });
+  const inputRestorePin = document.getElementById("restorePinInput");
+  if (inputRestorePin) inputRestorePin.addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''); });
 
   // Botón Restaurar Sesión por PIN
   const btnRestore = document.getElementById("btnRestoreSession");
@@ -350,12 +355,8 @@ function configurarListeners() {
   }
   const btnExecRec = document.getElementById("btnExecuteAutoRecovery");
   if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
-
-  // Botón Cerrar Sesión en Perfil
   const btnLogout = document.getElementById("btnLogoutSession");
   if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
-
-  // Botón Comprar Más Créditos desde el Perfil
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
   if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
@@ -410,7 +411,7 @@ function configurarListeners() {
   if (btnCancelLegal) btnCancelLegal.addEventListener("click", cerrarModalLegal);
   if (modalLegal) modalLegal.addEventListener("click", (e) => { if (e.target === modalLegal) cerrarModalLegal(); });
 
-  // Conmutador y Persistencia de Modo Claro / Modo Oscuro AMOLED
+  // Conmutador Atómico y Persistencia de Modo Claro / Modo Oscuro AMOLED
   const btnTheme = document.getElementById("btnThemeToggle");
   const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
   const temaInicial = document.documentElement.getAttribute("data-theme") || (function() {
@@ -423,13 +424,22 @@ function configurarListeners() {
   const toggleTheme = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+    // Congelar transiciones durante el cambio para actualización atómica instantánea de golpe
+    const noAnim = document.createElement("style");
+    noAnim.textContent = "*, *::before, *::after { transition: none !important; }";
+    document.head.appendChild(noAnim);
+
     document.documentElement.setAttribute("data-theme", newTheme);
-    try {
-      localStorage.setItem("hunter_theme", newTheme);
-    } catch (e) {
-      console.warn("No se pudo guardar el tema en localStorage:", e);
-    }
+    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
     actualizarIconoTema(newTheme);
+
+    // Rehabilitar transiciones en el siguiente frame de renderizado
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (noAnim.parentNode) noAnim.parentNode.removeChild(noAnim);
+      });
+    });
   };
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);

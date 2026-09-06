@@ -329,4 +329,52 @@
     min-height: 48px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   🏛️ IDENTIDAD INSTITUCIONAL FOOTER (ORIGGO CONTINUA)
+   ═══════════════════════════════════════════════════ */
+.footer-brand-title {
+  font-family: var(--font-display, 'Lufga', sans-serif);
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  cursor: default;
+  user-select: none;
+}
+
+.footer-brand-title .brand-initial-o-wrap {
+  width: 30px;
+  height: 30px;
+  margin-right: -2px; /* Kerning óptico milimétrico para unir la O con la r como una sola palabra */
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: none;
+}
+
+.footer-brand-title .brand-icon-o {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+}
+
+.footer-brand-title .brand-letters-riggo {
+  letter-spacing: -0.025em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.footer-brand-title .brand-letter {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
 

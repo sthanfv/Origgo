@@ -259,7 +259,16 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background-color: hsla(160, 84%, 39%, 0.35);
+  color: #FFFFFF;
+}
+
+[data-theme="light"] ::selection {
+  background-color: hsla(160, 84%, 39%, 0.25);
+  color: #022C22;
 }
 
 body {
@@ -271,4 +280,4 @@ body {
   min-height: 100vh;
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════

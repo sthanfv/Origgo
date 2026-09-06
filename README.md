@@ -65,12 +65,15 @@ hunter-portal-showcase/
 │   ├── lib/
 │   │   ├── crypto.js           # Cifrado AES-256-GCM, tokens JWT y comparación constante
 │   │   ├── db.js               # Ledger de usuarios, créditos y reintentos exponenciales
-│   │   └── rate-limiter.js     # Middleware de limitación de tasa en memoria
+│   │   ├── env.js              # Normalizador resiliente de variables de entorno
+│   │   ├── rate-limiter.js     # Middleware de limitación de tasa en memoria
+│   │   └── validation.js       # Esquemas de validación estricta en tiempo de ejecución con Zod
 │   ├── payments/
 │   │   ├── create-order.js     # Creación de orden y firma de integridad Wompi
 │   │   └── webhook-wompi.js    # Receptor de eventos Wompi con validación HMAC
 │   ├── auth/
-│   │   └── session.js          # Inicio de sesión por PIN y reconciliación Wompi
+│   │   ├── session.js          # Inicio de sesión por PIN y reconciliación Wompi
+│   │   └── recover.js          # Recuperación segura de PIN vía correo electrónico (Resend API)
 │   ├── leads/
 │   │   └── unlock.js           # Desbloqueo de leads con deducción atómica de crédito
 │   └── user/
@@ -78,7 +81,8 @@ hunter-portal-showcase/
 ├── scripts/
 │   ├── build.js                # Compilador y ensamblador modular de CSS y JS
 │   ├── validate.js             # Suite de validación DevSecOps en 8 fases
-│   └── test_ledger_wompi.js    # Suite de pruebas unitarias de ledger y pagos
+│   ├── test_ledger_wompi.js    # Suite de pruebas unitarias de ledger y pagos
+│   └── test_validation_ratelimit.js # Pruebas unitarias de validación Zod y rate limit
 └── data/
     ├── inmobiliario.json       # Feed de oportunidades de bienes raíces selladas y cifradas
     └── vehiculos.json          # Feed de oportunidades automotrices (Flipping)
@@ -100,6 +104,9 @@ Para el funcionamiento seguro del backend serverless en producción, configure l
 | `WOMPI_EVENTS_SECRET` | Crítico | Secreto para validar autenticidad de firmas en webhooks. |
 | `FIREBASE_PROJECT_ID` | Opcional | ID de proyecto Firebase/Firestore si se usa persistencia en la nube. |
 | `FIREBASE_SERVICE_ACCOUNT` | Opcional | JSON credencial de cuenta de servicio de Firebase codificado en Base64. |
+| `RESEND_API_KEY` | Opcional | Llave de API de Resend para el despacho de correos de recuperación de PIN. |
+| `RESEND_FROM_EMAIL` | Opcional | Remitente verificado en Resend (por defecto: `Origgo <seguridad@origgo.co>`). |
+| `APP_URL` | Opcional | URL base de la aplicación (ej: `https://origgo.co`). |
 
 ---
 
@@ -113,11 +120,11 @@ npm test
 ```
 
 Fases evaluadas en cada commit y push:
-1. **Sintaxis de JavaScript**: 23 archivos validados con `node --check` (lambdas en `api/`, submódulos en `modules/` y compilados).
-2. **Integridad y balance CSS**: 14 submódulos verificados, balance de llaves y selectores críticos.
+1. **Sintaxis de JavaScript**: 27 archivos validados con `node --check` (lambdas en `api/`, submódulos en `modules/` y compilados).
+2. **Integridad y balance CSS**: 15 submódulos verificados, balance de llaves y selectores críticos.
 3. **Marcado HTML y Seguridad OWASP**: Doctype, meta tags, recursos físicos y cabeceras de seguridad en `vercel.json`.
 4. **Contratos de datos JSON**: Validación de estructura AES-256 (`iv:tag:cipher`) en 52 oportunidades.
-5. **Suite de integración Wompi y ledger**: 12/12 pruebas al 100% de pasarela, idempotencia y criptografía.
+5. **Suite de integración Wompi, ledger y esquemas Zod**: Pruebas al 100% de pasarela, idempotencia, rate limiting y contratos Zod.
 6. **Auditoría Antifraude en Reconciliación**: Rechazo formal de reclamos con referencias falsas o no aprobadas.
 7. **Auditoría de PIN Estricto**: Confirmación de erradicación total del bypass de autenticación por dígitos de celular.
 8. **Auditoría de Modularidad Arquitectónica**: Verificación de que ningún archivo en `modules/` ni en `styles/` exceda 500 líneas.

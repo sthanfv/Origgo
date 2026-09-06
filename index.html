@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co https://*.wompi.co https://ka-f.fontawesome.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://ka-f.fontawesome.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com https://ka-f.fontawesome.com; img-src 'self' data: https: blob:; frame-src 'self' https://checkout.wompi.co https://*.wompi.co; connect-src 'self' https://checkout.wompi.co https://*.wompi.co https://sandbox.wompi.co https://production.wompi.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://images.unsplash.com https://*.unsplash.com https://cdn2.infocasas.com.uy https://*.infocasas.com.uy https://ka-f.fontawesome.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.wompi.co https://*.wompi.co https://ka-f.fontawesome.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://ka-f.fontawesome.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com https://ka-f.fontawesome.com; img-src 'self' data: https: blob:; frame-src 'self' https://checkout.wompi.co https://*.wompi.co; connect-src 'self' https://checkout.wompi.co https://*.wompi.co https://sandbox.wompi.co https://production.wompi.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://images.unsplash.com https://*.unsplash.com https://cdn2.infocasas.com.uy https://*.infocasas.com.uy https://ka-f.fontawesome.com; frame-ancestors 'self' https://*.google.com https://*.aistudio.google.com https://*.run.app;">
   
   <title>Origgo — Terminal de Oportunidades Directas y Arbitraje</title>
   <meta name="description" content="Origgo: Plataforma de inteligencia de mercado y arbitraje inmobiliario. Conexión de primera mano directamente con propietarios en Colombia.">
@@ -54,7 +54,7 @@
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   
   <!-- Hoja de Estilos Principal Minificada y Verificada -->
-  <link rel="stylesheet" href="./style.min.css?v=20260905-2.6.0">
+  <link rel="stylesheet" href="./style.min.css?v=20260906-2.6.2">
 </head>
 <body>
 
@@ -90,7 +90,7 @@
     <div class="command-bar-container">
       <div class="cmd-search-box">
         <i class="fa-solid fa-magnifying-glass cmd-search-icon"></i>
-        <input type="text" id="omniboxSearch" class="cmd-search-input" placeholder="Buscar por barrio, ciudad o palabra clave..." autocomplete="off">
+        <input type="text" id="omniboxSearch" class="cmd-search-input" placeholder="Buscar por barrio, ciudad o palabra clave..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true">
         <button type="button" id="cmdSearchClear" class="cmd-search-clear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -269,26 +269,10 @@
       <!-- Columna 1: Identidad y Alcance -->
       <div class="footer-brand-column">
         <div class="footer-logo-row">
-          <div class="brand-logo-container" style="width: 32px; height: 32px;">
-            <svg class="brand-iso-svg" width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="ringGradFooter" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#34D399" />
-                  <stop offset="50%" stop-color="#10B981" />
-                  <stop offset="100%" stop-color="#047857" />
-                </linearGradient>
-              </defs>
-              <circle cx="50" cy="50" r="48" stroke="url(#ringGradFooter)" stroke-width="1.5" stroke-dasharray="2 4" class="radar-sonar-ring" />
-              <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="1" class="radar-ring-mid" />
-              <circle cx="50" cy="50" r="28" stroke="#34D399" stroke-width="0.75" class="radar-ring-inner" />
-              <path d="M50 2 L50 12 M50 98 L50 88" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-north" />
-              <path d="M2 50 L12 50 M98 50 L88 50" stroke="#10B981" stroke-width="2" stroke-linecap="round" class="cardinal-pointer pointer-east" />
-              <circle cx="50" cy="50" r="10" fill="url(#ringGradFooter)" fill-opacity="0.2" stroke="#10B981" stroke-width="1.5" class="radar-core-lens" />
-              <circle cx="50" cy="50" r="3" fill="#6EE7B7" class="radar-core-dot" />
-            </svg>
-          </div>
-          <span class="brand-title" style="font-size: 1.35rem;">
-            <span class="brand-initial-o">O</span><span class="brand-letters-riggo">riggo</span>
+          <span class="brand-title footer-brand-title" aria-label="Origgo">
+            <span class="brand-logo-container brand-initial-o-wrap" aria-hidden="true">
+              <img src="./assets/img/origgo-icon.svg" alt="" class="brand-iso-svg brand-icon-o" width="30" height="30" />
+            </span><span class="brand-letters-riggo"><span class="brand-letter">r</span><span class="brand-letter">i</span><span class="brand-letter">g</span><span class="brand-letter">g</span><span class="brand-letter">o</span></span>
           </span>
         </div>
         <p class="footer-bio">
@@ -344,9 +328,9 @@
     <!-- Barra Inferior de Declaración Legal y Exoneración -->
     <div class="footer-bottom">
       <div class="footer-bottom-inner">
-        <p>&copy; 2026 Hunter Pro Intelligence. Marca y software registrados. Prohibida la reproducción total o parcial sin autorización expresa.</p>
+        <p>&copy; 2026 Origgo. Marca y software registrados. Prohibida la reproducción total o parcial sin autorización expresa.</p>
         <p class="footer-disclaimer">
-          <strong>Aviso de Exoneración Legal:</strong> Hunter Pro opera exclusivamente como un agregador e indexador de información pública. No actúa como intermediario, corredor inmobiliario ni asesor financiero. La verificación jurídica, física y documental de cada oportunidad es responsabilidad exclusiva de las partes contratantes.
+          <strong>Aviso de Exoneración Legal:</strong> Origgo opera exclusivamente como un agregador e indexador de información pública. No actúa como intermediario, corredor inmobiliario ni asesor financiero. La verificación jurídica, física y documental de cada oportunidad es responsabilidad exclusiva de las partes contratantes.
         </p>
       </div>
     </div>
@@ -517,7 +501,16 @@
             </label>
             <div class="checkout-input-wrapper">
               <span class="checkout-input-prefix">+57</span>
-              <input type="tel" id="restoreWhatsappInput" class="checkout-text-input" placeholder="Ej: 300 123 4567" maxlength="10" />
+              <input 
+                type="tel" 
+                id="restoreWhatsappInput" 
+                class="checkout-text-input" 
+                placeholder="Ej: 300 123 4567" 
+                maxlength="10" 
+                inputmode="numeric" 
+                pattern="[0-9]*" 
+                autocomplete="tel-national" 
+              />
             </div>
           </div>
 
@@ -525,7 +518,17 @@
             <label for="restorePinInput" class="checkout-form-label">
               <i class="fa-solid fa-key" style="color: #F59E0B;"></i> PIN de Seguridad:
             </label>
-            <input type="text" id="restorePinInput" class="checkout-text-input pin-input" placeholder="Ej: HNT-7489 o 7489" maxlength="12" style="text-transform: uppercase;" />
+            <input 
+              type="text" 
+              id="restorePinInput" 
+              class="checkout-text-input pin-input" 
+              placeholder="Ej: HNT-7489 o 7489" 
+              maxlength="12" 
+              style="text-transform: uppercase;" 
+              autocomplete="one-time-code" 
+              autocapitalize="characters" 
+              spellcheck="false" 
+            />
           </div>
 
           <button type="button" class="btn-restore-session" id="btnRestoreSession">
@@ -534,24 +537,34 @@
 
           <div id="restoreStatusMsg" class="restore-status-msg" style="display: none;"></div>
 
-          <!-- Recuperación Automática por Comprobante / Referencia de Pago (100% Autoservicio) -->
+          <!-- Recuperación Automática por Correo Electrónico (100% Autoservicio) -->
           <div class="auto-recovery-box" id="autoRecoveryBox" style="margin-top: 1.25rem; border-top: 1px dashed var(--border-subtle); padding-top: 1rem; text-align: left;">
             <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery" style="width: 100%; background: none; border: none; padding: 0.4rem 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: var(--accent-emerald); font-size: 0.85rem; font-weight: 700;">
-              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu PIN? Recuperar automáticamente</span>
+              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu PIN? Recuperar por Correo</span>
               <i class="fa-solid fa-chevron-down" id="recoveryToggleIcon" style="transition: transform 0.2s ease;"></i>
             </button>
             <div id="recoveryContentArea" style="display: none; margin-top: 0.85rem; background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem;">
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
-                Ingresa la <strong>Referencia de Pago</strong> de tu compra (la encuentras en tu comprobante bancario o correo de confirmación de Wompi, ej: <code style="color: var(--accent-emerald);">HNT-3001234567-10CR-...</code> o ID de transacción). Nuestro sistema validará tu pago en tiempo real y restaurará tu PIN al instante.
+                Ingresa el <strong>Correo Electrónico</strong> que utilizaste durante tu pago en Wompi. Te enviaremos tu PIN de acceso de inmediato.
               </p>
               <div class="checkout-form-group" style="margin-bottom: 0.75rem;">
                 <label for="recoveryReferenceInput" class="checkout-form-label" style="font-size: 0.78rem;">
-                  <i class="fa-solid fa-receipt"></i> Referencia de Pago o Transacción:
+                  <i class="fa-solid fa-envelope"></i> Correo Electrónico de Compra:
                 </label>
-                <input type="text" id="recoveryReferenceInput" class="checkout-text-input" placeholder="Ej: HNT-3001234567-10CR-... o ID Wompi" style="font-size: 0.85rem; font-family: monospace;" />
+                <input 
+                  type="email" 
+                  id="recoveryReferenceInput" 
+                  class="checkout-text-input" 
+                  placeholder="Ej: tu-correo@email.com" 
+                  inputmode="email" 
+                  autocomplete="email" 
+                  autocapitalize="none" 
+                  spellcheck="false" 
+                  style="font-size: 0.85rem;" 
+                />
               </div>
               <button type="button" class="btn-confirm-wompi" id="btnExecuteAutoRecovery" style="padding: 10px 14px; font-size: 0.85rem; margin-top: 0.25rem;">
-                <i class="fa-solid fa-bolt"></i> Validar Pago y Revelar mi PIN
+                <i class="fa-solid fa-paper-plane"></i> Enviar PIN a mi Correo
               </button>
               <div id="recoveryResultMsg" class="restore-status-msg" style="display: none; margin-top: 0.8rem;"></div>
             </div>
@@ -627,7 +640,7 @@
         <i class="fa-solid fa-crown"></i> MEMBRESÍA VIP ACTIVADA
       </div>
 
-      <h2 class="welcome-modal-title" id="welcomeModalTitle">¡Bienvenido a Hunter Pro!</h2>
+      <h2 class="welcome-modal-title" id="welcomeModalTitle">¡Bienvenido a Origgo!</h2>
       <p class="welcome-modal-subtitle" id="welcomeModalSubtitle">Tu acceso prioritario ha sido sellado con éxito en el ledger criptográfico.</p>
 
       <!-- Tarjeta de Credencial Segura con Copia de PIN en 1 clic -->
