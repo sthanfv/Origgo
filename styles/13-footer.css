@@ -349,7 +349,7 @@
 .footer-brand-title .brand-initial-o-wrap {
   width: 30px;
   height: 30px;
-  margin-right: -2px; /* Kerning óptico milimétrico para unir la O con la r como una sola palabra */
+  margin-right: 4px; /* Separación armónica para que la O no se monte sobre la r */
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;

@@ -1,6 +1,6 @@
 # 🧠 MEMORY.md — Origgo (Showcase & Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-06 13:10 (GMT-5)
+Última actualización: 2026-09-06 13:40 (GMT-5)
 
 ---
 
@@ -26,7 +26,8 @@
 
 5. **Experiencia de Usuario, Rendimiento y Branding Unificado (Origgo)**:
    - **Eliminación de Vestigios del Branding Pasado**: Isotipo SVG oficial de Origgo en footer, menú lateral, modal de bienvenida y PWA. Erradicación física de `assets/img/hunter_radar_logo.svg`.
-   - **Kerning y Tipografía Óptica en Footer**: Tipografía continua con espaciado óptico para la identidad "Origgo".
+   - **Kerning y Tipografía Óptica en Footer (`styles/13-footer.css`)**: Margen derecho del contenedor `.brand-initial-o-wrap` ajustado a `4px` para separar la "O" de "riggo" con lectura armónica sin superposición.
+   - **Unificación de Ícono de Créditos (`modules/01-state.js`)**: Eliminación del ícono `<i class="fa-solid fa-bolt">` pequeño duplicado en el badge de créditos del header (`btnVipHeader`), dejando únicamente el rayo emoji dorado `⚡ ${cr} Créditos`.
    - **Conmutación Atómica de Tema sin Congelamiento (*Zero-Jank*)**: Eliminación de transiciones globales `*`.
    - **Sincronización Dinámica de Filtros por Ciudad**: Dropdown de ciudades desde catálogo cargado con `DICCIONARIO_TERMINOS`.
    - **Anti-Rebote en Desbloqueo de Leads**: Conjunto `desbloqueosEnProgreso` para evitar peticiones duplicadas.
@@ -40,78 +41,54 @@
    - Creación y ejecución de `scripts/test_validation_ratelimit.js`.
    - Integración formal en la Fase 5 del pipeline `npm test`.
 
-8. **Resolución Definitiva del Fallo de Despliegue en Vercel — CRÍTICO**:
-   - **Causa 1 (RESUELTA)**: El hook `"prepare": "husky"` en `package.json` provocaba `command not found: husky` en Vercel. El script fue **eliminado completamente** de `package.json`.
-   - **Causa 2 (RESUELTA)**: Vercel rutea automáticamente **todos** los archivos `.js` en `api/**` como Serverless Functions públicamente enrutables. Los archivos de utilidades en `api/lib/` causaban fallos de build porque no tienen handler exportado.
-   - **Solución**: Se movió el directorio completo `api/lib/` a `lib/` en la raíz del proyecto. `api/lib/` eliminado. Todas las rutas de importación en `api/**/*.js` y `scripts/` actualizadas a las rutas correctas.
-   - **Bug adicional corregido en `scripts/validate.js`**: Línea 263 tenía `path.join(ROOT_DIR, 'api', 'lib', 'db.js')` → corregida a `path.join(ROOT_DIR, 'lib', 'db.js')`. Línea 250 usa `path.join(ROOT_DIR, 'lib', 'db')` para evitar conflictos de caché de módulos Node.js.
+8. **Resolución Definitiva del Fallo de Despliegue en Vercel**:
+   - `api/lib/` reubicado a `lib/` en la raíz del proyecto para evitar que Vercel intente exponer helpers como funciones serverless.
+   - Script `"prepare": "husky"` retirado de `package.json` para evitar fallo por falta de devDependencies en Vercel.
 
-9. **Corrección Tipográfica en Llave Pública Wompi Sandbox**:
-   - Llave pública oficial sincronizada: `pub_test_PQAm6bjXtS4ScbCpBU058xY0v1TPFXfA` en `config.js`, `api/payments/create-order.js` y `.env`.
+9. **Consola F12 Limpia de Advertencias (0 Errores / 0 Warnings)**:
+   - Retiro de la directiva `frame-ancestors` en el tag `<meta http-equiv="Content-Security-Policy">` de `index.html`, erradicando el error en rojo del navegador (`directive 'frame-ancestors' is ignored when delivered via a <meta> element`). La directiva se mantiene en cabeceras HTTP en `vercel.json` (`X-Frame-Options: DENY`).
 
-10. **Erradicación de Advertencias de Git (`.gitattributes`)**:
-    - `.gitattributes` creado con normalización `* text=auto eol=lf`.
+10. **Auditoría de Seguridad de Datos en F12 y Cero Fuga de Información**:
+    - Todos los datos sensibles de leads (`contacto_cifrado`) viajan cifrados bajo el estándar militar AES-256-GCM.
+    - Los teléfonos públicos permanecen enmascarados (`573 ••• ••••`).
+    - Cero números en claro en `data/inmobiliario.json`.
+    - Desencriptación delegada exclusivamente al backend seguro (`/api/leads/unlock`), validando saldo de créditos en Firestore antes de despachar el dato.
+    - Cero secretos expuestos en `window` ni en `console.log`.
+
+11. **Limpieza de Archivos Obsoletos y Configuración de npm**:
+    - Eliminación de scripts temporales `scripts/split_modules.js` y `scripts/split_styles.js`.
+    - Creación de `.npmrc` (`loglevel=error`, `fund=false`, `audit=false`) para evitar advertencias de paquetes deprecados de terceros durante instalaciones.
 
 ---
 
 ## 2. ¿Por qué cambió?
 
-- **Requerimiento del Usuario**: Integrar de manera segura las funcionalidades del entorno de pruebas, erradicando vestigios del branding antiguo y garantizando el correcto funcionamiento del backend en producción (Vercel + Firestore + Wompi).
-- **Seguridad en Tiempo de Ejecución**: Blindar las APIs serverless contra inyecciones y cargas malformadas mediante validación Zod.
-- **Retención y Recuperación de Usuarios**: Mecanismo seguro de recuperación de PIN por correo electrónico.
-- **Compatibilidad con Vercel**: La arquitectura de `api/lib/` es incompatible con el sistema de ruteado automático de Vercel para Serverless Functions.
+- **Requerimiento del Usuario**: Separar la "O" de "riggo" en el footer, remover el ícono de rayo pequeño duplicado en los créditos, eliminar cualquier error/advertencia en la consola F12 y garantizar blindaje absoluto contra robo o scraping de datos.
+- **Estándar DevSecOps y Código Limpio**: 0 advertencias en consola de navegación y en pipelines de construcción.
 
 ---
 
 ## 3. Archivos Afectados
 
-### Arquitectura de Librerías (CAMBIO CRÍTICO — NUEVA UBICACIÓN EN RAÍZ)
-- `lib/cors.js` — NUEVA UBICACIÓN (antes `api/lib/cors.js`). Incluye `hunter-pro.vercel.app` en lista blanca CORS.
-- `lib/crypto.js` — NUEVA UBICACIÓN (antes `api/lib/crypto.js`).
-- `lib/db.js` — NUEVA UBICACIÓN (antes `api/lib/db.js`).
-- `lib/env.js` — NUEVA UBICACIÓN (antes `api/lib/env.js`).
-- `lib/rate-limiter.js` — NUEVA UBICACIÓN (antes `api/lib/rate-limiter.js`).
-- `lib/validation.js` — NUEVA UBICACIÓN (antes `api/lib/validation.js`).
-- `api/lib/` — ELIMINADO COMPLETAMENTE.
-
-### Endpoints Serverless (importaciones actualizadas a `../../lib/`)
-- `api/auth/recover.js`, `api/auth/session.js`, `api/leads/unlock.js`
-- `api/payments/create-order.js`, `api/payments/verify.js`, `api/payments/webhook-wompi.js`
-- `api/user/balance.js`
-
-### Scripts (importaciones actualizadas a `../lib/`)
-- `scripts/test_ledger_wompi.js`, `scripts/test_validation_ratelimit.js`
-- `scripts/validate.js` — Rutas de auditoría corregidas de `api/lib/` a `lib/`.
-
-### Otros archivos
-- `package.json` — Script `prepare` eliminado completamente.
-- `.gitattributes` — Normalización LF.
-- `config.js` — Llave Wompi corregida.
-- `.env`, `.env.example` — Sincronizados con variables Resend y APP_URL.
-- `README.md` — Árbol de archivos y fases actualizados.
-- `MEMORY.md` — Este archivo.
-- `app.js`, `app.min.js`, `style.css`, `style.min.css` — Compilación sincronizada.
+- `styles/13-footer.css`: Ajuste de `margin-right: 4px` en `.footer-brand-title .brand-initial-o-wrap`.
+- `modules/01-state.js`: Eliminación del `<i class="fa-solid fa-bolt">` duplicado en `actualizarBadgeVip()`.
+- `index.html`: Eliminación de `frame-ancestors` en etiqueta `<meta>` de Content-Security-Policy.
+- `scripts/split_modules.js` y `scripts/split_styles.js`: Archivos huérfanos eliminados físicamente.
+- `.npmrc`: Archivo de configuración creado para silenciar avisos de paquetes de terceros.
+- `style.css`, `style.min.css`, `app.js`, `app.min.js`: Compilados y sincronizados.
+- `MEMORY.md`: Bitácora actualizada.
 
 ---
 
 ## 4. Decisiones Técnicas Tomadas
 
-- **Librerías fuera de `api/`**: La ubicación canónica para helpers en Vercel es `lib/` en la raíz o directorios con prefijo `_`. Se eligió `lib/` por claridad semántica.
-- **`require(path.join(ROOT_DIR, 'lib', 'db'))` en validate.js**: Uso de ruta absoluta para evitar conflictos de caché de módulos Node.js entre Fase 6 (que carga `api/auth/session` que a su vez requiere `lib/db`) y Fase 7.
-- **Validación Estricta Zod en la Frontera**: Cualquier payload mal formado es rechazado con HTTP 400 antes de ejecutar lógica criptográfica o consultar la base de datos.
-- **Cero Mutación de Secretos Criptográficos**: Los valores de `LEADS_ENCRYPTION_KEY` y `JWT_SECRET` no se tocaron.
-- **Compilación Modular Determinista**: Estricta modularización por debajo de 500 líneas en 11 módulos JS y 15 módulos CSS.
+- **CSP Nivel 3 W3C Compliance**: La directiva `frame-ancestors` solo es válida en encabezados HTTP. Al removerla de `<meta>` se elimina la advertencia de Chrome/Edge sin comprometer la protección contra Clickjacking (gestionada por `X-Frame-Options: DENY` en `vercel.json`).
+- **Seguridad por Diseño (Privacy by Design)**: Los datos de contacto permanecen sellados con AES-256-GCM en reposo y en tránsito hacia el cliente, desbloqueables únicamente mediante transacción verificada en el backend.
 
 ---
 
 ## 5. Estado Actual del Sistema
 
 - **Validación Automatizada (`npm test`)**: 8/8 Fases Aprobadas al 100% (0 errores).
-- **Compilación de Producción**: `style.min.css` (95.5 KB, -28%) y `app.min.js` (120.1 KB, -12%) compilados y balanceados.
-- **Seguridad OWASP**: Cero secretos expuestos, HSTS, X-Content-Type: nosniff, Frame: DENY, criptografía AES-256-GCM y firmas HMAC validadas.
-- **Git Repository**: Commit realizado y publicado en `origin/main`.
-- **Vercel**: Despliegue automático activado tras el push. `api/lib/` eliminado y `"prepare"` quitado de `package.json`.
-
-### URL de Eventos Wompi Sandbox (configurar manualmente)
-`https://hunter-pro.vercel.app/api/payments/webhook-wompi`
-Ingresar en: `comercios.wompi.co/developers` → Eventos → Guardar.
+- **Consola F12**: 0 errores, 0 advertencias de CSP.
+- **Git Repository**: Preparado para commit y sincronización en rama principal (`main`).
