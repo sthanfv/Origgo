@@ -101,7 +101,7 @@ Para garantizar un mantenimiento ágil y prevenir la creación de archivos gigan
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 199 |
 
 ### 4.2 Módulos CSS (`styles/`):
-Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (102.9 KB, -27% de peso).
+Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (103.2 KB, -27% de peso).
 
 ### 4.3 Tarjetas, carruseles y enlaces seguros
 - Los carruseles aceptan navegación por flechas, puntos y deslizamiento táctil con umbral horizontal para evitar colisiones con el scroll vertical.

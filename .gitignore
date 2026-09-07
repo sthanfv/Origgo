@@ -11,4 +11,5 @@ serviceAccountKey*.json
 service-account*.json
 data/ledger_store.json
 data/local_db.json
+data/*.sig
 dist/

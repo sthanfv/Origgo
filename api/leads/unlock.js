@@ -7,6 +7,9 @@
  * y descifra en memoria el teléfono y enlace real utilizando AES-256-GCM.
  */
 
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const db = require('../../lib/db');
 const { signJwt, verifyJwt, decryptLeadContact } = require('../../lib/crypto');
 const { checkRateLimit } = require('../../lib/rate-limiter');
@@ -21,6 +24,47 @@ const JWT_SECRET = requireEnv('JWT_SECRET', {
 const LEADS_ENCRYPTION_KEY = requireEnv('LEADS_ENCRYPTION_KEY', {
   testFallback: 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c'
 });
+
+/**
+ * Verifica la integridad HMAC-SHA256 de un archivo de datos.
+ * Si el archivo .sig no existe, se permite (compatibilidad hacia atrás).
+ * Si existe y no coincide, rechaza los datos.
+ * @param {string} dataset - Nombre del archivo (ej. "inmobiliario.json")
+ * @returns {{ valido: boolean, razon: string }}
+ */
+function verificarIntegridadDataset(dataset) {
+  const dataDir = path.join(__dirname, '..', '..', 'data');
+  const rutaJson = path.join(dataDir, dataset);
+  const rutaSig = rutaJson + '.sig';
+
+  // Si no existe archivo de firma, permitir (compatibilidad)
+  if (!fs.existsSync(rutaSig)) {
+    return { valido: true, razon: 'sin_firma' };
+  }
+
+  try {
+    const contenido = fs.readFileSync(rutaJson, 'utf8');
+    const firmaEsperada = fs.readFileSync(rutaSig, 'utf8').trim();
+
+    const firmaCalculada = crypto
+      .createHmac('sha256', LEADS_ENCRYPTION_KEY)
+      .update(contenido)
+      .digest('hex');
+
+    // Comparación en tiempo constante para prevenir ataques de temporización
+    const bufEsperada = Buffer.from(firmaEsperada);
+    const bufCalculada = Buffer.from(firmaCalculada);
+
+    if (bufEsperada.length !== bufCalculada.length) {
+      return { valido: false, razon: 'longitud_firma_invalida' };
+    }
+
+    const coincide = crypto.timingSafeEqual(bufEsperada, bufCalculada);
+    return { valido: coincide, razon: coincide ? 'firma_valida' : 'firma_no_coincide' };
+  } catch (e) {
+    return { valido: false, razon: 'error_verificacion' };
+  }
+}
 
 const HOSTS_ANUNCIOS_PERMITIDOS = [
   'fincaraiz.com.co',
@@ -113,6 +157,20 @@ module.exports = async function handler(req, res) {
 
     const leadCatalogo = obtenerLeadPorId(leadId);
     const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
+
+    // Verificar integridad HMAC-SHA256 del dataset si existe firma
+    if (leadCatalogo && leadCatalogo.dataset) {
+      const integridad = verificarIntegridadDataset(leadCatalogo.dataset);
+      if (!integridad.valido) {
+        console.error(`[unlock] INTEGRIDAD COMPROMETIDA: ${leadCatalogo.dataset} → ${integridad.razon}`);
+        return res.status(403).json({
+          ok: false,
+          error: 'INTEGRIDAD_COMPROMETIDA',
+          message: 'Los datos del catálogo han sido alterados. Desbloqueo rechazado por seguridad.'
+        });
+      }
+    }
+
     if (!leadCatalogo && !permiteContactoDePrueba) {
       return res.status(404).json({
         ok: false,

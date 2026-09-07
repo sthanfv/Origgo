@@ -25,7 +25,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 hunter-portal-showcase/
 ├── index.html                  # Maquetación principal con Bento Grid y Modal de Checkout
 ├── style.css                   # Hoja de estilos ensamblada deterministamente
-├── style.min.css               # Hoja de estilos compilada y balanceada (102.9 KB, -27%)
+├── style.min.css               # Hoja de estilos compilada y balanceada (103.2 KB, -27%)
 ├── app.js                      # Controlador orquestador del frontend
 ├── app.min.js                  # Script compilado y minificado (-13%)
 ├── config.js                   # Configuración y llaves públicas de cliente

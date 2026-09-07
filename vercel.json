@@ -37,6 +37,14 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=300, stale-while-revalidate=600"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         }
       ]
     },
