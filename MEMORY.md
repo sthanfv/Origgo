@@ -1,70 +1,79 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-07 05:55 (GMT-5)
+Última actualización: 2026-09-08 18:36 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
 
-1. **Corrección Crítica: Filtro de Credenciales Sandbox en `lib/env.js`**:
-   - La función `requireEnv()` rechazaba credenciales `test_*`, `prv_test_*` y `pub_test_*` cuando `NODE_ENV=production` en Vercel, impidiendo que el sistema de pagos Wompi Sandbox funcionara.
-   - Se agregó la variable `WOMPI_ENV` que controla si el filtro permite credenciales de prueba.
-   - Cuando `WOMPI_ENV=sandbox`, las credenciales de prueba de Wompi son aceptadas incluso en entornos con `NODE_ENV=production` (como Vercel).
-   - Cuando se active el modo producción real de Wompi, basta con cambiar `WOMPI_ENV=produccion` y las llaves `test_*` serán rechazadas automáticamente.
+1. **Ofuscación Anti-Ingeniería Inversa de Títulos (CRÍTICO)**:
+   - Los títulos públicos de las tarjetas ya NO muestran el nombre del conjunto, urbanización o barrio.
+   - Antes: "Apartamento en venta en Hacienda Santa Cruz, Ibagué"
+   - Ahora: "Apartamento en Venta — Ibagué"
+   - El título completo, barrio y ubicación exacta se guardan CIFRADOS dentro de `contacto_cifrado` (AES-256-GCM).
+   - Solo se revelan tras el desbloqueo pagado, a través de `datosRevelados` en la respuesta del API.
+   - Esto impide que un usuario copie el título, lo busque en Google y encuentre el anuncio original gratis.
 
-2. **Firma de Integridad HMAC-SHA256 para Archivos de Datos**:
-   - Nuevo script `scripts/sign-data.js` que genera una firma HMAC-SHA256 por cada archivo JSON en `data/` usando `LEADS_ENCRYPTION_KEY`.
-   - Las firmas se guardan como archivos `.sig` junto a los JSON (ej. `data/inmobiliario.json.sig`).
-   - El endpoint `api/leads/unlock.js` verifica la firma antes de desbloquear cualquier contacto. Si alguien altera el JSON de datos, el desbloqueo se rechaza con error `INTEGRIDAD_COMPROMETIDA`.
-   - La verificación es retrocompatible: si no existe archivo `.sig`, se permite el desbloqueo (para compatibilidad con datos sin firmar).
-   - Se usa `crypto.timingSafeEqual()` para prevenir ataques de temporización en la comparación de firmas.
+2. **Corrección del PIN Protegido**:
+   - El modal de bienvenida mostraba "PIN protegido" cuando el PIN no llegaba del backend.
+   - Ahora muestra instrucciones claras: "Revisa tu correo o usa Recuperar PIN".
+   - El botón de copiar PIN se oculta correctamente cuando no hay PIN disponible.
 
-3. **Sincronización de Llave Pública Wompi con Panel de Sandbox**:
-   - La llave pública de Wompi en `config.js` y `.env` se sincronizó con la que aparece en el panel de Wompi Sandbox: `pub_test_PQAm6bJXtS4ScbCpBU058xY0vlTPFXfA`.
+3. **Corrección del Badge de Créditos**:
+   - Después de cada desbloqueo, `actualizarBadgeVip()` se llama para reflejar el saldo real.
+   - El toast post-desbloqueo muestra el número exacto de créditos restantes.
 
-4. **Fortalecimiento de Cabeceras HTTP para Archivos de Datos**:
-   - En `vercel.json`, los archivos bajo `/data/*.json` ahora tienen `Content-Security-Policy: default-src 'none'` y `X-Content-Type-Options: nosniff`, impidiendo que el navegador interprete los JSON como scripts o los cargue fuera de contexto.
+4. **Firma HMAC-SHA256 Integrada en el Publisher del Scraper**:
+   - `publisher_web.js` ahora genera y sube `inmobiliario.json.sig` junto al JSON a GitHub.
+   - El backend de la web verifica la firma antes de desbloquear contactos.
+   - El scraper en el teléfono firmará automáticamente cuando se despliegue la nueva versión.
 
-5. **Clases CSS Utilitarias para Reemplazo de Estilos Embebidos**:
-   - Se agregaron en `styles/08-slideup.css`: `.btn-call-direct`, `.btn-whatsapp-compact`, `.slideup-unlocked-layout`, `.slideup-unlocked-row`, `.pagination-controls`, `.btn-pagination`, `.skeleton-*`, `.empty-state-msg`, `.error-state-msg`, `.unlocked-phone-box`, `.modal-summary-*`, `.city-count-badge`, entre otras.
+5. **Compatibilidad Sandbox Wompi** (sesión anterior):
+   - `lib/env.js` respeta `WOMPI_ENV=sandbox` para no rechazar credenciales de prueba.
+
+6. **Índice Maestro de Archivos**:
+   - Nuevo `docs/INDICE_ARCHIVOS.md` con mapa completo de ambos proyectos.
+   - Cada archivo tiene descripción en una línea para localización rápida por humanos.
 
 ---
 
 ## 2. Por qué cambió
 
-- **Error de Wompi en producción**: El backend rechazaba las credenciales sandbox con el error `CONFIGURACION_INSEGURA: WOMPI_INTEGRITY_SECRET usa credenciales de prueba`. El usuario necesita operar en modo sandbox hasta completar las pruebas de pago.
-- **Solicitud del usuario**: Implementar firma HMAC-SHA256 para proteger la integridad de los archivos JSON contra alteraciones.
-- **Mejora de seguridad**: La verificación de integridad se hace exclusivamente en el backend para que la llave secreta nunca se exponga al navegador.
+- El usuario descubrió que copiando el texto de una tarjeta y buscándolo en Google, se encontraba el anuncio original con teléfono incluido, eliminando la necesidad de pagar. Esto destruía la monetización.
+- El "PIN protegido" confundía a los usuarios: si cerraban sesión, no podían volver a entrar.
+- Los créditos no se actualizaban visualmente después de cada desbloqueo, causando confusión.
+- La firma HMAC estaba solo en la web pero no en el scraper que genera los datos.
+- La documentación existía pero nadie sabía dónde estaban los archivos.
 
 ---
 
 ## 3. Archivos afectados
 
-- `lib/env.js`: Lógica de `requireEnv()` reescrita para respetar `WOMPI_ENV`.
-- `api/leads/unlock.js`: Verificación de integridad HMAC-SHA256 del dataset antes del desbloqueo.
-- `scripts/sign-data.js`: Nuevo script de firmado para el scraper.
-- `config.js`: Llave pública de Wompi sincronizada con panel sandbox.
-- `.env` y `.env.example`: Variable `WOMPI_ENV=sandbox` documentada.
-- `.gitignore`: Archivos `data/*.sig` excluidos del repositorio.
-- `vercel.json`: Cabeceras CSP y nosniff para `/data/*.json`.
-- `styles/08-slideup.css`: Clases CSS utilitarias para botones, estados y layouts.
-- `app.js`, `app.min.js`, `style.css`, `style.min.css`: Recompilados.
+### Scraper (ofertas-hunter-pro)
+- `publisher_web.js`: Ofuscación de títulos, firma HMAC-SHA256, datos reales en contacto cifrado.
+- `docs/INDICE_ARCHIVOS.md`: Nuevo índice maestro de archivos.
+
+### Web (hunter-portal-showcase)
+- `api/leads/unlock.js`: Devuelve `datosRevelados` (título original, barrio, ubicación completa).
+- `modules/07-unlock.js`: Recibe y renderiza `datosRevelados` en la tarjeta tras desbloqueo.
+- `modules/11-welcome.js`: PIN real o instrucciones de recuperación en vez de "PIN protegido".
+- `docs/INDICE_ARCHIVOS.md`: Copia del índice maestro.
+- `app.js`, `app.min.js`: Recompilados.
 
 ---
 
 ## 4. Decisiones técnicas tomadas
 
-- **WOMPI_ENV por defecto es "sandbox"**: Si no se define la variable, el sistema asume sandbox. Esto previene bloqueos accidentales por omisión.
-- **Firma HMAC-SHA256 con clave existente**: Se reutiliza `LEADS_ENCRYPTION_KEY` como secreto de firmado para no agregar otra variable de entorno. La seguridad no se compromete porque HMAC y AES-GCM operan en dominios criptográficos distintos.
-- **Retrocompatibilidad**: Si no existe archivo `.sig`, el desbloqueo funciona normalmente. Esto permite que datos antiguos sin firmar sigan operando.
-- **Verificación server-side exclusiva**: La idea original del usuario proponía verificar la firma en el frontend, pero eso expondría la llave secreta en el JavaScript público. La verificación se movió al backend.
+- **Ofuscación simple pero efectiva**: En vez de usar NLP para reescribir títulos (complejo), se genera un título genérico tipo + operación + ciudad. Es simple, seguro y no revela nada buscable.
+- **Datos revelados en contacto cifrado**: El título original, barrio y ubicación se empaquetan dentro del mismo blob AES-256-GCM que ya protegía teléfono y enlace. No se necesita infraestructura nueva.
+- **Retrocompatibilidad**: Si `datosRevelados` es null (datos antiguos sin título cifrado), la tarjeta simplemente no actualiza el título. Funciona con datos viejos y nuevos.
+- **PIN pendiente en vez de falso**: Mostrar "Revisa tu correo" es honesto y accionable. "PIN protegido" era confuso e inútil.
 
 ---
 
 ## 5. Estado actual del sistema
 
-- `npm test`: aprobado, 8/8 fases DevSecOps al 100%.
-- `npm run build`: aprobado, 16 módulos CSS y 12 módulos JS compilados.
-- `node scripts/sign-data.js`: 2 archivos JSON firmados correctamente.
-- Credenciales Wompi Sandbox configuradas y aceptadas por `requireEnv()`.
-- **Acción pendiente en Vercel**: Agregar `WOMPI_ENV=sandbox` en las variables de entorno del proyecto.
+- `npm test` (web): 8/8 fases DevSecOps al 100%.
+- `node -c publisher_web.js` (scraper): Sintaxis válida.
+- Scraper pendiente de despliegue al teléfono para activar ofuscación + firma.
+- `WOMPI_ENV=sandbox` pendiente de agregar en Vercel Environment Variables.

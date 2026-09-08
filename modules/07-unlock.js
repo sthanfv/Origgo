@@ -31,8 +31,9 @@ async function manejarClicDesbloquear(index) {
  * @param {string} leadId
  * @param {object} contacto
  * @param {number|undefined} index
+ * @param {object|undefined} datosRevelados - Título y ubicación reales (post-desbloqueo)
  */
-function actualizarTarjetaEnElDOM(leadId, contacto, index) {
+function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
   const card = document.querySelector(`.bento-card[data-lead-id="${leadId}"]`) || 
                (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"]`) : null);
   if (!card) {
@@ -44,6 +45,18 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index) {
     : contacto;
 
   card.classList.add('card-unlocked');
+
+  // Revelar título y ubicación reales si vienen del backend
+  if (datosRevelados) {
+    const cardTitle = card.querySelector('.card-title');
+    if (cardTitle && datosRevelados.tituloOriginal) {
+      cardTitle.textContent = datosRevelados.tituloOriginal;
+    }
+    const cardLocation = card.querySelector('.card-location');
+    if (cardLocation && datosRevelados.ubicacionCompleta) {
+      cardLocation.innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + escaparHtml(datosRevelados.ubicacionCompleta);
+    }
+  }
 
   // 1. Badge superior flotante de "Desbloqueado"
   const floatingBadges = card.querySelector('.card-floating-badges');
@@ -230,10 +243,14 @@ async function ejecutarDesbloqueoLead(lead, index) {
     cacheContactosDesbloqueados[lead.id] = typeof sanitizarContactoCliente === 'function'
       ? sanitizarContactoCliente(data.contacto)
       : data.contacto;
+    // Cachear datos revelados para re-renderizado futuro
+    if (data.datosRevelados) {
+      cacheContactosDesbloqueados[lead.id]._datosRevelados = data.datosRevelados;
+    }
 
     cerrarModalCheckout();
     actualizarBadgeVip();
-    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index);
+    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index, data.datosRevelados);
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {

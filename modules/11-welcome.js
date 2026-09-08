@@ -28,9 +28,15 @@ function abrirModalBienvenidaVIP(planInfo, usuario) {
   const phone = usuario?.phone ? `+57 ${usuario.phone}` : '+57 ••••••••••';
 
   if (elPhone) elPhone.textContent = phone;
-  if (elPin) elPin.textContent = pin || 'PIN protegido';
+  if (elPin) {
+    if (pin) {
+      elPin.textContent = pin;
+    } else {
+      elPin.innerHTML = '<span class="pin-pending">Revisa tu correo o usa <em>Recuperar PIN</em></span>';
+    }
+  }
   if (elCopyPin) {
-    elCopyPin.style.display = pin ? 'inline-flex' : 'none';
+    elCopyPin.classList.toggle('is-hidden', !pin);
   }
 
   let itemsHtml = '';

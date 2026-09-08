@@ -285,6 +285,12 @@ module.exports = async function handler(req, res) {
         whatsappUrl,
         enlace,
         portal
+      },
+      // Datos revelados post-desbloqueo (venían cifrados en AES-256-GCM)
+      datosRevelados: {
+        tituloOriginal: contactoDescifrado?.tituloOriginal || null,
+        barrioOriginal: contactoDescifrado?.barrioOriginal || null,
+        ubicacionCompleta: contactoDescifrado?.ubicacionCompleta || null
       }
     });
   } catch (error) {
