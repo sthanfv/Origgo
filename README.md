@@ -17,6 +17,41 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 8. **Arquitectura Modular (< 500 líneas por módulo):** Frontend y estilos 100% particionados en módulos especializados bajo `modules/` y `styles/`.
 9. **Estética Glassmorphic & Bento Grid:** Modo oscuro y claro, visualización ejecutiva con carruseles bajo demanda, deslizamiento táctil, ambient glow y modal de checkout nativo.
 
+## 🗺️ Índice Maestro de Comportamientos y Rutas de Archivos
+> **Guía rápida para desarrolladores**: Localiza inmediatamente qué archivo y qué función controlan cada funcionalidad del portal sin tener que buscar palabras clave a ciegas.
+
+| Comportamiento / Funcionalidad | Archivo Fuente / Ruta | Mecanismo o Función Clave |
+|---|---|---|
+| **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | Generación SHA-256 de integridad para pasarela |
+| **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | Validación HMAC `timingSafeEqual` y ledger |
+| **Login por WhatsApp + PIN y reclamo post-pago** | [`api/auth/session.js`](api/auth/session.js) | `claim_reference`, reconciliación API Wompi |
+| **Recuperación segura de PIN por correo** | [`api/auth/recover.js`](api/auth/recover.js) | Envío transaccional vía Resend |
+| **Desbloqueo de lead y descifrado de contacto** | [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y deducción de créditos |
+| **Verificación de firma HMAC del dataset JSON** | [`api/leads/unlock.js`](api/leads/unlock.js) | `verificarIntegridadDataset()` con `.json.sig` |
+| **Consulta de saldo, perfil y compras** | [`api/user/balance.js`](api/user/balance.js) | Validación JWT y balance en tiempo real |
+| **Ledger en Firestore y reintentos exponenciales**| [`lib/db.js`](lib/db.js) | `withRetry()`, persistencia de usuarios y órdenes |
+| **Criptografía (AES-256-GCM, JWT, PIN)** | [`lib/crypto.js`](lib/crypto.js) | Cifrado simétrico y generación segura de PIN |
+| **Control de variables de entorno y sandbox** | [`lib/env.js`](lib/env.js) | Validación de entorno (`WOMPI_ENV=sandbox`) |
+| **Protección anti-fuerza bruta y rate limiting**| [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
+| **Validación estricta de payloads con Zod** | [`lib/validation.js`](lib/validation.js) | Esquemas de checkout, login y desbloqueo |
+| **CORS restringido con whitelist** | [`lib/cors.js`](lib/cors.js) | Cabeceras de seguridad e idempotencia |
+| **Índice server-side de leads** | [`lib/leads.js`](lib/leads.js) | Caché de búsqueda en memoria para API |
+| **Sanitización, escape HTML y logger seguro** | [`modules/00-security.js`](modules/00-security.js) | `escaparHtml()`, `sanitizarContactoCliente()` |
+| **Estado reactivo y gestión de sesión** | [`modules/01-state.js`](modules/01-state.js) | `sesionUsuario`, actualización de badge VIP |
+| **Notificaciones flotantes (Toasts)** | [`modules/02-toast.js`](modules/02-toast.js) | `mostrarNotificacionToast()`, barra progreso |
+| **Carga de catálogo JSON con trace ID** | [`modules/03-api.js`](modules/03-api.js) | `cargarDatosPublicos()`, `x-trace-id` |
+| **Filtros de ciudad, precio y búsqueda** | [`modules/04-filters.js`](modules/04-filters.js) | Normalización fonética y actualización de grilla |
+| **Carrusel fotográfico y gestos táctiles** | [`modules/05-carousel.js`](modules/05-carousel.js) | Swipe táctil en móvil, drawer de ficha |
+| **Renderizado Bento Grid y tarjetas** | [`modules/06-cards.js`](modules/06-cards.js) | `renderizarTarjetas()`, skeletons, botón ver anuncio |
+| **Lógica de desbloqueo y revelación de título** | [`modules/07-unlock.js`](modules/07-unlock.js) | `actualizarTarjetaEnElDOM()`, datos revelados |
+| **Checkout, planes de precios y widget Wompi** | [`modules/08-checkout.js`](modules/08-checkout.js) | Integración Wompi widget, selección de planes |
+| **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax y animaciones |
+| **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
+| **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
+| **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
+| **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
+| **Firma criptográfica offline de datasets** | [`scripts/sign-data.js`](scripts/sign-data.js) | Genera firmas `.sig` para JSONs estáticos |
+
 ---
 
 ## 📂 Estructura de Archivos Modular

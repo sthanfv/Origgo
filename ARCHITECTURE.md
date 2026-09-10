@@ -80,9 +80,23 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 
 ---
 
-## 4. Modularización del Código Fuente (< 500 Líneas)
-
-Para garantizar un mantenimiento ágil y prevenir la creación de archivos gigantes monolíticos:
+### 4.0 Localizador Rápido de Archivos Backend, Serverless y Scripts
+| Responsabilidad / Comportamiento | Archivo / Ruta | Función o Mecanismo Clave |
+|---|---|---|
+| **Cálculo de firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | SHA-256 de integridad para widget Wompi |
+| **Validación y procesamiento de webhooks** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | HMAC `timingSafeEqual`, acreditación atómica |
+| **Inicio de sesión y reclamo de referencias** | [`api/auth/session.js`](api/auth/session.js) | Verificación directa con API oficial de Wompi |
+| **Recuperación de PIN por email** | [`api/auth/recover.js`](api/auth/recover.js) | Tokens temporales firmados con Resend |
+| **Desbloqueo seguro y deducción de créditos**| [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y verificación `.sig` |
+| **Consulta de saldo y estado reactivo** | [`api/user/balance.js`](api/user/balance.js) | Ledger y verificación de sesión JWT |
+| **Persistencia Firestore y reintentos** | [`lib/db.js`](lib/db.js) | `withRetry()`, aislamiento de fallos de red |
+| **Criptografía (JWT, AES, hashes)** | [`lib/crypto.js`](lib/crypto.js) | Cifrado y validación en tiempo constante |
+| **Entorno y compatibilidad Sandbox** | [`lib/env.js`](lib/env.js) | Control de `WOMPI_ENV=sandbox` y llaves |
+| **Mitigación DDoS y Rate Limiting** | [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
+| **Validación estricta de esquemas Zod** | [`lib/validation.js`](lib/validation.js) | Validadores para pagos, auth y leads |
+| **Compilador y empaquetador de producción** | [`scripts/build.js`](scripts/build.js) | Ensambla CSS y JS en `style.min.css` y `app.js` |
+| **Suite DevSecOps de 8 fases** | [`scripts/validate.js`](scripts/validate.js) | Validador sintáctico, CSS, HTML y OWASP |
+| **Firma HMAC de datasets públicos** | [`scripts/sign-data.js`](scripts/sign-data.js) | Sellado criptográfico de `data/*.json` |
 
 ### 4.1 Módulos JavaScript (`modules/`):
 | Archivo | Responsabilidad | Líneas |
