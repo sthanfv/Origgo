@@ -49,19 +49,28 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = req.body || {};
+    const urlDestino = body.url || (body.leadId ? `./?lead=${body.leadId}` : './');
     const payload = JSON.stringify({
       title: body.title || '🔥 Nueva Oportunidad Directa — Origgo',
       body: body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.',
       icon: body.icon || './apple-touch-icon.png',
       badge: body.badge || './favicon-32x32.png',
+      image: body.image || undefined,
       data: {
-        url: body.url || './'
+        url: urlDestino,
+        leadId: body.leadId || null,
+        ciudad: body.ciudad || 'Colombia'
       }
     });
 
-    const suscripciones = await obtenerSuscripcionesActivas();
+    const suscripcionesTodas = await obtenerSuscripcionesActivas();
+    // Segmentación por ciudad si se especifica en el despacho
+    const suscripciones = body.ciudad && body.ciudad !== 'Colombia'
+      ? suscripcionesTodas.filter(s => !s.ciudad || s.ciudad === 'Colombia' || s.ciudad.toLowerCase() === body.ciudad.toLowerCase())
+      : suscripcionesTodas;
+
     if (suscripciones.length === 0) {
-      return res.status(200).json({ ok: true, message: 'No hay dispositivos suscritos.', enviados: 0 });
+      return res.status(200).json({ ok: true, message: 'No hay dispositivos suscritos para este criterio.', enviados: 0 });
     }
 
     let enviados = 0;

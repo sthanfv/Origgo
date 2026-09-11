@@ -16,6 +16,8 @@ const RECURSOS_CRITICOS = [
   './favicon.ico',
   './favicon-32x32.png',
   './apple-touch-icon.png',
+  './assets/img/push-icon-192.png',
+  './assets/img/push-icon-512.png',
   './assets/img/origgo-icon.svg'
 ];
 
@@ -90,9 +92,13 @@ self.addEventListener('push', (evento) => {
     vibrate: [100, 50, 100],
     data: datos.data || { url: './' },
     actions: [
-      { action: 'open', title: 'Ver Inmueble' }
+      { action: 'open', title: 'Ver Oportunidad' }
     ]
   };
+
+  if (datos.image) {
+    opciones.image = datos.image;
+  }
 
   evento.waitUntil(
     self.registration.showNotification(datos.title, opciones)

@@ -3909,11 +3909,14 @@ async function activarNotificacionesPush() {
       linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
     }
 
+    // Cerrar modal de bienvenida si estuviera visible
+    cerrarPushPromptModal(true);
+
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast('🔔 ¡Alertas activadas! Te avisaremos al instante cuando se capte una nueva ganga directa.', 'success');
+      mostrarNotificacionToast('🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.', 'success');
     }
 
-    // 6. Notificación inmediata de prueba en el sistema operativo Android / navegador
+    // 6. Notificación inmediata de confirmación con isotipo en alta definición
     if (registro && typeof registro.showNotification === 'function') {
       try {
         await registro.showNotification('🔥 ¡Radar de Origgo Activado!', {
@@ -3934,7 +3937,58 @@ async function activarNotificacionesPush() {
 }
 
 /**
- * Inicializa el botón de notificaciones en el DOM.
+ * Abre el modal sugestivo de radar de notificaciones push (Soft-Prompt).
+ */
+function abrirPushPromptModal() {
+  const overlay = document.getElementById('modalPushPromptOverlay');
+  if (overlay) {
+    overlay.classList.add('active', 'open');
+  }
+}
+
+/**
+ * Cierra el modal sugestivo de notificaciones push.
+ * @param {boolean} guardarDescarte - Si es true, recuerda la decisión en la sesión actual.
+ */
+function cerrarPushPromptModal(guardarDescarte = true) {
+  const overlay = document.getElementById('modalPushPromptOverlay');
+  if (overlay) {
+    overlay.classList.remove('active', 'open');
+  }
+  if (guardarDescarte) {
+    try {
+      sessionStorage.setItem('origgo_push_prompt_dismissed', 'true');
+    } catch (_) {}
+  }
+}
+
+/**
+ * Evalúa automáticamente si se debe presentar la sugerencia de radar al entrar a la web.
+ * Se dispara con un retardo amigable de 2.5 segundos para no interrumpir el render inicial.
+ */
+function evaluarSugerenciaPushAutomatica() {
+  if (!('Notification' in window)) return;
+
+  // Solo sugerir si el usuario aún no ha decidido (permiso 'default')
+  if (Notification.permission === 'default') {
+    let descartadoEnSesion = false;
+    try {
+      descartadoEnSesion = sessionStorage.getItem('origgo_push_prompt_dismissed') === 'true';
+    } catch (_) {}
+
+    if (!descartadoEnSesion) {
+      setTimeout(() => {
+        // Re-verificar por si el usuario ya interactuó con la campana
+        if (Notification.permission === 'default') {
+          abrirPushPromptModal();
+        }
+      }, 2500);
+    }
+  }
+}
+
+/**
+ * Inicializa el botón de notificaciones y los listeners del modal en el DOM.
  */
 function inicializarBotonPush() {
   const btnBell = document.getElementById('btnPushSubscribe');
@@ -3957,7 +4011,39 @@ function inicializarBotonPush() {
     });
   }
 
-  // Verificar si ya tiene permiso otorgado
+  // Listeners del modal interactivo Soft-Prompt
+  const btnAccept = document.getElementById('btnPushPromptAccept');
+  const btnLater = document.getElementById('btnPushPromptLater');
+  const btnClose = document.getElementById('btnPushPromptClose');
+  const promptOverlay = document.getElementById('modalPushPromptOverlay');
+
+  if (btnAccept) {
+    btnAccept.addEventListener('click', () => {
+      activarNotificacionesPush();
+    });
+  }
+
+  if (btnLater) {
+    btnLater.addEventListener('click', () => {
+      cerrarPushPromptModal(true);
+    });
+  }
+
+  if (btnClose) {
+    btnClose.addEventListener('click', () => {
+      cerrarPushPromptModal(true);
+    });
+  }
+
+  if (promptOverlay) {
+    promptOverlay.addEventListener('click', (e) => {
+      if (e.target === promptOverlay) {
+        cerrarPushPromptModal(true);
+      }
+    });
+  }
+
+  // Verificar si ya tiene permiso otorgado previamente
   if ('Notification' in window && Notification.permission === 'granted') {
     if (btnBell) {
       btnBell.classList.add('active-push');
@@ -3966,6 +4052,9 @@ function inicializarBotonPush() {
     if (linkSide) {
       linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
     }
+  } else {
+    // Si no tiene permiso, programar la invitación suave
+    evaluarSugerenciaPushAutomatica();
   }
 }
 

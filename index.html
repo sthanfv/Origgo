@@ -746,6 +746,60 @@
           <i class="fa-solid fa-check"></i> Entendido y Aceptado
         </button>
       </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL SUGESTIVO DE NOTIFICACIONES PUSH (RADAR EN VIVO)
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="modalPushPromptOverlay" role="dialog" aria-modal="true" aria-labelledby="pushPromptTitle">
+    <div class="modal-card push-prompt-card" id="pushPromptCard">
+      <button type="button" class="btn-modal-close" id="btnPushPromptClose" aria-label="Cerrar sugerencia de alertas">&times;</button>
+      
+      <div class="push-prompt-badge">
+        <span class="push-radar-ping"></span>
+        <img src="./assets/img/origgo-icon.svg" alt="" class="push-prompt-iso" width="24" height="24" />
+        <span>RADAR EN TIEMPO REAL</span>
+      </div>
+
+      <h2 class="modal-title push-prompt-title" id="pushPromptTitle">
+        ¿Activar Alertas de Oportunidades Directas?
+      </h2>
+      <p class="modal-subtitle push-prompt-subtitle">
+        Recibe una alerta en tu teléfono en el segundo exacto en que un propietario publique un inmueble sin comisiones inmobiliarias.
+      </p>
+
+      <div class="push-prompt-features">
+        <div class="push-feature-row">
+          <div class="push-feature-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="push-feature-text">
+            <strong>Primicia total:</strong>
+            <span>Entérate antes de que el inmueble llegue a portales o agencias con comisiones.</span>
+          </div>
+        </div>
+        <div class="push-feature-row">
+          <div class="push-feature-icon"><i class="fa-solid fa-location-crosshairs"></i></div>
+          <div class="push-feature-text">
+            <strong>Filtro por tu ciudad:</strong>
+            <span>Avisos geolocalizados de tu zona de interés o inversión comercial.</span>
+          </div>
+        </div>
+        <div class="push-feature-row">
+          <div class="push-feature-icon"><i class="fa-solid fa-bell-slash"></i></div>
+          <div class="push-feature-text">
+            <strong>100% libre de spam:</strong>
+            <span>Solo señales cuando se confirme una oportunidad real negociada entre particulares.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="push-prompt-actions">
+        <button type="button" class="btn-push-prompt-accept" id="btnPushPromptAccept">
+          <i class="fa-solid fa-bell"></i> Activar Radar en mi Teléfono
+        </button>
+        <button type="button" class="btn-push-prompt-later" id="btnPushPromptLater">
+          Quizás más tarde / Explorar primero
+        </button>
+      </div>
     </div>
   </div>
 
