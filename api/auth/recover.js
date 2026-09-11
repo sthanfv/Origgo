@@ -14,7 +14,7 @@
 
 const db = require('../../lib/db');
 const crypto = require('crypto');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { recoverPinSchema, validateBody } = require('../../lib/validation');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { signJwt } = require('../../lib/crypto');
@@ -244,15 +244,15 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // 🛡️ Rate Limiting estricto: Máximo 3 solicitudes de recuperación por día (24h) por IP
+  // 🛡️ Rate Limiting estricto: Máximo 3 solicitudes de recuperación por día (24h) por IP con Upstash Redis
   const unDiaMs = 24 * 60 * 60 * 1000;
-  if (!checkRateLimit(req, res, { 
+  if (!(await checkRateLimitAsync(req, res, { 
     prefix: 'recover_pin_ip', 
     maxRequests: 3, 
     windowMs: unDiaMs,
     error: 'LIMITE_DIARIO_EXCEDIDO',
     message: 'Has alcanzado el límite máximo de 3 solicitudes de recuperación de PIN por día desde esta red o dispositivo. Por seguridad, intenta de nuevo en 24 horas o contacta a soporte.'
-  })) {
+  }))) {
     return;
   }
 
@@ -273,15 +273,15 @@ module.exports = async function handler(req, res) {
 
   const normEmail = validation.data.email;
 
-  // 🛡️ Rate Limiting estricto por Correo: Máximo 3 solicitudes de recuperación por día para la misma cuenta
-  if (!checkRateLimit(req, res, { 
+  // 🛡️ Rate Limiting estricto por Correo: Máximo 3 solicitudes de recuperación por día para la misma cuenta con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { 
     prefix: 'recover_pin_email', 
     customKey: normEmail,
     maxRequests: 3, 
     windowMs: unDiaMs,
     error: 'LIMITE_DIARIO_EXCEDIDO',
     message: 'Has alcanzado el límite máximo de 3 solicitudes de recuperación de PIN por día para esta cuenta. Esta medida protege contra abusos y spam.'
-  })) {
+  }))) {
     return;
   }
 

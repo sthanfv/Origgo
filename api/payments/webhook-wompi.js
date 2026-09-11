@@ -12,7 +12,7 @@
 const crypto = require('crypto');
 const db = require('../../lib/db');
 const { generatePin } = require('../../lib/crypto');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { requireEnv } = require('../../lib/env');
 
 module.exports = async function handler(req, res) {
@@ -24,8 +24,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // 🛡️ Rate Limiting: máx 60 peticiones por minuto por IP para webhooks
-  if (!checkRateLimit(req, res, { prefix: 'payments_webhook', maxRequests: 60, windowMs: 60 * 1000 })) {
+  // 🛡️ Rate Limiting: máx 60 peticiones por minuto por IP para webhooks con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'payments_webhook', maxRequests: 60, windowMs: 60 * 1000 }))) {
     return;
   }
 

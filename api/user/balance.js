@@ -8,7 +8,7 @@
 
 const db = require('../../lib/db');
 const { verifyJwt } = require('../../lib/crypto');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { requireEnv } = require('../../lib/env');
 
@@ -23,8 +23,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // 🛡️ Rate Limiting: máx 60 consultas de saldo por minuto
-  if (!checkRateLimit(req, res, { prefix: 'user_balance', maxRequests: 60, windowMs: 60 * 1000 })) {
+  // 🛡️ Rate Limiting: máx 60 consultas de saldo por minuto con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'user_balance', maxRequests: 60, windowMs: 60 * 1000 }))) {
     return;
   }
 

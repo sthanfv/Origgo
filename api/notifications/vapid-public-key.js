@@ -7,7 +7,7 @@
  */
 
 require('../../lib/env');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 
 module.exports = async function handler(req, res) {
@@ -21,8 +21,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   }
 
-  // Rate limit para prevenir abusos
-  if (!checkRateLimit(req, res, { prefix: 'vapid_pubkey', maxRequests: 60, windowMs: 60 * 1000 })) {
+  // Rate limit para prevenir abusos con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'vapid_pubkey', maxRequests: 60, windowMs: 60 * 1000 }))) {
     return;
   }
 

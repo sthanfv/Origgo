@@ -1,10 +1,17 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 22:32 (GMT-5)
+Última actualización: 2026-09-10 22:52 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-1. **Cableado Asíncrono de Upstash Redis y Autodefensa Perimetral con Honeypot**:
+   - **Limitación de Tasa Distribuida Serverless (`checkRateLimitAsync`):** Se reemplazó la invocación síncrona en memoria por `checkRateLimitAsync` en los 8 endpoints de `api/` (`session.js`, `create-order.js`, `webhook-wompi.js`, `unlock.js`, `recover.js`, `balance.js`, `subscribe.js`, `vapid-public-key.js`). Ahora la tasa de peticiones se coordina atómicamente en Upstash Redis REST API en todas las instancias Lambdas de Vercel.
+   - **Honeypot Autónomo con Auto-Ban (`api/security/honeypot.js` + `vercel.json`):** Se implementó endpoint trampa que intercepta intentos de escaneo malicioso (`/.env`, `/.git`, `/wp-login.php`, `/wp-admin`, `/phpmyadmin`, `/api/admin`). Al detectar la intrusión, banea inmediatamente la dirección IP en Redis por 24 horas (86,400s) con motivo forense sin requerir alertas manuales.
+   - **Filtro Perimetral Atómico:** El pipeline atómico de `checkRateLimitAsync` consulta la clave de baneo `ratelimit:ban:${ip}` antes de incrementar contadores y responde de forma fulminante con HTTP 403 `IP_BLOCKED`.
+   - **Favicons Multiformato e Identidad Móvil:** Se generaron `favicon.ico` (formato ICO binario 32x32), `favicon-32x32.png` y `apple-touch-icon.png` (192x192) con el isotipo oficial `#0a9f68`. Se corrigió el problema en navegadores móviles (Chrome/Brave Android) que mostraban el globo terráqueo genérico al no admitir favicons SVG en la barra superior.
+   - **Acceso a Web Push en Drawer Móvil:** Se integró el botón "🔔 Activar Alertas en Vivo" en el menú lateral (`side-menu`) de `index.html` y se vinculó en `modules/12-push.js` con retroalimentación háptica y cierre automático del menú tras la interacción.
 
 0. **Calibración Cromática AMOLED `#0a9f68` y Micro-Kerning Óptico del Isotipo**:
    - **Color Institucional Exacto:** Se eliminó el degradado CSS verde menta (`#34D399`) en `.brand-letter` tanto en `styles/02-base.css` como en `styles/13-footer.css`, fijando el color sólido corporativo exacto `#0a9f68` (`-webkit-text-fill-color: #0a9f68`). Esto erradica cualquier salto o inconsistencia cromática en pantallas AMOLED.

@@ -9,7 +9,7 @@
 
 const db = require('../../lib/db');
 const { signJwt, verifyJwt } = require('../../lib/crypto');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { sessionLoginSchema, validateBody } = require('../../lib/validation');
 const { requireEnv } = require('../../lib/env');
@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
 
     // CASO 0: Restauración por enlace temporal firmado enviado al correo validado
     if (action === 'recover_token') {
-      if (!checkRateLimit(req, res, { prefix: 'recover_token', maxRequests: 5, windowMs: 15 * 60 * 1000 })) {
+      if (!(await checkRateLimitAsync(req, res, { prefix: 'recover_token', maxRequests: 5, windowMs: 15 * 60 * 1000 }))) {
         return;
       }
 
@@ -140,8 +140,8 @@ module.exports = async function handler(req, res) {
 
     // CASO 1: Reclamar sesión post-pago mediante referencia de orden verificada
     if (action === 'claim_reference' && reference) {
-      // 🛡️ Rate Limiting: Máximo 10 reclamos por minuto por IP
-      if (!checkRateLimit(req, res, { prefix: 'claim_ref', maxRequests: 10, windowMs: 60 * 1000 })) {
+      // 🛡️ Rate Limiting: Máximo 10 reclamos por minuto por IP con Upstash Redis
+      if (!(await checkRateLimitAsync(req, res, { prefix: 'claim_ref', maxRequests: 10, windowMs: 60 * 1000 }))) {
         return;
       }
 
@@ -309,8 +309,8 @@ module.exports = async function handler(req, res) {
     const normPhone = loginValidation.data.celular;
     const cleanPin = loginValidation.data.pin;
 
-    // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP
-    if (!checkRateLimit(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone })) {
+    // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP con Upstash Redis
+    if (!(await checkRateLimitAsync(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone }))) {
       return;
     }
 

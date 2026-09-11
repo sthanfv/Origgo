@@ -201,6 +201,9 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
   'sitemap.xml',
   'llms.txt',
   'favicon.svg',
+  'favicon.ico',
+  'favicon-32x32.png',
+  'apple-touch-icon.png',
   'google390e0a55723f2003.html'
 ].forEach((f) => copiarArchivo(f));
 

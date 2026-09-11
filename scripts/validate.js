@@ -49,7 +49,8 @@ async function ejecutarValidacionCompleta() {
     'api/media/proxy.js',
     'api/notifications/vapid-public-key.js',
     'api/notifications/subscribe.js',
-    'api/notifications/dispatch.js'
+    'api/notifications/dispatch.js',
+    'api/security/honeypot.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -157,6 +158,7 @@ async function ejecutarValidacionCompleta() {
       'config.js',
       'manifest.json',
       'favicon.svg',
+      'favicon.ico',
       'robots.txt',
       'sitemap.xml',
       'llms.txt',

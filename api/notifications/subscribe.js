@@ -7,7 +7,7 @@
  */
 
 require('../../lib/env');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { registrarSuscripcion } = require('../../lib/push-subscriptions');
 
@@ -21,8 +21,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   }
 
-  // Rate limit para prevenir spam de suscripciones
-  if (!checkRateLimit(req, res, { prefix: 'push_sub', maxRequests: 20, windowMs: 60 * 1000 })) {
+  // Rate limit para prevenir spam de suscripciones con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'push_sub', maxRequests: 20, windowMs: 60 * 1000 }))) {
     return;
   }
 

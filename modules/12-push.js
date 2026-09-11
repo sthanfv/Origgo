@@ -105,16 +105,34 @@ async function activarNotificacionesPush() {
  */
 function inicializarBotonPush() {
   const btnBell = document.getElementById('btnPushSubscribe');
-  if (!btnBell) return;
+  const linkSide = document.getElementById('sideMenuLinkPush');
 
-  btnBell.addEventListener('click', () => {
-    activarNotificacionesPush();
-  });
+  if (btnBell) {
+    btnBell.addEventListener('click', () => {
+      activarNotificacionesPush();
+    });
+  }
+
+  if (linkSide) {
+    linkSide.addEventListener('click', (e) => {
+      e.preventDefault();
+      activarNotificacionesPush();
+      const menu = document.getElementById('sideMenu');
+      const overlay = document.getElementById('sideMenuOverlay');
+      if (menu) menu.classList.remove('active', 'open');
+      if (overlay) overlay.classList.remove('active', 'open');
+    });
+  }
 
   // Verificar si ya tiene permiso otorgado
   if ('Notification' in window && Notification.permission === 'granted') {
-    btnBell.classList.add('active-push');
-    btnBell.title = 'Alertas de Oportunidades Activas';
+    if (btnBell) {
+      btnBell.classList.add('active-push');
+      btnBell.title = 'Alertas de Oportunidades Activas';
+    }
+    if (linkSide) {
+      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+    }
   }
 }
 

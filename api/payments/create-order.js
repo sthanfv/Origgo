@@ -8,7 +8,7 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { createOrderSchema, validateBody } = require('../../lib/validation');
 const { verifyJwt } = require('../../lib/crypto');
@@ -58,8 +58,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido. Utilice POST.' });
   }
 
-  // 🛡️ Rate Limiting Anti-DDoS: Máximo 12 solicitudes de orden por minuto por IP
-  if (!checkRateLimit(req, res, { prefix: 'create_order', maxRequests: 12, windowMs: 60 * 1000 })) {
+  // 🛡️ Rate Limiting Anti-DDoS: Máximo 12 solicitudes de orden por minuto por IP con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'create_order', maxRequests: 12, windowMs: 60 * 1000 }))) {
     return;
   }
 

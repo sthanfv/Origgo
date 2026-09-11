@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../../lib/db');
 const { signJwt, verifyJwt, decryptLeadContact } = require('../../lib/crypto');
-const { checkRateLimit } = require('../../lib/rate-limiter');
+const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { unlockLeadSchema, validateBody } = require('../../lib/validation');
 const { requireEnv } = require('../../lib/env');
@@ -107,8 +107,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // 🛡️ Rate Limiting: máx 30 desbloqueos por minuto por IP
-  if (!checkRateLimit(req, res, { prefix: 'leads_unlock', maxRequests: 30, windowMs: 60 * 1000 })) {
+  // 🛡️ Rate Limiting: máx 30 desbloqueos por minuto por IP con Upstash Redis
+  if (!(await checkRateLimitAsync(req, res, { prefix: 'leads_unlock', maxRequests: 30, windowMs: 60 * 1000 }))) {
     return;
   }
 
