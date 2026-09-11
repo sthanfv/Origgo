@@ -428,7 +428,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 4px;
+  margin-right: 1px;
   flex-shrink: 0;
   vertical-align: middle;
   position: relative;
@@ -460,7 +460,7 @@ body {
   align-items: center;
   font-family: var(--font-display, 'Lufga', sans-serif);
   font-weight: 800;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   transition: filter 0.3s ease;
 }
 
@@ -4819,7 +4819,7 @@ main {
 .footer-brand-title .brand-initial-o-wrap {
   width: 28px;
   height: 28px;
-  margin-right: 4px;
+  margin-right: 1px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -4837,7 +4837,7 @@ main {
 }
 
 .footer-brand-title .brand-letters-riggo {
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   line-height: 1;
   display: inline-flex;
   align-items: center;

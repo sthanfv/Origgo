@@ -1,14 +1,16 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 22:22 (GMT-5)
+Última actualización: 2026-09-10 22:32 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
 
-0. **Calibración Cromática AMOLED `#0a9f68` y Corrección de Kerning en Footer**:
+0. **Calibración Cromática AMOLED `#0a9f68` y Micro-Kerning Óptico del Isotipo**:
    - **Color Institucional Exacto:** Se eliminó el degradado CSS verde menta (`#34D399`) en `.brand-letter` tanto en `styles/02-base.css` como en `styles/13-footer.css`, fijando el color sólido corporativo exacto `#0a9f68` (`-webkit-text-fill-color: #0a9f68`). Esto erradica cualquier salto o inconsistencia cromática en pantallas AMOLED.
-   - **Corrección de Invasión de Isotipo en Pie de Página:** Se eliminó la sobredimensión del 108% (`width: 108%; height: 108%`) y el margen negativo (`margin-right: -1px`) en `.footer-brand-title .brand-icon-o`. Se fijó `margin-right: 4px` y `letter-spacing: -0.015em`, garantizando una alineación tipográfica perfecta donde el isotipo SVG no invade la letra "r".
+   - **Alineación y Espaciado Óptico Idéntico a los Caracteres:**
+     - En la cabecera (`styles/02-base.css`), se restauró `margin-right: 1px` y `letter-spacing: -0.02em`, eliminando el exceso de 4px que separaba artificialmente la "O" de "riggo".
+     - En el pie de página (`styles/13-footer.css`), se fijó `margin-right: 1px` y `letter-spacing: -0.02em` manteniendo `width: 100%; height: 100%`. De esta manera, el espacio entre el círculo de la "O" y la letra "r" coincide milimétricamente con el kerning existente entre la "r", la "i" y las "g" sin pisar ni separar en exceso.
 
 1. **Purga Total de Mocks de Vehículos y Enlaces Residuales**:
    - Se removió la pestaña y botón de vehículos del selector de nichos en `index.html`.

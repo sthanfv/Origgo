@@ -144,7 +144,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 4px;
+  margin-right: 1px;
   flex-shrink: 0;
   vertical-align: middle;
   position: relative;
@@ -176,7 +176,7 @@
   align-items: center;
   font-family: var(--font-display, 'Lufga', sans-serif);
   font-weight: 800;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   transition: filter 0.3s ease;
 }
 
