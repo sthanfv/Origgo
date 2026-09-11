@@ -213,6 +213,13 @@ async function ejecutarValidacionCompleta() {
   }
 
   try {
+    execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_upstash_redis.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de Upstash Redis distribuido y Fail-Safe pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de Upstash Redis: ${e.message}`);
+  }
+
+  try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'image_proxy.test.js')}"`, { stdio: 'pipe' });
     assert(true, 'Pruebas unitarias de proxy de medios y anti-SSRF pasadas al 100%');
   } catch (e) {
