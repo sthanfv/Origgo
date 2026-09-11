@@ -144,7 +144,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1px;
+  margin-right: 4px;
   flex-shrink: 0;
   vertical-align: middle;
   position: relative;
@@ -176,21 +176,19 @@
   align-items: center;
   font-family: var(--font-display, 'Lufga', sans-serif);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   transition: filter 0.3s ease;
 }
 
 .brand-badge:hover .brand-letters-riggo {
-  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.45));
+  filter: drop-shadow(0 0 12px rgba(10, 159, 104, 0.45));
 }
 
-/* Animación secuencial cinemática letra por letra de 'riggo' */
+/* Animación secuencial cinemática letra por letra de 'riggo' con color corporativo #0a9f68 */
 .brand-letter {
   display: inline-block;
-  background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #10B981;
+  color: #0a9f68;
+  -webkit-text-fill-color: #0a9f68;
   opacity: 0;
   transform: translateY(8px) scale(0.95);
   animation: animLetterAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -204,10 +202,8 @@
 .brand-letter-5 { --char-i: 5; }
 
 [data-theme="light"] .brand-letter {
-  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #047857;
+  color: #0a9f68;
+  -webkit-text-fill-color: #0a9f68;
 }
 
 @keyframes animLetterAppear {

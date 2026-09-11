@@ -1,10 +1,29 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 22:08 (GMT-5)
+Última actualización: 2026-09-10 22:22 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+0. **Calibración Cromática AMOLED `#0a9f68` y Corrección de Kerning en Footer**:
+   - **Color Institucional Exacto:** Se eliminó el degradado CSS verde menta (`#34D399`) en `.brand-letter` tanto en `styles/02-base.css` como en `styles/13-footer.css`, fijando el color sólido corporativo exacto `#0a9f68` (`-webkit-text-fill-color: #0a9f68`). Esto erradica cualquier salto o inconsistencia cromática en pantallas AMOLED.
+   - **Corrección de Invasión de Isotipo en Pie de Página:** Se eliminó la sobredimensión del 108% (`width: 108%; height: 108%`) y el margen negativo (`margin-right: -1px`) en `.footer-brand-title .brand-icon-o`. Se fijó `margin-right: 4px` y `letter-spacing: -0.015em`, garantizando una alineación tipográfica perfecta donde el isotipo SVG no invade la letra "r".
+
+1. **Purga Total de Mocks de Vehículos y Enlaces Residuales**:
+   - Se removió la pestaña y botón de vehículos del selector de nichos en `index.html`.
+   - Se removió el enlace de vehículos del menú lateral desplegable en `index.html`.
+   - Se eliminaron las bifurcaciones y textos condicionales de vehículos en `modules/06-cards.js`, consolidando la experiencia al 100% en inmuebles residenciales directos.
+
+2. **Contador Dinámico en Tiempo Real en Tarjetas de Catálogo**:
+   - Se implementaron las funciones reactivas `formatearTiempoRelativo(timestampMs, fallback)` y `actualizarTiemposRelativosEnDOM()` en `modules/06-cards.js`.
+   - El pill de antigüedad ahora almacena `data-timestamp` y actualiza automáticamente los textos en caliente ("⚡ Justo ahora", "Hace 5 min", "Hace 2 horas") cada 60 segundos con un `setInterval` global persistente.
+   - El publicador del scraper (`publisher_web.js`) en el Samsung Galaxy J7 ahora calcula y emite `timestamp_ms` y `fecha_relativa` en cada registro.
+
+3. **Publicación y Carga de Leads Reales desde Hardware Físico J7 a Cloudflare R2**:
+   - Se conectó con el Samsung Galaxy J7 vía ADB y se ejecutó `publisher_web.js` sobre la base de datos de producción `hunter.db` (403 particulares activos).
+   - Se compilaron y subieron 60 inmuebles reales a Cloudflare R2 (`https://pub-040118b18ae247d7b4643d22289744b6.r2.dev/inmobiliario.json`) y su firma criptográfica HMAC-SHA256 en 1.9 segundos.
+   - Se sincronizó el catálogo local de fallback en `hunter-portal-showcase/data/` con los datos reales frescos.
 
 0. **Unificación de Dominio Canónico a `origgo.online`**:
    - Se erradicaron todas las referencias a dominios hipotéticos (`origgo.co`).

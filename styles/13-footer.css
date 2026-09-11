@@ -349,7 +349,7 @@
 .footer-brand-title .brand-initial-o-wrap {
   width: 28px;
   height: 28px;
-  margin-right: -1px;
+  margin-right: 4px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -359,15 +359,15 @@
 }
 
 .footer-brand-title .brand-icon-o {
-  width: 108%;
-  height: 108%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   filter: none;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .footer-brand-title .brand-letters-riggo {
-  letter-spacing: -0.035em;
+  letter-spacing: -0.015em;
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -375,6 +375,8 @@
 }
 
 .footer-brand-title .brand-letter {
+  color: #0a9f68;
+  -webkit-text-fill-color: #0a9f68;
   opacity: 1;
   transform: none;
   animation: none;
@@ -385,7 +387,7 @@
 }
 
 .footer-brand-title:hover .brand-letters-riggo {
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.28));
+  filter: drop-shadow(0 0 8px rgba(10, 159, 104, 0.35));
 }
 
 

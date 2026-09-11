@@ -1433,10 +1433,47 @@ function generarHtmlSkeletons() {
           <div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div>
         </div>
       </div>
-    </article>
-  `).join('');
+    </article>`).join('');
 }
 
+/**
+ * Formatea dinámicamente el tiempo transcurrido desde la captura en tiempo real.
+ * @param {number|string} timestampMs - Timestamp en milisegundos
+ * @param {string} [fallback] - Texto alternativo
+ * @returns {string} Texto formateado (ej. "⚡ Justo ahora", "Hace 15 min", "Hace 2 h")
+ */
+function formatearTiempoRelativo(timestampMs, fallback) {
+  if (!timestampMs || isNaN(Number(timestampMs))) {
+    return fallback || 'Reciente';
+  }
+  const diffMs = Date.now() - Number(timestampMs);
+  if (diffMs < 0) return '⚡ Justo ahora';
+  
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHoras = Math.floor(diffMin / 60);
+  const diffDias = Math.floor(diffHoras / 24);
+
+  if (diffMin < 1) return '⚡ Justo ahora';
+  if (diffMin < 60) return `Hace ${diffMin} min`;
+  if (diffHoras < 24) return `Hace ${diffHoras} ${diffHoras === 1 ? 'hora' : 'horas'}`;
+  if (diffDias < 30) return `Hace ${diffDias} ${diffDias === 1 ? 'día' : 'días'}`;
+  return fallback || 'Reciente';
+}
+
+/**
+ * Recalcula y actualiza en caliente los contadores de tiempo en todas las tarjetas del DOM.
+ */
+function actualizarTiemposRelativosEnDOM() {
+  const pills = document.querySelectorAll('.badge-time-pill[data-timestamp]');
+  pills.forEach((pill) => {
+    const ts = pill.getAttribute('data-timestamp');
+    if (!ts) return;
+    const txtEl = pill.querySelector('.time-relative-text');
+    if (txtEl) {
+      txtEl.textContent = formatearTiempoRelativo(Number(ts), txtEl.textContent);
+    }
+  });
+}
 
 /**
  * Renderiza la interfaz utilizando Mapeo Dinámico de Llaves (Content-Agnostic) y Dark Luxury Cards.
@@ -1482,8 +1519,7 @@ function renderizarInterfaz(dataset) {
   }
   const headingEl = document.getElementById("catalogHeading");
   if (headingEl) {
-    const esVehiculoModulo = (config.titulo_modulo && config.titulo_modulo.toLowerCase().includes('vehículo'));
-    headingEl.textContent = esVehiculoModulo ? "Vehículos con Margen en Vivo" : "Inmuebles Directos en Vivo";
+    headingEl.textContent = "Inmuebles Directos en Vivo";
   }
 
   // Renderizar la grilla Bento
@@ -1520,9 +1556,7 @@ function renderizarInterfaz(dataset) {
     const busquedaTexto = querySegura ? ` para "${querySegura}"` : '';
     container.innerHTML = `
       <div class="empty-catalog-state" id="emptyCatalogState">
-        <div class="empty-state-icon-box">
-          <i class="fa-solid fa-filter-circle-xmark"></i>
-        </div>
+        <div class="empty-state-icon-box"><i class="fa-solid fa-filter-circle-xmark"></i></div>
         <div class="empty-state-content">
           <h3 class="empty-state-title">Sin oportunidades en esta zona</h3>
           <p class="empty-state-desc">No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.</p>
@@ -1530,12 +1564,9 @@ function renderizarInterfaz(dataset) {
         <button type="button" class="btn-empty-reset" id="btnResetFilters">
           <i class="fa-solid fa-rotate-left"></i> Restablecer todos los filtros
         </button>
-      </div>
-    `;
+      </div>`;
     const btnReset = document.getElementById("btnResetFilters");
-    if (btnReset) {
-      btnReset.addEventListener("click", restablecerTodosLosFiltros);
-    }
+    if (btnReset) btnReset.addEventListener("click", restablecerTodosLosFiltros);
     return;
   }
 
@@ -1567,22 +1598,12 @@ function renderizarInterfaz(dataset) {
             </div>
           `).join('')}
 
-          <!-- Flechas de navegación (Aparecen en Hover) -->
-          <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="Foto Anterior">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button class="carousel-nav-btn next" data-action="carrusel-next" data-index="${index}" data-total="${fotos.length}" title="Siguiente Foto">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-
-          <!-- Puntos indicadores de foto -->
+          <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="Foto Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="carousel-nav-btn next" data-action="carrusel-next" data-index="${index}" data-total="${fotos.length}" title="Siguiente Foto"><i class="fa-solid fa-chevron-right"></i></button>
           <div class="carousel-dots" id="dots-${index}">
-            ${fotos.map((_, fIdx) => `
-              <span class="carousel-dot ${fIdx === 0 ? 'active' : ''}" data-dot="${fIdx}"></span>
-            `).join('')}
+            ${fotos.map((_, fIdx) => `<span class="carousel-dot ${fIdx === 0 ? 'active' : ''}" data-dot="${fIdx}"></span>`).join('')}
           </div>
-        </div>
-      `;
+        </div>`;
     } else {
       mediaHtml += `
         <img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
@@ -1590,15 +1611,13 @@ function renderizarInterfaz(dataset) {
     }
     mediaHtml += '</div>';
 
-    const esVehiculo = (config.titulo_modulo && config.titulo_modulo.toLowerCase().includes('vehículo')) || (item.tipo_inmueble && (item.tipo_inmueble.toLowerCase().includes('sedán') || item.tipo_inmueble.toLowerCase().includes('pick-up') || item.tipo_inmueble.toLowerCase().includes('suv')));
-
     // Preparar especificaciones para la Ficha de Detalles
     const detalles = item.detalles || {
       [col1Nombre]: item.dato_1 || "No especificado",
       [col2Nombre]: item.dato_2 || "No especificado",
       "Ubicación": item.ubicacion || "Colombia",
-      "Tipo": item.tipo_inmueble || (esVehiculo ? "Vehículo" : "Propiedad"),
-      "Operación": esVehiculo ? "Venta Directa Particular" : "Venta Directa con Propietario"
+      "Tipo": item.tipo_inmueble || "Propiedad Residencial",
+      "Operación": "Venta Directa con Propietario"
     };
 
     const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
@@ -1617,7 +1636,7 @@ function renderizarInterfaz(dataset) {
       item.precio,
       item.precio_m2,
       detallesStr,
-      esVehiculo ? 'vehiculo carro auto particular' : 'inmueble propiedad vivienda particular directo dueno'
+      'inmueble propiedad vivienda particular directo dueno'
     ].filter(Boolean).join(' ');
 
     const searchDataCorpus = normalizarTextoBusqueda(corpusBruto);
@@ -1640,8 +1659,8 @@ function renderizarInterfaz(dataset) {
 
           <!-- Badges Superiores Flotantes (Izquierda) -->
           <div class="card-floating-badges">
-            <span class="badge-time-pill">
-              <i class="fa-regular fa-clock"></i> ${escaparHtml(item.fecha_relativa || 'Reciente')}
+            <span class="badge-time-pill" data-timestamp="${item.timestamp_ms || ''}">
+              <i class="fa-regular fa-clock"></i> <span class="time-relative-text">${escaparHtml(formatearTiempoRelativo(item.timestamp_ms, item.fecha_relativa))}</span>
             </span>
             ${estaDesbloqueado ? `
               <span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> Desbloqueado</span>
@@ -1736,7 +1755,7 @@ function renderizarInterfaz(dataset) {
         <div class="card-slideup-overlay" id="slideup-${index}">
           <div class="slideup-header">
             <div class="slideup-title">
-              <i class="fa-solid fa-circle-info"></i> ${esVehiculo ? 'Detalles del Vehículo' : 'Detalles de la Propiedad'}
+              <i class="fa-solid fa-circle-info"></i> Detalles de la Propiedad
             </div>
             <button class="btn-slideup-close" data-action="cerrar-ficha" data-index="${index}" title="Cerrar Detalles">
               <i class="fa-solid fa-xmark"></i>
@@ -1748,7 +1767,7 @@ function renderizarInterfaz(dataset) {
             <div class="slideup-specs-grid">
               ${Object.entries(detalles).map(([k, v]) => {
                 const kLow = k.toLowerCase();
-                const iconClass = kLow.includes('estrato') ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('superficie')) ? 'fa-ruler-combined' : kLow.includes('hab') ? 'fa-bed' : kLow.includes('baño') ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero')) ? 'fa-square-parking' : (kLow.includes('kilómet') || kLow.includes('km')) ? 'fa-gauge-high' : kLow.includes('transmisi') ? 'fa-gears' : kLow.includes('motor') ? 'fa-car-battery' : kLow.includes('placa') ? 'fa-id-card' : (kLow.includes('año') || kLow.includes('modelo')) ? 'fa-calendar-days' : kLow.includes('contacto') ? 'fa-user-shield' : 'fa-circle-info';
+                const iconClass = kLow.includes('estrato') ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('superficie')) ? 'fa-ruler-combined' : kLow.includes('hab') ? 'fa-bed' : kLow.includes('baño') ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero')) ? 'fa-square-parking' : kLow.includes('contacto') ? 'fa-user-shield' : 'fa-circle-info';
                 const vNorm = String(v || 'N/A').replace(/\b1 espacios\b/gi, '1 espacio').replace(/\b1 alcobas\b/gi, '1 alcoba').replace(/\b1 completos\b/gi, '1 completo');
                 return `
                   <div class="slideup-spec-card">
@@ -1762,10 +1781,10 @@ function renderizarInterfaz(dataset) {
             <!-- Bloque de Confianza: Trato Directo Sin Intermediarios -->
             <div class="slideup-trust-card">
               <div class="trust-badge">
-                <i class="fa-solid fa-shield-halved"></i> ${esVehiculo ? 'Trato Directo con el Dueño' : 'Trato Directo con el Propietario'}
+                <i class="fa-solid fa-shield-halved"></i> Trato Directo con el Propietario
               </div>
               <p class="trust-desc">
-                ${esVehiculo ? 'Vehículo publicado directamente por su dueño. Sin intermediarios ni comisiones de concesionario, listo para negociar por llamada o WhatsApp.' : 'Propiedad publicada directamente por su dueño. Sin inmobiliarias ni comisiones intermedias, lista para negociar por llamada o WhatsApp.'}
+                Propiedad comercializada directamente por su dueño. Sin inmobiliarias ni comisiones intermedias, lista para negociar por llamada o WhatsApp.
               </p>
             </div>
 
@@ -1824,15 +1843,7 @@ function renderizarInterfaz(dataset) {
   if (totalPaginas > 1) {
     const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" aria-label="Ir a la página anterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>` : '';
     const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" aria-label="Ir a la página siguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>` : '';
-    htmlContenido += `
-      <div class="pagination-controls">
-        ${btnPrevHtml}
-        <span class="pagination-info">
-          Página ${paginaActual} de ${totalPaginas}
-        </span>
-        ${btnNextHtml}
-      </div>
-    `;
+    htmlContenido += `<div class="pagination-controls">${btnPrevHtml}<span class="pagination-info">Página ${paginaActual} de ${totalPaginas}</span>${btnNextHtml}</div>`;
   }
 
   container.innerHTML = htmlContenido;
@@ -1858,6 +1869,11 @@ function renderizarInterfaz(dataset) {
 
   // Activar el Scroll Reveal progresivo con inercia para scroll móvil
   iniciarScrollReveal();
+
+  // Temporizador de refresco en vivo para tiempos relativos (cada 60 segundos)
+  if (!window._timerRelativoCards) {
+    window._timerRelativoCards = setInterval(actualizarTiemposRelativosEnDOM, 60000);
+  }
 
   container.querySelectorAll('.carousel-track').forEach((track) => {
     const card = track.closest('.bento-card');
