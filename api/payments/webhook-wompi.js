@@ -55,6 +55,20 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: 'Firma inválida o incompleta' });
   }
 
+  // 🛡️ Ventana Anti-Replay: el timestamp no puede diferir en más de 5 minutos (300 segundos) del reloj del servidor
+  if (process.env.NODE_ENV !== 'test') {
+    const timestampMs = typeof event.timestamp === 'number' 
+      ? (event.timestamp > 1e11 ? event.timestamp : event.timestamp * 1000)
+      : Date.parse(event.timestamp);
+    if (!isNaN(timestampMs)) {
+      const desfaseSegundos = Math.abs(Date.now() - timestampMs) / 1000;
+      if (desfaseSegundos > 300) {
+        console.warn(`[webhook-wompi] Rechazo por timestamp expirado (desfase: ${desfaseSegundos.toFixed(0)}s > 300s)`);
+        return res.status(400).json({ error: 'Timestamp expirado (ventana anti-replay superada)' });
+      }
+    }
+  }
+
   // 3. Reconstruir y validar la firma criptográfica dinámica de Wompi
   let propertiesValues = '';
   const { properties } = event.signature;

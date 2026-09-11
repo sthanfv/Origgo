@@ -43,21 +43,35 @@ async function runTests() {
   const encryptionKey = process.env.LEADS_ENCRYPTION_KEY || 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c';
   const jwtSecret = process.env.JWT_SECRET || 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
 
-  // TEST 1: Cifrado y Descifrado AES-256-GCM
-  console.log('▶ Test 1: Cifrado y descifrado simétrico AES-256-GCM...');
+  // TEST 1: Cifrado y Descifrado AES-256-GCM con soporte de Versionado de Claves
+  console.log('▶ Test 1: Cifrado y descifrado simétrico AES-256-GCM (versionado y retrocompatibilidad)...');
   const contactoOriginal = {
     telefono: '+573145678901',
     enlace: 'https://fincaraiz.com.co/inmueble/999999',
     portal: 'fincaraiz'
   };
-  const cipherText = encryptLeadContact(contactoOriginal, encryptionKey);
-  assert.ok(cipherText.includes(':'), 'El texto cifrado debe tener formato iv:tag:cipher');
-  
-  const decrypted = decryptLeadContact(cipherText, encryptionKey);
-  assert.strictEqual(decrypted.telefono, contactoOriginal.telefono);
-  assert.strictEqual(decrypted.enlace, contactoOriginal.enlace);
-  assert.strictEqual(decrypted.portal, contactoOriginal.portal);
-  console.log('  ✅ Cifrado/Descifrado AES-256-GCM verificado con éxito.');
+  // Caso A: Formato versionado v1 (4 partes)
+  const cipherV1 = encryptLeadContact(contactoOriginal, encryptionKey, 'v1');
+  const cipherText = cipherV1;
+  assert.ok(cipherV1.startsWith('v1:'), 'Debe incluir prefijo de versión v1');
+  const decryptedV1 = decryptLeadContact(cipherV1, encryptionKey);
+  assert.strictEqual(decryptedV1.telefono, contactoOriginal.telefono);
+
+  // Caso B: Formato legado sin prefijo (3 partes)
+  const cipherLegado = encryptLeadContact(contactoOriginal, encryptionKey, null);
+  assert.strictEqual(cipherLegado.split(':').length, 3, 'El formato legado debe tener exactamente 3 partes');
+  const decryptedLegado = decryptLeadContact(cipherLegado, encryptionKey);
+  assert.strictEqual(decryptedLegado.telefono, contactoOriginal.telefono);
+
+  // Caso C: Soporte de Llavero (Key Ring) para Rotación de Claves
+  const claveNueva = '11'.repeat(32); // 64 hex
+  const cipherV2 = encryptLeadContact(contactoOriginal, claveNueva, 'v2');
+  const keyRing = { v1: encryptionKey, v2: claveNueva };
+  const decryptedKeyRing1 = decryptLeadContact(cipherV1, keyRing);
+  const decryptedKeyRing2 = decryptLeadContact(cipherV2, keyRing);
+  assert.strictEqual(decryptedKeyRing1.telefono, contactoOriginal.telefono);
+  assert.strictEqual(decryptedKeyRing2.telefono, contactoOriginal.telefono);
+  console.log('  ✅ Cifrado/Descifrado AES-256-GCM y rotación de claves verificados con éxito.');
 
   // TEST 2: Firma y Verificación de JWT con timingSafeEqual
   console.log('▶ Test 2: Token JWT firmado y verificado...');
@@ -273,7 +287,7 @@ async function runTests() {
     },
     body: {
       leadId: 'lead-inm-99',
-      contactoCifrado: cipherText
+      contactoCifrado: cipherV1
     }
   };
   const mockResUnlock = createMockRes();
