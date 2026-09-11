@@ -87,10 +87,20 @@
      - Componente visual interactivo (`btnPushSubscribe`) con campana glassmorphism en cabecera desktop y móvil, y feedback mediante `mostrarNotificacionToast()`.
      - Suite DevSecOps (`tests/web_push.test.js`) con 5/5 pruebas unitarias automatizadas integradas en la Fase 5 de `scripts/validate.js`.
 
+   - **Pilar 5: Cloudflare R2 Object Storage S3 ($0 Egress Fee):**
+     - Bucket `origgo-catalogos` creado en Cloudflare R2 con subdominio público activo (`https://pub-040118b18ae247d7b4643d22289744b6.r2.dev`).
+     - Política CORS aplicada para lecturas `GET`/`HEAD` sin restricciones desde dominios autorizados.
+     - Cliente nativo S3 con firma criptográfica AWS Signature Version 4 (`r2_client.js`) implementado con 0 dependencias externas en Node.js, ahorrando memoria en el teléfono J7.
+     - Publicador del scraper (`publisher_web.js`) sincroniza en tiempo real `inmobiliario.json` y su firma HMAC `inmobiliario.json.sig` en ~900 ms sin generar commits a Git.
+     - Frontend (`modules/03-api.js` y `config.js`) consume el catálogo en tiempo real con timeout de 4s y fail-safe automático a `./data/inmobiliario.json` local.
+     - 4 pruebas unitarias de R2 pasadas al 100% en el procesador Exynos del J7 (`tests/r2_client.test.js`) y 4 pruebas unitarias pasadas al 100% en el frontend (`tests/r2_integration.test.js`).
+
 ---
 
 ## 2. Por qué cambió
 
+- El scraper realizaba hasta 96 commits diarios a GitHub para actualizar el JSON, saturando el historial de Git y obligando a Vercel a reconstruir la web completa continuamente.
+- Cloudflare R2 permite almacenar y servir el catálogo JSON en tiempo real con **$0 costo de transferencia saliente (zero egress fees)**, 10 GB de almacenamiento gratuito y 10 millones de lecturas mensuales.
 - WhatsApp Business Cloud API tiene costes por mensaje y requiere verificación de empresa en Meta. Web Push PWA utiliza el estándar W3C Push API con coste $0 permanente, permitiendo alertar a agentes e inversionistas en tiempo real sin tarifas por notificación.
 - Requerimiento de seguridad mandatorio: Ningún token o clave pública/privada debe quemarse en el frontend para evitar raspado o exposición en DevTools (F12).
 - Las funciones serverless de Vercel son efímeras; Upstash Redis garantiza contadores de rate limit distribuidos y compartidos entre todas las instancias edge.
@@ -101,6 +111,10 @@
 ## 3. Archivos afectados
 
 ### Web (hunter-portal-showcase)
+- `config.js`: Declaración de `catalogoR2Url` apuntando a la CDN de Cloudflare R2.
+- `modules/03-api.js`: Descarga en tiempo real con timeout de 4 segundos y fallback a almacenamiento local.
+- `tests/r2_integration.test.js` [NUEVO]: Pruebas unitarias de disponibilidad, latencia y contrato de datos en R2.
+- `scripts/validate.js`: Integración de validación de R2 en la Fase 5.
 - `api/notifications/vapid-public-key.js` [NUEVO]: Endpoint serverless GET de clave pública con rate limit y caché.
 - `api/notifications/subscribe.js` [NUEVO]: Endpoint serverless POST de registro de suscripciones W3C Push.
 - `api/notifications/dispatch.js` [NUEVO]: Endpoint serverless POST de emisión masiva con autenticación interna.
@@ -112,12 +126,16 @@
 - `styles/03-header.css`: Estilos glassmorphic, estados hover y `.active-push`.
 - `styles/11-mobile.css`: Tamaño táctil 36px en cabecera móvil.
 - `scripts/build.js`: Exclusión de `push_subscriptions.json` en `dist/`.
-- `scripts/validate.js`: Integración de validación de sintaxis, selectores CSS, DOM y tests automatizados de push.
 - `.gitignore`: Exclusión de `data/push_subscriptions.json`.
 - `README.md`, `ARCHITECTURE.md`, `docs/INDICE_ARCHIVOS.md`: Documentación técnica sincronizada al 100%.
 - `app.js`, `app.min.js`, `style.css`, `style.min.css`: Recompilados.
 
 ### Scraper (ofertas-hunter-pro)
+- `r2_client.js` [NUEVO]: Cliente S3 con firma canónica AWS SigV4 nativa de cero dependencias.
+- `publisher_web.js`: Publicación instantánea a Cloudflare R2 como canal primario y GitHub tolerante a fallos como secundario.
+- `worker_pool.js`: Reincorporación de la clase `WorkerPool` con mitigación anti-OOM y concurrencia acotada.
+- `.env`: Credenciales de R2 configuradas.
+- `tests/r2_client.test.js` [NUEVO]: Pruebas de firma SigV4, subida y lectura pública en R2 (100% verdes en J7).
 - `watchdog_hardware.js`: Soporte de ping a Healthchecks.io con DNS Android.
 - `tests/heartbeat_watchdog.test.js`: Suite de pruebas unitarias de sonda de supervivencia (27/27 tests verdes en J7).
 - `docs/INDICE_ARCHIVOS.md`: Sincronizado.
@@ -126,17 +144,21 @@
 
 ## 4. Decisiones técnicas tomadas
 
+- **Cliente S3 SigV4 sin SDK de AWS**: En lugar de instalar `@aws-sdk/client-s3` (>100MB de node_modules y alto consumo de RAM), se implementó la especificación canónica de firma AWS SigV4 con el módulo nativo `crypto` de Node.js en ~150 líneas, protegiendo los 1.5GB de RAM del J7.
+- **Fail-Safe Bi-direccional R2 + Local**: El frontend consulta primero la CDN de Cloudflare R2 con un timeout estricto de 4 segundos. Si el usuario está offline o R2 tiene latencia, el sistema cae silenciosa e instantáneamente a `./data/inmobiliario.json` empaquetado en Vercel. Cero pantallas en blanco.
 - **CERO variables en frontend (DevTools / F12 limpio)**: La clave pública VAPID no está quemada en HTML, JS ni en `window`. El cliente la solicita en memoria volátil en el instante en que el usuario activa las alertas, permitiendo rotar claves en Vercel sin reconstruir el frontend.
 - **Deduplicación por SHA-256 de endpoints**: Los navegadores generan endpoints largos; se indexan por un hash determinista SHA-256 de 32 caracteres para operaciones de persistencia instantáneas O(1).
 - **Protección timingSafeEqual en despacho masivo**: El endpoint `dispatch.js` compara el secreto interno en tiempo constante, previniendo ataques de canal lateral (*timing attacks*).
 - **Aislamiento en .gitignore y dist/**: Las suscripciones de navegadores nunca se copian a `dist/` ni se comitean a Git, respetando el principio de Privacidad por Diseño.
-- **Modularidad Desmulta (< 500 líneas)**: Todos los archivos creados (`12-push.js`: 127 líneas, `push-subscriptions.js`: 132 líneas, `03-header.css`: 293 líneas) cumplen holgadamente el límite.
+- **Modularidad Desmulta (< 500 líneas)**: Todos los submódulos JS y CSS cumplen holgadamente el límite.
 
 ---
 
 ## 5. Estado actual del sistema
 
 - `npm test` (web): 8/8 fases DevSecOps al 100% (0 errores).
-- 13 submódulos JS y 16 submódulos CSS compilados y minificados.
+- `node --test tests/*.test.js` (scraper): 109/109 pruebas pasadas al 100% (0 errores).
+- Samsung Galaxy J7 (ADB `3300aebadc113449`): PM2 `scraper` (PID 1) y `dashboard` (PID 2) online con parche R2 aplicado.
+- Cloudflare R2 `origgo-catalogos` activo y sirviendo 60 oportunidades directas en tiempo real.
 - Upstash Redis y Healthchecks.io validados en producción.
 - Web Push VAPID listo para despliegue en Vercel con variables de entorno preparadas.

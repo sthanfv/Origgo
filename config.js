@@ -20,7 +20,10 @@ const PORTAL_CONFIG = {
   contacto: {
     whatsapp: "573001234567",
     mensajeWhatsapp: "Hola, deseo activar mi suscripción a la Terminal VIP de Origgo."
-  }
+  },
+
+  // Catálogo en Vivo en Cloudflare R2 (Object Storage S3 en Tiempo Real sin Egress Fee)
+  catalogoR2Url: "https://pub-040118b18ae247d7b4643d22289744b6.r2.dev/inmobiliario.json"
 };
 
 // Exportación compatible tanto con navegador (window) como con Node.js

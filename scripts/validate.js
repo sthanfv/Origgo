@@ -253,6 +253,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de Web Push VAPID: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'r2_integration.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de Cloudflare R2 y carga en tiempo real pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de Cloudflare R2: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS
   // ═════════════════════════════════════════════════════════════════════════
