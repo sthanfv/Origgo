@@ -1,12 +1,28 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 23:10 (GMT-5)
+Última actualización: 2026-09-11 06:10 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
 
--4. **Activación Silenciosa y Profesional de Web Push (Erradicación de Alerta Mock)**:
+-6. **Corrección Crítica de Enlace 404 en Correos, Plantilla Bifurcada por Saldo y UI Móvil de Membresías**:
+   - **Causa Raíz del 404 Identificada y Resuelta:** En `api/auth/recover.js`, `resolverPortalUrlSeguro()` tenía configurado `fallback = 'https://origgo.vercel.app'`. Esa URL pertenecía a una aplicación ajena de rutas en Brasil, no a Origgo, provocando 404 al pulsar el enlace del correo. Se corrigió a `https://origgo.online`.
+   - **Módulo de Plantillas de Correo Élite (`lib/email-templates.js`, 253 líneas):**
+     - Se unificó el diseño a un **único botón principal CTA** ("Restaurar Terminal VIP" o "Comprar Acceso Inmediato").
+     - **Bifurcación de Negocio según Saldo:**
+       - *Si el usuario tiene saldo o membresía activa:* Recibe `generarPlantillaRestauracion` con su balance detallado (ej. "👑 Plan Nacional 30d" o "⚡ 10 Créditos"), PIN protegido y botón único para restaurar la sesión con token criptográfico seguro de 1 solo uso.
+       - *Si el usuario tiene 0 créditos y ningún plan activo:* Se le despacha `generarPlantillaSinCreditos` informándole formalmente de su estado ("Tu cuenta no posee créditos de desbloqueo activos ni planes vigentes") y ofreciéndole un botón directo para recargar saldo en el checkout oficial.
+   - **Página 404 Personalizada de Élite (`404.html`):**
+     - Se creó la página 404 con estética dark AMOLED institucional, isotipo esmeralda `#0a9f68`, animación de radar buscando en la nada y botón de regreso a la terminal principal.
+   - **Visibilidad Móvil de Saldo y Planes de Suscripción:**
+     - Se implementó `#btnMobileStatusChip` en el header móvil (`styles/11-mobile.css`, 497 líneas < 500) y `#sideMenuUserAccount` en el menú lateral (`styles/12-sidebar.css`, 304 líneas).
+     - Muestra dinámicamente si el usuario posee "👑 Nacional 30d", "👑 [Ciudad] 30d" o "⚡ [N] Creds", sincronizado en caliente vía `actualizarEstadoCuentaMobile()` en `modules/01-state.js` (442 líneas) y `modules/10-listeners.js` (476 líneas).
+   - **Despliegue y Validación DevSecOps:**
+     - Las 8 fases del validador pasaron con 100% de éxito.
+     - Commit `c4fb100` empujado a GitHub `main` y desplegado automáticamente en Vercel.
+
+-5. **Activación Silenciosa y Profesional de Web Push (Erradicación de Alerta Mock)**:
    - **Comportamiento en Producción:** Se eliminó la llamada artificial a `registro.showNotification` que saltaba de inmediato al activar el radar. Ahora, el flujo es 100% nativo y profesional: el usuario otorga el permiso, se guarda la suscripción en el backend, la campana se enciende en verde esmeralda y se muestra un toast discreto. Las notificaciones reales al teléfono solo llegarán cuando el scraper despache ofertas reales desde el backend.
    - **Modularidad Intacta:** `modules/12-push.js` (241 líneas), 8 fases DevSecOps al 100%.
 
