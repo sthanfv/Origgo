@@ -152,8 +152,8 @@ Para el funcionamiento seguro del backend serverless en producción, configure l
 | `FIREBASE_PROJECT_ID` | Opcional | ID de proyecto Firebase/Firestore si se usa persistencia en la nube. |
 | `FIREBASE_SERVICE_ACCOUNT` | Opcional | JSON credencial de cuenta de servicio de Firebase codificado en Base64. |
 | `RESEND_API_KEY` | Opcional | Llave de API de Resend para el despacho de enlaces temporales de recuperación. |
-| `RESEND_FROM_EMAIL` | Opcional | Remitente verificado en Resend (por defecto: `Origgo <seguridad@origgo.co>`). |
-| `APP_URL` | Opcional | URL base de la aplicación (ej: `https://origgo.co`). |
+| `RESEND_FROM_EMAIL` | Opcional | Remitente verificado en Resend (por defecto: `Origgo <seguridad@origgo.online>`). |
+| `APP_URL` | Opcional | URL base de la aplicación (ej: `https://origgo.online` o `https://origgo.vercel.app`). |
 
 ---
 

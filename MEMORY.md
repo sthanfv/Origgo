@@ -1,10 +1,16 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 19:25 (GMT-5)
+Última actualización: 2026-09-10 22:08 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+0. **Unificación de Dominio Canónico a `origgo.online`**:
+   - Se erradicaron todas las referencias a dominios hipotéticos (`origgo.co`).
+   - El dominio de producción oficial del ecosistema es **`origgo.online`** (con alias de despliegue en `origgo.vercel.app`), ya contemplado en la lista blanca de CORS de `lib/cors.js`.
+   - Se actualizó el subject de VAPID Web Push por defecto a `mailto:contacto@origgo.online` en `api/notifications/dispatch.js` y `docs/INTEGRACIONES_EXTERNAS.md`.
+   - Se actualizaron los enlaces de Telegram y pruebas de no-canibalización en el scraper a `https://origgo.online`.
 
 1. **Auditoría Crítica y Manual de Integraciones Externas ($0 Coste)**:
    - **Manual de Servicios Externos (`docs/INTEGRACIONES_EXTERNAS.md`):** Documentadas las instrucciones paso a paso con pantallas, clics y variables para Upstash Redis (rate limiting serverless), Healthchecks.io (sonda J7), Telegram BotFather & Canales, Web Push VAPID y Cloudflare R2.

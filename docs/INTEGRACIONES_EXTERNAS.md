@@ -163,7 +163,7 @@ La API de WhatsApp Business cobra por cada plantilla iniciada por la empresa (co
 - **En Vercel (Environment Variables de `hunter-portal-showcase`):**
   - `VAPID_PUBLIC_KEY` = (La clave pública generada).
   - `VAPID_PRIVATE_KEY` = (La clave privada generada).
-  - `VAPID_SUBJECT` = `mailto:contacto@origgo.co`
+  - `VAPID_SUBJECT` = `mailto:contacto@origgo.online`
 - **En el Frontend (`config.js`):**
   - `window.HUNTER_CONFIG.vapidPublicKey = "BEl62iXXXXX...";`
 
@@ -220,7 +220,7 @@ Recibir pagos con Nequi, PSE, Tarjetas de Crédito y Bancolombia para la compra 
    - Copia el **Secreto de Integridad** (para verificar que las órdenes no sean alteradas en el navegador).
    - Copia el **Secreto de Eventos** (para verificar la firma criptográfica del Webhook).
 3. En la sección **URLs de Eventos**, configura la URL de producción de Vercel:
-   `https://origgo.co/api/payments/webhook-wompi`
+   `https://origgo.online/api/payments/webhook-wompi` (o `https://origgo.vercel.app/api/payments/webhook-wompi`)
 
 ### ¿Dónde pegarlas?
 - **En Vercel Environment Variables:**

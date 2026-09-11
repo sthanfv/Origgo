@@ -15,7 +15,7 @@ const { obtenerSuscripcionesActivas } = require('../../lib/push-subscriptions');
 // Configuración de VAPID
 const publicKey = process.env.VAPID_PUBLIC_KEY;
 const privateKey = process.env.VAPID_PRIVATE_KEY;
-const subject = process.env.VAPID_SUBJECT || 'mailto:contacto@origgo.co';
+const subject = process.env.VAPID_SUBJECT || 'mailto:contacto@origgo.online';
 
 if (publicKey && privateKey) {
   webpush.setVapidDetails(subject, publicKey, privateKey);
