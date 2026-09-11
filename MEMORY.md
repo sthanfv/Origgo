@@ -1,10 +1,22 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-10 22:52 (GMT-5)
+Última actualización: 2026-09-10 23:10 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-2. **Reparación Crítica del Modal Legal, Pestañas Interactivas y Notificaciones Push en Android**:
+   - **Corrección de Bloqueo de Clics y Cierre (Botón X):** `#modalLegalOverlay` no cerraba porque el motor de estilos mantenía `pointer-events: none` al no activarse la clase `.active`. Se corrigió el controlador en `modules/09-ui-effects.js`, otorgando `pointer-events: auto !important` y elevando el `z-index` a `100000 !important` por encima del menú lateral (9999). Ahora el botón "X", el botón "Entendido y Aceptado", el fondo y la tecla `Escape` cierran el modal con total fiabilidad tanto en Android como en escritorio.
+   - **Pestañas y Contenido Estructurado:** Se sustituyó el texto estático plano por un sistema de pestañas interactivas:
+     - 📜 *Términos:* Licencia SaaS de uso personal, créditos de desbloqueo, pasarela Wompi PCI-DSS y cláusula estricta anti-scraping/reventa.
+     - ⚖️ *Exoneración (Disclaimer):* Cero intermediación ni comisiones inmobiliarias, obligatoriedad del Due Diligence e investigación de títulos (ORIP) por parte del comprador, inmunidad ante disputas entre particulares.
+     - 🔒 *Habeas Data (Ley 1581):* Fuentes de acceso público, garantías legales y canal formal de desindexación inmediata (< 24h) vía WhatsApp y correo.
+   - **Usabilidad Táctil en Android:** Se habilitó scroll con inercia (`-webkit-overflow-scrolling: touch; overscroll-behavior: contain;`) y una barra de desplazamiento visible estilizada en tono esmeralda para navegación táctil intuitiva.
+   - **Disparo Inmediato de Notificación Push en Android:** En `modules/12-push.js`, tan pronto el usuario acepta el permiso, el Service Worker dispara una notificación local nativa ("🔥 ¡Radar de Origgo Activado!") con patrón de vibración táctil `[120, 60, 120]`, confirmando de inmediato que el dispositivo está recibiendo alertas.
+   - **Compatibilidad de Iconos PNG para Android:** Se migraron los iconos de notificación en `sw.js` y `api/notifications/dispatch.js` a PNG (`./apple-touch-icon.png` y `./favicon-32x32.png`), evitando recuadros en blanco en el panel de notificaciones de Chromium/Android.
+   - **Script de Despacho de Prueba por Consola:** Se creó `scripts/test_dispatch_push.js` para emitir pruebas en vivo a dispositivos suscritos.
+   - **Limpieza Modular CSS:** Se removieron duplicados de sidebar en `styles/13-footer.css`, dejándolo en 365 líneas (estrictamente < 500).
 
 -1. **Cableado Asíncrono de Upstash Redis y Autodefensa Perimetral con Honeypot**:
    - **Limitación de Tasa Distribuida Serverless (`checkRateLimitAsync`):** Se reemplazó la invocación síncrona en memoria por `checkRateLimitAsync` en los 8 endpoints de `api/` (`session.js`, `create-order.js`, `webhook-wompi.js`, `unlock.js`, `recover.js`, `balance.js`, `subscribe.js`, `vapid-public-key.js`). Ahora la tasa de peticiones se coordina atómicamente en Upstash Redis REST API en todas las instancias Lambdas de Vercel.

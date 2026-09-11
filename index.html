@@ -710,23 +710,42 @@
     </div>
   </div>
 
-  <!-- MODAL INSTITUCIONAL (TEXTOS LEGALES) -->
-  <div class="modal-backdrop" id="modalLegalOverlay">
-    <div class="modal-card legal-modal-card">
-      <button class="btn-modal-close" id="btnLegalCloseIcon">&times;</button>
+  <!-- MODAL INSTITUCIONAL (TEXTOS LEGALES Y EXONERACIÓN) -->
+  <div class="modal-backdrop" id="modalLegalOverlay" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+    <div class="modal-card legal-modal-card" id="legalModalCard">
+      <button type="button" class="btn-modal-close" id="btnLegalCloseIcon" aria-label="Cerrar ventana de información legal">&times;</button>
       
-      <div class="modal-header-tag">
-        <i class="fa-solid fa-scale-balanced"></i> Documentación Legal
+      <div class="modal-header-tag" id="legalHeaderTag">
+        <i class="fa-solid fa-scale-balanced"></i> Seguridad Jurídica & Transparencia
       </div>
-      <h2 class="modal-title" id="legalModalTitle">Título del Documento</h2>
+      <h2 class="modal-title" id="legalModalTitle">Términos de Servicio y Exoneración</h2>
+      <p class="modal-subtitle" id="legalModalSubtitle">Reglas de operación y marco de responsabilidad legal</p>
       
-      <div class="legal-content-box legal-content-box-compact" id="legalContentBox">
-        <!-- El contenido se inyecta por JS -->
+      <!-- Pestañas de Navegación del Modal Legal -->
+      <div class="legal-tabs-bar" role="tablist">
+        <button type="button" class="legal-tab-btn active" data-legal-tab="terminos" role="tab" aria-selected="true">
+          <i class="fa-solid fa-file-contract"></i> Términos
+        </button>
+        <button type="button" class="legal-tab-btn" data-legal-tab="exoneracion" role="tab" aria-selected="false">
+          <i class="fa-solid fa-shield-halved"></i> Exoneración
+        </button>
+        <button type="button" class="legal-tab-btn" data-legal-tab="privacidad" role="tab" aria-selected="false">
+          <i class="fa-solid fa-user-shield"></i> Habeas Data
+        </button>
+      </div>
+
+      <div class="legal-content-box" id="legalContentBox">
+        <!-- El contenido enriquecido se inyecta dinámicamente -->
       </div>
       
-      <button type="button" class="btn-modal-cancel" id="btnLegalCancel">
-        Entendido y Aceptado
-      </button>
+      <div class="legal-modal-actions">
+        <a href="https://wa.me/573001234567?text=Hola%2C%20solicito%20informaci%C3%B3n%20o%20desindexaci%C3%B3n%20en%20Origgo" target="_blank" rel="noopener noreferrer" class="btn-legal-support" id="btnLegalSupport">
+          <i class="fa-brands fa-whatsapp"></i> Desindexación / Soporte
+        </a>
+        <button type="button" class="btn-legal-accept" id="btnLegalCancel">
+          <i class="fa-solid fa-check"></i> Entendido y Aceptado
+        </button>
+      </div>
     </div>
   </div>
 

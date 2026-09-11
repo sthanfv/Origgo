@@ -90,8 +90,27 @@ async function activarNotificacionesPush() {
       btnBell.title = 'Alertas de Oportunidades Activas';
     }
 
+    const linkSide = document.getElementById('sideMenuLinkPush');
+    if (linkSide) {
+      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+    }
+
     if (typeof mostrarNotificacionToast === 'function') {
       mostrarNotificacionToast('🔔 ¡Alertas activadas! Te avisaremos al instante cuando se capte una nueva ganga directa.', 'success');
+    }
+
+    // 6. Notificación inmediata de prueba en el sistema operativo Android / navegador
+    if (registro && typeof registro.showNotification === 'function') {
+      try {
+        await registro.showNotification('🔥 ¡Radar de Origgo Activado!', {
+          body: 'Notificaciones activas. Recibirás una alerta en tiempo real en tu teléfono cada vez que se capte un inmueble sin comisiones.',
+          icon: './apple-touch-icon.png',
+          badge: './favicon-32x32.png',
+          vibrate: [120, 60, 120],
+          tag: 'origgo-welcome-notification',
+          data: { url: './' }
+        });
+      } catch (_) {}
     }
   } catch (err) {
     if (typeof mostrarNotificacionToast === 'function') {

@@ -13,6 +13,9 @@ const RECURSOS_CRITICOS = [
   './data/inmobiliario.json',
   './manifest.json',
   './favicon.svg',
+  './favicon.ico',
+  './favicon-32x32.png',
+  './apple-touch-icon.png',
   './assets/img/origgo-icon.svg'
 ];
 
@@ -67,8 +70,8 @@ self.addEventListener('push', (evento) => {
   let datos = {
     title: 'Nueva Oportunidad Directa — Origgo',
     body: 'Se acaba de detectar un nuevo inmueble sin comisiones.',
-    icon: './favicon.svg',
-    badge: './favicon.svg',
+    icon: './apple-touch-icon.png',
+    badge: './favicon-32x32.png',
     data: { url: './' }
   };
 
@@ -82,8 +85,8 @@ self.addEventListener('push', (evento) => {
 
   const opciones = {
     body: datos.body,
-    icon: datos.icon || './favicon.svg',
-    badge: datos.badge || './favicon.svg',
+    icon: datos.icon || './apple-touch-icon.png',
+    badge: datos.badge || './favicon-32x32.png',
     vibrate: [100, 50, 100],
     data: datos.data || { url: './' },
     actions: [

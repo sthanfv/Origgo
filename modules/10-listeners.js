@@ -371,47 +371,18 @@ function configurarListeners() {
   }
 
   // MODAL LEGAL Y POLÍTICAS (LEY 1581)
-  const modalLegal = document.getElementById("modalLegalOverlay");
-  const btnCloseLegal = document.getElementById("btnLegalCloseIcon");
-  const btnCancelLegal = document.getElementById("btnLegalCancel");
-  const legalTitle = document.getElementById("legalModalTitle");
-  const legalContent = document.getElementById("legalContentBox");
   const btnTerminos = document.getElementById("btnOpenTerminos");
   const btnPrivacidad = document.getElementById("btnOpenPrivacidad");
-
-  const textosLegales = {
-    terminos: {
-      titulo: "Términos de Servicio y Exoneración de Responsabilidad",
-      html: "<p><strong>1. Naturaleza del Servicio y Cero Intermediación</strong><br>Origgo es una herramienta de software que indexa y clasifica información de ofertas publicadas abiertamente en internet. Origgo NO es una agencia inmobiliaria, concesionario, entidad de corretaje, ni actúa como asesor financiero o legal. No cobramos comisiones ni participamos en acuerdos comerciales o pagos.</p><p><strong>2. Exoneración Total de Responsabilidad</strong><br>Origgo no valida, certifica ni garantiza la veracidad, exactitud, vigencia, titularidad real, legalidad o estado físico o mecánico de los bienes listados. La negociación, desembolsos, revisión de títulos de propiedad, tradición, gravámenes o contratos es responsabilidad exclusiva, directa e indelegable del usuario y las partes interesadas. Origgo queda expresamente eximido de cualquier daño, pérdida económica o disputa derivada de transacciones entre particulares.</p><p><strong>3. Cláusula Anti-Scraping Estricta</strong><br>Se prohíbe terminantemente la extracción automatizada, raspado web o minería de datos mediante bots, spiders o herramientas informáticas. La infracción facultará la revocación inmediata del acceso y las acciones judiciales pertinentes.</p>"
-    },
-    privacidad: {
-      titulo: "Política de Privacidad y Tratamiento de Datos (Ley 1581)",
-      html: "<p><strong>1. Cumplimiento Normativo (Ley 1581 de 2012)</strong><br>En cumplimiento del régimen de protección de datos personales de Colombia, Origgo garantiza los derechos de consulta, actualización y supresión de datos a los titulares.</p><p><strong>2. Origen Público de la Información y Desindexación</strong><br>Los números de contacto y datos de bienes corresponden a información divulgada voluntariamente por sus anunciantes en plataformas públicas. Nuestro software opera únicamente como motor indexador. Si usted es el titular de un inmueble o vehículo y desea desindexar su contacto o publicación de la terminal, puede solicitar la supresión inmediata a través de nuestro canal de soporte.</p><p><strong>3. Acceso Restringido</strong><br>Los datos de contacto se suministran exclusivamente a usuarios registrados bajo verificación para evitar usos indebidos o masivos.</p>"
-    }
-  };
-
-  function abrirModalLegal(tipo) {
-    if (modalLegal && textosLegales[tipo]) {
-      legalTitle.textContent = textosLegales[tipo].titulo;
-      legalContent.innerHTML = textosLegales[tipo].html;
-      modalLegal.style.display = "flex";
-      modalLegal.offsetHeight;
-      modalLegal.style.opacity = "1";
-    }
+  if (btnTerminos) {
+    btnTerminos.addEventListener("click", () => {
+      if (typeof abrirModalLegal === 'function') abrirModalLegal('terminos');
+    });
   }
-
-  function cerrarModalLegal() {
-    if (modalLegal) {
-      modalLegal.style.opacity = "0";
-      setTimeout(() => { modalLegal.style.display = "none"; }, 300);
-    }
+  if (btnPrivacidad) {
+    btnPrivacidad.addEventListener("click", () => {
+      if (typeof abrirModalLegal === 'function') abrirModalLegal('privacidad');
+    });
   }
-
-  if (btnTerminos) btnTerminos.addEventListener("click", () => abrirModalLegal('terminos'));
-  if (btnPrivacidad) btnPrivacidad.addEventListener("click", () => abrirModalLegal('privacidad'));
-  if (btnCloseLegal) btnCloseLegal.addEventListener("click", cerrarModalLegal);
-  if (btnCancelLegal) btnCancelLegal.addEventListener("click", cerrarModalLegal);
-  if (modalLegal) modalLegal.addEventListener("click", (e) => { if (e.target === modalLegal) cerrarModalLegal(); });
 
   // Conmutador Atómico y Persistencia de Modo Claro / Modo Oscuro AMOLED
   const btnTheme = document.getElementById("btnThemeToggle");

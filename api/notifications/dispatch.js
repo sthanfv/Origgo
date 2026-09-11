@@ -52,8 +52,8 @@ module.exports = async function handler(req, res) {
     const payload = JSON.stringify({
       title: body.title || '🔥 Nueva Oportunidad Directa — Origgo',
       body: body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.',
-      icon: body.icon || './favicon.svg',
-      badge: body.badge || './favicon.svg',
+      icon: body.icon || './apple-touch-icon.png',
+      badge: body.badge || './favicon-32x32.png',
       data: {
         url: body.url || './'
       }
