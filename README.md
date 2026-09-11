@@ -48,6 +48,11 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax y animaciones |
 | **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
 | **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
+| **Alertas Web Push nativas PWA (Cero variables)** | [`modules/12-push.js`](modules/12-push.js) | `activarNotificacionesPush()`, `inicializarBotonPush()` |
+| **Clave pública VAPID dinámica** | [`api/notifications/vapid-public-key.js`](api/notifications/vapid-public-key.js) | GET clave pública sin quemar tokens en frontend |
+| **Registro de suscripciones Push** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | POST registro de endpoints y claves W3C Push |
+| **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
+| **Persistencia y deduplicación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido Firestore/local y hash SHA-256 |
 | **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
 | **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
 | **Firma criptográfica offline de datasets** | [`scripts/sign-data.js`](scripts/sign-data.js) | Genera firmas `.sig` para JSONs estáticos |

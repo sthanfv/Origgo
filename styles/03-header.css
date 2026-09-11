@@ -102,6 +102,69 @@
   border-color: #047857;
 }
 
+/* Botón de Alertas Web Push PWA (Campana de Oportunidades Directas) */
+.btn-push-subscribe {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.95rem;
+}
+
+.btn-push-subscribe i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+[data-theme="light"] .btn-push-subscribe {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #2E3B35;
+  box-shadow: 0 2px 8px rgba(5, 31, 32, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.btn-push-subscribe:hover {
+  color: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+  transform: scale(1.05);
+}
+
+.btn-push-subscribe:hover i {
+  transform: rotate(15deg);
+}
+
+.btn-push-subscribe.active-push {
+  color: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="light"] .btn-push-subscribe:hover {
+  color: #047857;
+  border-color: #047857;
+}
+
+[data-theme="light"] .btn-push-subscribe.active-push {
+  color: #047857;
+  border-color: #047857;
+  background: hsla(160, 60%, 94%, 0.9);
+}
+
 .status-pill {
   display: flex;
   align-items: center;

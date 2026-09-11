@@ -39,13 +39,17 @@ async function ejecutarValidacionCompleta() {
     'lib/env.js',
     'lib/leads.js',
     'lib/cors.js',
+    'lib/push-subscriptions.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/auth/session.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
     'api/user/balance.js',
-    'api/media/proxy.js'
+    'api/media/proxy.js',
+    'api/notifications/vapid-public-key.js',
+    'api/notifications/subscribe.js',
+    'api/notifications/dispatch.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -100,6 +104,7 @@ async function ejecutarValidacionCompleta() {
       '.btn-confirm-wompi',
       '.pricing-option-card',
       '.btn-whatsapp-direct',
+      '.btn-push-subscribe',
       '.hunter-toast',
       '.hunter-toast-glow',
       '.hunter-toast-progress-bar'
@@ -144,6 +149,7 @@ async function ejecutarValidacionCompleta() {
     assert(html.includes('<script defer src="./app.js'), 'app.js enlazado con defer');
     assert(html.includes('checkoutModal'), 'Modal de checkout y ledger presente en DOM');
     assert(html.includes('checkout.wompi.co/widget.js'), 'Widget de pasarela Wompi enlazado');
+    assert(html.includes('id="btnPushSubscribe"'), 'Botón de alertas Web Push PWA presente en DOM');
 
     const recursosLocales = [
       'style.min.css',
@@ -238,6 +244,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de ordenamiento táctico por $/m² y rebajas pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de ordenamiento táctico: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'web_push.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de Web Push VAPID y suscripciones PWA pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de Web Push VAPID: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

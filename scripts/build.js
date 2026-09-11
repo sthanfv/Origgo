@@ -179,7 +179,7 @@ function copiarDirectorio(origenRel) {
     const rel = path.join(origenRel, entrada.name);
     if (entrada.isDirectory()) {
       copiarDirectorio(rel);
-    } else if (entrada.name !== 'local_db.json' && entrada.name !== 'ledger_store.json') {
+    } else if (entrada.name !== 'local_db.json' && entrada.name !== 'ledger_store.json' && entrada.name !== 'push_subscriptions.json') {
       copiarArchivo(rel);
     }
   }

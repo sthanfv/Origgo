@@ -86,7 +86,8 @@
     flex-shrink: 0;
   }
 
-  .btn-theme-toggle {
+  .btn-theme-toggle,
+  .btn-push-subscribe {
     width: 36px;
     height: 36px;
     min-width: 36px;

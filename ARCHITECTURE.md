@@ -94,6 +94,10 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | **Entorno y compatibilidad Sandbox** | [`lib/env.js`](lib/env.js) | Control de `WOMPI_ENV=sandbox` y llaves |
 | **Mitigación DDoS y Rate Limiting** | [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
 | **Validación estricta de esquemas Zod** | [`lib/validation.js`](lib/validation.js) | Validadores para pagos, auth y leads |
+| **Persistencia de suscripciones Web Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Deduplicación SHA-256 y soporte Firestore/local |
+| **Clave pública VAPID dinámica** | [`api/notifications/vapid-public-key.js`](api/notifications/vapid-public-key.js) | Endpoint GET protegido por rate limit y caché |
+| **Registro de suscripciones Web Push** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | Validación W3C Push y persistencia |
+| **Despacho masivo de alertas Push** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | Despacho seguro autenticado por x-internal-secret |
 | **Compilador y empaquetador de producción** | [`scripts/build.js`](scripts/build.js) | Ensambla CSS y JS en `style.min.css` y `app.js` |
 | **Suite DevSecOps de 8 fases** | [`scripts/validate.js`](scripts/validate.js) | Validador sintáctico, CSS, HTML y OWASP |
 | **Firma HMAC de datasets públicos** | [`scripts/sign-data.js`](scripts/sign-data.js) | Sellado criptográfico de `data/*.json` |
@@ -112,7 +116,8 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 479 |
 | `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 248 |
 | `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 499 |
-| `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 199 |
+| `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 205 |
+| `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 127 |
 
 ### 4.2 Módulos CSS (`styles/`):
 Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (103.2 KB, -27% de peso).

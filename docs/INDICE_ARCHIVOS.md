@@ -85,6 +85,10 @@
 | `api/auth/recover.js` | POST /api/auth/recover | Recuperación de PIN por correo electrónico |
 | `api/leads/unlock.js` | POST /api/leads/unlock | Desbloqueo seguro de contactos con AES-256-GCM |
 | `api/user/balance.js` | GET /api/user/balance | Consulta de saldo y estado del usuario |
+| `api/media/proxy.js` | GET /api/media/proxy | Proxy de medios edge anti-SSRF y optimización de caché |
+| `api/notifications/vapid-public-key.js` | GET /api/notifications/vapid-public-key | Entrega dinámica de clave pública VAPID (CERO variables frontend) |
+| `api/notifications/subscribe.js` | POST /api/notifications/subscribe | Registro de suscripciones W3C Push API |
+| `api/notifications/dispatch.js` | POST /api/notifications/dispatch | Despacho masivo de alertas push (protegido con secreto interno) |
 
 ### Bibliotecas Backend (lib/)
 | Archivo | Descripción |
@@ -93,9 +97,10 @@
 | `lib/db.js` | Persistencia en Firestore: ledger de usuarios, órdenes, créditos |
 | `lib/crypto.js` | Criptografía: JWT, AES-256-GCM, generación de PIN seguro |
 | `lib/cors.js` | CORS seguro con whitelist de dominios |
-| `lib/rate-limiter.js` | Rate limiting por IP con ventanas deslizantes |
+| `lib/rate-limiter.js` | Rate limiting por IP con ventanas deslizantes y Upstash Redis distribuido |
 | `lib/validation.js` | Esquemas Zod para validación estricta de inputs |
 | `lib/leads.js` | Índice de leads por ID desde archivos JSON |
+| `lib/push-subscriptions.js` | Almacén y persistencia de suscripciones Web Push con deduplicación |
 
 ### Módulos Frontend (modules/)
 | Archivo | Descripción |
@@ -112,6 +117,7 @@
 | `modules/09-ui-effects.js` | Efectos visuales: parallax, animaciones, intersección |
 | `modules/10-listeners.js` | Event listeners globales, acordeones, teclado |
 | `modules/11-welcome.js` | Modal de bienvenida VIP, privilegios y credenciales |
+| `modules/12-push.js` | Gestión de suscripciones Web Push nativas PWA en memoria |
 
 ### Estilos CSS (styles/)
 | Archivo | Descripción |

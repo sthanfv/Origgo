@@ -75,20 +75,68 @@
 - `docs/INDICE_ARCHIVOS.md`: Copia del índice maestro.
 - `app.js`, `app.min.js`: Recompilados.
 
+3. **Implementación de Integraciones Externas ($0 Coste)**:
+   - **Pilar 1: Upstash Redis Distribuido (`lib/rate-limiter.js`):** Rate limiting serverless multi-región conectado a Upstash REST API (`origgo-ratelimit`), con pipeline atómico `INCR` + `EXPIRE` y fail-safe en memoria volátil ante microcortes.
+   - **Pilar 2: Healthchecks.io Sonda J7 (`watchdog_hardware.js`):** Latido de supervivencia cada 5 minutos adaptado con DNS Android (`config.resolverDnsAndroid`) y ping HTTP 200 directo. 27/27 pruebas pasadas en procesador Exynos del J7.
+   - **Pilar 4: Web Push PWA Nativo (VAPID):**
+     - Llaves criptográficas VAPID generadas y aisladas estrictamente en el backend serverless.
+     - CERO variables expuestas en el frontend: la clave pública se sirve en runtime vía `GET /api/notifications/vapid-public-key` con cabeceras de caché (`max-age=3600`) y rate limiting anti-abusos. DevTools / F12 limpio sin credenciales en `window` ni en bundle.
+     - Registro de suscripciones W3C Push API con validación estricta y deduplicación por hash SHA-256 de endpoints (`api/notifications/subscribe.js` y `lib/push-subscriptions.js`).
+     - Despacho masivo server-to-server (`api/notifications/dispatch.js`) protegido por secreto criptográfico en tiempo constante (`timingSafeEqual` sobre `x-internal-secret`).
+     - Service Worker (`sw.js`) actualizado con eventos `push` y `notificationclick` (apertura/foco de ventana y vibración háptica).
+     - Componente visual interactivo (`btnPushSubscribe`) con campana glassmorphism en cabecera desktop y móvil, y feedback mediante `mostrarNotificacionToast()`.
+     - Suite DevSecOps (`tests/web_push.test.js`) con 5/5 pruebas unitarias automatizadas integradas en la Fase 5 de `scripts/validate.js`.
+
+---
+
+## 2. Por qué cambió
+
+- WhatsApp Business Cloud API tiene costes por mensaje y requiere verificación de empresa en Meta. Web Push PWA utiliza el estándar W3C Push API con coste $0 permanente, permitiendo alertar a agentes e inversionistas en tiempo real sin tarifas por notificación.
+- Requerimiento de seguridad mandatorio: Ningún token o clave pública/privada debe quemarse en el frontend para evitar raspado o exposición en DevTools (F12).
+- Las funciones serverless de Vercel son efímeras; Upstash Redis garantiza contadores de rate limit distribuidos y compartidos entre todas las instancias edge.
+- El teléfono Samsung Galaxy J7 requería un monitor de latido externo infalible ante sobrecalentamiento o desconexión del cargador sin depender de herramientas de pago.
+
+---
+
+## 3. Archivos afectados
+
+### Web (hunter-portal-showcase)
+- `api/notifications/vapid-public-key.js` [NUEVO]: Endpoint serverless GET de clave pública con rate limit y caché.
+- `api/notifications/subscribe.js` [NUEVO]: Endpoint serverless POST de registro de suscripciones W3C Push.
+- `api/notifications/dispatch.js` [NUEVO]: Endpoint serverless POST de emisión masiva con autenticación interna.
+- `lib/push-subscriptions.js` [NUEVO]: Almacén de suscripciones con deduplicación por hash SHA-256.
+- `modules/12-push.js` [NUEVO]: Módulo cliente en memoria para solicitud de permisos y suscripción.
+- `tests/web_push.test.js` [NUEVO]: 5 pruebas unitarias DevSecOps para endpoints push y deduplicación.
+- `sw.js`: Handlers de eventos `push` y `notificationclick`.
+- `index.html`: Botón `#btnPushSubscribe` en `.nav-actions`.
+- `styles/03-header.css`: Estilos glassmorphic, estados hover y `.active-push`.
+- `styles/11-mobile.css`: Tamaño táctil 36px en cabecera móvil.
+- `scripts/build.js`: Exclusión de `push_subscriptions.json` en `dist/`.
+- `scripts/validate.js`: Integración de validación de sintaxis, selectores CSS, DOM y tests automatizados de push.
+- `.gitignore`: Exclusión de `data/push_subscriptions.json`.
+- `README.md`, `ARCHITECTURE.md`, `docs/INDICE_ARCHIVOS.md`: Documentación técnica sincronizada al 100%.
+- `app.js`, `app.min.js`, `style.css`, `style.min.css`: Recompilados.
+
+### Scraper (ofertas-hunter-pro)
+- `watchdog_hardware.js`: Soporte de ping a Healthchecks.io con DNS Android.
+- `tests/heartbeat_watchdog.test.js`: Suite de pruebas unitarias de sonda de supervivencia (27/27 tests verdes en J7).
+- `docs/INDICE_ARCHIVOS.md`: Sincronizado.
+
 ---
 
 ## 4. Decisiones técnicas tomadas
 
-- **Ofuscación simple pero efectiva**: En vez de usar NLP para reescribir títulos (complejo), se genera un título genérico tipo + operación + ciudad. Es simple, seguro y no revela nada buscable.
-- **Datos revelados en contacto cifrado**: El título original, barrio y ubicación se empaquetan dentro del mismo blob AES-256-GCM que ya protegía teléfono y enlace. No se necesita infraestructura nueva.
-- **Retrocompatibilidad**: Si `datosRevelados` es null (datos antiguos sin título cifrado), la tarjeta simplemente no actualiza el título. Funciona con datos viejos y nuevos.
-- **PIN pendiente en vez de falso**: Mostrar "Revisa tu correo" es honesto y accionable. "PIN protegido" era confuso e inútil.
+- **CERO variables en frontend (DevTools / F12 limpio)**: La clave pública VAPID no está quemada en HTML, JS ni en `window`. El cliente la solicita en memoria volátil en el instante en que el usuario activa las alertas, permitiendo rotar claves en Vercel sin reconstruir el frontend.
+- **Deduplicación por SHA-256 de endpoints**: Los navegadores generan endpoints largos; se indexan por un hash determinista SHA-256 de 32 caracteres para operaciones de persistencia instantáneas O(1).
+- **Protección timingSafeEqual en despacho masivo**: El endpoint `dispatch.js` compara el secreto interno en tiempo constante, previniendo ataques de canal lateral (*timing attacks*).
+- **Aislamiento en .gitignore y dist/**: Las suscripciones de navegadores nunca se copian a `dist/` ni se comitean a Git, respetando el principio de Privacidad por Diseño.
+- **Modularidad Desmulta (< 500 líneas)**: Todos los archivos creados (`12-push.js`: 127 líneas, `push-subscriptions.js`: 132 líneas, `03-header.css`: 293 líneas) cumplen holgadamente el límite.
 
 ---
 
 ## 5. Estado actual del sistema
 
-- `npm test` (web): 8/8 fases DevSecOps al 100%.
-- `node -c publisher_web.js` (scraper): Sintaxis válida.
-- Scraper pendiente de despliegue al teléfono para activar ofuscación + firma.
-- `WOMPI_ENV=sandbox` pendiente de agregar en Vercel Environment Variables.
+- `npm test` (web): 8/8 fases DevSecOps al 100% (0 errores).
+- 13 submódulos JS y 16 submódulos CSS compilados y minificados.
+- Upstash Redis y Healthchecks.io validados en producción.
+- Web Push VAPID listo para despliegue en Vercel con variables de entorno preparadas.
