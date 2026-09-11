@@ -6,6 +6,10 @@
 
 ## 1. Qué cambió
 
+-4. **Activación Silenciosa y Profesional de Web Push (Erradicación de Alerta Mock)**:
+   - **Comportamiento en Producción:** Se eliminó la llamada artificial a `registro.showNotification` que saltaba de inmediato al activar el radar. Ahora, el flujo es 100% nativo y profesional: el usuario otorga el permiso, se guarda la suscripción en el backend, la campana se enciende en verde esmeralda y se muestra un toast discreto. Las notificaciones reales al teléfono solo llegarán cuando el scraper despache ofertas reales desde el backend.
+   - **Modularidad Intacta:** `modules/12-push.js` (241 líneas), 8 fases DevSecOps al 100%.
+
 -3. **Regeneración de Iconos HD para Android, Modal Soft-Prompt de Radar y Estrategia Web Push**:
    - **Renderizado de Iconos HD de Estudio desde Matriz Vectorial:** Se eliminó la aproximación matemática rudimentaria de `scratch/generate_favicon.js`. Se localizó la matriz raster original de 4000x2250 embebida en los SVGs oficiales (`origgo-icon.svg`), extrayendo el isotipo exacto a 846 x 777 píxeles de resolución nativa. Con un remuestreo bilineal antialiased, color institucional `#0a9f68` y un 14% de safe-zone circular para Android, se generaron `apple-touch-icon.png` (192x192), `push-icon-192.png`, `push-icon-512.png` y `favicon-32x32.png`. En la bandeja de notificaciones de Android (Brave/Chrome) el icono se visualiza nítido, perfectamente centrado y sin deformaciones.
    - **Modal Sugestivo de Entrada (Soft-Prompt — `styles/17-push-modal.css` + `index.html`):** Se implementó una tarjeta modal interactiva con diseño glassmorphism y animación de radar verde esmeralda que invita amablemente al usuario tras 2.5 segundos de estancia (`Notification.permission === 'default'`). Explica las ventajas de la primicia total, filtro por ciudad y 0 spam. Si el usuario acepta, se solicita el permiso nativo mediante un gesto legítimo del usuario (W3C compliant). Si elige "Quizás más tarde" o la "X", se recuerda en `sessionStorage` durante la sesión para no estorbar, pero se vuelve a consultar en visitas posteriores.

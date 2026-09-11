@@ -102,19 +102,7 @@ async function activarNotificacionesPush() {
       mostrarNotificacionToast('🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.', 'success');
     }
 
-    // 6. Notificación inmediata de confirmación con isotipo en alta definición
-    if (registro && typeof registro.showNotification === 'function') {
-      try {
-        await registro.showNotification('🔥 ¡Radar de Origgo Activado!', {
-          body: 'Notificaciones activas. Recibirás una alerta en tiempo real en tu teléfono cada vez que se capte un inmueble sin comisiones.',
-          icon: './apple-touch-icon.png',
-          badge: './favicon-32x32.png',
-          vibrate: [120, 60, 120],
-          tag: 'origgo-welcome-notification',
-          data: { url: './' }
-        });
-      } catch (_) {}
-    }
+    // 6. Confirmación de activación silenciosa (las notificaciones llegarán exclusivamente por eventos reales del backend)
   } catch (err) {
     if (typeof mostrarNotificacionToast === 'function') {
       mostrarNotificacionToast(err.message || 'Error al activar alertas.', 'error');
