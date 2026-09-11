@@ -190,6 +190,7 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
 
 [
   'index.html',
+  '404.html',
   'style.css',
   'style.min.css',
   'app.js',
@@ -204,6 +205,8 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
   'favicon.ico',
   'favicon-32x32.png',
   'apple-touch-icon.png',
+  'push-icon-192.png',
+  'push-icon-512.png',
   'google390e0a55723f2003.html'
 ].forEach((f) => copiarArchivo(f));
 

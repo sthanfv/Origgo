@@ -270,33 +270,76 @@ async function inicializarSesionUsuario() {
 }
 
 /**
- * Actualiza visualmente el botón VIP del header y el botón de la barra móvil.
+ * Actualiza visualmente el botón VIP del header, chip móvil y menú lateral.
  */
 function actualizarBadgeVip() {
   const btnHeader = document.getElementById('btnVipHeader');
   const btnNavVip = document.getElementById('btnNavVip');
+  const btnMobileChip = document.getElementById('btnMobileStatusChip');
+  const sideUserBox = document.getElementById('sideMenuUserAccount');
 
   if (sesionUsuario) {
     let htmlBadge = '';
     let labelMovil = '';
+    let htmlChipMovil = '';
+    let htmlSideUser = '';
+
+    const phoneFormateado = sesionUsuario.phone ? `+57 ${sesionUsuario.phone}` : 'Cuenta Activa';
 
     if (sesionUsuario.plan === 'national') {
       htmlBadge = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP Nacional</span>';
       labelMovil = 'VIP Nac.';
+      htmlChipMovil = '<i class="fa-solid fa-crown" style="color:#FBBF24;"></i><span>Nacional 30d</span>';
+      htmlSideUser = `
+        <div class="side-user-card side-user-vip-national">
+          <div class="side-user-top">
+            <span class="side-user-badge-gold">👑 VIP Nacional</span>
+            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
+          </div>
+          <p class="side-user-desc">Acceso total ilimitado a todo el país activo por 30 días.</p>
+        </div>`;
     } else if (sesionUsuario.plan === 'city') {
       const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
       htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = 'VIP Ciudad';
+      htmlChipMovil = `<i class="fa-solid fa-crown" style="color:#34D399;"></i><span>${ciudad} 30d</span>`;
+      htmlSideUser = `
+        <div class="side-user-card side-user-vip-city">
+          <div class="side-user-top">
+            <span class="side-user-badge-emerald">👑 VIP ${ciudad}</span>
+            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
+          </div>
+          <p class="side-user-desc">Desbloqueo ilimitado de contactos en ${ciudad} por 30 días.</p>
+        </div>`;
     } else {
       const cr = Number(sesionUsuario.credits || 0);
       htmlBadge = `<span class="vip-btn-text">⚡ ${cr} Créditos</span>`;
       labelMovil = `${cr} Créditos`;
+      htmlChipMovil = cr > 0 
+        ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>`
+        : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
+      htmlSideUser = `
+        <div class="side-user-card">
+          <div class="side-user-top">
+            <span class="side-user-badge-creds">⚡ ${cr} ${cr === 1 ? 'Crédito' : 'Créditos'}</span>
+            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
+          </div>
+          <p class="side-user-desc">${cr > 0 ? 'Saldo activo para desbloquear propietarios directos.' : 'Sin saldo activo. Recarga para desbloquear contactos.'}</p>
+        </div>`;
     }
 
     if (btnHeader) btnHeader.innerHTML = htmlBadge;
     if (btnNavVip) {
       const span = btnNavVip.querySelector('span');
       if (span) span.textContent = labelMovil;
+    }
+    if (btnMobileChip) {
+      btnMobileChip.innerHTML = htmlChipMovil;
+      btnMobileChip.classList.remove('is-hidden');
+    }
+    if (sideUserBox) {
+      sideUserBox.innerHTML = htmlSideUser;
+      sideUserBox.classList.remove('is-hidden');
     }
   } else {
     if (btnHeader) {
@@ -305,6 +348,14 @@ function actualizarBadgeVip() {
     if (btnNavVip) {
       const span = btnNavVip.querySelector('span');
       if (span) span.textContent = 'VIP';
+    }
+    if (btnMobileChip) {
+      btnMobileChip.innerHTML = '<i class="fa-solid fa-crown"></i><span>VIP</span>';
+      btnMobileChip.classList.remove('is-hidden');
+    }
+    if (sideUserBox) {
+      sideUserBox.innerHTML = '';
+      sideUserBox.classList.add('is-hidden');
     }
   }
 }
@@ -3499,12 +3550,18 @@ function configurarListeners() {
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
   if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
-  // Botón VIP del Header
+  // Botón VIP del Header y Chip Móvil
   const btnVipHeader = document.getElementById("btnVipHeader");
   if (btnVipHeader) {
     btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
     btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
     btnVipHeader.addEventListener("click", () => abrirModalCheckout());
+  }
+  const btnMobileStatusChip = document.getElementById("btnMobileStatusChip");
+  if (btnMobileStatusChip) {
+    btnMobileStatusChip.addEventListener("mouseenter", preCargarWompi, { once: true });
+    btnMobileStatusChip.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
+    btnMobileStatusChip.addEventListener("click", () => abrirModalCheckout());
   }
 
   // MODAL LEGAL Y POLÍTICAS (LEY 1581)

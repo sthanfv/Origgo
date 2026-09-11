@@ -3724,25 +3724,7 @@ main {
   text-transform: uppercase;
 }
 
-/* ═══════════════════════════════════════════════════
-   FOOTER CORPORATIVO
-   ═══════════════════════════════════════════════════ */
-.site-footer {
-  border-top: 1px solid var(--border-subtle);
-  background-color: var(--bg-main);
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 0.8rem;
-}
-
-.site-footer strong {
-  color: var(--text-main);
-}
-
-/* ═════════════════════════════════════════════════════════════════════════
-   📱 ADAPTABILIDAD RESPONSIVA MOBILE-FIRST DE ÉLITE (iOS & ANDROID)
-   ═════════════════════════════════════════════════════════════════════════ */
+/* 📱 ADAPTABILIDAD RESPONSIVA MOBILE-FIRST DE ÉLITE (iOS & ANDROID) */
 
 /* Tablets y Pantallas Medianas (<= 1024px) */
 @media (max-width: 1024px) {
@@ -3995,18 +3977,13 @@ main {
   }
 }
 
-/* ═════════════════════════════════════════════════════════════════════════
-   ⚡ OPTIMIZACIÓN DE GPU Y ACCESIBILIDAD MÓVIL (SAMSUNG J7 & POCO X3 PRO)
-   ═════════════════════════════════════════════════════════════════════════ */
-
-/* Agrega aceleración de GPU a las clases con blur */
+/* ⚡ Optimización GPU y Accesibilidad Móvil */
 .glass-metrics-bg, .command-bar-container, .cmd-dropdown-menu {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform, opacity;
 }
 
-/* Reducir animaciones si el sistema operativo del usuario tiene ahorro de batería/rendimiento */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -4019,11 +3996,7 @@ main {
   }
 }
 
-/* ═════════════════════════════════════════════════════════════════════════
-   📱 NAVEGACIÓN INFERIOR NATIVA (ESTILO PWA APP MÓVIL ANDROID / IOS)
-   ═════════════════════════════════════════════════════════════════════════ */
-
-/* REGLA GLOBAL: Ocultar barra móvil en PC */
+/* 📱 Navegación Inferior Nativa (PWA Móvil) */
 .mobile-bottom-bar {
   display: none;
 }
@@ -4037,16 +4010,48 @@ main {
     display: none !important;
   }
 
-  /* Centrar identidad de marca institucional al ocultar los laterales */
+  /* Distribución de cabecera móvil con marca y chip de saldo/plan */
   .site-header-inner {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  /* 2. Activar y estilizar barra inferior (Glassmorphism con esquinas superiores suavizadas)
-     NOTA DEL DESARROLLADOR: Se aplican curvas sutiles (18px) en las orillas superiores
-     para erradicar la silueta recta y rígida, generando una transición orgánica hacia el contenido
-     con soporte seguro para barras de gestos nativas en iOS y Android. */
+  .header-user-status {
+    display: flex;
+    align-items: center;
+  }
+
+  .btn-mobile-status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    background: hsla(166, 40%, 15%, 0.65);
+    border: 1px solid var(--border-subtle);
+    color: var(--accent-emerald);
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn-mobile-status-chip:active {
+    transform: scale(0.94);
+  }
+
+  [data-theme="light"] .btn-mobile-status-chip {
+    background: hsla(0, 0%, 100%, 0.9);
+    border-color: hsla(160, 20%, 88%, 0.9);
+    color: #047857;
+  }
+
+  /* 2. Activar y estilizar barra inferior (Glassmorphism con esquinas suavizadas) */
   .mobile-bottom-bar {
     display: flex;
     justify-content: space-around;
@@ -4467,6 +4472,58 @@ main {
 
 [data-theme="light"] .footer-text-link:hover {
   color: hsl(170, 59%, 20%);
+}
+
+/* Estado de Cuenta y Balance en Menú Lateral */
+.side-menu-user-account {
+  padding: 0.95rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: hsla(166, 40%, 12%, 0.45);
+}
+[data-theme="light"] .side-menu-user-account {
+  background: hsla(140, 25%, 95%, 0.85);
+}
+.side-user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.side-user-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.side-user-badge-gold {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #FBBF24;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-badge-emerald {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #34D399;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-badge-creds {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #10B981;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-phone {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.side-user-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin: 0;
 }
 
 .footer-text-muted {

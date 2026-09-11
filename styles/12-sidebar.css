@@ -249,4 +249,56 @@
 
 [data-theme="light"] .footer-text-link:hover {
   color: hsl(170, 59%, 20%);
+}
+
+/* Estado de Cuenta y Balance en Menú Lateral */
+.side-menu-user-account {
+  padding: 0.95rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: hsla(166, 40%, 12%, 0.45);
+}
+[data-theme="light"] .side-menu-user-account {
+  background: hsla(140, 25%, 95%, 0.85);
+}
+.side-user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.side-user-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.side-user-badge-gold {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #FBBF24;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-badge-emerald {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #34D399;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-badge-creds {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #10B981;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.side-user-phone {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.side-user-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin: 0;
 }

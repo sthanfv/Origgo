@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>404 — Coordenada No Localizada · Origgo</title>
+  <meta name="description" content="La oportunidad o ruta solicitada no se encuentra disponible en la terminal de arbitraje e inteligencia inmobiliaria de Origgo.">
+  <link rel="canonical" href="https://origgo.online/404">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #05110d;
+      --bg-card: hsla(170, 59%, 9%, 0.85);
+      --accent-emerald: #0a9f68;
+      --accent-emerald-glow: rgba(10, 159, 104, 0.35);
+      --text-main: #FFFFFF;
+      --text-muted: #8EB69B;
+      --text-dim: #4B6358;
+      --border-subtle: hsla(129, 48%, 87%, 0.12);
+      --radius-card: 24px;
+      --radius-pill: 9999px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .background-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(10, 159, 104, 0.18) 0%, rgba(5, 17, 13, 0) 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .not-found-card {
+      position: relative;
+      z-index: 1;
+      max-width: 540px;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 3rem 2.2rem 2.5rem;
+      text-align: center;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px hsla(158, 64%, 52%, 0.15), inset 0 1px 0 hsla(129, 48%, 87%, 0.15);
+      animation: fadeInPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeInPop {
+      from { opacity: 0; transform: scale(0.95) translateY(16px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .brand-logo-container {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.5rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      filter: drop-shadow(0 0 16px rgba(10, 159, 104, 0.4));
+    }
+    .brand-logo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .error-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(10, 159, 104, 0.12);
+      border: 1px solid rgba(10, 159, 104, 0.35);
+      padding: 0.35rem 1rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .error-radar-ping {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+    .error-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--text-main);
+    }
+    .error-title span {
+      background: linear-gradient(135deg, #34D399 0%, #0a9f68 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .error-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 2rem;
+    }
+    .btn-return-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 1rem 1.75rem;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #041B12;
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-return-home:hover {
+      background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.55);
+    }
+    .support-footer {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .support-footer a {
+      color: var(--accent-emerald);
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .support-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-glow"></div>
+  <main class="not-found-card">
+    <div class="brand-logo-container">
+      <img src="/apple-touch-icon.png" alt="Origgo Isotipo Oficial" width="56" height="56">
+    </div>
+
+    <div class="error-code-badge">
+      <span class="error-radar-ping"></span>
+      <span>Radar de Arbitraje · Error 404</span>
+    </div>
+
+    <h1 class="error-title">Coordenada <span>No Localizada</span></h1>
+    <p class="error-desc">
+      La oportunidad inmobiliaria, enlace directo o ruta que buscas no existe en nuestra base de datos, ha expirado o fue retirada del ledger de transacciones directas.
+    </p>
+
+    <a href="/" class="btn-return-home">
+      <span>Volver a la Terminal Principal</span>
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+
+    <div class="support-footer">
+      <span>¿Necesitas asistencia con tu saldo?</span>
+      <a href="https://wa.me/573228128200?text=Hola%20Origgo%2C%20tengo%20una%20consulta%20sobre%20mi%20cuenta" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i> Soporte VIP
+      </a>
+    </div>
+  </main>
+</body>
+</html>

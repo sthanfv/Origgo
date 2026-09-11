@@ -362,12 +362,18 @@ function configurarListeners() {
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
   if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
-  // Botón VIP del Header
+  // Botón VIP del Header y Chip Móvil
   const btnVipHeader = document.getElementById("btnVipHeader");
   if (btnVipHeader) {
     btnVipHeader.addEventListener("mouseenter", preCargarWompi, { once: true });
     btnVipHeader.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
     btnVipHeader.addEventListener("click", () => abrirModalCheckout());
+  }
+  const btnMobileStatusChip = document.getElementById("btnMobileStatusChip");
+  if (btnMobileStatusChip) {
+    btnMobileStatusChip.addEventListener("mouseenter", preCargarWompi, { once: true });
+    btnMobileStatusChip.addEventListener("touchstart", preCargarWompi, { once: true, passive: true });
+    btnMobileStatusChip.addEventListener("click", () => abrirModalCheckout());
   }
 
   // MODAL LEGAL Y POLÍTICAS (LEY 1581)

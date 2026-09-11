@@ -159,6 +159,7 @@ async function ejecutarValidacionCompleta() {
       'manifest.json',
       'favicon.svg',
       'favicon.ico',
+      '404.html',
       'robots.txt',
       'sitemap.xml',
       'llms.txt',
