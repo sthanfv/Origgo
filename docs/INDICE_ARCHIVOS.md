@@ -142,3 +142,4 @@
 | `scripts/sign-data.js` | Firma HMAC-SHA256 de archivos JSON de datos |
 | `vercel.json` | Rutas, cabeceras OWASP, CSP, rewrites para Vercel |
 | `.env.example` | Plantilla de variables de entorno con documentación |
+| `docs/INTEGRACIONES_EXTERNAS.md` | Manual paso a paso para integraciones externas ($0 coste) |

@@ -6,7 +6,13 @@
 
 ## 1. Qué cambió
 
-1. **Blindaje de Grado Industrial (Nivel 9.9 / 10)**:
+1. **Auditoría Crítica y Manual de Integraciones Externas ($0 Coste)**:
+   - **Manual de Servicios Externos (`docs/INTEGRACIONES_EXTERNAS.md`):** Documentadas las instrucciones paso a paso con pantallas, clics y variables para Upstash Redis (rate limiting serverless), Healthchecks.io (sonda J7), Telegram BotFather & Canales, Web Push VAPID y Cloudflare R2.
+   - **Plantillas de Entorno Sincronizadas (`.env.example`):** Variables documentadas en español para Upstash Redis, llaves VAPID y secretos de Wompi.
+   - **Detección de Brechas en Auditoría:** Identificadas 6 brechas operativas en el ecosistema (rate limiting serverless volátil, riesgo de canibalización en Telegram, desconexión de sonda de hardware, cliente R2 incompleto, ausencia de .env.example en scraper e infraestructura PWA pendiente).
+   - **Plan de Implementación Actualizado:** `implementation_plan.md` enriquecido con la resolución técnica y matrices de prueba para cada brecha.
+
+2. **Blindaje de Grado Industrial (Nivel 9.9 / 10)**:
    - **Versionado Criptográfico y Rotación Segura (`lib/crypto.js`):** Formato `v1:iv:authTag:ciphertext` con soporte de llavero de claves (`keyRing { v1, v2 }`) manteniendo 100% retrocompatibilidad con formato legado de 3 partes.
    - **Anti-Replay en Webhooks Wompi (`api/payments/webhook-wompi.js`):** Ventana de expiración estricta de 300 segundos (< 5 min) y registro atómico para prevenir ataques de repetición y duplicación de saldo.
    - **Proxy de Medios Edge con Protección Anti-SSRF (`api/media/proxy.js`):** Descarga de fotos en streaming volátil, remoción de metadatos sensibles, bloqueo estricto de IPs privadas / dominios no autorizados y cabeceras de caché inmutables (`Cache-Control: public, max-age=86400, immutable`).
