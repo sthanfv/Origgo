@@ -44,7 +44,8 @@ async function ejecutarValidacionCompleta() {
     'api/auth/session.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
-    'api/user/balance.js'
+    'api/user/balance.js',
+    'api/media/proxy.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -209,6 +210,27 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de esquemas Zod y Rate Limiting diario pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en suite de validación Zod y rate limiting: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'image_proxy.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de proxy de medios y anti-SSRF pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de proxy de medios: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'whatsapp_template.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de plantilla WhatsApp de alta conversión pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de plantilla WhatsApp: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'filters_sorting.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de ordenamiento táctico por $/m² y rebajas pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de ordenamiento táctico: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

@@ -253,3 +253,110 @@ function sincronizarDropdownCiudades(leads) {
     sideSelect.innerHTML = selHtml;
   }
 }
+
+/**
+ * Filtra y ordena los leads del catálogo según los criterios activos:
+ * - Búsqueda semántica/fonética en Omnibox
+ * - Filtro por Ciudad
+ * - Ordenamiento por menor $/m², rebajas recientes o más recientes
+ * @param {Array} leads
+ * @returns {Array}
+ */
+function filtrarYOrdenarLeads(leads) {
+  if (!Array.isArray(leads)) return [];
+
+  const filtrados = leads.filter((item) => {
+    // A. Filtro por Ciudad
+    if (filtroCiudadActivo) {
+      const ciudadesObjetivo = filtroCiudadActivo.split("|").map(normalizarTextoBusqueda);
+      const itemCiudadNorm = normalizarTextoBusqueda(item.ciudad || "");
+      const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
+      const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
+      const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
+      const coincideCiudad = ciudadesObjetivo.some((c) =>
+        itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
+      );
+      if (!coincideCiudad) return false;
+    }
+
+    // B. Filtro por Texto Libre (Omnibox)
+    if (textoBusquedaActivo) {
+      const itemSearchText = normalizarTextoBusqueda(
+        `${item.titulo || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.detalles ? Object.values(item.detalles).join(' ') : ''}`
+      );
+      if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
+    }
+
+    return true;
+  });
+
+  // C. Ordenamiento Dinámico
+  if (criterioOrdenActivo === 'precio_m2_asc') {
+    filtrados.sort((a, b) => {
+      const m2A = Number(String(a.precio_m2 || '').replace(/\D/g, '')) || Infinity;
+      const m2B = Number(String(b.precio_m2 || '').replace(/\D/g, '')) || Infinity;
+      return m2A - m2B;
+    });
+  } else if (criterioOrdenActivo === 'rebajas') {
+    filtrados.sort((a, b) => {
+      const rebA = Boolean(a.rebaja && a.rebaja.trim() !== '') ? 1 : 0;
+      const rebB = Boolean(b.rebaja && b.rebaja.trim() !== '') ? 1 : 0;
+      return rebB - rebA;
+    });
+  } else if (criterioOrdenActivo === 'precio_asc') {
+    filtrados.sort((a, b) => (a.precio_raw || 0) - (b.precio_raw || 0));
+  } else if (criterioOrdenActivo === 'precio_desc') {
+    filtrados.sort((a, b) => (b.precio_raw || 0) - (a.precio_raw || 0));
+  }
+
+  return filtrados;
+}
+
+/**
+ * Inicializa el selector táctico de ordenamiento en la Barra de Comandos.
+ */
+function inicializarBarraOrdenamiento() {
+  const pillSort = document.getElementById("cmdFilterSort");
+  const dropdownSort = document.getElementById("cmdSortDropdown");
+  const labelSort = document.getElementById("cmdFilterSortLabel");
+
+  if (!pillSort || !dropdownSort) return;
+
+  pillSort.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = dropdownSort.classList.toggle("show");
+    pillSort.classList.toggle("open", isOpen);
+    pillSort.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  dropdownSort.addEventListener("click", (e) => {
+    const item = e.target.closest(".cmd-dropdown-item");
+    if (!item) return;
+    e.stopPropagation();
+    const sortValue = item.getAttribute("data-sort") || "recientes";
+    criterioOrdenActivo = sortValue;
+
+    dropdownSort.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+    item.classList.add("active");
+
+    const spanText = item.querySelector("span") ? item.querySelector("span").textContent : "Más Recientes";
+    if (labelSort) labelSort.textContent = spanText;
+
+    pillSort.classList.toggle("active-filter", sortValue !== "recientes");
+    dropdownSort.classList.remove("show");
+    pillSort.classList.remove("open");
+    pillSort.setAttribute("aria-expanded", "false");
+
+    aplicarFiltrosOmnibox();
+  });
+
+  window.addEventListener("click", (e) => {
+    if (dropdownSort && dropdownSort.classList.contains("show")) {
+      if (!pillSort.contains(e.target) && !dropdownSort.contains(e.target)) {
+        dropdownSort.classList.remove("show");
+        pillSort.classList.remove("open");
+        pillSort.setAttribute("aria-expanded", "false");
+      }
+    }
+  });
+}

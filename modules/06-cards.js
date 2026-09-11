@@ -105,29 +105,10 @@ function renderizarInterfaz(dataset) {
   const col1Nombre = config.columna_variable_1 || "Atributo 1";
   const col2Nombre = config.columna_variable_2 || "Atributo 2";
 
-  // 1. Filtrar leads por ciudad y búsqueda de texto ANTES de paginar
-  const leadsFiltrados = leads.filter(item => {
-    // A. Filtro por Ciudad
-    if (filtroCiudadActivo) {
-      const ciudadesObjetivo = filtroCiudadActivo.split("|").map(normalizarTextoBusqueda);
-      const itemCiudadNorm = normalizarTextoBusqueda(item.ciudad || "");
-      const itemUbicNorm = normalizarTextoBusqueda(item.ubicacion || "");
-      const itemTituloNorm = normalizarTextoBusqueda(item.titulo || "");
-      const itemBarrioNorm = normalizarTextoBusqueda(item.barrio || "");
-      const coincideCiudad = ciudadesObjetivo.some(c =>
-        itemCiudadNorm.includes(c) || itemUbicNorm.includes(c) || itemTituloNorm.includes(c) || itemBarrioNorm.includes(c)
-      );
-      if (!coincideCiudad) return false;
-    }
-    // B. Filtro por Texto Libre
-    if (textoBusquedaActivo) {
-      const itemSearchText = normalizarTextoBusqueda(
-        `${item.titulo || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.detalles ? Object.values(item.detalles).join(' ') : ''}`
-      );
-      if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
-    }
-    return true;
-  });
+  // 1. Filtrar y ordenar leads según ciudad, búsqueda y criterio de orden activo
+  const leadsFiltrados = typeof filtrarYOrdenarLeads === 'function'
+    ? filtrarYOrdenarLeads(leads)
+    : leads;
 
   // Actualizar metadatos de la cabecera de catálogo con el conteo real filtrado
   if (countEl) {

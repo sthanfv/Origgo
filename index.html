@@ -140,6 +140,37 @@
             </div>
           </div>
         </div>
+
+        <!-- Selector de Ordenamiento Táctico (Pilar 4.1) -->
+        <div class="cmd-filter-pill-dropdown-wrapper">
+          <button type="button" class="cmd-filter-pill" id="cmdFilterSort" aria-expanded="false" title="Ordenar oportunidades">
+            <i class="fa-solid fa-arrow-down-wide-short"></i>
+            <span id="cmdFilterSortLabel">Más Recientes</span>
+            <i class="fa-solid fa-chevron-down cmd-dropdown-arrow"></i>
+          </button>
+          <div class="cmd-dropdown-menu" id="cmdSortDropdown">
+            <div class="cmd-dropdown-item active" data-sort="recientes">
+              <i class="fa-solid fa-bolt"></i>
+              <span>Más Recientes</span>
+            </div>
+            <div class="cmd-dropdown-item" data-sort="precio_m2_asc">
+              <i class="fa-solid fa-calculator"></i>
+              <span>Menor $/m²</span>
+            </div>
+            <div class="cmd-dropdown-item" data-sort="rebajas">
+              <i class="fa-solid fa-tag"></i>
+              <span>Rebaja Reciente</span>
+            </div>
+            <div class="cmd-dropdown-item" data-sort="precio_asc">
+              <i class="fa-solid fa-arrow-up-1-9"></i>
+              <span>Menor Precio Total</span>
+            </div>
+            <div class="cmd-dropdown-item" data-sort="precio_desc">
+              <i class="fa-solid fa-arrow-down-9-1"></i>
+              <span>Mayor Precio Total</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="cmd-niche-group" id="nicheSwitcher">
         <button class="cmd-niche-tab active" data-dataset="./data/inmobiliario.json">

@@ -462,11 +462,11 @@ function configurarListeners() {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       cerrarModalCheckout();
-      document.querySelectorAll(".card-slideup-overlay.active").forEach((overlay) => {
-        overlay.classList.remove("active");
-      });
+      document.querySelectorAll(".card-slideup-overlay.active").forEach((overlay) => overlay.classList.remove("active"));
     }
   });
+
+  if (typeof inicializarBarraOrdenamiento === 'function') inicializarBarraOrdenamiento();
 }
 
 // ═════════════════════════════════════════════════════════════════════════

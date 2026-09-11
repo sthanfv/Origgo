@@ -31,6 +31,7 @@ let cacheContactosDesbloqueados = {};
 let filtroCiudadActivo = "";
 let filtroTratoDirectoActivo = false;
 let textoBusquedaActivo = "";
+let criterioOrdenActivo = "recientes";
 
 /**
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
