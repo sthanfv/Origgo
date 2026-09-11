@@ -6,14 +6,525 @@
     "columna_variable_2": "Distribución",
     "precio_membresia_cop": 89000,
     "total_sectores_monitoreados": 26,
-    "actualizado_en": "4 de septiembre de 2026 a las 06:55 p. m."
+    "actualizado_en": "10 de septiembre de 2026 a las 09:16 p. m."
   },
   "leads": [
     {
+      "id": "lead-inm-164",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 5.625.000 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "e6f0ca2b0d07857eec24b6d3:95a56a4a468f99c1b5d341b1ccc1cd9f:969a51c4e8cfbd48d852481b611770b4f5a01fb6178e2068e9f646108e324db19fcb6d222da06f1c0a663285827645f4c3d8f1a6d908745ccbdf3cddd13b70764ccd07cd59210cd8fb0b040c4493485567bead28b148842b173136bd9b14e7474b3390fa192dbbc97f2c0feca9725ae5a73653edefc62a5c4b53c6c0d9796417f33e7dff86e83913726b6dc9b5c9e6ce6bf38dd8a6f6e45b34cdcf49b3b03ca0b59089811c265551e5757ddf12929ea7edf2f52dc862451b413698e360584443101ddaad0bfea5abe41dfa3584aa69b039e05ebc198f8a86f1d6af55933fec72bfe68159a46de0e2707414ad9e5457333f9d383005eaebf942ade700025f",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-163",
+      "titulo": "Casa en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Casa",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 4.750.000 / m²",
+      "precio": "$ 380.000.000",
+      "precio_raw": 380000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "1844518182846f4748d4be77:577cf64b2cd29950fa5658fad170acec:bb1bb246e25493873bf00494cb6462c0957e5fb82daeade8377a0a664567fded5e82290462fddf3ee0cf90233fb15b73d9da78fa57c677b8173f4aba28e0473060d2d4b429aadcda88a1e3835525fb7cbc70f86af4de54bf7a2423ea25cd322ab9d579f97e9f23c69c256fba6f20b0bf1e4bc4ddd6d5213ae5b9ef5de12b1eaad3409ddd9c493590582810a5b25a0b036852586fb0c2aa0bafc476ee8b710992dfe84aa5c7661abf8c2dceb32dde1e61a87955642e5c28f9e29d6cd6bcaa1f8022d127d36ddfd0ee142e39270f88c4becd86f94f77c3f3dbd1c7f12327dcf9ab3faf2a599a18a2d0e95ad0c28888275fcb",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-162",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "a1aa5f9561315333ac56bbd7:c4a71a5c1c2d4618a34c5682c16cb07d:ad935e59bc9846ea0c0e5203a1279b3e685042c490f1fd1fe1c12f11cafabdb345788d7e61f21666b53a19b2532e3c59f9c9bcb7a8ec708549723afeffed9d84e5cbcf1b3824a4ae1d07cd6e5f044bb1d1de0bbc9a17fa08e6296d136ffc2de9c8e64ddc01cf1c66758cc7b1687e6424bbb7a5a4ffeef723ace2cd5e8c4ed83c6005cf0ba598ec9f42d30bf97de13053b2b6bdfbfd1615f73b18018fc2b510cbafcf96dfd5f8857d044aa26e7fd0128f42fbe744a2a5a205241cac112f8f413278fdd48c688ce1d5add2f40f37f4a52fae4026dbccd73f699064ab4ce64f8e6fb0f38b074f8bfbd4385f7d3ef136e8a53f6efea1a93383cfd6106f9bb184db3d32d220",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-161",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 5.625.000 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "982636bbeb268991e394bd83:52d805bc31199986bd844054e59da421:9fb88a7a4a68d9640c8fbae62af537bb5ef993a04313d7925139a4228aced586838a334807d405b1e1c9db9dbf2fe68999db93be141666422b745a43b4dca36ebdddc72ce5ed132c43a361b6f97d0c70b9de9e052886cfd8527523fc5ae322a83fd4291b0120f164d955db2b0e3a6a2b7a260671947854e2c9ce6c2b7f44d4bbd0d7ea291d0ad7d34af303fb6160f595e9563fc953a13e2e17f115919ed8c835c2b301129976015bbc9006f13d917f8158e7e90f656c9923b217183b3d1a77ceb68935ca1718794eddd85732ed5f26307210e23e23dda8e82289154987a5a38b0b3501e84161990ea22e170f3151dbf9c35a2ebb92860218d6b8a92293fc",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-160",
+      "titulo": "Casa en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Casa",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 4.750.000 / m²",
+      "precio": "$ 380.000.000",
+      "precio_raw": 380000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "836d4c4405f28e5a465fa6ae:5fafeaff0bf90f2771efa75225fe522e:5bd06e7c5406fe7cd551fab9bd88136396a294cdeb9a1db0be950d1a5eee6551e941438e9550036724dc4eaede930186937a2bc570dc84ddd4fba810cd48ec9da435463ca50d05962403859144d693b76ce8b29dbf271490b9c464cbcb0c30f2a306d3338c57522d3bafb113c02a54d06d7d508988eaf2d0767fb94e95b5343751facedbbc6e8a4df859b81afe4db5430668b2df08cd61b296d8dc903413f8f95fb9e71fcf5738b24701f09418deeed499764931a219bf48b28b0eb593586851adc710451b8e46dd281a83cec842540bb4668bf2130b5f009b0b47515204767280be54e66cd145c7b722f73bf4165ec528",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-159",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "866d40345ae8d5364fc72f92:239608fc3b4e525297666001cef7d83e:58722379c5c8c3c10cd36d8febeae17efc8e2c46b18adbc28ba043d1a3ee145a6f9793b04408f9173b14acf95149321da23078c00efdddf7ebec01e7375b0fa1cb1a33a7e6bda47ff8ae366f5098b68240ec5427cc252bae17a98ec7678d2719ff48dd819e242d2150fb879da68f989650bb944ec2c4cce367151a8f2c35e346dc3f379167e02a52ed1e64775a62331ad837ebdca626b2f4337ad5b0391b621954ea2f759349695cc161c576f7e376ce1de35b33e86553a285dc87cab0ce675e8cd04e65fb62488b71be63258d49601d8c4405ef860156a791b3b83049a7c958b929822d6ee1bff77478285b79d0e5af5749427f9e7e2f642a21967e9ae7513e77233f",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-158",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 5.625.000 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "bc9033b8261396c3f44e7966:0526d69f45bb669379d3a0d49ee5bcd3:983135dfe05dba8ac982a6a4f94aff67122656f1f8d03c424a50544d36ae223b0d6941470d7d1f2f9d6bade18c422559b02c47b6658f955a4e117dedfe4ca0c751f154a5c4afcc53fe953795d5868a2fcd36303436810f6a6d75158f51346824129e8c01bb1f90b13aa9861afa138b302647478fe8e752f4b5a23d61a34035161cf8614351eee2fbd59d46879ff39496399d483507a35ed393f47f0c70d20569e26e6d9a4d2644057c58ef95245ea7b8a5c42e8819f617ba6aaf588bd64a08a8f0b6261286ef986f8ceae2ad24f8825d81ccd083930a4d54a20b3deea3c2f13af536673be4fa22bf2d3cf49547f8d80264e4fce37f22bf5106e6a992cfdb",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-157",
+      "titulo": "Casa en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Casa",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 4.750.000 / m²",
+      "precio": "$ 380.000.000",
+      "precio_raw": 380000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "3e031385b3ce755260d5c199:a5f2bc6e99e32fcbf7d81008e5284e69:fed8c21a3e115b640c40963a5de9b67ca8223c7475002232ac3896acc94bcf885d75e290a924de591a700a270daafea21f07d80b112139d3e1fd0ca1450196f95eff3fa4d6baee8ba7d7a78b8923d20e2f03498e189919a494cc7aae1e184d65b88f68021d95afd9dfbecfc1bd5c87fa62162e3df7af7781d72f2aba0a6e957fe988d50fb020d8f3ed7e978bce0dbfa5901cf857e8edd9d1fc5d405862aed13d5d27904e00aea2dfe68e97f8a4dcd1fc1501b8dcbd56dae8eac4dac004231a5c54c24abfdbb51f3f732dc227c45fdf6d60b9f57a13b16c37c8acbbd040a5c85247671ef6d2cc5dc12bdfa3e85b43ca8663",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-156",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "5d0297edec1cddda7dbf7411:c6722d204f5fe9d3a6f84292b160fe41:771c5a9ff29abbe23dc7287a7e3a730eccfbd8794d7e32450862ed4ecc8973ac4e2fc341c554cb97e72d1ddeec806605bb3db22bd8d90401278e6f21415e62d69f91abafd81e511ef22a0513e79ac68be6cb7bffde789e9901ef751b6a69eb1c0e4f9349f9cde879188c47e43d09e47e9bd670c31115224a11cce21ab2983fa684bcf9c5a40a01ba1e2096da1d5d1f0cad7db9af3851046e7040a9a0f7c5b9bd753b5540766c5fc6619388de97afba0192ce905a8b62f3cd08859bd6547dcc4ed5eba478c8af982dfe0bc70cc092cd3eaa00868e6b9fdc5c7c2a3664726ebc15b02e01bb7edb90dfb1e29f5f44293d0e79554118f967ead1b6eb3281b6da34d84a4a29",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-155",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 5.625.000 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "b2cdfbafb627eea1e5aaccb1:87bf6c66097dec2350745f63e432d847:fdeb44ff4cf2a6bf134a4efe04c8f24bb70280cfdaa873cde4735712be6d25200c2e281cdd2e03009d96dd28e9fbbb2334e37c4ad16c0d5f4ca3940ba73d4c658743284a29191fd5c081410cf0886201a0442e7910701c56019123779676a046b6400850bf577a636e69a4b1202d81bb7d9afc31456541c540289311a9a5fe5c2be8dc3d9b42fc29ea42e2e2685b02ab07e02b4938c4b4e292515dcd71c33fd1f5e263b2a07c06d17190c49972cf1f874470a7469a81c2967d51f8f24c28596d07b1ca879c79c27dfe5d902c74741c0ed3d1347e921396feb6dcb375f08dbc2384bf83fd07832f70c9db437309138934131023e494f350c037c848b0943a",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-154",
+      "titulo": "Casa en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Casa",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 4.750.000 / m²",
+      "precio": "$ 380.000.000",
+      "precio_raw": 380000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "0c6d3b52949567f93ba56df8:d29f050f2ecc3bb5d323516c50bf0b84:7e4e4422a57190b3d90ae5b9ce73f2f2c6ae7cc980f1e3d90f9a28e3711f285171d168abd44c17a2c99993e4a9b0710e8c215749a95c45f85f6533fdbaf8a86bff4975b4d434ced3c14e30d044d0e83d82fdf8f8f17405cbd42c846ba305c863078f7e33923ee01d3d09d8196b59488b8477660a25c4b2f6052d90c2c69c2bd4f5bcc2b41b1299c05b63d3c7d6d92b51044d8cf3c3d08ab75270ddbe022544cef39ccdd07f420ed3629753a916b65da8b1d4c4d1dcd8efd6cd9819751ed11b5057dd1cceab6caf6ed7312e8cc999061be1fd88fb37486dc26a4a7de7d709e895b03a4a119484d3369a13fbd01665136c4e",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-153",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "b1de4c578620aac7cd0fc95b:238003840dfafe105767d2381d2b6c8c:1b3392ba0d627009607a9931ece8c028e4d01f29f1f7c80637ebaedbc568904dde5c5e44c91cb8ada5f7c1ee7517b438aea02f82ff7c3d50505a8c2cf82b43ca911ebbed2a8fc9b8b4d730e6e14665e7126deb032cf0af15e6dc905a0aadf6f7ec080081ebedfb62a786d795c811ad0250be72adaac24b87a0578359b9c347ebce1db683ee5231bebaceb398d8d2f7b8b11b6fd882af9c5c80c164a6ca6163da0c4562828cadcedbf0a829c50fee540b9b3247239a48cb9c537e826cf6cc79c8887b903ca8d98accb5cba67d57b73517bba1453f6f512e3370884161a73641e119d556b4194709a5d23052b52e55d62db2b6dace39fbfb12a7e72f9ecd493af9095a5e",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-152",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 5.625.000 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "b4e854e248d608142061e5b3:37371e15e1a9e63a6bdc56f25402abe6:5cc6934bcbbacff4213c401ac81f00f3a12485eb9dee845b957c385254a6de819ff88070e5a2ab522ecd3ed83e21cc83864208efe0db6b9835275cb189b9590e33e88406f3926553d6ca9297de0f58b5f3c8f9f8f2a33750ddebeca5f212e71a47ec05f98dbf94bdf7133a089b4a97f952e6b79719a2e9ed6bf518aaa9e3396c1e058823232279707ed42bef218fc34868ae347f69499dae4162518bba430b93c2109e733afeebc41e2dd4239761d0b795e9f2d951efc39578a4829b1a10db41aed040bba6d786e902821a0ef91f06be348294c8c75dc35cc3fab55784c886e1df44d7399f84a9e61643477a6bed8b3c1eb5f453e01269e69e6952d8f9b9",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-151",
+      "titulo": "Casa en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Casa",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 4.750.000 / m²",
+      "precio": "$ 380.000.000",
+      "precio_raw": 380000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "122c5f18703a89445e3cd164:b1e6b1eaaa9f403a0c5fd2f597ba04ab:bd6053d49dea79b039fb7b41cc9b654f17b22ee095499a6553f0c512d6a4b69e945149a5f7b838fb2d7dd3fdec5d44081fe37209426d7706b70aec41217af23dc6e2432f537a1b846da621a2c688cf79f00b68204b7e66620e02f3569c25819e72ae7d567369a502f5bb67f725cacbf859258040570fa8eb6f22dfd7ddd7697aa53078dab83e1aa92227b9f435c893484ae31935aa7858bf36c80616a0e8cc469e2380c5adbd6ba4ece540b3c336781062f93066788f8f3eb766d432b2048d9b64c810d23d4d281d7dc0000234984c8379d9d02dd3a76f0b502ad9a2d359a3bae5e2cfcef1700392b6c794c0661aef0c23",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-150",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "🔥 Oportunidad Directa",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "d5b02577200e7997958ab739:93acd0e9787845ba6ce79c1c10fa6bf5:0373b3a2408cbfa3ec56bcc3dbda8c5fa17ee199fd1dee0a9dd232b38d4a7fdc9d6ac79b2df5c203990c12279127013a183d8a98a17e9d1111cb48dcc411a81c91fbaa13ae5a4daa0560437f689f16c3c952cdf87e7d011199b0f201928b4741b80f2a9dda168bb88cdf13116154f2ff030ac91b47041e5a5b89cc159bf17c24c7ed5928aa6125502d21bbd141d02148508bc1172332bba8d2c2382be3ec085e04f2efc46d982c5a6e7dad0907fdaddd19043ce228f4e25f8704e652e87d80757922fb3db591866c29a176ce990910cac809395658aecafe4702c6e4551bc018214f4d16fbb6f291cf5bd29ec29947e9d13270b4192423a4ae13d8da25f2210c6317be",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
+      "id": "lead-inm-149",
+      "titulo": "Apartamento en Venta — Bogotá",
+      "ubicacion": "Bogotá • Estrato 4",
+      "ciudad": "Bogotá",
+      "tipo_inmueble": "Apartamento",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "80 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 3.125.000 / m²",
+      "precio": "$ 250.000.000",
+      "precio_raw": 250000000,
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_tipo": "urgente",
+      "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
+      "telefono_bloqueado": "573 ••• ••••",
+      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
+      "contacto_cifrado": "bef10e36a4e0db2249c5f2e8:2113d4da5ef10ed16f3b20e554214afd:aa473e54744ae3498e70edfa9839f5a9b4b818cd03509bcd7876d354f1504efa101105bd8fc40aa2d3e86fee3c8070f607d06cb3ee1c4a122941115bc5c7e6b40202c89a7a5ba103d366f0b184b9c064e8ca0b54b6f01367da405773a743d676a93e597113e3ad0f4c61fef850ffecf90cee0631bf820c1a20b7600ed4437d7abad8cc1613ca7f88efd6d6cb96b929e7be3e6a4706ecb068a128c6901c8fae4918eb02ec1ba9567b157804a70787d99c6b033cd97297f6f5207422a3712dc9462456fdf7550349928772e4efdbcdcf58d65aa90b5078e0437179574d3b431d604dea6218ac934902fb68a8a732037f4657d288ff299eff0ad7b818d623f9ce555df5a3",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "80 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      }
+    },
+    {
       "id": "lead-inm-148",
-      "titulo": "Lote en Venta en El Retiro",
-      "ubicacion": "El Retiro, Antioquia • Estrato 5",
-      "barrio": "El Retiro",
+      "titulo": "Apartamento en Venta — Antioquia",
+      "ubicacion": "Antioquia • Estrato 5",
       "ciudad": "Antioquia",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b0d820df2f_infocdn__jf2tcxyimydb5ek9ug3aegooijwywywyv1nplflajpg.jpg",
@@ -43,9 +554,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "35633e2b384885710fae79d9:ca83b3145d26f9041ba358bfcdf7ffe6:47f6feff5a6640248dd50a65b0f469e88b9b06bdd6ae2650dc5921ddfaf463762d585dd10a182e5959f0032e97068348e9f4be2357b5776aa11c2859dc8a64ce73a4ab1fba3325ddd7157b4dbcc4e8e75e79f8c187b9955655a9611d659e72bf7e39ec56ba534ef986d7fb55065c09a3b1944464a154d16e369a",
+      "contacto_cifrado": "6f50c1322c485369021875d1:5f049e73b1ba2500ab70a48d3fa92d76:4134f7df4afdddfa963bb9772d7e563fbc040b1afef3c4f7078709b87a7ce4473a0d43a0549168b600cb7cec6c89454f593bd3e6595ffa3c0326cfd589c53f59d3402ec42b72422ab3838ae5e3aca58b0dab739d079ab6f46f03776060a79178afb805daf5271b2d05dc7cfd781145a338276fba2fcb86c96320e4a866e3f8c4fe6757d69310dc9dab057ce9749d5ed16965274c112b056367e20f335abe19b6c4efe81ca7520ed5e4f920f98936c0da89d2a792b5cb99bc870b62bf97ede0451f84fb541ddf62f204f0226b8e682c5397fcf0053fe50aaa78dcab7da93a70aadbc31f694129fcd1ceeeaf7ccff5f35550675a12ea9a0a2cf0e54098a95c",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "116 m²",
@@ -53,14 +565,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-143",
-      "titulo": "Apartamento en Venta en Hacienda Santa Cruz, Ibagué",
-      "ubicacion": "Hacienda Santa Cruz, Ibagué • Estrato 4",
-      "barrio": "Hacienda Santa Cruz",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a918fc320a84_infocdn__kz02fsuq7igzfaipmnjjkgox3tsvid0wjaw3oaeajpg.jpg",
@@ -92,24 +602,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "67b7dfd98860256c9f538716:f94df832cd026c6d3006a28a5a07c468:447badc09719f67a2ba51b73caed2517c480718906d02b3ee729fc9508c9bcefc787549926ca005054bfabf265610a34fc02763aed0de0688d49c916007f5cdc8b91fccd37f6f1e4461038f9db36b7daa6f3d7dc506760e0ee291feb6cc7a9d7955e0b8dee0dde361b9e8230beecfec0cecf472dea63272d14facc16786de3b626670dac864302ce44e7c0f8bdf9a62fa943",
+      "contacto_cifrado": "1cb8299efa32c5d8fbbfe62b:e5e8a3cfadf4f61631edd463aefab931:63fda2093ace8ddf10a84648221f4474ceacbec0f1e137bdd92043f997bb9db59c5a97aac0d0ba47767e464049b0a031d2fbd3cc6d439b816004793be8ac722117a5ab53239c3aaf6daa35f53726d8d031e90495d3ef38c136a64ec3bf72014b10992145ebc999b2b3a4ea209a36d4c6556b849d0a73a7506b7701619940f8ce181cb894c425ec6533a0689ca878782a883653c9778bed256c2a939087b4a5d6c857bf291119e7a0062df518798e44b1170020f10d29aa7c46ad28c453de27c86f510abef8974136463ae1fffeb76c0503da9c86bc53ead8531f191ad0ad4ffcc529c7aa3064399c258edf3f4da3bec392ea92f530bdaeb53dfa4e11f0965659c7681dd043a3e43cf98b646afd6bdc18b6ecadb56bc87fed09d4bc93513096195dce4745d112101ebd200de0edc9f316c097b41674284c6ed1e6f0f0252da5ac572c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "56 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-144",
-      "titulo": "Apartamento en Venta en Bosque largo, Ibagué",
-      "ubicacion": "Bosque largo, Ibagué • Estrato 4",
-      "barrio": "Bosque largo",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a90af995db25_infocdn__vn913btve6hiksfjeunfxoxiqwniqsfc41y8y4w0jpg.jpg",
@@ -138,9 +647,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "a1e624f7e252286258fcf52f:66da3471afecc3efbfd0707a61d7e759:39d8e46cb2faa47f348ff7b6dee6562d7248d1517b5438f204a596b99d92acb62346b84ad677071e759726be65faacfc140afb170ea239468afd6d584d25c8824d6b4187ea3519851acb8685e8a340075e2151c16c2a5f353e4bb6eb116906d99bf60432f67eea95ca6047bfef57b96fb8a1626b92734495bf99e9fa82b7ae141d9f60e4e6d0754dc40e99",
+      "contacto_cifrado": "f14c718f16c01e7c145dd28f:6f15bf541e012d60fae5099615e59bb8:b7763ea40b131e96574571a2c1444bb830d7b86e008db0da134db983d39bb5f1eac6fafbaab0a3a128eedeb8f4d11d87b627867671af7133cefa5a071717ae7026b6e5fced47d6265af2d419f0358717958714484069a78ada29b18ee42fdd35b02ae94c9e68c1574609c6b5122a922d646b5ec3d05aaa3210189c555264f06394f1582748e9e104c799b5bea9a56770ef6df8abce70a251f937e19cc95fc1fbbfedab09271681676cd758726a26f3d77ce4caa0142e69795474bb544ac04b429acdc3e727a94605b70148f2ef43ba06cdaf9d8045203a2c25d2db9a620d50ed4d59497a77cb1ece5e9ad67828ccc30c816461e9a2c64eb9bfb66139ee480eb2d27e3000c8985001c868b4709aeced32815e12904996e4e40e3bdb96e78ed4ddef4a7b74f2af",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "88 m²",
@@ -148,14 +658,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-145",
-      "titulo": "Lote en Venta en Tibacuy",
-      "ubicacion": "Tibacuy, Cundinamarca • Estrato 7",
-      "barrio": "Tibacuy",
+      "titulo": "Apartamento en Venta — Cundinamarca",
+      "ubicacion": "Cundinamarca • Estrato 7",
       "ciudad": "Cundinamarca",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b05bc7b1bc_infocdn__jmlbcz8ou1a04yuotrwfphpg0igv9s8vobzndi2djpg.jpg",
@@ -173,9 +681,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "c506d6572a8d4cd7b6b3844d:d0c738b05b937db06a4a657479205dc7:7dfbd385621fbf24d2553119229548c924e61d20103662e125b55dd68d58214df4bbeb2094671de4509d1d012272b77e73092edc28cfb2056764205217f1490d7af526247c28537ac5e8816ba9dbccf61f9530f9b3c98bcfa8295e32248613ad3fae557f534674b727e143b7b1ee918ac683691eded7cb89",
+      "contacto_cifrado": "931b26d3189aa1ac1d637811:d2672a80711755e9035196388e4eaec3:176cbb9f0c0ba5486c79c4a3fabb64572aaa02bfec29855ee9bfd83dc6842fac10d1acca8bc15d683626b0706b399bada986cc522f784947d85301712a26daed099ae5670ee6cf09bc23422239e9aed5446e437bbe122474d0a22900e996fab746f27e5e9ebb27cd09aa45ed97b1bdda5fbc354c745920c1e3d6753aa74276312480595f0235886811fafafe8cc640e2011e8ae94206e1aef527a8d5c3dc491d160b91d2622ce5420964bc292dafee57ed4d6230478e2ac2cd15c7315318242e59498f4f384787de70e0b3bcdff5c33b095f0e0be7b170b1521c7a000bed0b72a6445f660f21c0d435ae0425f6cac246e2a09537f913aa6944",
       "detalles": {
         "Estrato": "7 Residencial",
         "Área": "91 m²",
@@ -183,14 +692,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-146",
-      "titulo": "Lote en Venta en San rafael, La calera",
-      "ubicacion": "San rafael, Cundinamarca • Estrato 2",
-      "barrio": "San rafael",
+      "titulo": "Apartamento en Venta — Cundinamarca",
+      "ubicacion": "Cundinamarca • Estrato 2",
       "ciudad": "Cundinamarca",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9a268369985_infocdn__efwddhwxw2jzutt9cvuekcjbuzz2f70asqno33cnjpg.jpg",
@@ -211,9 +718,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "0d6107ac0d9c7ef22ee9dff2:f65e77b5bfc182fb1cd020fcb29f604a:0065169ca4a772effb0a5ca35dd2117a78f3f75adbcc347bb7e0de4819f8d2b3937a4e94ff2fbba8ae381af111e572c34c5f10d35147b4da1158d6fe807165a4fbe2e2c933c2e6a4ec6f98fec546673706b189cb8a77a7bbb9fe4f3b70456b2f010c220f2cff8a7898c7afeaa3072eda241ec29459c89c164895429180b303364a105f241d",
+      "contacto_cifrado": "1cbb694443e8afe93dca38ed:0345b9722815ac391eba7be830197a79:d19d9f114285cf6402e99a321dc2739444bed4dbf82caedd6091c044a90e837b6c5755216d79428a09131e48a9852d91f96fd81b65b1d9fb699c47c217817f82c242c8c52a53988c44ea6e482237d150213a2901e5eead2e0c1fd86e467e5b22d408272391709d04930e9351a556a80a29eecbd2c2fc11eb6f9f6bd113904447fe55acf23661f3abcc082c1ebf03854333c4e26c45c6ad733a764da0c9acb4a8bd5ccd17ed3a8e37c011e90cad788ce2d7fd8dfc28b5415e135823a15ec9f556c8dd3ef41fda3c15e2b0a28e3a70165f40d356bcebde08a7c81a2c205bdb516f1b9a4d886953115549ccec96009450778c83e06482969fa0a468afb9d222c102ac879b6869947e8b8695e682877c9beb3c196f6bea18bb4760f6",
       "detalles": {
         "Estrato": "2 Residencial",
         "Área": "3700 m²",
@@ -221,14 +729,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-147",
-      "titulo": "Lote en Venta en Catalamonte, Tena",
-      "ubicacion": "Catalamonte, Cundinamarca • Estrato 2",
-      "barrio": "Catalamonte",
+      "titulo": "Apartamento en Venta — Cundinamarca",
+      "ubicacion": "Cundinamarca • Estrato 2",
       "ciudad": "Cundinamarca",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a986b00560d9_infocdn__g7luthrdrf8lab555pvve7mmrjlollchx1sablczjpg.jpg",
@@ -254,9 +760,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "3288429de9185d9d7aec05e3:0296d080c624573553fc00149afc77b8:f4c0a1ba5c1188f6f1d4f53034268109dacbf492191701dbacdbbf63b134351735b6a1606c61e8963b107ad71626fc08d67997521cecf5f8b5d2dbfcd1074638607eca848c54a9afc72cefc1ccdbe8e74f53a64b65ef31d9e34f83a43b2b72dddd1634c385e30e023682d29baa4d01cf5e444abdcc8f4d492e5661477bb1a812c5",
+      "contacto_cifrado": "4305edcbb25c862c3f5b17d3:5136c4c1e66ee6563f41bd55748b7c0e:693e9aba43281fe8012dcc7e744401cd9a75f054368216e637f2bb08b11fdbdafb838f610932d3ee4dd25bb82c3a281da9477a86a195f298c61d8e8cea288fc62982b06298073a77e0dec4d4162c7ce379bfd09c4baa5e72dcdc67f915747df3501d5f0dcd8b59a27dc1b284e5da228e9342fccf497406794d37a78674ece6f546d984bc8c4b2ed6a9e4ddd5f305653c825e75dc25704151404581db6d305a302b87b808b52317f8dfe71c89df4ddc34a965f9f65355183f80592a6428e82f42c1c90238ab6450a80ce06a59fd3c0a29125278f96db81bb499d4d34d6390af9130d397053c4b21f1f302bdd2be0bba0720ce092d5157e2526bbcb385212fafd008ebd7d1d1a87a21ff8b29e29586119649bf4a63",
       "detalles": {
         "Estrato": "2 Residencial",
         "Área": "13000 m²",
@@ -264,14 +771,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-139",
-      "titulo": "Apartamento en Venta en Picaleña y Mirolindo, Ibagué",
-      "ubicacion": "Picaleña y Mirolindo, Ibagué • Estrato 4",
-      "barrio": "Picaleña y Mirolindo",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9a2768bd632_infocdn__93ylgjbdvfozkjfvkknfej2qlwqy6p2pjonpf3zfjpg.jpg",
@@ -304,9 +809,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "8045c7f2448f72631101eef4:a7a9d3d470b77faf80d840ed635026cc:a3ac4ba42617c5434a7d2617750b3f50d77678588be9db7e3db207353a2f63e097a1a233487c323feb2a3b388620be7caa50c3bdf199bdf0b5fb10238bd1d1621ce6c0b6bd202483393a621fe17aed115ab4e9c3e2a1a94503dbbb65df2ba14f1f5a6c6a2a0af032ec2d9402196dbbbd6862238c3c38a0bf4a5ff7151a72bf0a9f3d1bf19679aaf2a0156c4a0e0f85c1be5498",
+      "contacto_cifrado": "261cabc73ebe4e19fddc9989:46de9a444475dac2727fa8c85637e0cf:59a0eec2a326d0f593edb431945213d64b57e6dedd86368470963847cf9d7e8c66b577860357dd8a54ce1d14956863e78a4c4f5134b756773053c97d8c80d58b8bf1afcd782431642b50a757a4ab0b3c6a7642c3cae5ccac505aa3766b4921523251d325a1f02c917dc2718b2c69adcb95375c0d783b1f9f091fc14d292cdc7ddc830baff0bc1bb83f5ba0785581e322b6e6dee333d2ac4bfbff8b5eeffa1a50c1ed22d5a69c33bbdb46b3226d01f47b7c991b27460c8208285d46170097ec39b678f91bea33f7a8972a772aaffa864413fee2e44854952961f58c389441d0232d828576fac90749c64ce0825fca68df68c5e6afadb76be9412aad21123f89a94c0a2e83aaea9fdcbb78a36797c920aa08ce9bf7563b8483950a4b1c6de7000bc402e0947bce182d59fdfe0f1e48a7c0b40ac524a72b478b1406572a04ce42bd9447ae4384e4690027",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "94 m²",
@@ -314,14 +820,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-140",
-      "titulo": "Apartamento en Venta en Hipodromo, Ibagué",
-      "ubicacion": "Hipodromo, Ibagué • Estrato 4",
-      "barrio": "Hipodromo",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9733876c4ad_infocdn__ihet2fep2uucla0krmys7v1jef7zffdj4pr77q3ljpg.jpg",
@@ -355,9 +859,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "86567a7fff08daa0fe318fa1:478dc181a56edb100b47c67331df739f:81afd10deccc5b884a9f73ba33d561ab38219c56fe5eab3483a09f7e866d7997effccf17a7aedbe105b8b8a9c52437f6391a600476180875792d092defdc926d056f296afca33413219d4387704ce9a3758d84acda8a2cdbd99b5a016542591db3b5ad00eaa9bab80b6f5e0100e635733e7d16f79f7b4fd121f27c06cd708cd341483c4c3cb611d0",
+      "contacto_cifrado": "aa71c6b81cf1fa157e794ac6:bfd188923e5578b341444f42ac46194a:c1c7b8a3a024247fa6af720df3a3a7787ec2db8cc22a9f072586ab28e56297575abc63c2fd1685022c674de5ab08d2cbfa46c7c7cc898e633a25f9dcb6f1eb4257ab8812e55d0d08e3e902cc7b2264ffa132ce388c00a9e16b0e05d5fa0a498d1c265a35ca98928ebfe60644e31c51ea4d782785c79802681b665e60146f01ceb9e96d86713dd200ef8436d086e3f9cfceb6cefe8c7ff75902be747a88032c765895db72a4cd349043885471799ebcf3b554ceb93ea7074ca6ba6102e4d18f7fe6e159c023b963b28ecd1721830cd0eef0712007db0e690af2691d8654d9efa40d4b6599403fbd4d181c3fad2c5ce5ed3f6161aba731181dfa7470a60996343a4dd4587adc138170307adfe271b4cab831583c204cd0514bc726",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "116 m²",
@@ -365,14 +870,12 @@
         "Baños": "3 completos",
         "Parqueaderos": "2 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-141",
-      "titulo": "Apartamento en Venta en Calambeo, Ibagué",
-      "ubicacion": "Calambeo, Ibagué • Estrato 4",
-      "barrio": "Calambeo",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a95c3c3d5eaa_infocdn__jl7h3rbhkwkr6locbndgli23tcbirxoqhi3vphefjpg.jpg",
@@ -407,9 +910,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "f8f0672e238085d929bb335f:6da509407daa393c4a11c411a9aafcb2:218c24664d92b1203339b6f1c99b816aa69b17480d75a5434c1294cd588d151f1839c7ac4db2dd76f5a59f008708bacaa7f44e4731c5af7def352cab7cf5b999566acc4f4e87130cdf68ea892b7ad2b9772a29f11cae04457091e22d8cc7bf3a3647adf64d9ee28bd8b7f8cfcfa429f097019d183e9ca7cfeef1f1d41aef2dec9263ecb181e928",
+      "contacto_cifrado": "cd3c2b960ec6e72f683b51c7:9b339cef7e053e3e89ed9ebfe8c8eaad:e6979369562ca92b04ea3baabe6766f9ac1ad9909c3ce397d703cfad01cf59fb54147fe07dd2363077be1cdd486e7e7eb813a471604b017120f9ee231e5bf10fbd0bccd78165ac614194e224784582fcfce87377c338fcf3400855855ea0c88d9f8a56356204c12abc4db0e1cc2535549c5075e1b6120cf9b70532f1b18d95c1eb01fd1be344f0227280f975cabda184fd1c21c1ed9150f43fad914016d88060628b41029e50a8aba4b580ef6bc3d48ac501a2049a82cde978a7c4568a8f69fc3986141dc975fb67578560e578bd5bec926d92b5e6403d587c6d0210a534657f2505132005fa0ff6dd034d75c09c7cb2e030b37f73626bbc878c453654648fc8253b61cddbcfac2f2419b775a24c27ee5e530fb1d9ec",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "205 m²",
@@ -417,14 +921,12 @@
         "Baños": "5 completos",
         "Parqueaderos": "2 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-142",
-      "titulo": "Apartamento en Venta en Santa helena, Ibagué",
-      "ubicacion": "Santa helena, Ibagué • Estrato 4",
-      "barrio": "Santa helena",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 4",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a93af2427861_infocdn__w2s1y5o9nxmsrcfbcxvpyninb5wtsedzhrvjfxu6jpg.jpg",
@@ -453,9 +955,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "2b33c4368ea224f5f48d24ff:9112d2c8df5c27fab80fc4f8c0e91de1:c0263ee2abe8fb167e62c5300e5bfa03a190367d8a863fdc9bdfb710ede29d7d9bf725230d6336b6965783a7e92f36e18f7f0c015946879ddf9ccddb252e1d299d48d5988ee4e0ae82ecda633f84ce5b40d97e06387e8099b76c4c8f678521cdb794189f6c7325eba2e06df14270e1b20b3b8665295a795b5ae4145d174661039035bb9e2930241c4dd5ca",
+      "contacto_cifrado": "05d65a3e3536599451e99c2a:d919e24aae13dc79d6631552d9249a47:4126bf1a696fb7b73d9912b6aba056af1453d41d97aa66a6c8726ffcdbb5b38e3c0ee14f7e148e8e0ef3a4df19caac54834ad263f06ab03888dae20597d49bb3f4e229a5b6b88b6700df44bcfd1998e309d108ff9a270236eb0b85eb1f4f8bcac24fb1bbfa917b78fabae76c2b9453b8eb04df882a7b2d536f621da66e77a3b397219f74b1a3b635297b1dd886a4b0bacd6dadaf37b159d93a5e5ab612abd162cd0658716707f8dc4be537c0f8c7cc756c8710b45139ca84faf2277cecaac42cb185f1f2cd62927ab38a121fbf916795ed578426df3e5aa70e8715f9071e0c2c9dc9ac3c202b226226a3b747c5e7fde660bb5cd0693b91ae4380031f3dea324e9b3815990875f0d35d356cc9f31b4a29ae70f10b64d2eac5d13117eedb5bed40e7be652aed78",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "76 m²",
@@ -463,14 +966,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-138",
-      "titulo": "Apartamento en Venta en Picaleña y Mirolindo, Ibagué",
-      "ubicacion": "Picaleña y Mirolindo, Ibagué • Estrato 3",
-      "barrio": "Picaleña y Mirolindo",
+      "titulo": "Apartamento en Venta — Ibagué",
+      "ubicacion": "Ibagué • Estrato 3",
       "ciudad": "Ibagué",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9af4e2796f8_infocdn__w79hoaebcclx2rrjf57ji62bvv28po1jkakh68eyjpg.jpg",
@@ -497,9 +998,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "5bf51e8fef06227364af79da:1677914b372f5c1fce4e8756743d2fab:274d2940d46aa34c6ca10cb18e66b797ae45a7761a0fb9290993e3ecfba8a0890db72fcd69162cb9f0ef90947b55b9138de5504c08387ea6fd4f8cde673a0c7ce1ddca2290821cef3685e8d130255267c50a4f207939f967fdb8a9365d0bfd9ac141480f116b23cca6c21ca74ee1185fb6d5ac387c6da653d2603751bea6e28fc1f27690c21559ed6fcd501cc98eea20b4490a91",
+      "contacto_cifrado": "35d176ad06d9fcaa917ed9f6:3719197a531edb6de018156ba523a912:c540772837b467143b8db4952b8cac7957d3a7fc8caee206fc31075392eb2bb7646d70f33b4009bdb36a9ad23e97622061803c07413fceed6fe7f90060945b70716f75d1dc8bd8c08431585591276d827beb1340a410acf5f37e851fa3b501aa11af4ad36549f7818c690526d398da8a9f09a653672514869780ae8db8952908ee78209d734ecfb59fa64dbb244740121877c93842a23b7cbc93a334894aabdd510de89b68dcbc12ee11baa3e14ebffc25329f0e2b26baa413441b93b6c2658212c479c793e56e363cba87b9c4c30a36682e895c76a6698c78220cd2a99f955c8c90ff5ec78ec80c7201376924cfb849aa40113360f1c82fc2361977397288cae91fa24956492cd2d58944c1a8f86026079340a67b9871f1adaddb8afccb9f6c4d40e21e696ffcb5705d88d34f73b4afef50d0281f372360a4b164179d09b113075b2a50bc8b24a4d4b0",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "52 m²",
@@ -507,14 +1009,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-132",
-      "titulo": "Apartamento en Venta en Condina, Pereira",
-      "ubicacion": "Condina, Pereira • Estrato 5",
-      "barrio": "Condina",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 5",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a90b0ddb1da5_infocdn__nqyjckmwulkuxmzdp0mv6ukssi5b6rxxgwfypfntjpg.jpg",
@@ -540,9 +1040,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "7a2c4d419ed0dc6e1a4f4356:aec53230cd2de7d4a6be2ce1e44dc034:89b72b8da96b7c598ed9cd86098b11020dad88800f04c41822893fa5905ec4ce67fdfcf64872d55da31a39781af839ba9dd70aa3d07f7ced49bc4a31f622648b520ac89c725510ac290716182796825851b1496a4afc88f1bfff5a597d4d20b7956d6f5f03283b24c0e56ab8610df8170ebe739a3b75840a5ca9ddf31cc357266ffb37bf4f096d",
+      "contacto_cifrado": "1be7fd0cbbea9b64364968c3:0ee1b039dbceab1f10c79a6ddccb8a72:e46524fb36ef55199abe6b9fe08d30f453365f58032ff9079266c4f68d0463887a6e6ef6cfadbe4e1ba1b3100614902bb7dfb7c9d01bca3d288cf39c19199d3cde88531e47dc7ede5322b71163619595a350f9395c30e1ac6f60e1c4f6fb44ffafbbdedf3a4e4121186e3cc9d8e5a8a5e3355d6b03c963b51706d48dac1702ebc52f9888c38cc9994256d60e8ee0baff069caf686d9410520dbe6c0dc2314b722f7df2ec3679a117ed82df65d918125868aa778fc163e55580e0617f8ac5c13f657752530ccbd3940a32c255737b35625bfcb5308386a22e9adc45b2d5fed8cfc8d33186acce51f1438d2b70f9738964ab54817d26c754e0ed76f8b74b8b3fa2a441ba89ce4bf3c904930a6f3912eeeeb5b7eb",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "74 m²",
@@ -550,14 +1051,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-133",
-      "titulo": "Apartamento en Venta en Pinares alto, Pereira",
-      "ubicacion": "Pinares alto, Pereira • Estrato 6",
-      "barrio": "Pinares alto",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 6",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a909a11d5226_infocdn__gjkomro3mvwcwms4jrg1de5if4tcjkquvlbmimjvjpg.jpg",
@@ -591,9 +1090,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "44b03c682b380ee45d8add95:974a3cc380119ab9dea119c3bbaac020:1a3be10710e64cdeaf34de6281ae66d4a01c408451a26b89769488073704a6e47d792fec1543772bb8eda50ea11f5fd6f567ca069756f0b8b59c3f8a8d2bff74e56c254b39f51e2ac9f1af90c0929a0b7bb0a7d034ee4322ac8f71bde0d717480d2f152bc41e2de4a1ed66a516fbf2cd70358428218adc700441efc18c476d188450e45b5f8a21f17a52be5e",
+      "contacto_cifrado": "98c1bcc4b694db953ee97a22:8f4ffef5ed405c4c733914170b00454b:07902e5a41c7164268b461449bd233a19f122f30b936d04b8a6cc3272af2e9f211c0301f38f2e8ef1ee064c0b452df6a5840c87accd66459bd76279e6e1bf776756b9af80cbd118fc73eec6acda72ce09407f7cf55eaed617fb00541d0418b5fa5c8255418f332c988e29c39fee0b81c6c4fa5b4035db1ded5d8ced76250bf32190b59c2eec6b49fb4e22173fa61503f24a202c2623e15f0bf51e631273c542c9452c767cceb3ae1773c4e0eb59a225ff80c8603165b1554e1c50ab5caec4d6f0f6987920cd51ea8f59af36a62b9b841b254052fa54a2137d92e1355c247fd75a631c77038f3e395fae46f25353fd6b941178e790815a08aad85d00f160f49e7a9b2f69a8bdde425443b12b3f7b5464d8c42684df355e0d8d80b02f205c451eafc7a30e4d4f62e",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "165 m²",
@@ -601,14 +1101,12 @@
         "Baños": "4 completos",
         "Parqueaderos": "2 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-134",
-      "titulo": "Casa Campestre en Venta en Cerritos, Pereira",
-      "ubicacion": "Cerritos, Pereira • Estrato 5",
-      "barrio": "Cerritos",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 5",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a95c3acebae9_infocdn__kufc6osxo1ifa2m3ec2bqctkhahucbjvzsmrg9xwpng.png",
@@ -641,9 +1139,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "e21d3e74fa290843972d57cd:65ac2e814b3e982f6ec7caaef2aaef2f:2e807093243b61d495af7c990b6e568b374a73d89a753659d650abd15db4190faedbc5a0f70437e919b33db95d3d0eafdc31be9341709ac89446f667a148dd7ca18ad4680637630b63c04ab7d90d43a828c9e9128068e4132b37df671592c172057a98c66bc44d714a1a930591e28a1a9f6d5a7f551ec491ac2e6673788626a3522e47ea6cb2de0c795673",
+      "contacto_cifrado": "2adcb965d000d609d62c4d9a:a457d08cbba4a84a8916cd821b6308e3:f215c95595f55797a760a325e0c530cd44279cf9968f98950bb6ee26a87fd5a9243dc9bd0d3ba86a6cc4b947183b091f9fcca4a8342ccb7762c69d76cc9f9e5fdba9fa05e0f4e0d17f60c85e3b144a014a985cf610ac2eb9cf8aac1ce15ee922af884134c78bc1a976bce638f9da63ee68a15d46ca7da9b62acacb041959878cd2ce52ea89d3afcfddf824832bb8e6c962addea7815e4ef4f72803d4448d4a22a17c197544b86c0f599860d4d87e95fb0594193e9e091954e5b6f0a151a1e07ff99ff8cdf95d57f972f442619377638ec2120d15c7fa6d7b58bc472e3805de18207a3d6933053265ec2e707ff7492c46060f646b7afcfb3350b6ceceff1aee2ef05c3b194533f13cbf4bc62a8d3789312c424749e262239d82fc612af0",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "4539 m²",
@@ -651,14 +1150,12 @@
         "Baños": "3 completos",
         "Parqueaderos": "6 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-135",
-      "titulo": "Casa Campestre en Venta en Cerritos, Pereira",
-      "ubicacion": "Cerritos, Pereira • Estrato 6",
-      "barrio": "Cerritos",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 6",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a94e03763e80_infocdn__ib0su1vtkqls0xhtmqcu8l4cgsgzbue5p6x2wnifjpg.jpg",
@@ -691,9 +1188,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "575 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "b2b057f4c165f0d2d45cbad9:699768c584fd7c0a449a0345dfe6d4de:97f5532eda9bae839880b8dc00c4b9ba49e5c3a0c23b93d4e3a522da5384aa541ae0c0d2a77e164f6f865bca16d45c1cc22ef12028782af0d76962310f43e83014d29485a8c41ba1b25ff59b68a652f38921833a2f9a3046bb548bb2ca6058d7eab42b275369ca76a89b7cf5ae9821d9f05a7ed462efe52e98ce9d110ac060c7421cab4d716083a318ee",
+      "contacto_cifrado": "ee19b11ea454141d828ab553:d30b6e0bb36dadb1663c8533cc63099a:a93c95508b1193b5afab89163e1e416b8d03448d337223123bc2e639e552254cd7e5ceb4a09b8b822ffee0aa6fec1f32b63e71f2e9ea42c6a6e473746f326055f000ae1a71d4c5f9be3fef6f7c2a1ad17485887abe9afe96dbeee36375d6e3b410d7a023c0995d76d818af97be8d6472ba4b7ba2706d8eab86fd84905f0d49b1156e7287a45a6a383814b6dc2ce7ab1c4ab5f40dee81bfe943da86b21263e4ac9e361a500df255c3f8ba7a0cc3c8784fc5c7df79b35754e0f4bed3d8ec8e318b806124a945435712b0b73fe57083d30754d00a83ec4a35be724845447c6652af5680f48c5017a9d627fad37223a8b11dcf3b1f21507305b952f9982df6439901f2b83f2c54097844631254ded7114bf9abbd0f13da588c58f079d8a3",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "1036 m²",
@@ -701,14 +1199,12 @@
         "Baños": "4 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-136",
-      "titulo": "Apartamento en Venta en Palermo, Manizales",
-      "ubicacion": "Palermo, Manizales • Estrato 6",
-      "barrio": "Palermo",
+      "titulo": "Apartamento en Venta — Manizales",
+      "ubicacion": "Manizales • Estrato 6",
       "ciudad": "Manizales",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9a46272866a_infocdn__65uu7exmfcexwyftqwxtelrcuxdsexcewhuz8t5mjpg.jpg",
@@ -733,24 +1229,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "2affaaa281fc996c6752a017:0e5aca0ade806d453daaf0440bacbc99:f0cf5eb2e0ed3eb59a30c1073ef8dffff0d7f8194f439c5a6fb20c2669c39fc5716dd832e3acdb7638586f71d4ef2da16390bb3332015791d7dec3beba889f6a0d7175ebc365c2c50319849e9234ed6df430f08155645a3714dac0dfb909d9e232c8b69c6d5c23e42b2d3354ba6c3885ccf1a33c61b6d54d3b8a37fd13bace94486d0380e7ba1b3d73",
+      "contacto_cifrado": "9a30e399b2021cc8aa5e14c1:c5fde5b4504cc322053c963386cf3471:a5952968e952179927823672a25e28d8ec080c06199275f0507a0fc3d1d583878040d95dd3f4f0a24ad4d2e33985b1263ec46dd1dd80434250e5b4a337fb5997d0ed66df54e88a3f009cf3362bafe089d620a603432ca351dcfbbbc953cb6cbd4c435d16c914df3df5b9dda7c63fec333aad3fe59f7c634cfb152b046aac7620572a8d2930688e547e57cd8916b446911f7d0ff3f65a50645fc61d940b29dd3d6435eaa8767903bcadc6d8ee5fe3da1011fc99a7189fc21aa92dc1fbea1fa90439a81820f56fa43c9f7f629882ac07ed5e9ad9d7ae1d4d1717a41280abd437345a40ec9e5e26ea393cab9c5d9f4417a5272725c4b1f94b4c10544085caaa5db4767409a73516086bea161255a7d2a07d2977f9592c7e21def6",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "61 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-137",
-      "titulo": "Apartamento en Venta en Armenia",
-      "ubicacion": "Armenia, Armenia • Estrato 3",
-      "barrio": "Armenia",
+      "titulo": "Apartamento en Venta — Armenia",
+      "ubicacion": "Armenia • Estrato 3",
       "ciudad": "Armenia",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a4e875d69e09_infocdn__ddpfz35w09ap9ihtofeay82xxlzxymz5y7xi4ihqjpg.jpg",
@@ -780,9 +1275,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "b98c871c92b8895035332b27:5814862eae1624ce3e935ad3827424c3:c7e208c525a5789e6ecbf9879c01e5e338b76a2299ec076d7647087d4660f8b367172be6f7000e0208745a06c013dd3a4f1231b219b70c71b107cda001d50e35aa5a0f336f86a389d390ce9e8e0ef8d97a5693f17f2f106fe1d97b00fb645c057ce923f207dec2f0a99ef1b8e90736d48eb7dd512883d4fe36e8df8e86b0cb",
+      "contacto_cifrado": "27ca7959aaa6c677426b3665:8b90cf65730f4babcb609ea64f299f5c:3600d77d7e263dcd4f3a00748839dd952e1108151d94fdc764dc918f79891533c5ae8c2ea2c200c90ad0ba1b78739287c41a195d1a78078ce3fa6c3acf358c51243f9df30c21b5dc074613c2014213e272534255f7605b59eb743ba990382b19c67221b28a8cc760601195e14edd7fcd43cfe4c457f3bc2e7100dad8103a3c605f34ad9c198d74b797412c26d8de196d959cb8cea200ad5b4dd5c1d9b63d7054808367ec1061a4408981489e99f80dab3b48d8418dc5fbfd125bc109e8952d6ec4cb1690479d12857d7e6076106572e1917ed85e731ca24a59019c8cce115ea589a81801ee70180410968e44332c11c38cc6c42e4f582c56ee5505f51880997ef856",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "72 m²",
@@ -790,14 +1286,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-128",
-      "titulo": "Apartamento en Venta en Anillo Vial, Floridablanca",
-      "ubicacion": "Anillo Vial, Floridablanca • Estrato 4",
-      "barrio": "Anillo Vial",
+      "titulo": "Apartamento en Venta — Floridablanca",
+      "ubicacion": "Floridablanca • Estrato 4",
       "ciudad": "Floridablanca",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9806f14b362_infocdn__6dcqzkhdjgs6cigy9kxekgotqpwfb4zdbz37xwr1png.png",
@@ -828,9 +1322,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "192eb689ba925b8bcbf731cb:f0d1d0df3841272881e53cb605dd2165:7088e3161371a575346e199fbc3b16471a10d080c6a1b384ef9d0ef60bd87b83a2ab70d5852605b7a08e03d32ca8346f340ad940fce5a4a3efcffd3d9ff009d779e960aa4325a8228f29bf30234d4048b652f701a4b9bc6b384ae841265df7d15f06ba267fe8ce3cd63e1bc053d44e9080e560cb4286f96b941507b11ed9100ad596559abd25cdaa58c9c14ea446ec2e44",
+      "contacto_cifrado": "8fe9e8adfe50bfbea3e3725c:8471fa57aad5c2a5c07fe03ae00439c8:eb5e241010bd599c3aa6d3a5852f6239c657a6fead737918568039899d6937cf8ac0377fa0a159e6e44fd631b06bc20f96956aae9e2ca016854a66b94e6eb169988222ecca1f03cb4fa32851be7846f5718653a2a54f417a6a815ad2086b4a2d5953acc4b54540026a3b3a9138801bf04dad9bcd543431723426bdfda210c740f785a5ac357ad4f96ba46e369bc3dac437d91c20ea25a2115e9290d637c169a936f07e3338cded6749a2a98684e02cb40f127b2091ec60a36260b8d7ad4d8b167ce71119f3c5de64c7a88715412b2528f5891e2495d242fc2203dde24be4c29b4badee4b5a02286e6e82fa2641df5ea542f2aa106db682514b1b4e068641d34549bb7cadf84a0d65cf256c49326f56c080847177f74f0b617909de70df3caf4eb813289cfadba23abe753961d5d166271b16c52588",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "68 m²",
@@ -838,14 +1333,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-129",
-      "titulo": "Apartamento en Venta en Floridablanca",
-      "ubicacion": "Floridablanca, Floridablanca • Estrato 3",
-      "barrio": "Floridablanca",
+      "titulo": "Apartamento en Venta — Floridablanca",
+      "ubicacion": "Floridablanca • Estrato 3",
       "ciudad": "Floridablanca",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a962301ef056_infocdn__iu3cywpdcxb4fzaulg7oa5dctejvd47xjzofyhbijpg.jpg",
@@ -868,9 +1361,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "9cbc897c2324745a88f5af3f:ba876103ff337d38c8f78c1db2e6c5b6:3734c4efc4aaee8fd0dd6fcb2119310f3199c7b80dffaa72c8c582a72a06f6d0a2e1401a428e5ca60d14a356099c4a35694113643797602d12d845a1d3a5b6ef544550eaeaf329d01dfac7db12bff063b16b69b6757fbb8b9e0d5f3254e672737c134d28a2a410b984940825b6801e52feab548ffe7400720f55b54687e5e0aab918574a53",
+      "contacto_cifrado": "8eb36dc28627f477a7635ea0:a2b772ac512855eec8b0e3ee35be6b57:8cd206c206869d437d43628bada46965f55a87d244a4de066a340dd63ca630a7e4cc18e7a0c327019364c6a18fac1c1b22f10c07632cb3641fdec762fa7413c1485b1f2564a22c75af096f1a7596844e5f46c9f8211f3dd5f877985fce7ec8593d0e7fe888605ac9dcfc31adde3246f98b946e380febc3275740f7ef766055b7dedc0f1f42bb4d6901a3c7140f01dc8df646ee297041336afde1186f2a1584c25bb425875ab62d8f15449b777c6016cfb393b63d695bc0ea356722213464b70ff717678d83daa21df8337f25f7390313bc42f469d82099fd6cda840051cdca90a50a3ae855f3909dc7bb139e43fcc297b032fad1bbc6b4ceacc8947211ce90e0e84e754115d1c967a87a459dd9d664c770d711a226cc22960a8aeb1c445bc30d",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "76 m²",
@@ -878,14 +1372,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-130",
-      "titulo": "Apartamento en Venta en El poblado, Pereira",
-      "ubicacion": "El poblado, Pereira • Estrato 3",
-      "barrio": "El poblado",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 3",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a983594eb4f3_infocdn__5spl32kn8nl1ibcgdyv6gjdkxtjfy6ccwxsd6jgcjpg.jpg",
@@ -910,24 +1402,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "e8775d5b6351fae36f2ea162:bcc70e81cd0f7608e8406429f21355de:ee08ada4f5ac67aef2035d02fdd887b1fdb577dd103dde9b35d78ca4903c61dabfbad2ea25659f87690f03e3edb1c459d973c19256d545cc684daa77fa1eb8332f8f1ceb4b2597f3b3ad4c7e94fc32a010002256cd3ea0bcdcc5d378509850e45ef002252f2cc09da88571d8293dad061641883d8c675a5c6428e34b70be759472e54010c55626b3630f",
+      "contacto_cifrado": "1bb8588c9adc399acf00909d:b5e23261f82c970bec4c8962e5fdfed5:43d2687eff6a4407fa9e79b77bcd13caad6356919360cf0def7803c0ca622324415f3df6125e744c37131558c01d59d29fd6875aba1cc2f8e2f70defc9385fcb630284651b22accdecd3f07df20c2efd353a9c5172fb21c435e3156aacadc0fda5b32bf5076655bb3204d0d9a7f159bf1442e8ee92cc4e526553a944d51d3d2b11b3295b822dc6008e61c102755b552730558661bcb300307bcb480f49f86506c87633c31e8603f31e6a008736f4e1d264dd61513ae7d80756d179c30116b8942c995ddbac68cbff5b002e2bbb5b0c15f683e90812b9a5807452c27b265ec1bbd2b8b7ecb1e2696d92ab2a0a0e64484bc8c0e192583af0c49cd0a4c0ba3d3898e38464f2e0bfa33f50ce44caf26cda9b81ae3d637f4cef4fd3fc642679020f",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "48 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-131",
-      "titulo": "Apartamento en Venta en El poblado i etapa, Pereira",
-      "ubicacion": "El poblado i etapa, Pereira • Estrato 3",
-      "barrio": "El poblado i etapa",
+      "titulo": "Apartamento en Venta — Pereira",
+      "ubicacion": "Pereira • Estrato 3",
       "ciudad": "Pereira",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a93bd6d3e1d9_infocdn__d7yvyqsuznyukxnkgrajc9nocqpggfhvl6myfu4kjpg.jpg",
@@ -958,24 +1449,23 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "2d276c7eddfbbf4fcd394efc:7f4169d81ed2a94bd7c0fca7e60606c5:db09c21c8c732098f29455183c8a3c102102dd44e883d401c3b35ee9398a821b3ce123f1a497e507fc4678c312c3a1640320e83e256934fc7d8318ef49f1380fc0d26d1e71886b3335d8f162395917e6bc3a97d4de2a2808e449ebde5eec1ab1f81038c8210d94066c5a50d8ee3645f80faed2a6bd6a0e803ac069b50c89efc3bfc8f6938bf8d50640cef1855199927f8f9d",
+      "contacto_cifrado": "22c6a88abead39b5428bf8ee:d7d4c9de4b51a13b2eb0e02fde14c6c0:d96dbc8bdc365ae9e468aa05bb27e0bf3a454f0f8d20e2164c9e437787ed40b4aa0c525b67fd24321ab35c5de937f092cf1c31ca03b10ebf95f3d23ae4bfde2b8a02918bd40feeebbfc416d7bd1290cd14becc724f23ce86abca7918a50e930903c46942efb07e5fbdd1127fdde9487bcc3984392d31bdee84ac1ecab2303469054724e2481e7c619524da2092c46084fe9b9078bb50b5da48f8caba7150240869b5523181f05b4b1bf466ff357f1cc6fa28f5ff6ffa67ae976172885de62d73e598b956028713d3a9cb32f35844e39aaafd9b71052f61b7b395546a475dc32583b49a07aac213b1ac6ae59194293b443de0c5b21d51a1dc4e08c7c749b8ff242c9d3a4d4b0a50ca4d363796d831aa012ac02f09463786b1b784c0b5e18139e96bcf19a904a79462ae5321729c65f40e4427e751b89d8e8af317de7efbaaa7",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "46 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-125",
-      "titulo": "Apartamento en Venta en Los cardonales, Santa marta",
-      "ubicacion": "Los cardonales, Santa marta • Estrato 6",
-      "barrio": "Los cardonales",
+      "titulo": "Apartamento en Venta — Santa marta",
+      "ubicacion": "Santa marta • Estrato 6",
       "ciudad": "Santa marta",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9709b06bc56_infocdn__vdecakfkhzk3l554mkkrqmzy0dcogvh0dleg1z5ejpg.jpg",
@@ -1010,9 +1500,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "64fde1494c8cca205cf3c4ce:336509ecb3ebfd00ace5b1b2514ba5dd:813310cc411ee084e66a872261aa2b1bb7e1278567cbbbc883f0a7532adc55cc8b7007c8d7829989e16fac7c46850d4497c3661c22daf2e3278241618fa9b93447b824daba2a30dd07555f888cc14f4f780b914bf88ce383f790c41c3b1e18c451a014164ec28c4c250bbcea95be69af3c32523b67fcb7ebfa0f53c9d52a81ef33bdcd97294fc67d57a70ceda4aa364e9c5b",
+      "contacto_cifrado": "2ba3b98449d895d03b63850f:ad208f39bd3326e05237827b332987d7:a79aeaa4e5201423ce09aeca06b865dec02b43db721b62385bf06142aae9898331945dc8000947b93afcda2e60a0d3d71c03b55d2e99b13e46b8e5a8225d90d4c7c36bcca869de3720ccc6371a067368e376548a84aaece8e5e5377fbede172993ff3bd30eac389697882bb004bb6db643f0bc76b08f259bdd0d107bb9b409870a8a5ade4b34fd52dbbe916e08c27993ad683a3b7e849dbfeed36cd1520bcd1553818b192d268e99171debd022d86cacb1158c0d975761d5b92d811b2104906abdaff134078d429324d111a6c2642f179002de60151efa4eb6964014419240b0aa5e89c280c28bbe07737b5d334a01c8a82aaa6e81f4617711f17a8e8e8713d7dec0340e96e703ab2d87ff0977497e57c5d17d460b9fcb068a5667652cd923323e532eba79d6852c2638c9a6be5d27aa8061fa98024a1376cf839b",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "64 m²",
@@ -1020,14 +1511,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-126",
-      "titulo": "Apartamento en Venta en Antiguo Campestre, Bucaramanga",
-      "ubicacion": "Antiguo Campestre, Bucaramanga • Estrato 5",
-      "barrio": "Antiguo Campestre",
+      "titulo": "Apartamento en Venta — Bucaramanga",
+      "ubicacion": "Bucaramanga • Estrato 5",
       "ciudad": "Bucaramanga",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b182f9a7ff_infocdn__hpqlpegoaxzzqfeyr7tgbqouird12ymvb6veljbgjpg.jpg",
@@ -1062,24 +1551,23 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "c7aaf99db780514a1ae54ac3:f492a9ddd2407fd461c8a0a329efacb7:61c38d6f1aa77ba5e92eec08abed3f180aa764c864d11f7162b35da8b74351f9a5ea46f0a5fbfca6aa0ea46f3f1c893cfa6bc1bd177846bea133174831c188750c41a139b01e4eb2b639dfdd654d0b9a6714c43371d9c2e3bd1ac4e2af52ecc62d5490aa968875cb8916d3f42e4d9108eddda4890aabbd983ee3b14c0b401a6fa8778e4dc541c0828ebc2f84f9fe51cd4f64c6f4f5",
+      "contacto_cifrado": "9426836f92b1ffa074919ba3:aab74cd24208907d8a4226adb3402cc7:75211a58fa191e4256807cc7a8b93ae2a2dfef3ef646cdc60464c9d86fa6d23636c087109e2c5f203f9be4cc71a0fb0c6848fd3dd2c248646b5e979ee57c5fdd8c037c5331c93fb4a291b16168d5c869bd4f459a5dafb562ff33291da762dafa5b81d544cc7d4a03d2a76486042d9d52468b3e418c1000058cc2a026cb2d7e033a86e79e7f699ad8799ae5baf835f5d604894d8097f7415a911b9423b87dff420d8c6d1e3c6621d062f51c772bd62b5d0bf4eee718b2f96171b766656f2a26fd690047fd29854fb4d940b4dc21185def0e3adb3310f46bd23776a54a24e1c9e228b616f1fb9e063322226bb99c450a0946c5abed824b3565965c9c8554106d3e6a1a150022dcaa597376cdc19285e6a6cd11cd67f0e34bc9070e13209529d829e88d6421a20c79c6c01991b8e33b547a648d46881dc5df5925712c276230cd33e04f301960f83b",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "75 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-127",
-      "titulo": "Apartamento en Venta en Bolivar, Bucaramanga",
-      "ubicacion": "Bolivar, Bucaramanga • Estrato 4",
-      "barrio": "Bolivar",
+      "titulo": "Apartamento en Venta — Bucaramanga",
+      "ubicacion": "Bucaramanga • Estrato 4",
       "ciudad": "Bucaramanga",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a98852000bca_infocdn__7vlruky1qx8hrcf18tpk2sux25kpewfcdbwuefx7jpg.jpg",
@@ -1112,24 +1600,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "39ab338c56315e51f8570fcf:f44bbd0013af2174c3acae4e76befc02:bbc96519ea08a4aea358d975168a121dac98aee2a940bbe1d2ad36edaf58b55815d9772ca997fbbff1aee9c59ada803521060e68719ed7ee1e5276488c4f9131dccd63173ad8a52fcc4b9fc1e21eb8c72cc9e6677f1a937ddb810261ccd884464c12e26e6935fb7309519222d7b223b0b8b64914850e7afe9b79987322d26ba2a88462ae22619e39a9799a",
+      "contacto_cifrado": "75ed8498fe8abc1e167fd60d:6df0edc9cf1bc622324cff1b488da348:dbeb3a481847a4d5d9c117be1048715ee333e55754c1d335adb655fce9fc59941cc3476940281275239d09f2282ee93ab0201d658003e3d40512ac25891368b0df82a36e65022661d409b6ed5d369e0ffae258b90ba0ac4fc8d3e779226679dc119f8c44db99d710fa7c7f027928ed9fb5e0c2b56fd5b05814fe89e2916b25bc5287db1592a36e3737351fb0f95f52e7f5079aaf774119bbb9fd5d808d24dd59f9f220df076bda3a1d1c99a8d2a8618338744aa55f5805a3c0fff03b485069a8ee43f28fa87654a55e08d287b050b0b50468514065d1eb112ea5482e52d44b6e00868825bde070c41dc307002e90bd5825cf4b6cf760506416b62fbf72b39351ec23b96f775725f0b2d1cfa88d2b86b5065c5f140a2788f6f2cc5a65e704c9",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "65 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-124",
-      "titulo": "Apartamento en Venta en URBANIZACION SALGUERO, Santa marta",
-      "ubicacion": "URBANIZACION SALGUERO, Santa marta • Estrato 6",
-      "barrio": "URBANIZACION SALGUERO",
+      "titulo": "Apartamento en Venta — Santa marta",
+      "ubicacion": "Santa marta • Estrato 6",
       "ciudad": "Santa marta",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9981ea42f43_infocdn__l7dqydsomgfinjspvyp9529xvib60iybaremsvbnpng.png",
@@ -1156,9 +1643,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "4d032a42fba6ab78f526a356:361d026293a5b8c0c79e2f782691016e:81d03f2a17ca8c168d653a9659e28c5fdc056ebc877dbc89254200f3a054c3b59ef9b40704144cd528365b3351b2a7b18c5b5d47e291aeb2b313b92224c3dc8fcbcc2ee4e41c5c33f674fc782d19486f11ec83fdcc7311fe446fe5f06a544eff6c029238978408276608a6fe38c80f330e7802fc58999439bd270939ca6ba2bd5c3dc78467865a3d145fb101ca027211d203b3e8e0af098310",
+      "contacto_cifrado": "86c05039a6806cef4b75c279:ba0053a15b8cc6c7ec2a06dea359e89a:c509a22013614dc588ffb4cff2c255982bd0c454edfdb2040ac4ca7f44f6fef782d17a6dc03aa6b83f2c577c1c75d765950adad68bdbaf83f66adc7e24f40ec4e3eec7a65fc1caf111b8d8a19b434eb17556772e9f6a1dd50d42fe999f03e2bca78300183cef6efba9a8c3c360f01e6e1add599e24ff4efbcad0ddf2036664376d0e765fedb59d786ebc5d7135d0093d849753c1b29810dc8725c27a8ba2b5662e703806c0cbc3681344e3a67f300e6baa88a00edb0957ad32fc906fd767a80a6e4dd9429d79a069151d1ee3f02a33380d0269471f31ec6a462692cbd57b66b92e63f0e8ca9eecfd8be6d3134eee9f2c2e6551b784ec6bf8896aa537e36e1cdadfc5f7fa566ff86feb6e947beeac82e29d57f926fd6b263efde79302fd6e81fca7b3db0a531d13e569ba63c2e0c85482103117e64e584219555b13feb1de598a0dbac0e9935f9e22c1dee630db96cc78a8bb9273a711ac",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "59 m²",
@@ -1166,14 +1654,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-121",
-      "titulo": "Apartamento en Arriendo en Crespo, Cartagena",
-      "ubicacion": "Crespo, Cartagena • Estrato 5",
-      "barrio": "Crespo",
+      "titulo": "Apartamento en Arriendo — Cartagena",
+      "ubicacion": "Cartagena • Estrato 5",
       "ciudad": "Cartagena",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a96dbc9ddc4e_infocdn__dvacnqfyqobswu86hmzvrtrnpcx6iamor7lvmp9kjpg.jpg",
@@ -1194,24 +1680,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "42cef0a55d88bfdce8a811a6:7f6ad2d2a69e118fc8ddc92754c99920:1b06c8f036d73cd7bd2dd6a3f1953d243c7250c17a37f8f66267fca8c4c9c81297b7aa5f6950426d17c293ce55e3e5076584f3c87b3d78d46007a72b098c4f6f99aeca0f2e6fbd0a8dab590b84d24710caf16f4aefe06b04dd22053a7cb16951fddf52a3f6d93ed27fdce9bdd3362588cd7e0d4bc62c0b599244d1ec64475f6280616279aa0d952b22148d",
+      "contacto_cifrado": "615c7459f48cb0bb23fcde73:43a4be4d6b455234f7bb8fe7e963d37b:a28bf9c01ce0a8f106d7347e5cb4db80f5d6cca035f59876a8666f4cb8876d7ab8ad5ff3273c7e80756ce34ea9b2645f99f1e49f85c8a1660b53729a29546b72826f372504f658c393e692dfd7f7e0c41540ff74d97a68867c2aa769b49fa7b6460e4e1c1e11f553380f16de755698bfc443411f410f74da8168256f9fbd8bbf9e8f43cfa71695e79cf87381fc0b23a04b5181c6d02326620c4e4a33feaddc52aa09856d04e04c6ffcf63ec9a5c66d1821fbad4ff9b1dd873b26eae15c1d1f271ecc5511afff434806c6d87e93d978f250c2dd4dae4e88277219bb7f99568dc2395a1c630cd63fb036976ba7a7c9f083fe9d81a55972b6764ab8c27751925464b8c4189bb3d8a851a97d482866d16567ec396614f13bdb272ed1b8",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "50 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-122",
-      "titulo": "Apartamento en Arriendo en Crespo, Cartagena",
-      "ubicacion": "Crespo, Cartagena • Estrato 5",
-      "barrio": "Crespo",
+      "titulo": "Apartamento en Arriendo — Cartagena",
+      "ubicacion": "Cartagena • Estrato 5",
       "ciudad": "Cartagena",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9793d0e1db6_infocdn__jdkyfb3oz70yudmetvr3ia7zxg4lsehqcpqllzfdjpg.jpg",
@@ -1242,9 +1727,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "08cd5948b7ac07566234a26c:03552ba8938a58836379c99bdeb333a0:e1bb4a8598349093af8b78e26993f771e63f1242ff996b742a94823fa187c5eea1dac84e6eb014d9e01b640c46f1966289d6810732e8191184488f920f5105c3cfcf3830c2ae0dceceea49e1fb4d6eda16c3d8eb0941b1fdfe219d01e8f23091be4abafa5629f10302158cb5b04b52f3ff66a76ecc59bf5ff593bcf57d4948251647923e8996e08a7a1785",
+      "contacto_cifrado": "70f9d1fe22c62dfd97f64dcd:0dff6d34e8831255f39144e4adf8766d:f0ee81f0934b346158c961f5032be8d31a8cf949aa93d8043fe03eabd6446f35b70ba1660a3eeddca7096078f17ecd789730ff25dbaddae3d9f552fa2b0663f75917423b1891eda927f3dc6068ffe7d706c1da15cb710950939ef8c457289b0fdb45ec409dfd22313e4dcb300e4d19e425d6309610a86a22d93aa09d310c60f6bf1ac7339db0f374cbfd3d7b7b82d62ba26662699e506a4e0008b9df96409e915a7a06497bf98b2d2c97547d9557972019d9fb8f5d5ebe6157997fdd33a4d1160d6ddb81e2a52ecec46713b5f184f68cff04cf0a5a6e63e993f13e80027a52e6e7864ba73b19f838dedaf379c237a6ddbe93abb1088ff3d306a041bb21a3d659b7322a945d603de0c8a21fe16638734723930d4d718e86765032a7",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "66 m²",
@@ -1252,14 +1738,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-123",
-      "titulo": "Apartamento en Venta en Don jaca, Santa marta",
-      "ubicacion": "Don jaca, Santa marta • Estrato 4",
-      "barrio": "Don jaca",
+      "titulo": "Apartamento en Venta — Santa marta",
+      "ubicacion": "Santa marta • Estrato 4",
       "ciudad": "Santa marta",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9adbbe8e44b_infocdn__9ssmhhvzlyhodudxtpgxsdox5eagmijv4lzaxwrujpg.jpg",
@@ -1283,24 +1767,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "b7a75ab92d33624915344bcd:8407950ebcaf39725baa72cd80909e57:ce54519fb4e029e5149477a5af2e9a4aeaa01c6eb81f3e4b2e1ca5059fc68f7befeba6901274ef85381a08e3f074d4657969b90e0874e134756e65b5f68a5e9eadffe23d74eada92c029e915e79cfe2051c51919dfdfe923579d3004c4a2d69413b3483aa42c16ee3599b9d81ddc55e3429d681e46fd2773bd0f5a591e68a571320502572289ba298bfb2cb7",
+      "contacto_cifrado": "e73eaba20a84ae1104880cec:02fa88493710d02bdb16f968ba8135d1:3b811c0dd6a58850c150fa4501955d1cb9aa27cf59824ea154af4c330929fa8a4693fe756b34b073b94d8570a33cf831386ef577f670c33573e551b4a7d720ae3dd3473d874bdea199f1cffadf028f8a2efa3c8f0f253723e5e247b720d2d79f2f1c2a7b0cb5795b0e0b1d0bb91b4483faff937c7bbfbb76871c5db7eee6874402f3b943dc8def7c7be63305d2711e6687e707bea0e7c06f5c5c987cd10906a0c2a64953a59398203cee97acd505b158c0176b8806a368f8df812842780df1026fd7e69c80075123826f5bdb89da06df334ad0e66c3a51b39e18b6ca6af68511c87c15dc47177f1f2b5a51e1456becc028e575d0254965c1354428080e7eb8b9a32b7fd5684af9df1ac4b26b5e909af456538198b40412a8db87590f9134f1e375596f",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "30 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-117",
-      "titulo": "Casa en Venta en Colseguros andes, Cali",
-      "ubicacion": "Colseguros andes, Cali • Estrato 4",
-      "barrio": "Colseguros andes",
+      "titulo": "Apartamento en Venta — Cali",
+      "ubicacion": "Cali • Estrato 4",
       "ciudad": "Cali",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9a095147264_infocdn__au9vnt6t8qpf61zrllagyps7j1y6rwea40nkjruvjpg.jpg",
@@ -1331,9 +1814,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "fccc118ec258466d6239db18:4dbc63a8c95416fd45bac52523731833:11060a943156fe19589e04dd5d2c4a541d9c9f54a1af7f31a177f8c215aeb5c9f60b2495b59cbf29b2053e7aad93125f160226f94821a1b89013a5407737cff383f2f83e3648a33f7ea26fec62f7774a30dd10a8623a7028072e234a0a854f2233b6a79d420ffc8f4146eba549a36962422e33a7847c38e6cd5fd8fd1a07931fa8bf0aba6d4f",
+      "contacto_cifrado": "b8fd18b297fc24161e5be709:86328f114467bd0ec8fbfc940e5313d9:faeb314293fdb24c6e5eaffa81638a64f2e0796a5762c4626b2ecc86451244f17ed07a52cf5d925b55302e5a72fc965c9a075a5c768648877c458ef49598b0a48ab5cf9d53f9163d1d2a49a1ffd0bc4566ff100653719f5dfbae1fee553d46f6d568f463d1692585dd04083c928e5bca8e367ef4b681b162b7f956f5982736afe57bd4c3bcfff3be9f5d3cdbafcd72b916b1cb714ec3e3e7ab421e3585bcc5e9d797404da99f23204641ccb42f098020f323cec4fbceb9833ff03adabb09a7e734cadb970a5dc30c133126a2e23b4d9500c8f7ab8a51495f0df9c91e237f98c1679b151ad6ac256d346ac5e550bc18955e0b8dd4786a57397053039cffb140901cd5595a2db6cdb93a2470fcf0d2494bd14224a083731a089f70028aca218adc",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "288 m²",
@@ -1341,14 +1825,12 @@
         "Baños": "4 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-118",
-      "titulo": "Apartamento en Venta en Ciudad jardin, Barranquilla",
-      "ubicacion": "Ciudad jardin, Barranquilla • Estrato 4",
-      "barrio": "Ciudad jardin",
+      "titulo": "Apartamento en Venta — Barranquilla",
+      "ubicacion": "Barranquilla • Estrato 4",
       "ciudad": "Barranquilla",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b25dd959cb_infocdn__b5jjwu3nmphqbswfko2as5xslv9tcj6wte1s0sipjpg.jpg",
@@ -1374,9 +1856,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "936077d78959e6d5cb62711b:74f60c66a3ff67e1ab09d8bbda297fee:c36bf5ae4d4e89f29d32f8e233684ccbc10583d1b59214ef96eb3da68bd227a3ca7fa0fc17acf4b5b39cdbc0b30fd8e684ed8022cd105c8dfb995cc700e72773bae1e0178cf98f08313aa96f5dd898f6342f7672b217074e7b589ab2f1649cf269a2dc7adbf315f7a37bbce76f61e6d004a9c7d8f194d0e2e4717e08a936a9e1d42df379f8d9348dc199e352ac6e4b0870",
+      "contacto_cifrado": "72c0ad9643a72e43206bc8d6:568db39f9fab604578c0cd27b01183ca:303092b0622bf7d011575b35fff1de6bea6a82367926a9b484c1fa23006edbd15ccbb30a2a960667e1524f944db99827b6d05f5d096b43acbbb80b1e5959521c36562fca89f6e2034d323cb881c64f16e32203ee5d895dcd00664bf2de764eb88865509f747f723c3539f8eeec46479ee13ab5dd92432435046dd0ad8d0cf6e21c608ef01de7c8a8294104b096b7897278ab3a80705f9df97e5a13f51e78f3cf87eb4d67ef9889db535729d3fbe6fbe5f40fa5d8daf82af158b4e011031f633b9f1332ad46c8ee1edec0f168381f82d5d0430c91ea63c9299bd9d21745e66901274a3eeb85d57edf144ac48c4ae9ab3ae6df5cd01f5e153329cbcefd246b3e4402813a242f7f5d51b7ddd1715f1a6f044fbe3dd01f374587979466dae71575c36771dd748c2c461e427e321c0c1eb6bcaf3d6b4b65860ae16a",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "67 m²",
@@ -1384,14 +1867,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-119",
-      "titulo": "Apartamento en Venta en El laguito, Cartagena",
-      "ubicacion": "El laguito, Cartagena • Estrato 6",
-      "barrio": "El laguito",
+      "titulo": "Apartamento en Venta — Cartagena",
+      "ubicacion": "Cartagena • Estrato 6",
       "ciudad": "Cartagena",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a99863b2f8d8_infocdn__z7reiawqlexhactcrjqgs9mullfjy9tfdlmmhmlkbin.bin",
@@ -1426,9 +1907,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "140 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "8de0d497f3257a85df950eff:1433c7324044c6cc2b36f5161a38694a:3ce3cc715e651089c237d0befbda5f2aea32d21e9e425583236c0d703752f239b44ea0c33c4d2088399b898ff09fe5251a2fabaa7f95f5bddb71396a229759815e6243df2cdfb89ad54d8f04794fb5840e9518c0ae4ea3487784a27846737677a620b927c79807ed16a1d2533382d0d9cb9ea2afc63e2bfcc5d052e463e2be54cb3d0586401965db5c7f1384",
+      "contacto_cifrado": "c56996af87df1c773892ceb3:3d87e3720fc35dfe65a73362f0526262:5f75b6c91132254a3e4348662477194b3fd56d220338ce7e2f32cd6ca1929c9488f597a1791b8b8c248f892e9152176142ccd83379d5bbcb3d604a3df9c2487bf00216dc649da9394cb9f9be89119fc36e3a105abacf258a15557f294567defadac909f45335d39c92b1ef6b3c573dee6b46d897bcb499ffcf5444503f5e17066127208d65f6fc7d2049c5f0598026974fb37b2224b5567c9d9802556ad18e54fddc0f9a869abf325f927a656027d7244065629c3c74873a06aa6fedeebbd2b285fc36852a84c992132de4f8964c8e1144495991b6ad700e8cf0f5d526f47ac449f636a7424913d4508747d1f838ba70bc28173d09c81b0a5d5be4f6c9feabc6ddc5f14e18bf220d459b9f7803e9be86f240bb151323347d52bd1b191e7f405055e14e5d48",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "92 m²",
@@ -1436,14 +1918,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-120",
-      "titulo": "Apartamento en Venta en Castillogrande, Cartagena",
-      "ubicacion": "Castillogrande, Cartagena • Estrato 6",
-      "barrio": "Castillogrande",
+      "titulo": "Apartamento en Venta — Cartagena",
+      "ubicacion": "Cartagena • Estrato 6",
       "ciudad": "Cartagena",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9875d0f1611_infocdn__u5brtqbandy4hy4cayepcfgkvgyo9rbn3mdh9p4fjpg.jpg",
@@ -1478,9 +1958,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "575 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "5868dbc4fb5517bb9dce0f10:ea37a61ecaefc99b58377ca6cf7bf257:e45352b7fc027936da347c804e9d788d84b3afe1c734cfb214b4adab4150b8cb5b806e245cdaa2ebc0f7b1b74eb7cb8a1a3c199a021236c78f35deb5a741120e6f5e97c618bb9ed0b87f02d9373b6cfd26146108027ed80403c749818ff1b0ade095e94b953539cbc74cfab4fc081e70e8a33b1ef4fdc2b70fa97f59839368ffd712fae00a2b4c8ca5162e9b50cb7c",
+      "contacto_cifrado": "f281263d1ffb0fd5451fd57b:dc54ed4266271518191f9bd3a984d895:c72482b7cffe73e4e5fcad5cdde6e4afa6fb79f8e1a99732e87eef4b54ddc42c45459d15b54e0c0b3c2f446bb7505367d1e4481d70974fcbb6acdda967cab8d244dad067b69bb0f7f1236a5a5a51ae4cf0929a50e84563892cb60dace9e3efc525997007c009c1e9acdbc371d2bf734d9ca86b964307f12aab1d6b0ef51052923d0e4ab02c7c226d4d2a156dd5f948643747d6ac81bff469cf07929e813aa6fd25fb245ebeff029b690742fc687152e3a8c49200ee7e9e45ba4e1455dcdc58345d6fb12ed4afd964f5f3bdcaaab52542668aa23ce98181ff0c820ed0123a504c5a18852aa8ec962c6af36c00b222d498c104d4a20042f727c29d45dfafefeddba2f0d4b88ea13af9496f07cf2bd3f32a42a375d1df7373ee5b641532cca097b1019a70c3a82c7e20fb069d0a8ba3009a309c2247",
       "detalles": {
         "Estrato": "6 Residencial",
         "Área": "200 m²",
@@ -1488,14 +1969,12 @@
         "Baños": "5 completos",
         "Parqueaderos": "2 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-112",
-      "titulo": "Apartamento en Venta en Loma del Esmeraldal, Envigado",
-      "ubicacion": "Loma del Esmeraldal, Envigado • Estrato 5",
-      "barrio": "Loma del Esmeraldal",
+      "titulo": "Apartamento en Venta — Envigado",
+      "ubicacion": "Envigado • Estrato 5",
       "ciudad": "Envigado",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b07825bcca_infocdn__thdngfs1ydwv1bzo309idix141ptf9rxnm7evjxwjpg.jpg",
@@ -1530,9 +2009,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "3088aa3a995c4bf08ecdbd95:3067c71c681b72dc7316963866495006:28b3760a8533cf6330869d6096d92070d9fdb9c5ddfd06f8bb032c719179e6bdefb12c59f089f3eb9eef3d5265e57a36aee3ef33b77ae994f6c7fa85b70d08ce3d48b1f85b1af2c5663cafb409582f0695675098d53c3c8c7fbdc42578326b6e13036d8b7b62cc5ce3d1cd67f8b5adda2a36e00c8117dd7104c5936b1c123f2310924600cc099bd636e3d063b016e1dfa4afc9",
+      "contacto_cifrado": "ffe86c66e9759233a32f8bec:068a157bb9e042342e71a4face296bb8:0828608094e4efbb36588afb8f0a3d3b8e213479e0ef2150fde2b84bbfba5e8285d0012416a439ab4bed9b2f390cd45f7ec6d5892719cac8a3c737903ce4ea08c46d18f6a7a330ea836a97d6cc9afaa507a3d82dc7fbca8b4ee05a617ee6596b142d1c7905de7b6be338660f64d89ee4d3716ba2c278384772417c7195b5e2173c1ee992f39fbd3cae74974528eb0c821f465a1fa9c9a1580e10934b1238c77b75f3b395b3b0c219b6e113af4dbe4c3f09f9770044aea4e330c834f1d1dabc279bb7f6a9a5f6a10db0f95f96cfbee2f18448df07d37c14f37a9d5a7476bb02499ad3c9b8fa65aaa16b84d42a45bcb782769beeb256e315e7140de4018f7772f621810ef01c15997b646a201d097f1a65e5fea3dcdbbc0d074db1f203cde8357524d11f9246d81e3f3d7a3152d1ad36980b7968fc2c166e94133067dfa17e3a5505803924c4",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "89 m²",
@@ -1540,14 +2020,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "2 espacios",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-113",
-      "titulo": "Apartamento en Venta en Mayapan las vegas, Cali",
-      "ubicacion": "Mayapan las vegas, Cali • Estrato 5",
-      "barrio": "Mayapan las vegas",
+      "titulo": "Apartamento en Venta — Cali",
+      "ubicacion": "Cali • Estrato 5",
       "ciudad": "Cali",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9ae8e06dfb4_infocdn__dqfagkmzeldkg1vizgnspwgat6veriyobtfhtzd5jpg.jpg",
@@ -1581,9 +2059,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "0be9a9cc6f4c71de9373361a:b2ecf04513fee76ca843ff90f7b1c0d5:e3109dc1a64382aaa670ee5eadaf9902c106c8eca2d7fff3d5d90b9c46b0dd833aa95799f456780a4c845d73773995a14134fdc2ea339a0973c6d0bf3f11b80d73ee0683986948340e3034ebc9bf0c4543beffd10b71c43871b1c91881ebb29cf70eb4a67f43ef8566031f53db960d89675b190f0de612b60db968284f5d4d45925c091f732decb043c9fd0b3416",
+      "contacto_cifrado": "a555c1b312b80382fc15692b:3a1ab748f0e9250f948637009f9e7db1:843238b71639b2b8a2db62f11fa95e243b1a4b7a6ebec80b94af4738bcd1105dbce73bb6bb257e24199c079fc076e051a475a31283ead564e29383601fe1ec616a882673b82ace72eebeffc1886b874cb24b6906cb8a60c237362ffb8a16770507dd80888d31c901a337152bc0c44c325495d999b372eb08ca3bda9eca4974eb68f69c2616f15b5d0fe7ef5048ed0f2be8deef1fbfa613760847a1aee2313074de18a5ff6df0181d155f2c9d1378327680b4a760365c363ebde1fc9b69e5a5e037455f02f76ae1408564bfde6eb33fcd96f338794136817caceea6566c8d4ddb1f52b3a95f0e399adbcc9b5148bf1222d386fd6c8d786dde23acd3380bbe626d2dff040ad1ed12524df32e7154551cf7e034cf51ac95f03b49db437669855387116eada4adf7d8957c7038e9986b5f72721b",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "84 m²",
@@ -1591,14 +2070,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-114",
-      "titulo": "Apartamento en Venta en Ciudad los alamos, Cali",
-      "ubicacion": "Ciudad los alamos, Cali • Estrato 4",
-      "barrio": "Ciudad los alamos",
+      "titulo": "Apartamento en Venta — Cali",
+      "ubicacion": "Cali • Estrato 4",
       "ciudad": "Cali",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b00373707e_infocdn__ybmnoqxymyxcfcyxzpku13hcejljauol7quh0mdyjpg.jpg",
@@ -1628,9 +2105,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "1f5779e96f306c5f4d468d81:acd4097049760e1d3648a9baa4f629bb:c890c2951bd2fea65a03355ad30c7a18b450b0841c28f11d53ed4e48e7a88a177a97c7be46d87f161007d4a63e2824340368f925f3289843f3f7c2f915123ad0bcc27b2672d57acf340477a8822de57357e462cba7265bf93adccf3aa4b62c258d8a5410e73823f9c57e903c593512018b5f2bf70ade89f07538637c424b8ab34842c37cecb73aac0001430b6c41",
+      "contacto_cifrado": "01e289aa24dc58c7d57916fa:53b010a1f55e3ff726aae8692d3aaf75:3df3642c7994cc91946057ad0a70f8171eb232342c661882bc693c9187bf1f643d8cd4e5f5d1665b3ac64a4121b7d9197524bbf74d0463f68afb1c8e982e60eff9da7814e7f9cb83cfbb2e8aa3aafebea0e95b10c5d529d7289d1b0813513f95d0e12c60bfc40758ced5e986c5b12b680571e20de336640e3c16c8bb6482f26300447c15e5643b3289a017e8d2145ff764a208a8020b5b9b17e802fdc2a57a92ff124fa466b8794cf313985840964ca8453397af058c9ba46e2f4f8ab338c1fa4fc54894dc90e1b0c193a7b3aa82a5115e7e08390635c516471ba73c08b94fb086940ba8589ac968caf76ea34d8687837a7371f82ba995a6c265be4cc848c30f5cb9c03b51903bc7006de23a8440001f9d9df1a42e9ac1d62cd63020aec0128a127c3fe8bc94b08db62d8e49552018689529",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "59 m²",
@@ -1638,14 +2116,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-115",
-      "titulo": "Casa en Venta en Granada, Cali",
-      "ubicacion": "Granada, Cali • Estrato 7",
-      "barrio": "Granada",
+      "titulo": "Apartamento en Venta — Cali",
+      "ubicacion": "Cali • Estrato 7",
       "ciudad": "Cali",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9aff64d21f7_infocdn__d2vi5omrm5scgtojwmmcravahqkdu9jpg3vnqidxjpg.jpg",
@@ -1680,9 +2156,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "05a748f465d16c9b59cefeae:10f210cbd44853db170e7b389807fb27:a59d598986113faca6ed7ec7c57f5c320d791ac18e3e2c780930c97f2bcc8b6a48018bf38e6ac357453a75374e668b308413e5c214b4a1ef5ce3a4cc75609f970bb29850322403f9e1e27e1daa094a37d173aa50fa1a49a20dc130a7850718768c004ec6b86743c1bf26f5f947affd76ee535de02cd1b48001b74c5349",
+      "contacto_cifrado": "0ae1665288c2cf1f10500ce5:8bc265ad9e12f0d9269944a6d2c448ff:7246ef4e49d55935f36fb0d0375d81d34a4443b60f2f7aeb835abbcab3a890762b5c2db2632a19db514c1f81ecea2e77b1649f3eb241d634fd34d9823892a5efc99b5d6bfcc4928519706a6731a30d825c31aeb71c680e476b7710c9eb6abbfe8a6b636ffd27fb0aa18d11d375e74d98ab2fa30688b87ee3d534166d34aa9f5e834c813552e090a32ec1134bffec9d5c1627565fb54ddd912a8324911581f1d62d9b3fac7602c6682f38a526bf5adba662f1447ce0dd9f43a24fb7784d4be17bd9e3317cf67d64df34ef69dd6424566605babe706e3b58b80d8711af48d616a9cff5a9d22fcf9217486e4d0ca0a8c12a32594e16abb1a533097a8cc5",
       "detalles": {
         "Estrato": "7 Residencial",
         "Área": "280 m²",
@@ -1690,14 +2167,12 @@
         "Baños": "5 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-116",
-      "titulo": "Casa en Venta en Benjamin herrera, Cali",
-      "ubicacion": "Benjamin herrera, Cali • Estrato 3",
-      "barrio": "Benjamin herrera",
+      "titulo": "Apartamento en Venta — Cali",
+      "ubicacion": "Cali • Estrato 3",
       "ciudad": "Cali",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b2a1d48367_infocdn__kivhdpy1jknezodoynmynxttdmlhlcfzdgwxmtagjpg.jpg",
@@ -1724,9 +2199,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "cf2c2e07a095febf960e2aa9:74f37aa8ede7cf3bd6d00afc3a93672d:8a3cc67733c44679cf3f2b1a2c0e3006578eedc4936df98880daa8b004c2f43238a946a428649572438bd93a56f21f1a776a29cc566e57f1dcbf9c940f18c249b778a0b54d746e720bb72b71d1b031ae819eed85eb90754ce53fa54d1030bfc3735aee29120d647dda70e723621da9924f54127d0800dd3eaa0d992f26b5e4d383e9b7fbfa",
+      "contacto_cifrado": "c2d3db24e4b8fd93bf15ab1b:89b169b457ed9ee7c246e92731503a8f:73c96d91e8da1d4a1437070bc11fb34d68f16cb00ab0c8ce79785a80e0d6b3e235df86bb445b09f5a4870e371220e8f77ce9a871bb35f57306c4a2dd768052945eb93a510f846f887f74b8c20fd4c530f53eb220a8bdbddd36b2916511692fd3d31516a496d83c687384769041e2d79006e6754cc69ab1c354d308e330c04cee0711f8b2f0544ff03de312d00718f5459a8c9aab693375ec366d27002ba7e1f272f29d1db642c012338952fc7b2e024d37052c282e4eb87f010b3e88ef7ce58471cc9ef3e3e00ab4bb7ea2824ec3cdbfc005e013e253392b769650c45f63d7601f55a58672ee721abfdb314921738d40784c5338bfaf77bb1547a56c35656b3dda6fa48064b1baf8bf741f69b465d3f4a5c3fed29ead656d084357b9756025",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "115 m²",
@@ -1734,14 +2210,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-108",
-      "titulo": "Apartamento en Venta en Canelon, Cajicá",
-      "ubicacion": "Canelon, Cajicá • Estrato 4",
-      "barrio": "Canelon",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 4",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a998a0ad431c_infocdn__hxpgnzth5dqvyn3owoep1fqngf3wpkehzs8mvkbyjpg.jpg",
@@ -1776,9 +2250,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "ad0345c5d684dd78715b6992:a75b69e5960d0f02c5e52736b01ea573:01fef95c1959c7c00f27a8967f79505624e43dfeb91558935d657103bded9cc4a961aeb16b340de1e09ffa3b0e8270c55ef5bfffcecda8d0f46149867a0fdffaa031e909c3531c49aff72ef232a959bba8d82d9a115e1f1cfccab9fe85aca9249ef9d85804ce39c5e0b41ff1d448422f6b914b14239d238eeb171ab345ad28ca6e581bce509f",
+      "contacto_cifrado": "ee8e41a843cc42111169f62b:4c998f6bdd6012ca8a660fba9ea0a24b:bf1a2544eec9e006b3d0686f302c5d029e295cd35c8e8adaf7610ff2bf76be3e8e9c388d51dcc27ccf32d56af81559f042c635d7438bc921fc7f6b109b9641fd4fca15f382dffda00cb304f0213a1716b383efe3734cbfbed3d6efb2cdf0405aef80cf6ce4a4c6a165a6d2f0df9745306da2fb9cc2e0268f36afa9243a7ba56195287e58e53c763a334e52da505527afc12ee53fe3da7846e3e2c29e1391dcbb7c8e826d261a0e71792954532114b8e8491dc0582a5e886ba22276b2981523ddeca07de857b0a8ef19236c5c06c675e442c9bec7ba4879a86de0755e2ad096e8216ded3ff73dc04d50c79ab77708d0c54112db939d0ebefb6748016208d30a95e4aa522d114dc606c0d11cd34641fbbc7afc",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "72 m²",
@@ -1786,14 +2261,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-109",
-      "titulo": "Apartamento en Venta en Canelon, Cajicá",
-      "ubicacion": "Canelon, Cajicá • Estrato 4",
-      "barrio": "Canelon",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 4",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a979642e937b_infocdn__krrmpx6oeobamvsozybletfptlsdz31ljsy6bfwkjpg.jpg",
@@ -1815,9 +2288,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "cf54d2f1a8e5418db52c33d2:39310f90e1dbe8ae126d4d81221eb3d5:83e7dca40a038762be0766cf714a95c57b12d8bb5e248b53b3bda068c08ef9d3f4399a049d32640c71249835c8e933d65af3e43e58e42a6aca1c7ccf0af07121f6927fd54a765411bfbe421e17b455ed2465eb4976db3eb4a1f72a7b6cf0d78082264471f8a2a7a818a5860ee45eb2afe4ef4913ef851833df9d962922be8414298ab41c743b",
+      "contacto_cifrado": "9345bafc277640ee225199f1:afaa3acfba56cc03f96a33d64f5943a2:ccdde1022896ed17d56eef222cf487f6e45bc143360f4315dbc73b823f21a9781941227cb3203a84ad67d407dc954cea97e9a891ceffd65e84f2672a7a1235f203dc02f9a64fa8a6627c6f115ffcb21ab45961a82c89ffb258b16fcd2200765719210bd4c5e3445e45aff26bc95a0bc5957ffa4e454a3ba6534b5329adf430ff3577bf30c8a87bd42ffac45bf192d89efa6cda3994ff03b03b000175d140f9441183371f65aea579ad5804ae0674008c2bed6146f94ee27bdb63386f5984f9ce77c15ab0f92ebdffa67bc6c2bda010db72523bce143b742d2486afc516188ac2049d36b9f8b386e63d9439ef6fea3a44890b77d947f36544be0e889b714b7dc67d7e63a5d1d6044e89a979a20e6c71e9b409",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "50 m²",
@@ -1825,14 +2299,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-110",
-      "titulo": "Apartamento en Venta en Centro, Cajicá",
-      "ubicacion": "Centro, Cajicá • Estrato 4",
-      "barrio": "Centro",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 4",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a963c802d647_infocdn__ynk490t9md3l8lc9ezicsbas695wiawltqnao0jejpg.jpg",
@@ -1866,24 +2338,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "398ff86fde5cb696e3a72d57:11ce83e33424b3071b4f23240024daa7:80255b967403f9f470e9a7943f11e480ce85e6b526b76ffc3e505313b7580578a9f56b046d8cadbe36ad44605656ec63bf1255279379e39d8bc430f54fef59f551d6d8c15753d38f6b4fa35cdc637c07d0e2646e87ee6534c2bb5ab0784c86471421fbac69e90e5eb272b6cb061931d3f1dfb82518784e53289d9ff983a5164cb1c39372f9",
+      "contacto_cifrado": "2595673f759c859620506cd3:9abfcef6c430ec47495adf281592f53e:0d81b49ce7f3d19c69fce1ec8ee82bf57e9bd0fe17facaf9178521539326251443a00fe986e6695dc4098323e87250c0b1bee1115d1482c3a2b1d41646b74065216e299092afaaaf8265244a75e54cf13665578e367bde97608a84e03081ddd428f846cece66636e8127de29638bd513e76dccaf23e5a1c5adccfd458200d40b09a93516c4a8b56de0ce5075354659808659be39d35382fbf1319b24ed7d3e298c9ee76d922a9652ecc9ab312bdf9d753e283be798b4292cc88bb6f546649ad4538efc949978492af9a8cedfdc8fe26a8dd0d3223e7ccdb0e98e54e68e403ce5c29f3031187899f106893ba838973023da6ef46f5f85d1f48271cca04a83d4264662b89225dcb13baadeccbe50ee",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "41 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-111",
-      "titulo": "Apartamento en Venta en Chuntame, Cajicá",
-      "ubicacion": "Chuntame, Cajicá • Estrato 4",
-      "barrio": "Chuntame",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 4",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a93714217848_infocdn__6qtvnglszk5dvpistaotmiwwkcvbgvavnk2z7ptbjpg.jpg",
@@ -1908,9 +2379,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "95230bead010cfffd10cd2ac:906e37436e3e5fd0ce006710ecd4bad5:ddc426ec0aae629633cf565c835531ac045f26e1a190e3293d07ea4c6c2cdf532f98d305b29bed79b7b37a5d490247d4bac13fef07a47d8371b47dc4b135294671d179ba8aa62297eca5323dee90bf6e2b7d9837f6fd82719bf66dc173da75e491f5998903ed916d884084ec45f6da5297f336d4ab584183928f8a2e1ef7cd40eb0fd4de3de116",
+      "contacto_cifrado": "93155535b3b64ccbe04425e1:5a8ad2d71839c04b08da614a3d542f3f:54e8380134732d781cc5715528b24c9d26be3cd1ef183cad13dd84b2efffe9d5d7d2808e62c595619e14d75b00a2e09714f99448c2fea1c8e20696248efc1d092b56c043b3c773883a544d5b2296bd8fad0f7cc6aa44c5bb388186983d54523d097106496d351accca7309cab8b224579eae05683e63fcd21ce282b60f6a1259917de9c185aa62c90f44e84e98bb654657dcacba6ee124374ea8b3b961399b36b8b525a1ec960ca04ebc3569d257222d0933bd81f27fbcd00877b6b46a15a0ce8ee280bf46ae30b22adabb53a382274fc6736b19c82e7f7f9615ff1e0ba3e87ad329f78587a79d2ef0eff2b0c4c888fb889cd802dc5ae3ab21e751ea6fd4b046cc7c4ebaaf9074ab6669f4aa9414b5a394bddbc9067c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "72 m²",
@@ -1918,14 +2390,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-103",
-      "titulo": "Apartamento en Arriendo en Engativá, Bogotá",
-      "ubicacion": "Engativá, Bogotá • Estrato 3",
-      "barrio": "Engativá",
+      "titulo": "Apartamento en Arriendo — Bogotá",
+      "ubicacion": "Bogotá • Estrato 3",
       "ciudad": "Bogotá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b21ff9036e_infocdn__wpcgnmahvtrgbj6bou173xkarnmbfn4ihttsobd9jpg.jpg",
@@ -1955,24 +2425,23 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "657a60e3d5fdf3f8b787f000:3ecec05496f259731b15f68daa680070:e5e7bbb6ab184147e7a5bcefb9f2afa84188e5deab3ae3997f61a159f5bede58fb89a54129de31395c811db4fe683c413e7c84c176239e996f05bdb60c724cb6a5906f2379e6915bf15067e682ca0a3d5bbc990f715ed4ab5761cdd227b20b63b573bfd2ef9d38f18a75e2bf9120343565155e38f00fe0c1c1c9ed3b669e94cb13d4ad8778c06634facb",
+      "contacto_cifrado": "c6c09cfb9f60f99a39cb086b:b3c873a3d8743dc6ea10ad53f6bb4db4:f6f982fa5820ad5d0994d73c290ef4c37e688ac9b7dc8809c26901bc9dfb1bb325b8a0a5be7bf54ce9e0aa7afa00c72a38294512a601ad51f3b61d113171fca5b8b0e1db72efcfd0f97b5626d0754c6007611ad8d3893b4eba131403b494a388b0a97a37de290bf708fb778a3474c3ece0a9a1c11828364aa991f8fbee454136439816d9f50a4b33e19379711adc56d88bf5eabaa5a71c2750212f9159149fd567d70bf8a75d132760d1af921d2974f2c2e3e2bd058d71048b75bc201bca90ffdb774657f32810f9c01bb13634f36c9c08fbc33387d7a1858a8e64303673aff5f56cc9f4bcda7d673b879a83bf0fc34adf62d753bdd6f64f1a918787cd07364c5cbc72546921c158a03f626221abb210f0bf81b947bc1bc21340a9e66daa6b",
       "detalles": {
         "Estrato": "3 Residencial",
         "Área": "38 m²",
         "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
+        "Baños": "1 completo",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-104",
-      "titulo": "Apartamento en Venta en El misterio, Cajicá",
-      "ubicacion": "El misterio, Cajicá • Estrato 5",
-      "barrio": "El misterio",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 5",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9abd431b6d6_infocdn__0csiszjo71fgglyue6gho4pdzlrq85f46cyqk4aupng.png",
@@ -2002,9 +2471,10 @@
       "urgencia": "🔥 Oportunidad Directa",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "cd6ae487eb19ee9f5fe0ae22:130ba1cb30edf353fe1e0bf4ac143c45:bc995218d5342989126a1c04dad391e21fa5bc490ca3cc27362cb27fe9620343e320c54be6d896b9edbc1740ed34d80d292e58c0aa18bbaf0f078cd9af3eff0cfbfdcc1de677e549c2c4c2c95a05c1c2ecefb06a66fdd710a5ac5ba11d1e724cd9c53113fdedfd795dd0f0da2b6b15adfd34c7dca16482bf5c85023423a88767ab7af77d841558094824",
+      "contacto_cifrado": "6f66073aee0448459c18b2f4:2556d64327e4ef338cd819550ff91391:d07760815229a67d0c5fc0d86aa50b6d3709616191574de49231e54548a975be3cb853a9d0ff43e58b437541b3e309e3a4fa9e7e2bd5a0638391b33960dafb99a9c33cdcfadd24569c3dce3947291a1f7f3bc91c980c6b4c214110a12f2fe72beecde396dbd8532f285d801f2b8063076f5cc3d2e7a1f1558a2f517f50710e2906483970f3fb79c44f595b78898fca10de27fb06c5896d0d6e886413f87fb035178c9189f79943be7f88cdce23f401f9ab03c18c90c621443a8ab66a5a9cf5be9ac62d87366aea0889043ca70a98b06361d0790f1f7b488cc2b6931831d2b95ad707ed0c934487726c87e692019a304eb73a81bd415634e91aa1dad1e55e364ebb0b0cea107e5e0f249f55bd3272ae1dbcd0c8f5d820ba095754858c728380e452df",
       "detalles": {
         "Estrato": "5 Residencial",
         "Área": "80 m²",
@@ -2012,14 +2482,12 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     },
     {
       "id": "lead-inm-105",
-      "titulo": "Apartamento en Venta en Chuntame, Cajicá",
-      "ubicacion": "Chuntame, Cajicá • Estrato 4",
-      "barrio": "Chuntame",
+      "titulo": "Apartamento en Venta — Cajicá",
+      "ubicacion": "Cajicá • Estrato 4",
       "ciudad": "Cajicá",
       "tipo_inmueble": "Apartamento",
       "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9ae03aad186_infocdn__riql5fkisnph0srsalliflgmorlryn8qjd64qybwjpg.jpg",
@@ -2050,9 +2518,10 @@
       "urgencia": "⚡ Trato Directo",
       "urgencia_tipo": "urgente",
       "fecha_relativa": "Captado recientemente",
+      "portal": "Finca Raíz",
       "telefono_bloqueado": "573 ••• ••••",
       "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "3a50a15ef63e776ff73a2d92:cb5b6f31c980c891e5052bd057ec0792:efc2520a770122cea0a34d157e88627819c5dd569b8fe1e66708cd4c6c3cf5c7490fce009e7299c34cc3f8f9431ed7fec5cafa1ed96dabde7f3d734bc3d0f5bcca64322d52b3dd12b95b84a568cf81d4497e521ca22776bd0ebc4e874bb740ca4a927198917472eabaec7d506191d8bf9ea485d3e92a26e894b23528fc3cc0d7f080efcdd8cde3",
+      "contacto_cifrado": "2806ca07f48ef4b5140ee1f8:a13fdd117751013bda84175e284791d9:2e606bcb80af6eecdd21644990e1bc96a1588132c4b6c05f50f8585d59f688c969f26ca2772fe679afbc445c48e8d4c885ee91aa25cfd5967995dde87245287828487f18704dd6d5d56f022ca8fb9bd6b46015cb472494a4b3850ada90061c11bbddfdaccdcb13a2981009b24e17bdafb1b5b9fb94f04067b9c6200d6b05e69592f6a52313a27347733e541d6a647604889f1f8c2f18c4dd83674b0b6b0547842e45e41f4e448cc2837fb6a9f491fddb176b47efa8549f3117df8eaa3af81ecc91bb17738780c323f234d7fbeb216e257b1ac64ab67e454267c477be182316d80c83e6d22093e45435debf581b13d96e22e78842fc5c77f58ae0edab344113ab295007d4976b32de1b928a41efa6fe680145c9dad6ed",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "56 m²",
@@ -2060,360 +2529,7 @@
         "Baños": "2 completos",
         "Parqueaderos": "1 espacio",
         "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-106",
-      "titulo": "Apartamento en Venta en Canelon, Cajicá",
-      "ubicacion": "Canelon, Cajicá • Estrato 4",
-      "barrio": "Canelon",
-      "ciudad": "Cajicá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd63dc4e_infocdn__fg4xr3hpypivzyvny3oehwcvlznm40tdc8ofvjfkjpg.jpg",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd63dc4e_infocdn__fg4xr3hpypivzyvny3oehwcvlznm40tdc8ofvjfkjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd6b007f_infocdn__8ze2tu5ozziovu5xpqoceosy1xnvoswopgcu1cyqjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd7285cc_infocdn__byzif0ys8lwqti6r4otz26n4d641jhotczgrnghfjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd7ab0c3_infocdn__ymwimfrtymvefkqvgbbgct7kxkujrvnzrb951vegjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd82961f_infocdn__tgqzfarmq1m8ujykiplkzoidiukidzd8x5z0y2ugjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd8af6f3_infocdn__b7qtbzvkmh2azzpnm7htuvtwn20aeumexyxtraygjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd93590c_infocdn__cmvvvuwn4nsqv5xnh9cmyl0chu3ixcdo4k3f5zt2jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cd9a4e8e_infocdn__20cu4jsk0hvj69cgyi57qjydiliwa0ju60fgwdz9jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cda23298_infocdn__q18kbt4tfr8ynq0k78jxyltljwo7ga4kfwz59dccjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cda95075_infocdn__mrs07jycpnfzdkdatzfiemb404lhfodhtanwjo2ajpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdb1b212_infocdn__smfdclwe3iopiveyz2c5fqyxxyusvvqamce9q15djpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdbc1327_infocdn__em0cop4loyouw6otpsdo9hdnnuzjerv5dpw9pqoyjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdc3e1ed_infocdn__rcn9baokocvauorqgiakkjxyynu7jmf5pfbfxvagjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdcb63c5_infocdn__vc0oeqr09fmty1tfmikypv0s3ghpjpblpmov6vo9jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdd3778c_infocdn__8xmgkllwu6sjccffb6o9cib0pvtwgeutwgbly562jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cddb0f23_infocdn__gyknb5xptyvvmwzwpdsblf5osqieylwiumxrnlhyjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cde302dd_infocdn__ezvmdtamacsnxywv3rmi2grgbzyxrpkmuro8edgnjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdeb0aed_infocdn__ecbwzdog2jndt5dfpyxba9l5mt9396aodyny5hlpjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdf440b6_infocdn__xbrr4xayi0vi1gtl3jxpw4sqfr9reuraxqhkntjhjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9a0cdfe9636_infocdn__kogkjqhqtveujvxuenby7jujlo7nxhpb2h6eecjrpng.png"
-      ],
-      "dato_1": "81 m²",
-      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
-      "precio_m2": "$ 6.160.494 / m²",
-      "precio": "$ 499.000.000",
-      "precio_raw": 499000000,
-      "rebaja": "",
-      "urgencia": "🔥 Oportunidad Directa",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "6c9474740452a2886402a573:beb1447b63054a4d9668c52eafdda0c7:d4a17fc578e8b53d1b6b5543080680f6b002f64a4a25e31440407b90a2eea323c3437219d4718b8587cdf5e5002176cff4938520537f1fe8797c7361e40af30f61fd951a5d14a8df35cd91065d9dee769d6464658880f17d4eb40617bb7c53f111c68875f4964a40f6efd12bdf1063604fcb1438fdc8ba2d09801de51c8580eeb4ed9d406275",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "81 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "2 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-107",
-      "titulo": "Apartamento en Venta en Calahorra, Cajicá",
-      "ubicacion": "Calahorra, Cajicá • Estrato 5",
-      "barrio": "Calahorra",
-      "ciudad": "Cajicá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a995c53435a3_infocdn__jip8iuihy2qebxl3q761vjzajpmoiurgsy9j5pfwjpg.jpg",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c53435a3_infocdn__jip8iuihy2qebxl3q761vjzajpmoiurgsy9j5pfwjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c53d2e17_infocdn__h75ksp0fierl9v5b1mufpkjscbc3xd73c0ggtgdsjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c546f959_infocdn__bgmww15n9ip2vtdfq25iyy2gkkz0u7drxcfpor81jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5515239_infocdn__hxh6hfq0isjn7akvexbl1coykshyysnfwzamgrimjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c55a5509_infocdn__cx1i3fmmkicx8wcsuslnumhexq89ayabwfod8ccmjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c564d8ef_infocdn__dgifyx6udt3jupci7p7o59ei2csau0anfuy3z4t0jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c56e2bc0_infocdn__3w9ht6gkuioyyptw7ahfodvx31smsncgqnzzouhjjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5791132_infocdn__vrh72nvwuvwjmpqbutgfzreuxpk0gntwsrbptwibjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c58616ce_infocdn__sxqccdj33yrn2lapr9g1ubma8mnhbthvooeegje8jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c58f0399_infocdn__eogjrozxms4m6wqi44lnqaetpxcqlyfhwv7nv5mojpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5991031_infocdn__qx3lgxja0arko6klcgiz0uz3lf6lk16vy7yvhkiqjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c59efe15_infocdn__zunrufqfnwtxy7elgcir6xsy7wfrsxhgzdfwidstjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5a89f7c_infocdn__m3315ssmkqtppozo78otc2kgaevhsaopu67atsszjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5b26e19_infocdn__m5ws83vstnd1c5wuxanlq9ve8swuzwhgmqe0dlmnjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5bb4e4c_infocdn__awu2su0wpinx2we3rasrdhb5szzdn44cvx3dztqsjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5c574ae_infocdn__liffs50s5ec22nv31osdkqlibevip25ou6w297fzjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a995c5ceb34b_infocdn__abaqtyir9pkrq783zwwsuegp4bopzpx1jsuie00zjpg.jpg"
-      ],
-      "dato_1": "95 m²",
-      "dato_2": "3 Hab • 3 Baños • 2 Garajes",
-      "precio_m2": "$ 7.157.895 / m²",
-      "precio": "$ 680.000.000",
-      "precio_raw": 680000000,
-      "rebaja": "",
-      "urgencia": "⚡ Trato Directo",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "970594cd1eeed21245639b8e:e554d875633a1d2a2985d4cf49e46ce9:060a975cbca09d13543aa9ad200cdc3b4d4ad765180515248cc90272ddbf279f5f268b4c3dbef81cac3e6faacafff33a491f15d8fee4f1be910c8163d5349882d60ed13389925ebcba1e0882e0dfd331cbab44d027fe00ae103ceced1fb1d17b3901fcc27a04a7e0d01fd3b2de252c90ed1657aabc58ce98e08e220d686fec7ec8c5c840d8a21c53",
-      "detalles": {
-        "Estrato": "5 Residencial",
-        "Área": "95 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "3 completos",
-        "Parqueaderos": "2 espacios",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-101",
-      "titulo": "Casa en Venta en Diana turbay, Bogotá",
-      "ubicacion": "Diana turbay, Bogotá • Estrato 2",
-      "barrio": "Diana turbay",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b1ef12778e_infocdn__ehjiytomtzbeicax8a0pdvwya41hjieyjlwwmnswpng.png",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1ef12778e_infocdn__ehjiytomtzbeicax8a0pdvwya41hjieyjlwwmnswpng.png",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1ef36bec4_infocdn__jiln2ih6tey7vvleccykw5imejmejl6yr50fjdszjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1ef561c69_infocdn__zk5heubsvh7ogeijduchxbqnqij6zpf7kky3laoyjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1ef8049f3_infocdn__5qnndag67wfqllr2ufsy4ti71vqwz5hy6aep6z9ojpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1efa9958a_infocdn__dv0rhf0swe1otyvefgdfzwwv3jvwmkji6p7q5bmajpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1efd3204e_infocdn__llhkbcgk2n5mpwa1aulrpemy19wmk5flipxlqjctjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1eff8693e_infocdn__ksqzdangjoiypn2exqlvceg2k5miknr9lxzsoizkjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f01b8aa2_infocdn__6tdxunwwohkygpv6hqhsbselfpgzndvzv411bz02jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f0448a01_infocdn__8priv1k33w2paxc4csnruaxtpjmkcccmyi5snat1jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f06f21c6_infocdn__v1owy274nb9sob2k82omzrf1iwhl6ym7rabe0gbmjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f09be503_infocdn__fgadfbactihm66qo5c0od3hwusqur60vtvu7habijpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f0c708a4_infocdn__qxyfwbtvgpfkr5xo3zm5fqv1rvbefzqpzznf4ecgjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f10071cf_infocdn__disqumoksdngrenvoaxtu6brqoyiowiosjegnhpsjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f12e75fd_infocdn__txxghi72oyoiub1tpd4zzu4nmobqnfh8pirrbxecjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f169793d_infocdn__sc1rx9gfpxbh9bkrbitqp1ewo3cfo91k8mrmakq3jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f19e3fec_infocdn__0brxe3ss1xkis8cygc2cao8vsyxxitikzmaibpjbjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f1e532ce_infocdn__gtazquqlvvmvtqubhxkkozfcsvewwb2emkna8pmejpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f25c42b5_infocdn__ohi7kx1ndyplkl5hm9i0lfmnsajrwfvo5pulhkggjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f2d24a30_infocdn__ytvlip1tz2scyqefamnwowut9hysaku1on5an8evjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b1f373370e_infocdn__urrpmgkzz9f2sek9zkwqg4dky6s0ykdzrbxxgn3pjpg.jpg"
-      ],
-      "dato_1": "219 m²",
-      "dato_2": "3 Hab • 4 Baños • 1 Garajes",
-      "precio_m2": "$ 2.191.781 / m²",
-      "precio": "$ 480.000.000",
-      "precio_raw": 480000000,
-      "rebaja": "",
-      "urgencia": "🔥 Oportunidad Directa",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "d66504f13c92c2e17d262285:3c2e51572dd584c7e369f26db87c57b4:408ec1d713f8233a16d0c1bba0943bbc31e5e703ac99ed1efaa9d5c510856923013b003629b95cadf0552a04914851c7d1e5419315b11691fd022deac27da55ca61bbe874031eff13540b8c143d1cb431e36f5e7a61b2d0974e53695849df406ac3eff0232adf676707a742148ae06a723f58e164cc28e92849f4c22b4d6f436aa927373",
-      "detalles": {
-        "Estrato": "2 Residencial",
-        "Área": "219 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "4 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-102",
-      "titulo": "Apartamento en Arriendo en El recuerdo, Bogotá",
-      "ubicacion": "El recuerdo, Bogotá • Estrato 4",
-      "barrio": "El recuerdo",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9ada272f66a_infocdn__ule0dl7oeeg4cmgvqwpwxw632lb5nbwn08eqhp30jpg.jpg",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada272f66a_infocdn__ule0dl7oeeg4cmgvqwpwxw632lb5nbwn08eqhp30jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada27c6745_infocdn__qdiixwnmlp0qnxlh7cvbhlvg73e0ym530yktdrl9jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2882948_infocdn__llvnxqkple5vvzsnshxvmmni43xlbaeext7d4tbijpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2928b34_infocdn__m1pcukzapgkpwyipaecm43da4i4hp9liqbjmim5bjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada29b416a_infocdn__sysmenneggrdxhi8gpnj34ennmij8cd9xiizl9kdjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2a51694_infocdn__jkzlcwfdto1upnbd1xntsjhmbyztp0hceq3h6tssjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2b1dd82_infocdn__yqcdihf7xsa0m6bi1xqg1spomm9nkaiqe888dem8jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2b89530_infocdn__qehu8ndfjadmg7okembecqd5nirfrrrvmmwaf7sdjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2c2a744_infocdn__oyg6ltbppjkjgpemk8xfhyg6qxhpnyjh2kijfjc5jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2c9459c_infocdn__btgzov8ktgqzodhsmjkeqt7ye6qbxwbegi2lvscxjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2cd7023_infocdn__ifvdymychxdjh1lrbnbjhtl6quevlmpersxyvafpjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2d2a336_infocdn__oy42bkrldov71i57n55tdu9f11mq8mpbvuav2pdljpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9ada2d8f357_infocdn__f3lsvitn2cx47esh2mc55ffoekbprbp1war06rlxjpg.jpg"
-      ],
-      "dato_1": "23 m²",
-      "dato_2": "3 Hab • 1 Baños • 1 Garajes",
-      "precio_m2": "$ 82.609 / m²",
-      "precio": "$ 1.900.000",
-      "precio_raw": 1900000,
-      "rebaja": "",
-      "urgencia": "⚡ Trato Directo",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "20c5c40cbbd26ac1900ebf80:c903c1fd2bb3ebde25a43bc7d7dfe728:e5dabb3faad096c076b922ac45feac38b8cc053631b02d86f47ac27a15cbddcf48da1fb8041adc65462962e9c3621553dca1940f3ba6a11741b12c586463b259b00fe36b154c15425ec43054db7fe956b714f2a22b86e66ffe52962be5c5070f0db603ed20d886ef76551064cae8a432b4ca6684237af55471c0e3460eed8cc9c8c587a1dcf91f7125a480ba80",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "23 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-100",
-      "titulo": "Apartamento en Venta en Lagos de Cordoba, Bogotá",
-      "ubicacion": "Lagos de Cordoba, Bogotá • Estrato 5",
-      "barrio": "Lagos de Cordoba",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9b12d87403d_infocdn__lkcidgqbleajbq3bykkddu3ddypnonvazsxsx3gwjpg.jpg",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12d87403d_infocdn__lkcidgqbleajbq3bykkddu3ddypnonvazsxsx3gwjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12d97d897_infocdn__cybq7kcfxh2majm5ogypsqlhco5jzihitfesoznxjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12da52234_infocdn__ouu2orpgyf325ml5ci1ghtwjw5e8nnbpvj3gi2h2jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12db6d4d7_infocdn__wmchgtkorsqowfls14legcmb2xo0wbmuhl4med5njpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12dc6b578_infocdn__qmcqzsnpsdquinyjjp4kyaymccxzapldf2hn6xcqjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12dd4b049_infocdn__xsuvr4kde8hreuls1ebsyzpn7jnlh6xsdtqhz5p2jpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12de51ea7_infocdn__rtsrugxmgrlucph06gm2outdvnv3bdffivcbgtpujpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12df23aaa_infocdn__nerpg9pmzyg8mfff4ydjums9wr7zhcmesf1fe8yujpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12dfbdcc5_infocdn__uinknwolliwzydqubfspv2ymdmiwu4rbsjreft4fjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e0c21f7_infocdn__hyuol4b6girbnoon3ohev8nwmjusx5igfdxfehgkjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e1c4a00_infocdn__c1fdftxmscf2cpgixgnc3wyjtohr1cytyy9uz6xwjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e2efd93_infocdn__dz92vfjkwads8ylndnojej51c1c2lrrsmxigtbhtjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e489e54_infocdn__lk8tplxjavsksbciozorkdoblzwdqoutsrtb8wlbjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e6e1f16_infocdn__vt30shen3qa2k5tkigjjplrliq9fry3voao1ysaujpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12e8d85c7_infocdn__fdgrxklfy32pop9ichjnnolaohrej60wzhscmhcxjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9b12ec8fdb9_infocdn__ava8uo5lv2ywh7zm3kxylsqvsm9oiw05uvbckwlnjpg.jpg"
-      ],
-      "dato_1": "84 m²",
-      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
-      "precio_m2": "$ 7.380.952 / m²",
-      "precio": "$ 620.000.000",
-      "precio_raw": 620000000,
-      "rebaja": "",
-      "urgencia": "🔥 Oportunidad Directa",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "7e45a0b695da9f91a50109f4:5e2304f09e2793934274c01e8d4c7dee:e14f7de44a2a1ac5a9f9f983e272b12c5109d96b38afc4aafa384395706388ac7327510e32acc2d627eff027ef7bc14138ebb5f7da43647b945838939b7ac486cdd4ae1eee92f6ef5e20d7ad0b1207ecbde49cc6e65ecbba7a8527ce797947393796ded27d33bba9b70d8bc6f3dae2e43f9577c462c90b4181db51cb880da8b690650e651b1459e61959ce24cda75e",
-      "detalles": {
-        "Estrato": "5 Residencial",
-        "Área": "84 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "2 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-99",
-      "titulo": "Apartamento en Venta en Castilla, Bogotá",
-      "ubicacion": "Castilla, Bogotá • Estrato 3",
-      "barrio": "Castilla",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://cdn2.infocasas.com.uy/repo/img/6a9acacc91694_infocdn__dqi5hp5d2flioaw02sdorebf7svq8kq01prborhmjpg.jpg",
-      "imagenes": [
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacc91694_infocdn__dqi5hp5d2flioaw02sdorebf7svq8kq01prborhmjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacce8f25_infocdn__ridimnfwme4phxruqs73dekj6jgscqz6rgeloy6pjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacd499ac_infocdn__j2hewvy2lfiufdfi6xmyhocdus9nbybmdttkcplrjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacdadc66_infocdn__zvzhfi4yddi1hj1xvednz1qsasldrmbod4g4yf7ajpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acace10c3f_infocdn__me7vzeh3zt3mlrbhd6esw4rsr8gys2otlv8zhmuujpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acace6329a_infocdn__jxhkfs1ysqz0pz9mpp57f5662ijd9v1yu2upcwotjpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacebcb0f_infocdn__w4izznmwgpfzl2krxnhifte81guipfsx3pqr2oaejpg.jpg",
-        "https://cdn2.infocasas.com.uy/repo/img/6a9acacf2104d_infocdn__tto8e6apguqasmd86kbmgjwn4qy3gvkkodoauhpkjpg.jpg"
-      ],
-      "dato_1": "49 m²",
-      "dato_2": "3 Hab • 1 Baños • 1 Garajes",
-      "precio_m2": "$ 5.510.204 / m²",
-      "precio": "$ 270.000.000",
-      "precio_raw": 270000000,
-      "rebaja": "",
-      "urgencia": "⚡ Trato Directo",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "146 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "a0705697a1f987d82781c7e2:1333f9f31e15642c831c54b3b5a94c06:b69798e1894f4d1d3e644bfc7c332235aa0caf123870baaf6658e631711dc06ad4f4c104a5bdebce43ba278ca6ee6aee2aa1d98f99dd416d9348d68d8391c0fc91c6f6751e77da86b06b31d16662f9d0847ddd1548160a476eee7a7a21bed5b05cfa43e01a191df4b273e5bc4317af1320e27d33bc14c900553d2613b1c65fb630d0ec42034ad4",
-      "detalles": {
-        "Estrato": "3 Residencial",
-        "Área": "49 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "1 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-2",
-      "titulo": "Casa en Venta en Suba Las Mercedes, Bogotá",
-      "ubicacion": "Suba Las Mercedes, Bogotá • Estrato 4",
-      "barrio": "Suba Las Mercedes",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Casa",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
-      "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
-      ],
-      "dato_1": "200 m²",
-      "dato_2": "3 Hab • 8 Baños • 1 Garajes",
-      "precio_m2": "$ 3.350.000 / m²",
-      "precio": "$ 670.000.000",
-      "precio_raw": 670000000,
-      "rebaja": "",
-      "urgencia": "🔥 Oportunidad Directa",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "c422aa687524230bcb8887ba:0d1645f97d63b789d5545ea6d79a593e:7cc69f264643d49afc1c7c851cdb9ee42042e302a9a6ab5c698893c0fbfbb78f1dd20de9cbbe348e5a6a26999a4adaca3d81bb5157c027143972b48e1956e727826179593d226d4f88d5c4ea327a2d1fee069d284035e4e764e0bac3c09681a5fcddf9464f8108340c85433740aea8ac92f0ce14a6effe93adaa604128bae9fa42d5e9b0d13debb743",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "200 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "8 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
-    },
-    {
-      "id": "lead-inm-1",
-      "titulo": "Apartamento en Venta en Engativá, Bogotá",
-      "ubicacion": "Engativá, Bogotá • Estrato 4",
-      "barrio": "Engativá",
-      "ciudad": "Bogotá",
-      "tipo_inmueble": "Apartamento",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
-      "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
-      ],
-      "dato_1": "79 m²",
-      "dato_2": "3 Hab • 2 Baños • 2 Garajes",
-      "precio_m2": "$ 6.455.696 / m²",
-      "precio": "$ 510.000.000",
-      "precio_raw": 510000000,
-      "rebaja": "",
-      "urgencia": "⚡ Trato Directo",
-      "urgencia_tipo": "urgente",
-      "fecha_relativa": "Captado recientemente",
-      "telefono_bloqueado": "573 ••• ••••",
-      "enlace_bloqueado": "https://fincaraiz.com.co/inmueble-••••••",
-      "contacto_cifrado": "e0a0bdf1865e4284bfa14797:060791dc79e6802b2c5f0eed6c774b39:9c161d4f238e556464bfeed34595a2d005acbe86d7cc24e993b42950286c2b4fa7c3b1cd05fa7cf818a70a29c4cf7efe0ae5ebf06f81d197e7169c60d1ec481c0bb33bdcda9f73125448e5bc4760d99bc9eb7c5166c240d3486918327e70e1923ac4ccb3f94aeffd733bf0613f765f0357b357cf8cf19e9e878161c76f3396a5da06b7f5fc8801",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "79 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "2 completos",
-        "Parqueaderos": "2 espacios",
-        "Contacto": "Propietario Verificado"
-      },
-      "portal": "Finca Raíz"
+      }
     }
   ]
 }
