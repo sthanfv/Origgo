@@ -359,30 +359,56 @@
   }
 }
 
-/* Responsive para pantallas móviles */
+/* Responsive para pantallas móviles (Heads-Up Notification estilo Android 14 / One UI) */
 @media (max-width: 640px) {
   .hunter-toast-container {
     width: calc(100% - 1.25rem);
-    top: max(0.85rem, env(safe-area-inset-top, 0.85rem));
+    max-width: 400px;
+    top: max(0.65rem, env(safe-area-inset-top, 0.65rem));
+    gap: 0.5rem;
   }
 
   .hunter-toast {
-    padding: 0.9rem 1rem 0.55rem 1rem;
-    border-radius: 14px;
+    padding: 0.75rem 0.95rem 0.45rem 0.95rem;
+    border-radius: 18px;
+    box-shadow: 
+      0 14px 32px -6px rgba(0, 0, 0, 0.8),
+      0 4px 12px -2px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 hsla(129, 48%, 87%, 0.16);
   }
 
   .hunter-toast-title {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.25;
   }
 
   .hunter-toast-description {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .hunter-toast-icon-wrapper {
     width: 32px;
     height: 32px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .hunter-toast-footer {
+    margin-top: 0.35rem;
+    padding-top: 0.15rem;
+  }
+
+  /* Ocultar texto secundario de temporizador en móvil para lograr silueta nativa compacta */
+  .hunter-toast-timer-label {
+    display: none;
+  }
+
+  .hunter-toast-progress-track {
+    height: 2px;
   }
 }
 

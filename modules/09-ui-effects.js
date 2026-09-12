@@ -255,19 +255,19 @@ const TEXTOS_LEGALES_ORIGGO = {
     html: `
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-code"></i> 1. Naturaleza Tecnológica del Servicio</div>
-        <p>Origgo es una plataforma informática de software como servicio (SaaS) especializada en el procesamiento, clasificación y normalización de información pública inmobiliaria disponible en la web abierta. El acceso a la terminal es estrictamente personal e intransferible.</p>
+        <p>Origgo es una plataforma informática SaaS especializada en el procesamiento, clasificación y normalización de información inmobiliaria pública disponible en la web abierta. El acceso a la terminal es personal e intransferible.</p>
       </div>
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Créditos y Desbloqueo Directo</div>
-        <p>El sistema de créditos permite revelar datos de contacto (números de WhatsApp y enlaces directos) de propietarios que han publicado voluntariamente sus bienes. Los créditos adquiridos no tienen fecha de caducidad mientras la cuenta mantenga actividad en el sistema.</p>
+        <p>El sistema de créditos permite revelar datos de contacto (WhatsApp y enlaces directos) de propietarios que han publicado voluntariamente sus bienes. Los créditos adquiridos no tienen fecha de caducidad mientras la cuenta mantenga actividad.</p>
       </div>
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-ban"></i> 3. Prohibición Estricta de Reventa y Scraping</div>
-        <p>Queda terminantemente prohibida la extracción masiva automatizada, el raspado web (scraping), la ingeniería inversa, la redistribución o la comercialización de las bases de datos de Origgo. Cualquier violación facultará el bloqueo definitivo de la cuenta sin derecho a reembolso.</p>
+        <p>Queda prohibida la extracción masiva automatizada, el raspado web (scraping), la ingeniería inversa o la comercialización no autorizada de las bases de datos de Origgo, acarreando el bloqueo de la cuenta sin derecho a restitución.</p>
       </div>
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-shield-check"></i> 4. Seguridad en Transacciones Wompi</div>
-        <p>Todos los pagos se procesan de forma cifrada a través de la pasarela certificada Wompi (Bancolombia) bajo normativa internacional PCI-DSS Nivel 1. Origgo no almacena números de tarjetas de crédito ni credenciales bancarias.</p>
+        <p>Los pagos se procesan de forma cifrada a través de la pasarela certificada Wompi (Bancolombia) bajo normativa internacional PCI-DSS Nivel 1. Origgo no almacena números de tarjeta de crédito ni credenciales bancarias.</p>
       </div>
     `
   },
@@ -279,35 +279,63 @@ const TEXTOS_LEGALES_ORIGGO = {
     html: `
       <div class="legal-section legal-section-warning">
         <div class="legal-section-badge"><i class="fa-solid fa-triangle-exclamation"></i> 1. Cero Intermediación y Cero Corretaje</div>
-        <p>Origgo <strong>NO es una agencia inmobiliaria, entidad de corretaje, firma comisionista ni asesoría financiera o jurídica</strong>. Origgo no cobra porcentajes sobre transacciones, no intermedia en la fijación del precio, no custodia dineros de arras ni participa en contratos de promesa de compraventa.</p>
+        <p>Origgo <strong>NO es una agencia inmobiliaria, entidad de corretaje, firma comisionista ni asesoría financiera o jurídica</strong>. No cobra comisión por transacción, no fija precios, no custodia arras ni participa en contratos de promesa de compraventa.</p>
       </div>
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-scale-balanced"></i> 2. Debida Diligencia (Due Diligence) Obligatoria</div>
-        <p>La verificación física, técnica, catastral, jurídica y tributaria del inmueble es <strong>responsabilidad exclusiva, indelegable y directa de las partes contratantes</strong>. Es deber imperativo del comprador solicitar el Certificado de Tradición y Libertad reciente ante la ORIP, realizar el estudio de títulos por un profesional idóneo, y verificar gravámenes, embargos o afectaciones antes de cualquier desembolso.</p>
+        <p>La verificación física, técnica, catastral, jurídica y tributaria del inmueble es <strong>responsabilidad exclusiva, indelegable y directa de las partes contratantes</strong>. Es deber del comprador solicitar el Certificado de Tradición y Libertad reciente ante la ORIP y realizar el estudio de títulos antes de cualquier desembolso.</p>
       </div>
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-file-shield"></i> 3. Inmunidad ante Disputas Particulares</div>
-        <p>Origgo no valida ni garantiza el estado material, vicios ocultos, veracidad de las afirmaciones del vendedor ni la titularidad jurídica de los bienes catalogados. En consecuencia, Origgo queda formal y expresamente exonerado de cualquier daño económico o conflicto contractual entre particulares.</p>
+        <p>Origgo no valida el estado material, gravámenes ni titularidad de los bienes catalogados, quedando formal y expresamente exonerado de cualquier daño económico o conflicto contractual entre particulares.</p>
       </div>
     `
   },
   privacidad: {
-    titulo: 'Habeas Data y Privacidad (Ley 1581 de 2012)',
-    subtitulo: 'Tratamiento de datos personales y canal de desindexación inmediata',
+    titulo: 'Privacidad, Habeas Data & GDPR',
+    subtitulo: 'Tratamiento de datos personales según Ley 1581 de 2012 y estándares internacionales',
     badge: 'Protección de Datos',
     icono: 'fa-solid fa-user-shield',
     html: `
       <div class="legal-section">
         <div class="legal-section-badge"><i class="fa-solid fa-gavel"></i> 1. Marco Regulatorio (Ley 1581 de 2012)</div>
-        <p>En estricto cumplimiento del régimen general de protección de datos personales de la República de Colombia, Origgo garantiza a los titulares de la información el pleno ejercicio de sus derechos de consulta, actualización, rectificación y supresión de datos personales.</p>
+        <p>En cumplimiento del régimen de protección de datos de Colombia, Origgo garantiza a los titulares el ejercicio pleno de sus derechos de consulta, actualización, rectificación y supresión de datos personales.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Fuentes Públicas de Información</div>
-        <p>Los datos telefónicos y descripciones de los inmuebles provienen única y exclusivamente de publicaciones abiertas y de libre acceso realizadas voluntariamente por los titulares en portales web inmobiliarios.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Inmuebles Catalogados (Fuentes Públicas)</div>
+        <p>Los datos de contacto y descripciones provienen exclusivamente de publicaciones abiertas realizadas voluntariamente por los titulares en portales web inmobiliarios (Art. 10 lit. a, Ley 1581).</p>
+      </div>
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-address-card"></i> 3. Datos de Compradores (WhatsApp y Correo)</div>
+        <p>El teléfono y correo suministrados por el comprador se utilizan estrictamente para autenticación, entrega del PIN de seguridad, asignación de créditos y recibos de pago. <strong>Cero venta a terceros y cero spam</strong>.</p>
+      </div>
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-earth-americas"></i> 4. Cumplimiento Internacional y GDPR</div>
+        <p>Para residentes en el exterior o en la Unión Europea (Reglamento UE 2016/679), se garantizan los derechos de acceso, rectificación, olvido, limitación y portabilidad escribiendo a <strong>contacto@origgo.online</strong>.</p>
       </div>
       <div class="legal-section legal-section-highlight">
-        <div class="legal-section-badge"><i class="fa-solid fa-user-xmark"></i> 3. Derecho de Desindexación Inmediata (Opt-Out)</div>
-        <p>Si usted es propietario o representante legal de un inmueble y no desea que su información de contacto continúe catalogada en Origgo, puede solicitar su <strong>supresión y desindexación inmediata y permanente</strong> sin costo a través de nuestro canal de WhatsApp o al correo: <strong>contacto@origgo.online</strong>. La remoción se procesa en menos de 24 horas hábiles.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-user-xmark"></i> 5. Desindexación Inmediata (Opt-Out)</div>
+        <p>Si usted es propietario y no desea que su inmueble figure catalogado, solicite su <strong>supresión y desindexación inmediata y permanente</strong> sin costo por WhatsApp o al correo <strong>contacto@origgo.online</strong> (procesamiento en < 24h).</p>
+      </div>
+    `
+  },
+  reembolsos: {
+    titulo: 'Garantía de Acceso y Política de Reembolso',
+    subtitulo: 'Reglas de consumo digital, respaldo por PIN maestro y reversión de pago',
+    badge: 'Garantía & Devoluciones',
+    icono: 'fa-solid fa-rotate-left',
+    html: `
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 1. Servicios Digitales de Consumo Inmediato</div>
+        <p>Conforme al Art. 47 de la Ley 1480 de 2011 (Estatuto del Consumidor), se exceptúan del derecho de retracto los servicios ejecutados en el acto. Al desbloquear un contacto de propietario directo, el crédito se perfecciona y consume.</p>
+      </div>
+      <div class="legal-section legal-section-highlight">
+        <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Garantía de Permanencia mediante PIN Maestro</div>
+        <p>El saldo y membresías activas no se pierden por cambio de dispositivo o borrado de navegador. Su saldo está protegido y puede reactivarse en segundos desde la opción <strong>"Restaurar Cuenta"</strong> con su correo o celular.</p>
+      </div>
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-arrows-rotate"></i> 3. Reversión de Pago por Falla Técnica</div>
+        <p>Conforme al Art. 51 de la Ley 1480, ante cobros duplicados involuntarios en pasarela o fallas técnicas imputables a Origgo no resueltas en 72 horas, se procederá a la reposición de créditos o a la reversión íntegra del pago.</p>
       </div>
     `
   }
@@ -385,6 +413,7 @@ function inicializarModalLegal() {
   const btnAccept = document.getElementById('btnLegalCancel');
   const btnTerminosFooter = document.getElementById('btnOpenTerminos');
   const btnPrivacidadFooter = document.getElementById('btnOpenPrivacidad');
+  const btnReembolsosFooter = document.getElementById('btnOpenReembolsos');
 
   if (btnClose) {
     btnClose.addEventListener('click', (e) => {
@@ -441,6 +470,13 @@ function inicializarModalLegal() {
     btnPrivacidadFooter.addEventListener('click', (e) => {
       e.preventDefault();
       abrirModalLegal('privacidad');
+    });
+  }
+
+  if (btnReembolsosFooter) {
+    btnReembolsosFooter.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirModalLegal('reembolsos');
     });
   }
 

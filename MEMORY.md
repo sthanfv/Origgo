@@ -1,10 +1,23 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 22:10 (GMT-5)
+Última actualización: 2026-09-11 23:33 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-14. **Blindaje Jurídico Integral (Habeas Data, GDPR, Política de Reembolso por PIN) y Morfología Toast Android Nativo**:
+   - **Marco Legal y Política de Reembolsos (`modules/09-ui-effects.js` + `index.html`):**
+     - Se incorporó la pestaña formal **"Reembolsos"** sustentada en la Ley 1480 de 2011 (Estatuto del Consumidor): el desbloqueo de contactos directos constituye un servicio de contenido digital de consumo instantáneo no sujeto a retracto posterior.
+     - Se formalizó la **Garantía de Permanencia mediante PIN Maestro**: el saldo y las membresías no expiran por cambio de equipo o navegador, permitiendo al comprador recuperar su acceso en segundos desde "Restaurar Cuenta".
+     - Se contempló la **Reversión Total de Pago (Art. 51)** en caso de duplicidad técnica de cobro no resuelta en 72 horas hábiles.
+   - **Protección de Datos de Compradores y Alcance Internacional GDPR (`modules/09-ui-effects.js`):**
+     - Se declaró explícitamente el tratamiento de los datos entregados por compradores (WhatsApp y correo): uso exclusivo para autenticación, PIN y facturación (cero comercialización a terceros anunciantes).
+     - Se añadió cláusula de cumplimiento del Reglamento General de Protección de Datos de la Unión Europea (GDPR - Reglamento UE 2016/679) para proteger transacciones internacionales en Wompi contra contracargos o bloqueos de pasarela.
+     - Se habilitó el enlace directo en el footer institucional: `Garantía y Política de Reembolso`.
+   - **Morfología Toast Nativa de Android (`styles/14-toast.css`):**
+     - Se rediseñó la experiencia móvil del toast para adoptar la silueta y proporciones de una notificación nativa Heads-Up de Android 13/14 (One UI / Pixel): altura estilizada, esquinas de 18px, márgenes safe-area superiores, ocultamiento del pie explicativo ("Cierra en 4s") en pantallas táctiles y micro-barra de progreso inferior de 2px.
+   - **DevSecOps:** Suite de 8 fases aprobada al 100% (0 errores, 494 líneas en `09-ui-effects.js` y 415 líneas en `14-toast.css`).
 
 -13. **Estilos Tipográficos Sobrios de Rebajas / Arbitraje y Resurrección del Bot de Encendido Remoto (WoL)**:
    - **Estilos Tipográficos Sobrios para Rebajas (`styles/16-utilities.css`):** Se crearon las clases `.unit-rate-badge.badge-rebaja` y `.unit-rate-badge.badge-arbitraje` basadas en tipografía monoespaciada de alta legibilidad (`var(--font-mono)`), eliminando ilustraciones infantiles y reemplazándolas por notación sobria tipo terminal financiera/Bloomberg (`-$ 30M`, `-14.5% vs Mediana`).
