@@ -1,10 +1,25 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 06:10 (GMT-5)
+Última actualización: 2026-09-11 19:45 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-7. **Resolución Crítica de Bloqueo CSP Cloudflare R2, Plantilla Formal de WhatsApp y Visualización de Arbitraje $/m²**:
+   - **Desbloqueo de Content Security Policy (CSP):** Se integró `https://*.r2.dev` y `https://pub-040118b18ae247d7b4643d22289744b6.r2.dev` en la directiva `connect-src` tanto en `vercel.json` como en la etiqueta `<meta http-equiv="Content-Security-Policy">` de `index.html`. Erradicado por completo el bloqueo del navegador al consultar `inmobiliario.json` en Cloudflare R2 CDN.
+   - **Piso 5: Plantilla Formal y Respetuosa de WhatsApp (`api/leads/unlock.js`):**
+     - Erradicada la mención de "recursos listos", "cierre rápido" o cualquier referencia a dinero o regateo.
+     - Nuevo mensaje institucional de alta gama para propietarios de alto estrato y patrimonio:
+       *"Buen día, le escribo con respecto a su publicación del [Tipo] en [Ubicación]. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita. Quedo atento a su respuesta, muchas gracias."*
+     - Adaptada la suite de pruebas unitarias `tests/whatsapp_template.test.js` (3/3 aprobadas con 0 menciones de dinero).
+   - **Pisos 2 y 4: Terminal de Arbitraje $/m² y Tracker de Rebajas (`modules/06-cards.js` + `styles/16-utilities.css`):**
+     - Integrada la visualización reactiva de arbitraje cuantitativo (`-${item.descuento_arbitraje}% vs Mediana`) y badges de rebaja confirmada en la fila inferior de precio por m².
+     - `modules/06-cards.js` preservado en 492 líneas (estricto cumplimiento < 500 líneas).
+     - Nueva clase utilitaria `.pricing-sub-row` en `styles/16-utilities.css` (72 líneas).
+   - **Sincronización End-to-End de Catálogo Real:**
+     - Descargado y validado el feed de 60 oportunidades reales emitidas por el procesador Exynos del Samsung Galaxy J7 con firmas HMAC intactas en Cloudflare R2 y almacenamiento local de contingencia.
+   - **DevSecOps:** Suite de 8 fases al 100% de éxito (`npm test`).
 
 -6. **Corrección Crítica de Enlace 404 en Correos, Plantilla Bifurcada por Saldo y UI Móvil de Membresías**:
    - **Causa Raíz del 404 Identificada y Resuelta:** En `api/auth/recover.js`, `resolverPortalUrlSeguro()` tenía configurado `fallback = 'https://origgo.vercel.app'`. Esa URL pertenecía a una aplicación ajena de rutas en Brasil, no a Origgo, provocando 404 al pulsar el enlace del correo. Se corrigió a `https://origgo.online`.

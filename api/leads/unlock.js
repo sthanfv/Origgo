@@ -247,10 +247,10 @@ module.exports = async function handler(req, res) {
       telefonoDisplay = `+57 ${cel10.substring(0, 3)} ${cel10.substring(3, 6)} ${cel10.substring(6)}`;
       telLlamar = `+${waNum}`;
 
-      // Plantilla de Alta Conversión para comprador directo (Pilar 4.3)
+      // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
       const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
       const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
-      const textoMensaje = `Hola, vi su publicación del ${tipo} en ${ubicacion}. Soy comprador directo con recursos listos para cierre rápido. ¿Aún está disponible para visitarlo?`;
+      const textoMensaje = `Buen día, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita. Quedo atento a su respuesta, muchas gracias.`;
       const mensajeWa = encodeURIComponent(textoMensaje);
       whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
     } else if (rawTel) {

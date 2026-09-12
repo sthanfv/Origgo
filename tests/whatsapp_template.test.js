@@ -11,19 +11,21 @@ const assert = require('node:assert');
 
 function generarUrlWhatsApp(waNum, tipoInmueble, ubicacion) {
   const tipo = tipoInmueble ? tipoInmueble.toLowerCase() : 'inmueble';
-  const textoMensaje = `Hola, vi su publicación del ${tipo} en ${ubicacion}. Soy comprador directo con recursos listos para cierre rápido. ¿Aún está disponible para visitarlo?`;
+  const textoMensaje = `Buen día, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita. Quedo atento a su respuesta, muchas gracias.`;
   const mensajeWa = encodeURIComponent(textoMensaje);
   return `https://wa.me/${waNum}?text=${mensajeWa}`;
 }
 
-describe('Plantilla de Alta Conversión WhatsApp (Pilar 4.3)', () => {
-  it('Debe generar la URL de WhatsApp con el mensaje de comprador directo codificado', () => {
+describe('Plantilla Formal de WhatsApp (Pilar 4.3)', () => {
+  it('Debe generar la URL de WhatsApp con el mensaje formal y respetuoso codificado', () => {
     const url = generarUrlWhatsApp('573101234567', 'Apartamento', 'El Poblado, Medellín');
 
     assert.ok(url.startsWith('https://wa.me/573101234567?text='));
-    assert.ok(url.includes('comprador%20directo'));
-    assert.ok(url.includes('recursos%20listos'));
+    assert.ok(url.includes('Buen%20d%C3%ADa'));
+    assert.ok(url.includes('coordinar%20una%20visita'));
     assert.ok(url.includes('El%20Poblado'));
+    assert.ok(!url.includes('recursos%20listos')); // CERO mención de dinero o liquidez
+    assert.ok(!url.includes('cierre%20r%C3%A1pido')); // CERO presión de tiempo
   });
 
   it('Debe manejar tipos de inmuebles no definidos usando fallback', () => {

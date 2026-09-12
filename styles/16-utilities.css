@@ -61,3 +61,11 @@
   .checkout-text-input { font-size: 1.1rem !important; padding: 0.75rem !important; }
   .btn-confirm-wompi { padding: 0.95rem 1rem !important; font-size: 0.95rem !important; min-height: 48px !important; }
 }
+
+/* Fila de sub-badges de precio por m², arbitraje y rebajas */
+.pricing-sub-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}

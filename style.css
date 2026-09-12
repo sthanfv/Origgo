@@ -5695,6 +5695,14 @@ main {
   .btn-confirm-wompi { padding: 0.95rem 1rem !important; font-size: 0.95rem !important; min-height: 48px !important; }
 }
 
+/* Fila de sub-badges de precio por m², arbitraje y rebajas */
+.pricing-sub-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
 /**
  * 🔔 ESTILOS DEL MODAL DE RADAR WEB PUSH (styles/17-push-modal.css)
  * Componente Soft-Prompt para activación de alertas de oportunidades sin intermediarios.
