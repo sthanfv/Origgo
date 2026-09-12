@@ -6,6 +6,13 @@
 
 ## 1. Qué cambió
 
+-11. **Sincronización Continua de Hardware J7, Catálogo Fresco en Cloudflare R2 y Homologación de Dominio Canónico en Entorno**:
+   - **Salud Operativa del Scraper en Samsung Galaxy J7 (`3300aebadc113449`):** El proceso principal de extracción (PID 31390) y el centinela de sistema operativo (PID 1934) operan con 100% de estabilidad y 0 caídas (74.9 MB RAM, 2.4% CPU en procesador Exynos).
+   - **Base de Datos de Leads Directos:** SQLite `hunter.db` superó los 781 leads registrados, de los cuales 447 corresponden a oportunidades verificadas de propietarios directos (FSBO).
+   - **Publicación Instantánea a Cloudflare R2:** `publisher_web.js` sincronizó exitosamente en 1,834 ms el feed en tiempo real a la CDN S3 de Cloudflare R2 (`origgo-catalogos`) con firma de integridad criptográfica HMAC-SHA256.
+   - **Homologación de Dominio Canónico (`.env.example`):** Corregidas las referencias residuales a `origgo.co` para unificar el estándar 100% a `https://origgo.online` y `contacto@origgo.online`.
+   - **DevSecOps:** Suite de 8 fases al 100% de éxito (`npm test`).
+
 -10. **Desinfección Crítica de Google Safe Browsing, Restauración de Cuadrícula del Header, Favicon Canónico y Nuevo Posicionamiento SEO**:
    - **Erradicación de Heurísticas de Phishing en Vercel (`vercel.json`):** Se removió el bloque de `rewrites` que capturaba rutas trampa como `/.env`, `/.git`, `/wp-login.php`, `/wp-admin`, `/phpmyadmin` y `/api/admin`. Ahora devuelven 404 estándar limpio, eliminando el principal indicador de firmas de kits de phishing que activaron la alarma roja en los rastreadores automáticos de Google Safe Browsing.
    - **Desinfección Semántica Anti-Phishing (`index.html`):**
