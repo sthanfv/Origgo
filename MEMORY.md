@@ -1,10 +1,16 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 19:45 (GMT-5)
+Última actualización: 2026-09-11 20:05 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-8. **Resolución Crítica de Barra Inferior Móvil Secuestrada, Centrado de Logo y Saldo en Navegación Táctil**:
+   - **Causa Raíz de Desaparición de Barra Móvil y Menú Lateral:** Se identificó que en `index.html` (línea 756), el contenedor `#modalLegalOverlay` carecía de su etiqueta de cierre `</div>`. Como consecuencia directa del parser HTML, los elementos posteriores (`#modalPushPromptOverlay`, `#mobileBottomBar` y `#sideMenu`) quedaron anidados dentro de un contenedor con clase `.modal-backdrop` que posee `display: none; pointer-events: none;`. Al corregir el balance de etiquetas `</div>`, la barra inferior táctil (`.mobile-bottom-bar`) y el menú lateral (`#sideMenu`) volvieron a ser hijos directos del `<body>`, restaurando de inmediato su visibilidad y operatividad nativa en teléfonos.
+   - **Centrado Absoluto de Identidad de Marca en Móvil:** Se erradicó la regla `justify-content: space-between` de `.site-header-inner` en `styles/11-mobile.css` (468 líneas < 500) y se restauró `justify-content: center`. El logo corporativo de Origgo vuelve a gozar de protagonismo centrado en todas las pantallas móviles sin estar montado a la izquierda.
+   - **Ocultamiento del Chip en Cabecera Móvil y Saldo en Navegación Táctil:** Se ocultó `.header-user-status` en pantallas `<= 768px` para evitar apiñamiento. Los créditos y estado de membresía se reflejan directamente en el botón táctil `#btnNavVip` de la barra inferior (`⚡ 10 Creds` con icono dinámico) y en el panel desplegable del menú lateral (`#sideMenuUserAccount`).
+   - **DevSecOps:** Suite de 8 fases al 100% de éxito (`npm test`).
 
 -7. **Resolución Crítica de Bloqueo CSP Cloudflare R2, Plantilla Formal de WhatsApp y Visualización de Arbitraje $/m²**:
    - **Desbloqueo de Content Security Policy (CSP):** Se integró `https://*.r2.dev` y `https://pub-040118b18ae247d7b4643d22289744b6.r2.dev` en la directiva `connect-src` tanto en `vercel.json` como en la etiqueta `<meta http-equiv="Content-Security-Policy">` de `index.html`. Erradicado por completo el bloqueo del navegador al consultar `inmobiliario.json` en Cloudflare R2 CDN.
