@@ -1279,6 +1279,59 @@ body {
   color: #34D399 !important;
 }
 
+/* Botón de Alertas Web Push integrado contextualmente en la Command Bar */
+.command-bar-container .btn-push-subscribe {
+  width: auto !important;
+  height: auto !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem !important;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 9999px !important;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.command-bar-container .btn-push-subscribe:hover {
+  color: var(--accent-emerald) !important;
+  border-color: var(--accent-emerald) !important;
+  background: var(--accent-emerald-bg) !important;
+}
+
+.command-bar-container .btn-push-subscribe.active-push {
+  color: var(--accent-emerald) !important;
+  border-color: var(--accent-emerald) !important;
+  background: hsla(160, 60%, 12%, 0.45) !important;
+}
+
+[data-theme="light"] .command-bar-container .btn-push-subscribe {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #2E3B35;
+}
+
+[data-theme="light"] .command-bar-container .btn-push-subscribe:hover {
+  color: #047857 !important;
+  border-color: #047857 !important;
+}
+
+[data-theme="light"] .command-bar-container .btn-push-subscribe.active-push {
+  color: #047857 !important;
+  border-color: #047857 !important;
+  background: hsla(160, 60%, 94%, 0.9) !important;
+}
+
 /* ═══════════════════════════════════════════════════
    3. MACRO-HERO EN CÁPSULA ENMARCADA (NIVEL 3)
    Inspirado en la tarjeta de gran formato con curvas extremas y atmósfera de lujo
@@ -4525,6 +4578,47 @@ main {
   flex-direction: column;
   gap: 0.6rem;
   text-align: center;
+}
+
+.footer-bottom-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.footer-theme-toggle {
+  width: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.38rem 1rem !important;
+  border-radius: 9999px !important;
+  background: var(--glass-metrics-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.footer-theme-toggle:hover {
+  color: var(--accent-emerald) !important;
+  border-color: var(--accent-emerald) !important;
+  background: var(--accent-emerald-bg) !important;
+}
+
+[data-theme="light"] .footer-theme-toggle {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(160, 20%, 88%, 0.9);
+  color: #526058;
+}
+
+[data-theme="light"] .footer-theme-toggle:hover {
+  color: #047857 !important;
+  border-color: #047857 !important;
 }
 
 .footer-bottom p {

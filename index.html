@@ -71,12 +71,6 @@
       </div>
 
       <div class="nav-actions">
-        <button class="btn-theme-toggle" id="btnThemeToggle" title="Cambiar tema (Claro/Oscuro)" aria-label="Cambiar tema de color">
-          <i class="fa-solid fa-moon"></i>
-        </button>
-        <button class="btn-push-subscribe" id="btnPushSubscribe" title="Activar Alertas de Oportunidades" aria-label="Activar Alertas PWA">
-          <i class="fa-solid fa-bell"></i>
-        </button>
         <button class="btn-vip-header" id="btnVipHeader" title="Activar Pase VIP" aria-label="Comprar acceso VIP">
           <i class="fa-solid fa-crown"></i>
           <span class="vip-btn-text">Acceso VIP</span>
@@ -182,6 +176,10 @@
           <i class="fa-solid fa-building"></i> Inmuebles Directos
         </button>
       </div>
+      <button type="button" class="cmd-filter-pill btn-push-subscribe" id="btnPushSubscribe" title="Activar Alertas de Primicia Inmobiliaria" aria-label="Activar Alertas PWA">
+        <i class="fa-solid fa-bell"></i>
+        <span>Alertas en Vivo</span>
+      </button>
     </div>
   </div>
 
@@ -356,6 +354,12 @@
     <!-- Barra Inferior de Declaración Legal y Exoneración -->
     <div class="footer-bottom">
       <div class="footer-bottom-inner">
+        <div class="footer-bottom-actions">
+          <button type="button" class="btn-theme-toggle footer-theme-toggle" id="btnThemeToggle" title="Cambiar a Modo Claro / Oscuro" aria-label="Cambiar tema de color">
+            <i class="fa-solid fa-moon"></i>
+            <span class="footer-theme-label">Modo Visual</span>
+          </button>
+        </div>
         <p>&copy; 2026 Origgo. Marca y software registrados. Prohibida la reproducción total o parcial sin autorización expresa.</p>
         <p class="footer-disclaimer">
           <strong>Aviso de Exoneración Legal:</strong> Origgo opera exclusivamente como un agregador e indexador de información pública. No actúa como intermediario, corredor inmobiliario ni asesor financiero. La verificación jurídica, física y documental de cada oportunidad es responsabilidad exclusiva de las partes contratantes.
@@ -870,6 +874,7 @@
       <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard Principal</a>
       <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> Inmuebles Directos</a>
       <a href="#" class="side-menu-link" id="sideMenuLinkPush" data-side="push"><i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Activar Alertas en Vivo</a>
+      <a href="#" class="side-menu-link" id="sideMenuThemeToggle" data-side="theme"><i class="fa-solid fa-circle-half-stroke"></i> Modo Claro / Oscuro</a>
       <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown side-menu-icon-vip"></i> Desbloqueo VIP</a>
       <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp side-menu-icon-whatsapp"></i> Soporte VIP WhatsApp</a>
       <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> Términos & Exoneración</a>

@@ -3619,6 +3619,13 @@ function configurarListeners() {
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);
   if (btnThemeMobile) btnThemeMobile.addEventListener("click", toggleTheme);
+  const sideMenuTheme = document.getElementById("sideMenuThemeToggle");
+  if (sideMenuTheme) {
+    sideMenuTheme.addEventListener("click", (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
 
   // Calibración táctil del Isotipo Radar (Feedback háptico-visual en móvil y click en desktop)
   const brandBadge = document.querySelector(".brand-badge");

@@ -6,6 +6,12 @@
 
 ## 1. Qué cambió
 
+-12. **Rediseño de Jerarquía Visual de Alta Gama y Desacoplamiento de Controles en Cabecera**:
+   - **Erradicación del Conflicto de Jerarquía en Cabecera (`index.html`):** Se eliminaron los botones de cambio de tema (`#btnThemeToggle`) y de alertas (`#btnPushSubscribe`) de `.nav-actions`. La cabecera desktop ahora contiene con exclusividad absoluta el botón de **Acceso VIP / Saldo**, eliminando distracciones visuales, sobrecarga cognitiva y elevando el estatus de la plataforma al estándar de terminales privadas de inversión.
+   - **Alertas Push Contextuales en Command Bar (`index.html` + `styles/04-command-bar.css`):** El botón de alertas (`#btnPushSubscribe`) se integró junto a los filtros de búsqueda (`cmd-filters-group`) como una acción contextual natural (`<i class="fa-solid fa-bell"></i> Alertas en Vivo`), maximizando la intención de suscripción cuando el usuario filtra por ciudad o precio.
+   - **Conmutador de Modo Visual en Pie de Página y Menú Lateral (`index.html` + `styles/13-footer.css` + `modules/10-listeners.js`):** Se reubicó el selector de tema (`#btnThemeToggle`) discretamente en el footer institucional (`.footer-bottom-inner`) y se añadió `#sideMenuThemeToggle` en el drawer lateral, sincronizados reactivamente sin afectar el foco principal.
+   - **DevSecOps:** Suite de 8 fases al 100% de éxito (`npm test`).
+
 -11. **Sincronización Continua de Hardware J7, Catálogo Fresco en Cloudflare R2 y Homologación de Dominio Canónico en Entorno**:
    - **Salud Operativa del Scraper en Samsung Galaxy J7 (`3300aebadc113449`):** El proceso principal de extracción (PID 31390) y el centinela de sistema operativo (PID 1934) operan con 100% de estabilidad y 0 caídas (74.9 MB RAM, 2.4% CPU en procesador Exynos).
    - **Base de Datos de Leads Directos:** SQLite `hunter.db` superó los 781 leads registrados, de los cuales 447 corresponden a oportunidades verificadas de propietarios directos (FSBO).
