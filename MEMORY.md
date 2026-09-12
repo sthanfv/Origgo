@@ -1,10 +1,21 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 23:33 (GMT-5)
+Última actualización: 2026-09-11 23:45 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-15. **Service Worker v6 Network-First, Purga Automática de Caché y Erradicación Total de Referencias Bancarias**:
+   - **Modernización de Service Worker (`sw.js`):**
+     - Elevado a `origgo-v6-20260911` con política de purga activa de versiones obsoletas en evento `activate` (`caches.delete()`) y reclamo inmediato de clientes (`self.clients.claim()`).
+     - Transición de la navegación HTML (`mode === 'navigate'` o `.html`) de *Cache-First* a **Network-First con fallback a caché**: cualquier dispositivo móvil o PC conectado a la red siempre recibe el `index.html` más fresco del servidor, resolviendo de raíz el congelamiento de versiones viejas en teléfonos de usuarios.
+   - **Cache-Busting en Recursos Estáticos (`index.html`):**
+     - Versionado forzado de CSS y JS en producción: `style.min.css?v=20260911-night` y `app.js?v=20260911-night`.
+   - **Desinfección Semántica 100% de Textos Legales (`modules/09-ui-effects.js`):**
+     - Sustituida la última mención residual a `(Bancolombia)` en la cláusula 4 de los términos legales por `pasarela oficial Wompi (Vigilada Superfinanciera)`.
+     - Cero referencias no autorizadas a marcas financieras en el código ejecutable.
+   - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (0 errores).
 
 -14. **Blindaje Jurídico Integral (Habeas Data, GDPR, Política de Reembolso por PIN) y Morfología Toast Android Nativo**:
    - **Marco Legal y Política de Reembolsos (`modules/09-ui-effects.js` + `index.html`):**

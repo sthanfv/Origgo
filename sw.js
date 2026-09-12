@@ -3,7 +3,7 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'origgo-v5';
+const NOMBRE_CACHE = 'origgo-v6-20260911';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
@@ -48,7 +48,21 @@ self.addEventListener('fetch', (evento) => {
   // Las peticiones a APIs serverless y CDNs externos deben ir directo a la red
   if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
 
-  // Estrategia Cache-First con revalidación en red para recursos locales
+  // 🌐 Peticiones de Navegación HTML: Network-First para recibir siempre la versión más fresca
+  if (evento.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+    evento.respondWith(
+      fetch(evento.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const copia = networkResponse.clone();
+          caches.open(NOMBRE_CACHE).then((cache) => cache.put(evento.request, copia));
+        }
+        return networkResponse;
+      }).catch(() => caches.match(evento.request))
+    );
+    return;
+  }
+
+  // 📦 Recursos estáticos locales: Cache-First con revalidación en segundo plano
   evento.respondWith(
     caches.match(evento.request).then((cachedResponse) => {
       if (cachedResponse) {
