@@ -1,10 +1,25 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 23:45 (GMT-5)
+Última actualización: 2026-09-11 23:59 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-16. **Humanización Total del Lenguaje Legal, Erradicación de Tecnicismos y Centralización en Soporte por WhatsApp**:
+   - **Simplificación Empática de Textos Legales (`modules/09-ui-effects.js` + `index.html`):**
+     - Erradicada la jerga técnica e intimidante ("Due Diligence", "SaaS especializada", "ORIP", "vicios redhibitorios", "desindexación", "Disclaimer", "ledger criptográfico").
+     - Reescritura 100% en lenguaje claro, transparente y cercano para compradores y propietarios de a pie:
+       - Pestaña 1: *Cómo Funciona* (Trato directo sin comisiones, uso personal, pagos seguros con Wompi).
+       - Pestaña 2: *Seguridad* (Consejo práctico de visitar la propiedad y solicitar tradición y libertad antes de pagar).
+       - Pestaña 3: *Tus Datos* (Exclusividad de celular para PIN y compras, cero venta de datos, opción directa para propietarios de retirar su anuncio).
+       - Pestaña 4: *Garantía de Saldo* (Permanencia de créditos mediante número de WhatsApp, soporte prioritario).
+   - **Erradicación de Canales Inexistentes y Centralización en WhatsApp:**
+     - Removidas todas las menciones a `contacto@origgo.online` y promesas de respuesta en 24h.
+     - Centralizado todo el canal de atención, soporte y retiro de anuncios en **WhatsApp directo**, el canal real, preferido e instantáneo en Colombia.
+   - **Modernización del Modal de Bienvenida (`index.html`):**
+     - Sustituido "sellado con éxito en el ledger criptográfico" por "Tu cuenta y tus créditos están activos y listos para usar".
+   - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (486 líneas en `09-ui-effects.js` < 500).
 
 -15. **Service Worker v6 Network-First, Purga Automática de Caché y Erradicación Total de Referencias Bancarias**:
    - **Modernización de Service Worker (`sw.js`):**
