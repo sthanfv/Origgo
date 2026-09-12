@@ -1,10 +1,21 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 20:05 (GMT-5)
+Última actualización: 2026-09-11 20:16 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-9. **Saludo Dinámico por Franja Horaria (Colombia UTC-5) y Modulación Formal de Visita en WhatsApp**:
+   - **Saludo Adaptativo según Hora Local de Colombia (`api/leads/unlock.js`):** Se implementó la función `obtenerSaludoHorario(fecha)` que evalúa la zona horaria `America/Bogota`:
+     - *05:00 a 11:59:* "Buen día"
+     - *12:00 a 18:59:* "Buenas tardes"
+     - *19:00 a 04:59:* "Buenas noches"
+   - **Cortesía en Solicitud de Visita:** Se incorporó la cláusula de respeto `"y coordinar una visita, de ser posible"` para mantener una postura sobria, prudente y no invasiva ante propietarios de estratos 4, 5 y 6.
+   - **Mensaje Oficial Resultante:**
+     *"[Buen día / Buenas tardes / Buenas noches], le escribo con respecto a su publicación del [Tipo] en [Ubicación]. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias."*
+   - **Suite de Pruebas:** 4/4 pruebas unitarias pasadas en `tests/whatsapp_template.test.js`.
+   - **En espera activa:** Preparado el espacio para el análisis e intervención inmediata de los 4 problemas críticos reportados por el usuario.
 
 -8. **Resolución Crítica de Barra Inferior Móvil Secuestrada, Centrado de Logo y Saldo en Navegación Táctil**:
    - **Causa Raíz de Desaparición de Barra Móvil y Menú Lateral:** Se identificó que en `index.html` (línea 756), el contenedor `#modalLegalOverlay` carecía de su etiqueta de cierre `</div>`. Como consecuencia directa del parser HTML, los elementos posteriores (`#modalPushPromptOverlay`, `#mobileBottomBar` y `#sideMenu`) quedaron anidados dentro de un contenedor con clase `.modal-backdrop` que posee `display: none; pointer-events: none;`. Al corregir el balance de etiquetas `</div>`, la barra inferior táctil (`.mobile-bottom-bar`) y el menú lateral (`#sideMenu`) volvieron a ser hijos directos del `<body>`, restaurando de inmediato su visibilidad y operatividad nativa en teléfonos.

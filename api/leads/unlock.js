@@ -247,10 +247,28 @@ module.exports = async function handler(req, res) {
       telefonoDisplay = `+57 ${cel10.substring(0, 3)} ${cel10.substring(3, 6)} ${cel10.substring(6)}`;
       telLlamar = `+${waNum}`;
 
+/**
+ * Determina el saludo cortés formal según la hora local de Colombia (UTC-5).
+ * @param {Date} [fecha]
+ * @returns {string} 'Buen día', 'Buenas tardes' o 'Buenas noches'
+ */
+function obtenerSaludoHorario(fecha = new Date()) {
+  try {
+    const hora = fecha.toLocaleString('en-US', { timeZone: 'America/Bogota', hour: 'numeric', hour12: false });
+    const h = parseInt(hora, 10);
+    if (h >= 5 && h < 12) return 'Buen día';
+    if (h >= 12 && h < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  } catch (e) {
+    return 'Buen día';
+  }
+}
+
       // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
       const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
       const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
-      const textoMensaje = `Buen día, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita. Quedo atento a su respuesta, muchas gracias.`;
+      const saludo = obtenerSaludoHorario();
+      const textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
       const mensajeWa = encodeURIComponent(textoMensaje);
       whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
     } else if (rawTel) {
