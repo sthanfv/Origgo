@@ -5768,6 +5768,31 @@ main {
   gap: 0.35rem;
 }
 
+/* Badges tipográficos sobrios (sin dibujos, estilo terminal financiera) */
+.unit-rate-badge.badge-rebaja {
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="light"] .unit-rate-badge.badge-rebaja {
+  color: #B91C1C;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.unit-rate-badge.badge-arbitraje {
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+  border-color: rgba(16, 185, 129, 0.3);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
 /**
  * 🔔 ESTILOS DEL MODAL DE RADAR WEB PUSH (styles/17-push-modal.css)
  * Componente Soft-Prompt para activación de alertas de oportunidades sin intermediarios.

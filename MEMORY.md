@@ -1,10 +1,16 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 20:16 (GMT-5)
+Última actualización: 2026-09-11 22:10 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-13. **Estilos Tipográficos Sobrios de Rebajas / Arbitraje y Resurrección del Bot de Encendido Remoto (WoL)**:
+   - **Estilos Tipográficos Sobrios para Rebajas (`styles/16-utilities.css`):** Se crearon las clases `.unit-rate-badge.badge-rebaja` y `.unit-rate-badge.badge-arbitraje` basadas en tipografía monoespaciada de alta legibilidad (`var(--font-mono)`), eliminando ilustraciones infantiles y reemplazándolas por notación sobria tipo terminal financiera/Bloomberg (`-$ 30M`, `-14.5% vs Mediana`).
+   - **Resurrección y Blindaje del Bot de Encendido Remoto (`@Mi_PcEncendido_Bot`):** Erradicada la dependencia al proxy Tor caído en el Samsung J7, inyectado DNS robusto (`8.8.8.8`, `1.1.1.1`), persistido en PM2 y guardado (`pm2 save`). Comprobada MAC `F4-4D-30-55-D6-C2`.
+   - **Compilación Modular:** Recompilado `style.css` y `style.min.css` mediante `npm run build`.
+   - **DevSecOps:** Suite de 8 fases al 100% de éxito (`npm test`).
 
 -12. **Rediseño de Jerarquía Visual de Alta Gama y Desacoplamiento de Controles en Cabecera**:
    - **Erradicación del Conflicto de Jerarquía en Cabecera (`index.html`):** Se eliminaron los botones de cambio de tema (`#btnThemeToggle`) y de alertas (`#btnPushSubscribe`) de `.nav-actions`. La cabecera desktop ahora contiene con exclusividad absoluta el botón de **Acceso VIP / Saldo**, eliminando distracciones visuales, sobrecarga cognitiva y elevando el estatus de la plataforma al estándar de terminales privadas de inversión.
