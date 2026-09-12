@@ -404,21 +404,12 @@ function configurarListeners() {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-    // Congelar transiciones durante el cambio para actualización atómica instantánea de golpe
-    const noAnim = document.createElement("style");
-    noAnim.textContent = "*, *::before, *::after { transition: none !important; }";
-    document.head.appendChild(noAnim);
-
-    document.documentElement.setAttribute("data-theme", newTheme);
-    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
-    actualizarIconoTema(newTheme);
-
-    // Rehabilitar transiciones en el siguiente frame de renderizado
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (noAnim.parentNode) noAnim.parentNode.removeChild(noAnim);
-      });
+    ejecutarConTransicionSuave(() => {
+      document.documentElement.setAttribute("data-theme", newTheme);
+      actualizarIconoTema(newTheme);
     });
+
+    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
   };
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);

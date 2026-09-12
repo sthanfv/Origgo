@@ -114,6 +114,25 @@ function registrarLogDesarrollo(nivel, ...args) {
   }
 }
 
+/**
+ * Ejecuta una mutación del DOM utilizando la View Transitions API nativa de W3C
+ * para eliminar parpadeos, destellos o saltos bruscos (Cross-fade sedoso acelerado por GPU).
+ * Si el navegador no soporta la API o el usuario tiene 'prefers-reduced-motion', se ejecuta directamente.
+ * @param {Function} mutacionDOM - Callback con los cambios que alteran el DOM.
+ * @returns {Promise<void>}
+ */
+function ejecutarConTransicionSuave(mutacionDOM) {
+  if (
+    typeof document !== "undefined" &&
+    "startViewTransition" in document &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return document.startViewTransition(() => mutacionDOM()).finished;
+  }
+  return Promise.resolve(mutacionDOM());
+}
+
+
 
 /**
  * 🧠 MÓDULO DE ESTADO Y SESIÓN (modules/01-state.js)
@@ -1071,7 +1090,9 @@ function aplicarFiltrosOmnibox() {
   paginaActual = 1;
   limiteVisible = 6;
   if (datosActuales) {
-    renderizarInterfaz(datosActuales);
+    ejecutarConTransicionSuave(() => {
+      renderizarInterfaz(datosActuales);
+    });
   }
 }
 
@@ -3628,21 +3649,12 @@ function configurarListeners() {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-    // Congelar transiciones durante el cambio para actualización atómica instantánea de golpe
-    const noAnim = document.createElement("style");
-    noAnim.textContent = "*, *::before, *::after { transition: none !important; }";
-    document.head.appendChild(noAnim);
-
-    document.documentElement.setAttribute("data-theme", newTheme);
-    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
-    actualizarIconoTema(newTheme);
-
-    // Rehabilitar transiciones en el siguiente frame de renderizado
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (noAnim.parentNode) noAnim.parentNode.removeChild(noAnim);
-      });
+    ejecutarConTransicionSuave(() => {
+      document.documentElement.setAttribute("data-theme", newTheme);
+      actualizarIconoTema(newTheme);
     });
+
+    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
   };
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);

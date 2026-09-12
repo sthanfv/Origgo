@@ -134,7 +134,9 @@ function aplicarFiltrosOmnibox() {
   paginaActual = 1;
   limiteVisible = 6;
   if (datosActuales) {
-    renderizarInterfaz(datosActuales);
+    ejecutarConTransicionSuave(() => {
+      renderizarInterfaz(datosActuales);
+    });
   }
 }
 

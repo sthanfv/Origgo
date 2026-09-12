@@ -15,7 +15,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 6. **Resiliencia ante el Caos:** Envoltorio `withRetry` con backoff exponencial y jitter aleatorio en operaciones críticas de base de datos, absorbiendo caídas de red o picos de latencia.
 7. **Rate Limiting Anti-DDoS:** Middleware en memoria que protege endpoints financieros y autenticación contra ataques de fuerza bruta y saturación.
 8. **Arquitectura Modular (< 500 líneas por módulo):** Frontend y estilos 100% particionados en módulos especializados bajo `modules/` y `styles/`.
-9. **Estética Glassmorphic & Bento Grid:** Modo oscuro y claro, visualización ejecutiva con carruseles bajo demanda, deslizamiento táctil, ambient glow y modal de checkout nativo.
+9. **Estética Glassmorphic, Bento Grid & View Transitions API:** Modo oscuro y claro con cross-fade cinematográfico acelerado por GPU (`document.startViewTransition`), visualización ejecutiva con carruseles bajo demanda, deslizamiento táctil, ambient glow y modal de checkout nativo sin parpadeos.
 
 ## 🗺️ Índice Maestro de Comportamientos y Rutas de Archivos
 > **Guía rápida para desarrolladores**: Localiza inmediatamente qué archivo y qué función controlan cada funcionalidad del portal sin tener que buscar palabras clave a ciegas.
@@ -36,7 +36,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Validación estricta de payloads con Zod** | [`lib/validation.js`](lib/validation.js) | Esquemas de checkout, login y desbloqueo |
 | **CORS restringido con whitelist** | [`lib/cors.js`](lib/cors.js) | Cabeceras de seguridad e idempotencia |
 | **Índice server-side de leads** | [`lib/leads.js`](lib/leads.js) | Caché de búsqueda en memoria para API |
-| **Sanitización, escape HTML y logger seguro** | [`modules/00-security.js`](modules/00-security.js) | `escaparHtml()`, `sanitizarContactoCliente()` |
+| **Sanitización, escape HTML y View Transitions** | [`modules/00-security.js`](modules/00-security.js) | `escaparHtml()`, `ejecutarConTransicionSuave()` |
 | **Estado reactivo y gestión de sesión** | [`modules/01-state.js`](modules/01-state.js) | `sesionUsuario`, actualización de badge VIP |
 | **Notificaciones flotantes (Toasts)** | [`modules/02-toast.js`](modules/02-toast.js) | `mostrarNotificacionToast()`, barra progreso |
 | **Carga de catálogo JSON con trace ID** | [`modules/03-api.js`](modules/03-api.js) | `cargarDatosPublicos()`, `x-trace-id` |

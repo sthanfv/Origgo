@@ -113,3 +113,22 @@ function registrarLogDesarrollo(nivel, ...args) {
     // Sin acción: el registro nunca debe afectar la experiencia del usuario.
   }
 }
+
+/**
+ * Ejecuta una mutación del DOM utilizando la View Transitions API nativa de W3C
+ * para eliminar parpadeos, destellos o saltos bruscos (Cross-fade sedoso acelerado por GPU).
+ * Si el navegador no soporta la API o el usuario tiene 'prefers-reduced-motion', se ejecuta directamente.
+ * @param {Function} mutacionDOM - Callback con los cambios que alteran el DOM.
+ * @returns {Promise<void>}
+ */
+function ejecutarConTransicionSuave(mutacionDOM) {
+  if (
+    typeof document !== "undefined" &&
+    "startViewTransition" in document &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return document.startViewTransition(() => mutacionDOM()).finished;
+  }
+  return Promise.resolve(mutacionDOM());
+}
+

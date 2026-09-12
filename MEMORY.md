@@ -1,10 +1,26 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-12 00:37 (GMT-5)
+Última actualización: 2026-09-12 05:57 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-18. **Implementación de View Transitions API Nativa (Erradicación de Parpadeos y Saltos Visuales)**:
+   - **Análisis del Video (Astro Transitions / ClientRouter):**
+     - El video mostraba cómo resolver los parpadeos y destellos molestos al cambiar de ruta o idioma mediante transiciones de vista de Astro (`astro:transitions`).
+     - En Origgo (JavaScript vainilla modular de ultra alto rendimiento), se implementó la **View Transitions API nativa de W3C** con aceleración por GPU y fallback resiliente para navegadores sin soporte o modo `prefers-reduced-motion`.
+   - **Helper Global Desacoplado (`modules/00-security.js`, 135 líneas < 500):**
+     - Función `ejecutarConTransicionSuave(mutacionDOM)` que detecta si el navegador soporta `document.startViewTransition()`.
+   - **Animaciones CSS Cinematográficas (`styles/16-utilities.css`, 134 líneas < 500):**
+     - Reglas `::view-transition-old(root)` y `::view-transition-new(root)` con curva `cubic-bezier(0.4, 0, 0.2, 1)` a 220ms para un cross-fade sedoso imperceptible.
+   - **Integración Reactiva en Filtros y Temas (`modules/04-filters.js` y `modules/10-listeners.js`):**
+     - `aplicarFiltrosOmnibox()`: Al cambiar de ciudad, buscar en el omnibox o cambiar el ordenamiento, la cuadrícula Bento se transforma con cross-fade suave sin saltos secos del DOM.
+     - `toggleTheme()`: Al conmutar entre modo claro y modo oscuro AMOLED, los colores se funden con elegancia cinematográfica, eliminando hacks antiguos de estilos temporales.
+   - **Arquitectura del Scraper Definida (Ojos y Manos vs Motor):**
+     - Confirmado el modelo de **Adaptadores Desacoplados (Pluggable Adapters)** bajo `adapters/` sin tocar el motor central (`index.js`).
+     - Protección de IP residencial del Samsung Galaxy J7 mediante priorización de APIs JSON abiertas (ej. vacantes remotas USD) y cronogramas espaciados.
+   - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (0 errores).
 
 -17. **Visibilidad Explícita del Botón e Icono de Créditos en Desktop y Barra Móvil**:
    - **Erradicación de Ambigüedad en Botón de Saldo (`index.html` + `modules/01-state.js`):**
