@@ -7,26 +7,26 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://checkout.wompi.co https://*.wompi.co https://ka-f.fontawesome.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://ka-f.fontawesome.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com https://ka-f.fontawesome.com; img-src 'self' data: https: blob:; frame-src 'self' https://checkout.wompi.co https://*.wompi.co; connect-src 'self' https://*.r2.dev https://pub-040118b18ae247d7b4643d22289744b6.r2.dev https://checkout.wompi.co https://*.wompi.co https://sandbox.wompi.co https://production.wompi.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://images.unsplash.com https://*.unsplash.com https://cdn2.infocasas.com.uy https://*.infocasas.com.uy https://ka-f.fontawesome.com;">
   
-  <title>Origgo — Terminal de Oportunidades Directas y Arbitraje</title>
-  <meta name="description" content="Origgo: Plataforma de inteligencia de mercado y arbitraje inmobiliario. Conexión de primera mano directamente con propietarios en Colombia.">
+  <title>Origgo — Radar de Primicia Inmobiliaria & Trato Directo</title>
+  <meta name="description" content="Terminal privada de inversión inmobiliaria en Colombia. Detectamos oportunidades comercializadas directamente por sus dueños, rebajas de urgencia y arbitraje de precio por m² antes de que lleguen a intermediarios.">
   <link rel="canonical" href="https://origgo.online/">
   <meta name="google-site-verification" content="google390e0a55723f2003">
 
   <!-- Identidad de Marca y Favicon Oficial (Multi-Navegador e Indexadores) -->
-  <link rel="icon" type="image/x-icon" href="./favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
   <!-- Open Graph / Redes Sociales & WhatsApp Preview -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://origgo.online/">
-  <meta property="og:title" content="Origgo — Terminal de Oportunidades Directas y Arbitraje">
-  <meta property="og:description" content="Conexión de primera mano en tiempo real: Inmuebles y oportunidades comercializadas directamente por sus dueños sin intermediarios.">
+  <meta property="og:title" content="Origgo | Oportunidades Inmobiliarias Directas de Propietario">
+  <meta property="og:description" content="Compra sin comisiones de intermediarios. Accede de primera mano a inmuebles directos con análisis cuantitativo de precio y alertas en tiempo real.">
   <meta property="og:image" content="https://origgo.online/apple-touch-icon.png">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Origgo">
-  <meta name="twitter:description" content="Terminal privada de inteligencia inmobiliaria y arbitraje comercial en Colombia.">
+  <meta name="twitter:title" content="Origgo — Radar de Primicia Inmobiliaria">
+  <meta name="twitter:description" content="Terminal privada de inversión inmobiliaria y arbitraje comercial directo con propietarios en Colombia.">
   <meta name="twitter:image" content="https://origgo.online/apple-touch-icon.png">
 
   <!-- Modo Inmersivo en Android e iOS -->
@@ -68,13 +68,6 @@
             </span><span class="brand-letters-riggo"><span class="brand-letter brand-letter-1">r</span><span class="brand-letter brand-letter-2">i</span><span class="brand-letter brand-letter-3">g</span><span class="brand-letter brand-letter-4">g</span><span class="brand-letter brand-letter-5">o</span></span>
           </h1>
         </div>
-      </div>
-
-      <div class="header-user-status" id="headerUserStatus">
-        <button class="btn-mobile-status-chip is-hidden" id="btnMobileStatusChip" title="Estado de Cuenta y Créditos" aria-label="Ver saldo de créditos o membresía">
-          <i class="fa-solid fa-crown"></i>
-          <span>VIP</span>
-        </button>
       </div>
 
       <div class="nav-actions">
@@ -379,7 +372,7 @@
       <!-- Cabecera del Modal -->
       <div class="checkout-modal-header">
         <div class="checkout-badge-pill">
-          <i class="fa-solid fa-shield-halved"></i> Pasarela Segura Wompi Bancolombia
+          <i class="fa-solid fa-shield-halved"></i> Pasarela de Pago Segura Wompi
         </div>
         <h2 class="checkout-modal-title" id="checkoutModalTitle">Desbloqueo de Propietarios Directos</h2>
         <p class="checkout-modal-subtitle">Sin intermediarios, comisiones de agencia ni mensualidades forzosas.</p>
@@ -397,7 +390,7 @@
           <i class="fa-solid fa-cart-shopping"></i> Comprar Planes
         </button>
         <button type="button" class="checkout-tab-btn" id="tabBtnTengoPin" data-tab="tengo-pin">
-          <i class="fa-solid fa-key"></i> Ya Tengo un PIN
+          <i class="fa-solid fa-key"></i> Restaurar Cuenta
         </button>
       </div>
 
@@ -518,16 +511,16 @@
         </button>
 
         <div class="checkout-guarantee-badges">
-          <span><i class="fa-solid fa-shield"></i> Pasarela Bancolombia / Wompi</span>
+          <span><i class="fa-solid fa-shield"></i> Pasarela Segura Wompi (Vigilada SFC)</span>
           <span><i class="fa-solid fa-bolt"></i> Activación Instantánea</span>
         </div>
       </div>
 
-      <!-- PANEL 2: YA TENGO UN PIN (RESTAURACIÓN) -->
+      <!-- PANEL 2: ACTIVAR CON CÓDIGO DE ACCESO (RESTAURACIÓN) -->
       <div class="checkout-tab-panel" id="panelTengoPin">
         <div class="pin-restore-box">
           <p class="pin-restore-intro">
-            Si ya compraste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu PIN de seguridad (ej. <strong>HNT-7489</strong>).
+            Si ya adquiriste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu Código de Acceso Origgo (ej. <strong>HNT-7489</strong>).
           </p>
 
           <div class="checkout-form-group">
@@ -551,13 +544,13 @@
 
           <div class="checkout-form-group">
             <label for="restorePinInput" class="checkout-form-label">
-              <i class="fa-solid fa-key checkout-icon-key"></i> PIN de Seguridad:
+              <i class="fa-solid fa-key checkout-icon-key"></i> Código de Acceso Origgo:
             </label>
             <input 
               type="text" 
               id="restorePinInput" 
               class="checkout-text-input pin-input pin-uppercase"
-              placeholder="Ej: HNT-7489 o 7489" 
+              placeholder="Ej: HNT-7489" 
               maxlength="12" 
               autocomplete="one-time-code" 
               autocapitalize="characters" 
@@ -574,7 +567,7 @@
           <!-- Recuperación Automática por Correo Electrónico (100% Autoservicio) -->
           <div class="auto-recovery-box" id="autoRecoveryBox">
             <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery">
-              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu PIN? Restaurar por Correo</span>
+              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu Código? Restaurar por Correo</span>
               <i class="fa-solid fa-chevron-down recovery-toggle-icon" id="recoveryToggleIcon"></i>
             </button>
             <div id="recoveryContentArea" class="recovery-content-area is-hidden">

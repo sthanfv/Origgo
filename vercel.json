@@ -66,32 +66,6 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/.env(.*)",
-      "destination": "/api/security/honeypot"
-    },
-    {
-      "source": "/.git(.*)",
-      "destination": "/api/security/honeypot"
-    },
-    {
-      "source": "/wp-login.php",
-      "destination": "/api/security/honeypot"
-    },
-    {
-      "source": "/wp-admin/(.*)",
-      "destination": "/api/security/honeypot"
-    },
-    {
-      "source": "/phpmyadmin/(.*)",
-      "destination": "/api/security/honeypot"
-    },
-    {
-      "source": "/api/admin/(.*)",
-      "destination": "/api/security/honeypot"
-    }
   ]
 }
 
