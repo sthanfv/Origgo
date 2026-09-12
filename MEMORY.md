@@ -1,10 +1,19 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-11 23:59 (GMT-5)
+Última actualización: 2026-09-12 00:37 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-17. **Visibilidad Explícita del Botón e Icono de Créditos en Desktop y Barra Móvil**:
+   - **Erradicación de Ambigüedad en Botón de Saldo (`index.html` + `modules/01-state.js`):**
+     - Anteriormente, para usuarios no autenticados o nuevos visitantes, el botón mostraba una corona (`fa-crown`) con el texto "Acceso VIP" o "VIP", ocultando visualmente la existencia del sistema de créditos.
+     - Se actualizó tanto en el marcado estático inicial como en el estado reactivo (`actualizarBadgeVip`):
+       - Desktop: Icono de rayo `<i class="fa-solid fa-bolt"></i>` con texto descriptivo `"Créditos / Planes"`.
+       - Móvil (Barra inferior `#btnNavVip`): Icono `<i class="fa-solid fa-bolt"></i>` con etiqueta `"Créditos"`.
+     - Al autenticarse o comprar, se actualiza reactivamente mostrando el saldo exacto (`⚡ 10 Créditos` / `10 Creds`) o la membresía ilimitada territorial (`👑 VIP Bogotá 30d`).
+   - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (0 errores).
 
 -16. **Humanización Total del Lenguaje Legal, Erradicación de Tecnicismos y Centralización en Soporte por WhatsApp**:
    - **Simplificación Empática de Textos Legales (`modules/09-ui-effects.js` + `index.html`):**
