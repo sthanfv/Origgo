@@ -188,8 +188,11 @@ module.exports = async function handler(req, res) {
         }
       }
 
+      const reqLangClaim = body.lang || order?.lang || 'es';
+      const isEnClaim = reqLangClaim === 'en';
+
       if (!celular) {
-        return res.status(404).json({ error: 'Referencia de pago no encontrada' });
+        return res.status(404).json({ error: isEnClaim ? 'Payment reference not found' : 'Referencia de pago no encontrada' });
       }
 
       // 🛡️ BLINDAJE FINANCIERO: Verificar que la transacción esté confirmada
@@ -240,7 +243,9 @@ module.exports = async function handler(req, res) {
         return res.status(403).json({
           ok: false,
           error: 'TRANSACCION_NO_APROBADA',
-          message: 'La transacción aún no ha sido aprobada por la pasarela de pagos Wompi. Si acabas de pagar, espera unos segundos e intenta nuevamente.'
+          message: isEnClaim
+            ? 'The transaction has not been approved yet by the Wompi payment gateway. If you just paid, please wait a few seconds and try again.'
+            : 'La transacción aún no ha sido aprobada por la pasarela de pagos Wompi. Si acabas de pagar, espera unos segundos e intenta nuevamente.'
         });
       }
 
@@ -280,7 +285,9 @@ module.exports = async function handler(req, res) {
         return res.status(202).json({
           ok: true,
           requiresLogin: true,
-          message: 'Pago acreditado. Para proteger la cuenta, inicia sesión con el PIN existente.'
+          message: isEnClaim
+            ? 'Payment credited. For account protection, please sign in with your existing PIN.'
+            : 'Pago acreditado. Para proteger la cuenta, inicia sesión con el PIN existente.'
         });
       }
 
@@ -307,7 +314,7 @@ module.exports = async function handler(req, res) {
 
     // CASO 2: Inicio de sesión con WhatsApp + PIN
     // 🛡️ Validación estricta con Zod
-    const loginValidation = validateBody(sessionLoginSchema, { celular, pin });
+    const loginValidation = validateBody(sessionLoginSchema, { celular, pin, lang: body.lang || 'es' });
     if (!loginValidation.success) {
       return res.status(400).json({ 
         error: loginValidation.message,
@@ -317,6 +324,8 @@ module.exports = async function handler(req, res) {
 
     const normPhone = loginValidation.data.celular;
     const cleanPin = loginValidation.data.pin;
+    const reqLang = loginValidation.data.lang || body.lang || 'es';
+    const isEn = reqLang === 'en';
 
     // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP con Upstash Redis
     if (!(await checkRateLimitAsync(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone }))) {
@@ -326,12 +335,13 @@ module.exports = async function handler(req, res) {
     const user = await db.getUserByPin(normPhone, cleanPin);
     if (!user) {
       return res.status(401).json({ 
-        error: 'Credenciales inválidas. Verifique el número de WhatsApp y el PIN.' 
+        error: isEn
+          ? 'Invalid credentials. Please verify your WhatsApp number and PIN.'
+          : 'Credenciales inválidas. Verifique el número de WhatsApp y el PIN.' 
       });
     }
 
-    const reqLang = loginValidation.data.lang;
-    if (reqLang && typeof db.updateUserPreferences === 'function' && !user.preferredLang) {
+    if (reqLang && typeof db.updateUserPreferences === 'function') {
       try {
         await db.updateUserPreferences(normPhone, { preferredLang: reqLang });
         user.preferredLang = reqLang;

@@ -209,12 +209,12 @@ function calcularReferenciaUSD(precioStr) {
  * Actualiza las insignias de referencia en USD en todas las tarjetas Bento.
  */
 function sincronizarPreciosUsdEnDOM() {
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   document.querySelectorAll('.bento-card').forEach(card => {
     const priceMain = card.querySelector('.price-main');
     if (!priceMain) return;
     let elUsd = card.querySelector('.card-price-usd');
-    const valorCop = priceMain.textContent.trim();
-    const usdRef = calcularReferenciaUSD(valorCop);
+    const valorCop = priceMain.textContent.trim(), usdRef = calcularReferenciaUSD(valorCop);
     if (usdRef) {
       if (!elUsd) {
         elUsd = document.createElement('div');
@@ -223,6 +223,21 @@ function sincronizarPreciosUsdEnDOM() {
       }
       elUsd.textContent = usdRef;
     }
+  });
+  const usdMap = { single_lead: '≈ $1.20 USD', pack_10_leads: '≈ $8.50 USD', subscription_city: '≈ $22 USD/mo', subscription_national: '≈ $36 USD/mo' };
+  document.querySelectorAll('.pricing-option-card').forEach(card => {
+    const pEl = card.querySelector('.option-price');
+    if (!pEl) return;
+    let badgeUsd = card.querySelector('.option-usd-ref');
+    const prod = card.getAttribute('data-product'), refTxt = usdMap[prod];
+    if (refTxt && isEn) {
+      if (!badgeUsd) {
+        badgeUsd = document.createElement('span');
+        badgeUsd.className = 'option-usd-ref';
+        pEl.appendChild(badgeUsd);
+      }
+      badgeUsd.textContent = ` (${refTxt})`;
+    } else if (badgeUsd) { badgeUsd.remove(); }
   });
 }
 
@@ -245,61 +260,40 @@ function aplicarTraduccionesAlDOM() {
     }
   });
 
+  const selCity = document.getElementById('checkoutCitySelect');
+  if (selCity) {
+    const optDef = selCity.querySelector('option[value=""]');
+    if (optDef) optDef.textContent = dict.checkout_city_select_default || '-- Selecciona tu ciudad --';
+  }
+
   // 2. Placeholders y tooltips
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    const key = el.getAttribute('data-i18n-ph');
-    if (dict[key]) el.setAttribute('placeholder', dict[key]);
-  });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
-    const key = el.getAttribute('data-i18n-title');
-    if (dict[key]) el.setAttribute('title', dict[key]);
-  });
-  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-    const key = el.getAttribute('data-i18n-aria');
-    if (dict[key]) el.setAttribute('aria-label', dict[key]);
-  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { const k = el.getAttribute('data-i18n-ph'); if (dict[k]) el.setAttribute('placeholder', dict[k]); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { const k = el.getAttribute('data-i18n-title'); if (dict[k]) el.setAttribute('title', dict[k]); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { const k = el.getAttribute('data-i18n-aria'); if (dict[k]) el.setAttribute('aria-label', dict[k]); });
 
   // 3. Botón de ordenamiento
   const sortBtn = document.getElementById('cmdFilterSort');
   if (sortBtn) {
     const sortVal = typeof criterioOrdenActivo !== 'undefined' ? criterioOrdenActivo : '';
-    const labelMap = {
-      '': dict.sort_recent, 'reciente': dict.sort_recent, 'recientes': dict.sort_recent,
-      'precio_asc': dict.sort_price_asc, 'precio_desc': dict.sort_price_desc,
-      'descuento': dict.sort_discount, 'precio_m2_asc': dict.sort_m2_asc,
-      'rebajas': dict.sort_rebajas
-    };
+    const labelMap = { '': dict.sort_recent, 'reciente': dict.sort_recent, 'recientes': dict.sort_recent, 'precio_asc': dict.sort_price_asc, 'precio_desc': dict.sort_price_desc, 'descuento': dict.sort_discount, 'precio_m2_asc': dict.sort_m2_asc, 'rebajas': dict.sort_rebajas };
     const span = sortBtn.querySelector('#cmdFilterSortLabel') || sortBtn.querySelector('span');
     if (span) span.textContent = labelMap[sortVal] || dict.sort_recent || dict.sort_placeholder;
     document.querySelectorAll('#cmdSortDropdown .cmd-dropdown-item').forEach(item => {
-      const sVal = item.getAttribute('data-sort');
-      const itemSpan = item.querySelector('span');
+      const sVal = item.getAttribute('data-sort'), itemSpan = item.querySelector('span');
       if (itemSpan && labelMap[sVal]) itemSpan.textContent = labelMap[sVal];
     });
   }
 
   // 4. Selector de Ciudad (Label)
   const locLabel = document.getElementById('cmdFilterLocationLabel');
-  if (locLabel && (typeof filtroCiudadActivo === 'undefined' || !filtroCiudadActivo)) {
-    locLabel.textContent = dict.filter_all_cities;
-  }
+  if (locLabel && (typeof filtroCiudadActivo === 'undefined' || !filtroCiudadActivo)) locLabel.textContent = dict.filter_all_cities;
 
   // 5. Botones de tarjetas bento
-  document.querySelectorAll('.btn-specs-pill').forEach(btn => {
-    btn.innerHTML = `${dict.card_view_details} <i class="fa-solid fa-chevron-up"></i>`;
-  });
-  document.querySelectorAll('.pricing-label').forEach(label => {
-    label.textContent = dict.card_listed_price;
-  });
-  document.querySelectorAll('.btn-unlock-lead:not(.closed)').forEach(btn => {
-    btn.innerHTML = `<i class="fa-solid fa-lock"></i> ${dict.card_unlock_btn}`;
-  });
-  document.querySelectorAll('.card-unlocked-badge').forEach(badge => {
-    badge.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.card_unlocked_badge}`;
-  });
-  document.querySelectorAll('.btn-view-ad-direct').forEach(btn => {
-    btn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${dict.card_view_ad}`;
-  });
+  document.querySelectorAll('.btn-specs-pill').forEach(btn => { btn.innerHTML = `${dict.card_view_details} <i class="fa-solid fa-chevron-up"></i>`; });
+  document.querySelectorAll('.pricing-label').forEach(label => { label.textContent = dict.card_listed_price; });
+  document.querySelectorAll('.btn-unlock-lead:not(.closed)').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-lock"></i> ${dict.card_unlock_btn}`; });
+  document.querySelectorAll('.card-unlocked-badge').forEach(badge => { badge.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.card_unlocked_badge}`; });
+  document.querySelectorAll('.btn-view-ad-direct').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${dict.card_view_ad}`; });
 
   // 6. Precios referenciales USD en tarjetas
   sincronizarPreciosUsdEnDOM();

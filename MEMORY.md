@@ -6,6 +6,37 @@
 
 ## 1. Qué cambió
 
+-54. **Infraestructura Bilingüe Integral en Todo el Ecosistema (Omnibox Semántico EN->ES, Persistencia de Idioma en Órdenes/Checkout, Respuestas Localizadas en Autenticación/Desbloqueo y Referencias USD)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Búsqueda Omnibox ciega en inglés:* El diccionario `DICCIONARIO_TERMINOS` en `modules/04-filters.js` solo contenía variantes y sinónimos en español. Búsquedas habituales de compradores e inversionistas internacionales (como `apartment`, `house`, `bedroom`, `bath`, `parking`, `owner`, `discount`, `deal`, `bargain`) retornaban 0 resultados porque el corpus de búsqueda y el diccionario carecían de equivalencias léxicas inglés-español.
+      2. *Omisión de idioma en el checkout y creación de órdenes:* Al enviar el pago en `modules/08-checkout.js` (`ejecutarPagoWompi`), el payload a `POST /api/payments/create-order` no incluía `lang: obtenerIdiomaActual()`. Por lo tanto, la orden siempre se guardaba con `lang: 'es'`, causando que los recibos por correo (webhook, cron de conciliación) se emitieran en español para compradores extranjeros. Además, `productName` siempre se generaba en español y los mensajes de error del formulario de checkout estaban fijos en español.
+      3. *Pérdida de idioma y textos rígidos en restauración y recuperación de cuenta:* En `modules/01-state.js` (`restaurarSesionConPin` y `recuperarPinConReferencia`), las peticiones a `/api/auth/session` y `/api/auth/recover` no enviaban `lang`. En el backend, `api/auth/session.js` omitía `lang` en `validateBody`, ignorando la actualización de `preferredLang` en Firestore y devolviendo errores hardcodeados en español (`Credenciales inválidas...`, `Pago acreditado...`). Igualmente, `api/auth/recover.js` respondía con textos en español sin considerar el idioma solicitado.
+      4. *Falta de respuestas localizadas de error en `/api/leads/unlock`:* Mensajes de error como falta de token, sesión expirada, catálogo comprometido o lead no encontrado se devolvían únicamente en español.
+      5. *Falta de referencias en USD en las opciones de precios del checkout:* A diferencia del catálogo Bento, el modal de checkout solo mostraba montos en COP sin equivalencias aproximadas en USD (`≈ $1.20 USD`, `≈ $8.50 USD`, etc.), generando fricción para compradores extranjeros.
+    - **Solución Implementada:**
+      1. **Omnibox Semántico Bilingüe (`modules/04-filters.js`, 438 líneas; `modules/06-cards.js`, 472 líneas):**
+         - Enriquecido `DICCIONARIO_TERMINOS` con mapeo determinista EN -> ES: `apartment/flat/condo`, `house/home`, `land/lot/plot`, `bedroom/bed`, `bathroom/bath`, `parking/garage`, `owner/direct/fsbo`, `discount/bargain/deal/urgent`, etc.
+         - Enriquecido `corpusBruto` en cada tarjeta con lemas canónicos bilingües (`property real estate direct owner fsbo apartment house flat`).
+      2. **Persistencia y Emisión Bilingüe en Checkout (`modules/08-checkout.js`, 489 líneas; `api/payments/create-order.js`, 248 líneas):**
+         - `ejecutarPagoWompi` inyecta `lang: esIngles ? 'en' : 'es'` en el payload a `/api/payments/create-order`.
+         - Validaciones visuales y estados de carga de checkout (`checkoutPhoneError`, `checkoutCityError`, `btnConfirmWompi`) adaptados al idioma activo.
+         - Catálogo en backend `PRODUCT_CATALOG_EN` asigna y persiste nombres de productos en inglés (`Single Direct Contact Unlock`, `10 Direct Contacts Pack (-30% Off)`, `Pro City Pass`, `National VIP Pass`).
+      3. **Autenticación y Recuperación Bilingüe End-to-End (`modules/01-state.js`, 481 líneas; `api/auth/session.js`, 370 líneas; `api/auth/recover.js`, 211 líneas):**
+         - `restaurarSesionConPin` y `recuperarPinConReferencia` envían `lang` y muestran feedback de validación, carga y éxito/error en el idioma activo.
+         - `sessionLoginSchema` procesa `lang` y actualiza atómicamente `preferredLang` del usuario en Firestore. Errores (`Invalid credentials...`, `Payment reference not found...`, `Payment credited...`) responden en inglés ante `lang === 'en'`.
+         - `/api/auth/recover` responde con mensajes genéricos antifraude localizados.
+      4. **Manejo de Errores Localizado en Desbloqueo (`api/leads/unlock.js`, 428 líneas):**
+         - Detección temprana de idioma para emitir respuestas semánticas en inglés ante falta de autenticación, expiración de sesión o catálogo no encontrado.
+      5. **Referencias USD en Checkout y Dropdowns (`modules/13-i18n.js`, 481 líneas):**
+         - `sincronizarPreciosUsdEnDOM` inyecta badges de equivalencia USD en las tarjetas de planes del checkout (`≈ $1.20 USD`, `≈ $8.50 USD`, `≈ $22 USD/mo`, `≈ $36 USD/mo`).
+         - Traducción de las opciones del selector de ciudad (`checkoutCitySelect`).
+      6. **Ampliación de Pruebas Unitarias DevSecOps (`tests/bilingual_infrastructure.test.js`):**
+         - Añadidas 5 pruebas unitarias cubriendo: omnibox en inglés, checkout bilingüe, login con PIN en inglés, y autoservicio de recuperación por correo. Suite ampliada a 15 pruebas pasadas al 100%.
+      7. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: `app.min.js`, `style.min.css` y `dist/` sincronizados.
+         - 8/8 fases DevSecOps aprobadas al 100% (0 errores).
+         - Cumplimiento estricto del Estándar Desmulta ($\le 500$ líneas por archivo).
+
 -53. **Desbloqueo Integral de Segunda Capa (Ficha Técnica / Slide-Up Drawer), Protocolo de Siguientes Pasos Bilingüe Estructurado y Transición Fluida Post-Venta**:
     - **Diagnóstico y Causa Raíz:**
       1. *Pérdida de contexto de segunda capa en compra:* Al abrir el checkout desde la ficha técnica (`slideup-cta`), `abrirModalCheckout` sobreescribía `leadSeleccionado` directamente desde el catálogo, borrando los indicadores `_desdeFicha` y `_fichaIndex`.

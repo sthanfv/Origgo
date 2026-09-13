@@ -339,32 +339,29 @@ function sincronizarFiltroCiudadUsuario() {
  * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
  */
 async function restaurarSesionConPin() {
-  const inputWa = document.getElementById('restoreWhatsappInput');
-  const inputPin = document.getElementById('restorePinInput');
-  const msgBox = document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnRestoreSession');
-
-  const celular = inputWa ? inputWa.value.trim() : '';
-  const pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
+  const inputWa = document.getElementById('restoreWhatsappInput'), inputPin = document.getElementById('restorePinInput');
+  const msgBox = document.getElementById('restoreStatusMsg'), btn = document.getElementById('btnRestoreSession');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const celular = inputWa ? inputWa.value.trim() : '', pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
 
   if (!celular || !pin) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
+      msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
       msgBox.style.display = 'block';
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`;
     btn.disabled = true;
   }
 
   const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
   const requestBody = esReferencia
-    ? { action: 'claim_reference', reference: pin }
-    : { celular, pin };
+    ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' }
+    : { celular, pin, lang: isEn ? 'en' : 'es' };
 
   try {
     const res = await fetch('/api/auth/session', {
@@ -375,11 +372,11 @@ async function restaurarSesionConPin() {
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      throw new Error(data.message || data.error || 'Credenciales o referencia incorrectas');
+      throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
     }
 
     if (data.requiresLogin) {
-      throw new Error(data.message || 'Pago acreditado. Ingresa tu PIN para continuar.');
+      throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
@@ -396,14 +393,12 @@ async function restaurarSesionConPin() {
     if (msgBox) {
       msgBox.className = 'restore-status-msg success';
       msgBox.textContent = pinDevuelto
-        ? `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`
-        : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
+        ? (isEn ? `✅ Payment verified! Your PIN is ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
+        : (isEn ? `✅ Welcome back! You have ${data.user.credits} available credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
       msgBox.style.display = 'block';
     }
 
-    setTimeout(() => {
-      abrirModalCheckout(undefined, 'perfil');
-    }, 800);
+    setTimeout(() => { abrirModalCheckout(undefined, 'perfil'); }, 800);
   } catch (err) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
@@ -412,7 +407,7 @@ async function restaurarSesionConPin() {
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos';
+      btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`;
       btn.disabled = false;
     }
   }
@@ -438,22 +433,21 @@ function cerrarSesionUsuario() {
  * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
  */
 async function recuperarPinConReferencia() {
-  const inputEmail = document.getElementById('recoveryReferenceInput');
-  const msgBox = document.getElementById('recoveryResultMsg');
-  const btn = document.getElementById('btnExecuteAutoRecovery');
-
+  const inputEmail = document.getElementById('recoveryReferenceInput'), msgBox = document.getElementById('recoveryResultMsg'), btn = document.getElementById('btnExecuteAutoRecovery');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
+
   if (!email || !email.includes('@')) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor, ingresa un correo electrónico válido.';
+      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
       msgBox.style.display = 'block';
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando instrucciones...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending instructions...' : 'Enviando instrucciones...'}`;
     btn.disabled = true;
   }
 
@@ -461,33 +455,25 @@ async function recuperarPinConReferencia() {
     const response = await fetch('/api/auth/recover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
     });
-
     const result = await response.json();
-
     if (msgBox) {
-      if (response.ok) {
-        msgBox.className = 'restore-status-msg restore-status-recovery-result success';
-        msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
-        msgBox.style.display = 'block';
-        if (inputEmail) inputEmail.value = '';
-      } else {
-        msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-        msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
-        msgBox.style.display = 'block';
-      }
+      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, recovery instructions will be sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
+      msgBox.style.display = 'block';
+      if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
     registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = '<i class="fa-solid fa-network-wired"></i> Error de conexión. Intenta de nuevo.';
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar instrucciones';
+      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`;
       btn.disabled = false;
     }
   }

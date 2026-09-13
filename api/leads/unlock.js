@@ -135,24 +135,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // 1. Validar autenticación por JWT
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-
-    if (!token) {
-      return res.status(401).json({ 
-        error: 'No autenticado. Por favor adquiere créditos o ingresa tu PIN.' 
-      });
-    }
-
-    const session = verifyJwt(token, JWT_SECRET);
-    if (!session || !session.phone) {
-      return res.status(401).json({ 
-        error: 'Sesión expirada o inválida. Inicia sesión nuevamente con tu WhatsApp y PIN.' 
-      });
-    }
-
-    // 2. Parsear el cuerpo
+    // Parsear el cuerpo tempranamente para detectar idioma preferido
     let body = req.body;
     if (typeof body === 'string') {
       try {
@@ -160,6 +143,25 @@ module.exports = async function handler(req, res) {
       } catch (e) {
         return res.status(400).json({ error: 'JSON malformado' });
       }
+    }
+    const earlyLang = (body && body.lang) || ((req.headers['accept-language'] || '').includes('en') ? 'en' : 'es');
+    const isEarlyEn = earlyLang === 'en';
+
+    // 1. Validar autenticación por JWT
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+    if (!token) {
+      return res.status(401).json({ 
+        error: isEarlyEn ? 'Not authenticated. Please acquire credits or enter your PIN.' : 'No autenticado. Por favor adquiere créditos o ingresa tu PIN.' 
+      });
+    }
+
+    const session = verifyJwt(token, JWT_SECRET);
+    if (!session || !session.phone) {
+      return res.status(401).json({ 
+        error: isEarlyEn ? 'Session expired or invalid. Please log in again with your WhatsApp and PIN.' : 'Sesión expirada o inválida. Inicia sesión nuevamente con tu WhatsApp y PIN.' 
+      });
     }
 
     // 🛡️ Validación estricta con Zod
@@ -172,6 +174,7 @@ module.exports = async function handler(req, res) {
     }
 
     const { leadId, contactoCifrado, leadCity, lang = 'es' } = validation.data;
+    const isEn = lang === 'en';
 
     const leadCatalogo = obtenerLeadPorId(leadId);
     const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
@@ -184,7 +187,7 @@ module.exports = async function handler(req, res) {
         return res.status(403).json({
           ok: false,
           error: 'INTEGRIDAD_COMPROMETIDA',
-          message: 'Los datos del catálogo han sido alterados. Desbloqueo rechazado por seguridad.'
+          message: isEn ? 'Catalog data integrity compromised. Unlock rejected for security.' : 'Los datos del catálogo han sido alterados. Desbloqueo rechazado por seguridad.'
         });
       }
     }
@@ -193,7 +196,7 @@ module.exports = async function handler(req, res) {
       return res.status(404).json({
         ok: false,
         error: 'LEAD_NO_ENCONTRADO',
-        message: 'El lead solicitado no existe en el catálogo oficial.'
+        message: isEn ? 'The requested property does not exist in the official catalog.' : 'El lead solicitado no existe en el catálogo oficial.'
       });
     }
 
@@ -204,7 +207,7 @@ module.exports = async function handler(req, res) {
       return res.status(404).json({
         ok: false,
         error: 'CONTACTO_NO_DISPONIBLE',
-        message: 'Este lead no tiene contacto privado disponible para desbloqueo.'
+        message: isEn ? 'This property has no private contact available for unlock.' : 'Este lead no tiene contacto privado disponible para desbloqueo.'
       });
     }
 
@@ -223,7 +226,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({
         ok: false,
         error: 'CONTACTO_NO_DESCIFRABLE',
-        message: 'No fue posible descifrar el contacto del lead. No se descontaron créditos.'
+        message: isEn ? 'Unable to decrypt property contact. Zero credits deducted.' : 'No fue posible descifrar el contacto del lead. No se descontaron créditos.'
       });
     }
 

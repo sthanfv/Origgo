@@ -85,9 +85,14 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const reqLang = validation.data?.lang || req.body?.lang || 'es';
+  const isEnReq = reqLang === 'en';
+
   const respuestaGenerica = {
     ok: true,
-    message: 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.'
+    message: isEnReq
+      ? 'If an associated account exists, we will send recovery instructions.'
+      : 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.'
   };
 
   try {

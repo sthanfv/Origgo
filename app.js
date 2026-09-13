@@ -751,32 +751,29 @@ function sincronizarFiltroCiudadUsuario() {
  * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
  */
 async function restaurarSesionConPin() {
-  const inputWa = document.getElementById('restoreWhatsappInput');
-  const inputPin = document.getElementById('restorePinInput');
-  const msgBox = document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnRestoreSession');
-
-  const celular = inputWa ? inputWa.value.trim() : '';
-  const pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
+  const inputWa = document.getElementById('restoreWhatsappInput'), inputPin = document.getElementById('restorePinInput');
+  const msgBox = document.getElementById('restoreStatusMsg'), btn = document.getElementById('btnRestoreSession');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const celular = inputWa ? inputWa.value.trim() : '', pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
 
   if (!celular || !pin) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
+      msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
       msgBox.style.display = 'block';
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`;
     btn.disabled = true;
   }
 
   const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
   const requestBody = esReferencia
-    ? { action: 'claim_reference', reference: pin }
-    : { celular, pin };
+    ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' }
+    : { celular, pin, lang: isEn ? 'en' : 'es' };
 
   try {
     const res = await fetch('/api/auth/session', {
@@ -787,11 +784,11 @@ async function restaurarSesionConPin() {
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      throw new Error(data.message || data.error || 'Credenciales o referencia incorrectas');
+      throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
     }
 
     if (data.requiresLogin) {
-      throw new Error(data.message || 'Pago acreditado. Ingresa tu PIN para continuar.');
+      throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
@@ -808,14 +805,12 @@ async function restaurarSesionConPin() {
     if (msgBox) {
       msgBox.className = 'restore-status-msg success';
       msgBox.textContent = pinDevuelto
-        ? `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`
-        : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
+        ? (isEn ? `✅ Payment verified! Your PIN is ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
+        : (isEn ? `✅ Welcome back! You have ${data.user.credits} available credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
       msgBox.style.display = 'block';
     }
 
-    setTimeout(() => {
-      abrirModalCheckout(undefined, 'perfil');
-    }, 800);
+    setTimeout(() => { abrirModalCheckout(undefined, 'perfil'); }, 800);
   } catch (err) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg error';
@@ -824,7 +819,7 @@ async function restaurarSesionConPin() {
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos';
+      btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`;
       btn.disabled = false;
     }
   }
@@ -850,22 +845,21 @@ function cerrarSesionUsuario() {
  * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
  */
 async function recuperarPinConReferencia() {
-  const inputEmail = document.getElementById('recoveryReferenceInput');
-  const msgBox = document.getElementById('recoveryResultMsg');
-  const btn = document.getElementById('btnExecuteAutoRecovery');
-
+  const inputEmail = document.getElementById('recoveryReferenceInput'), msgBox = document.getElementById('recoveryResultMsg'), btn = document.getElementById('btnExecuteAutoRecovery');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
+
   if (!email || !email.includes('@')) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor, ingresa un correo electrónico válido.';
+      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
       msgBox.style.display = 'block';
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando instrucciones...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending instructions...' : 'Enviando instrucciones...'}`;
     btn.disabled = true;
   }
 
@@ -873,33 +867,25 @@ async function recuperarPinConReferencia() {
     const response = await fetch('/api/auth/recover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
     });
-
     const result = await response.json();
-
     if (msgBox) {
-      if (response.ok) {
-        msgBox.className = 'restore-status-msg restore-status-recovery-result success';
-        msgBox.textContent = result.message || 'Si existe una cuenta asociada, enviaremos instrucciones de recuperación.';
-        msgBox.style.display = 'block';
-        if (inputEmail) inputEmail.value = '';
-      } else {
-        msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-        msgBox.textContent = result.message || 'No se pudo procesar la solicitud. Intenta más tarde.';
-        msgBox.style.display = 'block';
-      }
+      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, recovery instructions will be sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
+      msgBox.style.display = 'block';
+      if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
     registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = '<i class="fa-solid fa-network-wired"></i> Error de conexión. Intenta de nuevo.';
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
   } finally {
     if (btn) {
-      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar instrucciones';
+      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`;
       btn.disabled = false;
     }
   }
@@ -1462,6 +1448,42 @@ const DICCIONARIO_TERMINOS = {
   "pickup": ["pickup", "pick-up", "camioneta", "4x4", "utilitaria"],
   "sedan": ["sedan", "deportivo", "carro", "auto"],
   "4x4": ["4x4", "camioneta", "suv", "pickup"],
+  // Bilingüe EN -> ES (Infraestructura de Búsqueda Internacional)
+  "apartment": ["apartamento", "apto"],
+  "apartments": ["apartamento", "apto"],
+  "flat": ["apartamento", "apto"],
+  "condo": ["apartamento", "apto"],
+  "house": ["casa", "quinta", "campestre", "chalet"],
+  "houses": ["casa", "quinta", "campestre"],
+  "home": ["casa", "apartamento"],
+  "land": ["lote", "terreno", "campestre"],
+  "lot": ["lote", "terreno"],
+  "plot": ["lote", "terreno"],
+  "office": ["oficina"],
+  "offices": ["oficina"],
+  "building": ["edificio"],
+  "estate": ["finca", "campestre"],
+  "warehouse": ["bodega"],
+  "commercial": ["local", "comercial"],
+  "retail": ["local", "comercial"],
+  "store": ["local"],
+  "bedroom": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "bedrooms": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "bed": ["habitacion", "hab", "alcoba"],
+  "beds": ["habitaciones", "hab", "alcobas"],
+  "bath": ["bano", "banos", "ducha"],
+  "baths": ["bano", "banos", "ducha"],
+  "bathroom": ["bano", "banos", "ducha"],
+  "bathrooms": ["bano", "banos", "ducha"],
+  "parking": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
+  "garage": ["garaje", "garajes", "parqueadero", "parqueaderos"],
+  "owner": ["propietario", "particular", "directo", "dueno"],
+  "owners": ["propietario", "particular", "directo", "dueno"],
+  "direct": ["directo", "dueno", "propietario", "particular"],
+  "discount": ["rebaja", "descuento", "ganga", "arbitraje"],
+  "bargain": ["ganga", "rebaja", "oportunidad"],
+  "deal": ["oportunidad", "directo", "trato"],
+  "urgent": ["urgente", "viaje", "motivo"],
   // Ciudades / Sectores
   "bogota": ["bogota", "rosales", "chico", "cundinamarca"],
   "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
@@ -2259,7 +2281,7 @@ function renderizarInterfaz(dataset) {
 
     const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
-    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno'].filter(Boolean).join(' ');
+    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno property real estate direct owner fsbo apartment house flat'].filter(Boolean).join(' ');
     const searchDataCorpus = normalizarTextoBusqueda(corpusBruto), ciudadNorm = normalizarTextoBusqueda(item.ciudad || ''), barrioNorm = normalizarTextoBusqueda(item.barrio || '');
 
     return `
@@ -3127,6 +3149,7 @@ async function ejecutarPagoWompi() {
   const inputWa = document.getElementById('checkoutWhatsappInput');
   const errorBox = document.getElementById('checkoutPhoneError');
   const inputWrapper = document.getElementById('checkoutInputWrapper');
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const whatsappRaw = inputWa ? inputWa.value.trim() : '';
   const celularLimpio = whatsappRaw.replace(/\D/g, '');
   const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
@@ -3135,7 +3158,7 @@ async function ejecutarPagoWompi() {
 
   if (!celular || celular.length < 10) {
     if (errorBox) {
-      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567';
+      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number. Example: 300 123 4567' : 'Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567');
       errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     }
@@ -3163,7 +3186,7 @@ async function ejecutarPagoWompi() {
     ciudad = selectCity ? selectCity.value.trim() : '';
     if (!ciudad) {
       if (cityError) {
-        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor selecciona la ciudad de cobertura para tu membresía.';
+        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city for this pass.' : 'Por favor selecciona la ciudad de cobertura para tu membresía.');
         cityError.classList.remove('is-hidden');
         cityError.style.display = 'block';
       }
@@ -3183,7 +3206,7 @@ async function ejecutarPagoWompi() {
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
   let idempotencyKey = '';
   if (btnPagar) {
-    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando con pago seguro...';
+    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (esIngles ? 'Connecting to secure checkout...' : 'Conectando con pago seguro...');
     btnPagar.disabled = true;
   }
 
@@ -3201,12 +3224,12 @@ async function ejecutarPagoWompi() {
     const res = await fetch('/api/payments/create-order', {
       method: 'POST',
       headers: headersOrden,
-      body: JSON.stringify({ productType, celular, ciudad })
+      body: JSON.stringify({ productType, celular, ciudad, lang: esIngles ? 'en' : 'es' })
     });
 
     const orderData = await res.json();
     if (!res.ok || !orderData.ok) {
-      throw new Error(orderData.error || 'No se pudo generar la orden de pago');
+      throw new Error(orderData.message || orderData.error || (esIngles ? 'Could not generate payment order' : 'No se pudo generar la orden de pago'));
     }
 
     if (typeof WidgetCheckout === 'undefined') {
@@ -5029,12 +5052,12 @@ function calcularReferenciaUSD(precioStr) {
  * Actualiza las insignias de referencia en USD en todas las tarjetas Bento.
  */
 function sincronizarPreciosUsdEnDOM() {
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   document.querySelectorAll('.bento-card').forEach(card => {
     const priceMain = card.querySelector('.price-main');
     if (!priceMain) return;
     let elUsd = card.querySelector('.card-price-usd');
-    const valorCop = priceMain.textContent.trim();
-    const usdRef = calcularReferenciaUSD(valorCop);
+    const valorCop = priceMain.textContent.trim(), usdRef = calcularReferenciaUSD(valorCop);
     if (usdRef) {
       if (!elUsd) {
         elUsd = document.createElement('div');
@@ -5043,6 +5066,21 @@ function sincronizarPreciosUsdEnDOM() {
       }
       elUsd.textContent = usdRef;
     }
+  });
+  const usdMap = { single_lead: '≈ $1.20 USD', pack_10_leads: '≈ $8.50 USD', subscription_city: '≈ $22 USD/mo', subscription_national: '≈ $36 USD/mo' };
+  document.querySelectorAll('.pricing-option-card').forEach(card => {
+    const pEl = card.querySelector('.option-price');
+    if (!pEl) return;
+    let badgeUsd = card.querySelector('.option-usd-ref');
+    const prod = card.getAttribute('data-product'), refTxt = usdMap[prod];
+    if (refTxt && isEn) {
+      if (!badgeUsd) {
+        badgeUsd = document.createElement('span');
+        badgeUsd.className = 'option-usd-ref';
+        pEl.appendChild(badgeUsd);
+      }
+      badgeUsd.textContent = ` (${refTxt})`;
+    } else if (badgeUsd) { badgeUsd.remove(); }
   });
 }
 
@@ -5065,61 +5103,40 @@ function aplicarTraduccionesAlDOM() {
     }
   });
 
+  const selCity = document.getElementById('checkoutCitySelect');
+  if (selCity) {
+    const optDef = selCity.querySelector('option[value=""]');
+    if (optDef) optDef.textContent = dict.checkout_city_select_default || '-- Selecciona tu ciudad --';
+  }
+
   // 2. Placeholders y tooltips
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    const key = el.getAttribute('data-i18n-ph');
-    if (dict[key]) el.setAttribute('placeholder', dict[key]);
-  });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
-    const key = el.getAttribute('data-i18n-title');
-    if (dict[key]) el.setAttribute('title', dict[key]);
-  });
-  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-    const key = el.getAttribute('data-i18n-aria');
-    if (dict[key]) el.setAttribute('aria-label', dict[key]);
-  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { const k = el.getAttribute('data-i18n-ph'); if (dict[k]) el.setAttribute('placeholder', dict[k]); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { const k = el.getAttribute('data-i18n-title'); if (dict[k]) el.setAttribute('title', dict[k]); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { const k = el.getAttribute('data-i18n-aria'); if (dict[k]) el.setAttribute('aria-label', dict[k]); });
 
   // 3. Botón de ordenamiento
   const sortBtn = document.getElementById('cmdFilterSort');
   if (sortBtn) {
     const sortVal = typeof criterioOrdenActivo !== 'undefined' ? criterioOrdenActivo : '';
-    const labelMap = {
-      '': dict.sort_recent, 'reciente': dict.sort_recent, 'recientes': dict.sort_recent,
-      'precio_asc': dict.sort_price_asc, 'precio_desc': dict.sort_price_desc,
-      'descuento': dict.sort_discount, 'precio_m2_asc': dict.sort_m2_asc,
-      'rebajas': dict.sort_rebajas
-    };
+    const labelMap = { '': dict.sort_recent, 'reciente': dict.sort_recent, 'recientes': dict.sort_recent, 'precio_asc': dict.sort_price_asc, 'precio_desc': dict.sort_price_desc, 'descuento': dict.sort_discount, 'precio_m2_asc': dict.sort_m2_asc, 'rebajas': dict.sort_rebajas };
     const span = sortBtn.querySelector('#cmdFilterSortLabel') || sortBtn.querySelector('span');
     if (span) span.textContent = labelMap[sortVal] || dict.sort_recent || dict.sort_placeholder;
     document.querySelectorAll('#cmdSortDropdown .cmd-dropdown-item').forEach(item => {
-      const sVal = item.getAttribute('data-sort');
-      const itemSpan = item.querySelector('span');
+      const sVal = item.getAttribute('data-sort'), itemSpan = item.querySelector('span');
       if (itemSpan && labelMap[sVal]) itemSpan.textContent = labelMap[sVal];
     });
   }
 
   // 4. Selector de Ciudad (Label)
   const locLabel = document.getElementById('cmdFilterLocationLabel');
-  if (locLabel && (typeof filtroCiudadActivo === 'undefined' || !filtroCiudadActivo)) {
-    locLabel.textContent = dict.filter_all_cities;
-  }
+  if (locLabel && (typeof filtroCiudadActivo === 'undefined' || !filtroCiudadActivo)) locLabel.textContent = dict.filter_all_cities;
 
   // 5. Botones de tarjetas bento
-  document.querySelectorAll('.btn-specs-pill').forEach(btn => {
-    btn.innerHTML = `${dict.card_view_details} <i class="fa-solid fa-chevron-up"></i>`;
-  });
-  document.querySelectorAll('.pricing-label').forEach(label => {
-    label.textContent = dict.card_listed_price;
-  });
-  document.querySelectorAll('.btn-unlock-lead:not(.closed)').forEach(btn => {
-    btn.innerHTML = `<i class="fa-solid fa-lock"></i> ${dict.card_unlock_btn}`;
-  });
-  document.querySelectorAll('.card-unlocked-badge').forEach(badge => {
-    badge.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.card_unlocked_badge}`;
-  });
-  document.querySelectorAll('.btn-view-ad-direct').forEach(btn => {
-    btn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${dict.card_view_ad}`;
-  });
+  document.querySelectorAll('.btn-specs-pill').forEach(btn => { btn.innerHTML = `${dict.card_view_details} <i class="fa-solid fa-chevron-up"></i>`; });
+  document.querySelectorAll('.pricing-label').forEach(label => { label.textContent = dict.card_listed_price; });
+  document.querySelectorAll('.btn-unlock-lead:not(.closed)').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-lock"></i> ${dict.card_unlock_btn}`; });
+  document.querySelectorAll('.card-unlocked-badge').forEach(badge => { badge.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.card_unlocked_badge}`; });
+  document.querySelectorAll('.btn-view-ad-direct').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${dict.card_view_ad}`; });
 
   // 6. Precios referenciales USD en tarjetas
   sincronizarPreciosUsdEnDOM();

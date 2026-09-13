@@ -48,6 +48,13 @@ const PRODUCT_CATALOG = {
   }
 };
 
+const PRODUCT_CATALOG_EN = {
+  single_lead: 'Single Direct Contact Unlock',
+  pack_10_leads: '10 Direct Contacts Pack (-30% Off)',
+  subscription_city: 'Pro City Pass — 30 Days Unlimited Access',
+  subscription_national: 'National VIP Pass — All-Colombia Radar & Price Drops'
+};
+
 module.exports = async function handler(req, res) {
   // Configuración de cabeceras CORS seguras según whitelist
   aplicarCorsSeguro(req, res);
@@ -124,12 +131,14 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const { productType, celular: normPhone, ciudad } = validation.data;
+    const { productType, celular: normPhone, ciudad, lang = 'es' } = validation.data;
+    const reqLang = lang || 'es';
+    const isEn = reqLang === 'en';
 
     const headers = req.headers || {};
     const idempotencyKey = String(headers['idempotency-key'] || headers['Idempotency-Key'] || headers['IDEMPOTENCY-KEY'] || '').trim();
     if (!idempotencyKey || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
-      return res.status(400).json({ ok: false, error: 'IDEMPOTENCY_KEY_REQUERIDA' });
+      return res.status(400).json({ ok: false, error: 'IDEMPOTENCY_KEY_REQUERIDA', message: isEn ? 'Idempotency-Key header is required.' : 'Cabecera Idempotency-Key requerida.' });
     }
 
     const bearer = (headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
@@ -138,14 +147,14 @@ module.exports = async function handler(req, res) {
       return res.status(403).json({
         ok: false,
         error: 'CELULAR_NO_COINCIDE_CON_SESION',
-        message: 'El número de WhatsApp no coincide con la sesión activa.'
+        message: isEn ? 'The WhatsApp number does not match your active session.' : 'El número de WhatsApp no coincide con la sesión activa.'
       });
     }
 
     const producto = PRODUCT_CATALOG[productType];
     if (!producto) {
       return res.status(400).json({ 
-        error: 'Tipo de producto inválido.',
+        error: isEn ? 'Invalid product type.' : 'Tipo de producto inválido.',
         productosValidos: Object.keys(PRODUCT_CATALOG)
       });
     }
@@ -200,11 +209,13 @@ module.exports = async function handler(req, res) {
         const integrityChain = `${reference}${amountInCents}${currency}${integritySecret}`;
         const signature = crypto.createHash('sha256').update(integrityChain).digest('hex');
 
+        const nombreProducto = isEn ? (PRODUCT_CATALOG_EN[productType] || producto.nombre) : producto.nombre;
+
         // Registrar pre-orden en el ledger para conciliación posterior
         await db.savePendingOrder(reference, {
           reference,
           productType,
-          productName: producto.nombre,
+          productName: nombreProducto,
           amountInCents,
           currency,
           celular: normPhone,
@@ -213,7 +224,7 @@ module.exports = async function handler(req, res) {
           creditos: producto.creditos,
           status: 'PENDING',
           accountExistedAtOrderCreation: Boolean(cuentaExistente),
-          lang: validation.data.lang || 'es',
+          lang: reqLang,
           idempotencyKey
         });
 
@@ -224,7 +235,7 @@ module.exports = async function handler(req, res) {
           currency,
           signature,
           publicKey,
-          productName: producto.nombre
+          productName: nombreProducto
         };
       },
       { ttlSegundos: 120 }

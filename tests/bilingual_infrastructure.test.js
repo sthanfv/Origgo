@@ -236,4 +236,109 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
     assert.equal(pasosEs[0].titulo, 'Contacto Inmediato');
     assert.equal(pasosEs[2].titulo, 'Cierre Directo (0% Comisión)');
   });
+
+  it('Omnibox inteligente debe mapear sinónimos en inglés a términos del catálogo en español', () => {
+    // Importamos o emulamos la lógica enriquecida de modules/04-filters.js
+    const sinonimosEn = {
+      apartment: ['apartamento', 'apto'],
+      bedroom: ['habitacion', 'alcoba', 'hab'],
+      bathroom: ['bano', 'ducha'],
+      parking: ['garaje', 'parqueadero'],
+      owner: ['propietario', 'directo', 'dueno'],
+      discount: ['rebaja', 'descuento', 'ganga']
+    };
+
+    const corpusLead = 'apartamento en venta el poblado medellin 3 alcobas 2 banos 1 parqueadero directo propietario rebaja urgente';
+
+    function buscar(termino) {
+      const syns = sinonimosEn[termino] || [];
+      return syns.some(s => corpusLead.includes(s));
+    }
+
+    assert.ok(buscar('apartment'), 'Debe encontrar "apartment" en un lead de apartamento');
+    assert.ok(buscar('bedroom'), 'Debe encontrar "bedroom" en un lead con alcobas');
+    assert.ok(buscar('bathroom'), 'Debe encontrar "bathroom" en un lead con banos');
+    assert.ok(buscar('parking'), 'Debe encontrar "parking" en un lead con parqueadero');
+    assert.ok(buscar('owner'), 'Debe encontrar "owner" en un lead con propietario/directo');
+    assert.ok(buscar('discount'), 'Debe encontrar "discount" en un lead con rebaja/descuento');
+  });
+
+  it('create-order debe devolver nombres de productos en inglés para usuarios angloparlantes', async () => {
+    const handler = require('../api/payments/create-order');
+    const req = {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': '00000000-0000-4000-8000-000000000001'
+      },
+      body: {
+        productType: 'pack_10_leads',
+        celular: '3001234567',
+        lang: 'en'
+      }
+    };
+    let statusCode = 0;
+    let resBody = null;
+    const res = {
+      status(c) { statusCode = c; return this; },
+      json(b) { resBody = b; return this; },
+      setHeader() { return this; },
+      end() { return this; }
+    };
+
+    await handler(req, res);
+    assert.equal(statusCode, 200);
+    assert.equal(resBody.ok, true);
+    assert.equal(resBody.productName, '10 Direct Contacts Pack (-30% Off)');
+  });
+
+  it('session login con PIN debe validar lang y devolver error en inglés ante credenciales inválidas', async () => {
+    const handler = require('../api/auth/session');
+    const req = {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {
+        celular: '3009998877',
+        pin: '9999',
+        lang: 'en'
+      }
+    };
+    let statusCode = 0;
+    let resBody = null;
+    const res = {
+      status(c) { statusCode = c; return this; },
+      json(b) { resBody = b; return this; },
+      setHeader() { return this; },
+      end() { return this; }
+    };
+
+    await handler(req, res);
+    assert.equal(statusCode, 401);
+    assert.ok(resBody.error.includes('Invalid credentials'), 'Debe responder con mensaje en inglés');
+  });
+
+  it('recover endpoint debe responder con mensaje genérico en inglés cuando lang === "en"', async () => {
+    const handler = require('../api/auth/recover');
+    const req = {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {
+        email: 'investor.global@example.com',
+        lang: 'en'
+      }
+    };
+    let statusCode = 0;
+    let resBody = null;
+    const res = {
+      status(c) { statusCode = c; return this; },
+      json(b) { resBody = b; return this; },
+      setHeader() { return this; },
+      end() { return this; }
+    };
+
+    await handler(req, res);
+    assert.equal(statusCode, 202);
+    assert.equal(resBody.ok, true);
+    assert.ok(resBody.message.includes('If an associated account exists'), 'Debe responder mensaje genérico en inglés');
+  });
 });

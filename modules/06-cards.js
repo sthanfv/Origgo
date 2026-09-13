@@ -318,7 +318,7 @@ function renderizarInterfaz(dataset) {
 
     const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
-    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno'].filter(Boolean).join(' ');
+    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno property real estate direct owner fsbo apartment house flat'].filter(Boolean).join(' ');
     const searchDataCorpus = normalizarTextoBusqueda(corpusBruto), ciudadNorm = normalizarTextoBusqueda(item.ciudad || ''), barrioNorm = normalizarTextoBusqueda(item.barrio || '');
 
     return `

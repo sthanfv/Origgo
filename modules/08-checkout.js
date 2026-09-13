@@ -308,6 +308,7 @@ async function ejecutarPagoWompi() {
   const inputWa = document.getElementById('checkoutWhatsappInput');
   const errorBox = document.getElementById('checkoutPhoneError');
   const inputWrapper = document.getElementById('checkoutInputWrapper');
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const whatsappRaw = inputWa ? inputWa.value.trim() : '';
   const celularLimpio = whatsappRaw.replace(/\D/g, '');
   const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
@@ -316,7 +317,7 @@ async function ejecutarPagoWompi() {
 
   if (!celular || celular.length < 10) {
     if (errorBox) {
-      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567';
+      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number. Example: 300 123 4567' : 'Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567');
       errorBox.classList.remove('is-hidden');
       errorBox.style.display = 'block';
     }
@@ -344,7 +345,7 @@ async function ejecutarPagoWompi() {
     ciudad = selectCity ? selectCity.value.trim() : '';
     if (!ciudad) {
       if (cityError) {
-        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Por favor selecciona la ciudad de cobertura para tu membresía.';
+        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city for this pass.' : 'Por favor selecciona la ciudad de cobertura para tu membresía.');
         cityError.classList.remove('is-hidden');
         cityError.style.display = 'block';
       }
@@ -364,7 +365,7 @@ async function ejecutarPagoWompi() {
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
   let idempotencyKey = '';
   if (btnPagar) {
-    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando con pago seguro...';
+    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (esIngles ? 'Connecting to secure checkout...' : 'Conectando con pago seguro...');
     btnPagar.disabled = true;
   }
 
@@ -382,12 +383,12 @@ async function ejecutarPagoWompi() {
     const res = await fetch('/api/payments/create-order', {
       method: 'POST',
       headers: headersOrden,
-      body: JSON.stringify({ productType, celular, ciudad })
+      body: JSON.stringify({ productType, celular, ciudad, lang: esIngles ? 'en' : 'es' })
     });
 
     const orderData = await res.json();
     if (!res.ok || !orderData.ok) {
-      throw new Error(orderData.error || 'No se pudo generar la orden de pago');
+      throw new Error(orderData.message || orderData.error || (esIngles ? 'Could not generate payment order' : 'No se pudo generar la orden de pago'));
     }
 
     if (typeof WidgetCheckout === 'undefined') {
