@@ -1,10 +1,35 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-12 23:35 (GMT-5)
+Última actualización: 2026-09-13 00:04 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-24. **Corrección Visual Integral Móvil, Regeneración de Assets de Marca a Alta Resolución, Restauración de FontAwesome y Modal Push**:
+    - **Diagnóstico y Regeneración Cristalina de Assets de Marca (`scratch/regenerate_assets.js`):**
+      - Se diagnosticó la causa raíz de la visualización deficiente del logotipo ("riggo" cortado y una "mancha" casi transparente en lugar de la 'O'): una compresión previa había reemplazado `origgo-icon.svg` por un PNG raster con 99% de transparencia y el texto se había fragmentado en spans.
+      - A partir de la matriz master original de 4000x2250 (`test_logo_4000.png`), se identificó la caja delimitadora del isotipo oficial (compás/pin en 'O') en `X: [228, 1001], Y: [424, 1589]` y del logotipo completo en `X: [228, 3675], Y: [424, 1589]`.
+      - Se regeneraron en color verde esmeralda corporativo `#0a9f68` con fondo transparente: `assets/img/origgo-logo.png`, `assets/img/origgo-logo.svg` (860x289px, peso pluma de 28 KB), `assets/img/origgo-icon.svg`, `push-icon-192.png`, `push-icon-512.png`, `favicon.svg`, `favicon-48x48.png` y `favicon-32x32.png`. Todos con nitidez cristalina en pantallas Retina/AMOLED.
+    - **Reparación Crítica de Carga de FontAwesome (`index.html`):**
+      - Se detectó que el hack `media="print" onload="this.media='all'"` introducido para optimizar métricas de Lighthouse bloqueaba la ejecución de la hoja de estilos en navegadores móviles (especialmente Brave Mobile con escudos de privacidad), provocando que todos los iconos de la web y modales no se renderizaran.
+      - Se restauró la carga formal y síncrona de FontAwesome 6.5.1 en el `<head>`.
+    - **Rediseño del Modal de Alertas Web Push (`index.html` y `styles/17-push-modal.css`):**
+      - Se incorporó el logotipo oficial `origgo-logo.svg` en la cabecera `.push-prompt-header` junto al badge pulsante de radar en vivo.
+      - Para garantizar que los iconos de las características nunca fallen sin importar la conexión o bloqueadores de red, se incrustaron iconos SVG vectoriales inline en las 3 filas descriptivas: rayo (`bolt`), mira táctica (`crosshairs`) y campana silenciada (`bell-slash`).
+      - Se reposicionó el botón de cierre `.btn-modal-close` en `top: 1rem; right: 1rem;` con área táctil protegida (44px) sin solapamiento con el contenido.
+    - **Restauración de Créditos y Saldo en Móvil (`styles/11-mobile.css` y `modules/01-state.js`):**
+      - Se eliminó la regla destructiva `.nav-actions { display: none !important; }` que borraba el saldo del usuario en pantallas pequeñas.
+      - Se rediseñó la barra de navegación superior móvil con distribución `space-between`: el logotipo a la izquierda y a la derecha el chip táctil de saldo (`#btnVipHeader`) con etiqueta clara (`⚡ Planes`, `⚡ X Créditos` o `👑 VIP`).
+      - Se ajustó el `.command-bar-wrapper` en móvil con `position: relative !important; top: auto !important;` para que fluya con el scroll natural y no asfixie ni tape el 30% superior de las tarjetas de inmuebles.
+    - **Erradicación de Jerga Antigua Residual ("Terminal de Inmuebles directos y Arbitraje"):**
+      - Modificado `data/inmobiliario.json` con `"titulo_modulo": "Inmuebles en venta <span class=\"editorial-italic\">directo</span> de sus dueños"` y subtítulo sin tecnicismos. Dataset refirmado criptográficamente (`data/inmobiliario.json.sig`).
+      - Blindada la función `renderizarHero` en `modules/06-cards.js` para neutralizar proactivamente cualquier cadena residual con "Terminal" o "Radar de captación".
+    - **Modularidad Desmulta (< 500 líneas por submódulo):**
+      - `modules/06-cards.js`: 488 líneas (< 500)
+      - `styles/11-mobile.css`: 491 líneas (< 500)
+      - `styles/17-push-modal.css`: 254 líneas (< 500)
+    - **DevSecOps:** Build compilado (`npm run build`) y suite de 8 fases aprobada al 100% (0 errores).
 
 -23. **Perro Guardián Serverless ($0 Coste), Telemetría con Sanitización PII, Cola Universal de Reintentos con Backoff Exponencial y Validación de Integridad de Catálogo**:
     - **Perro Guardián Serverless y Telemetría de Errores a Coste $0 (`api/telemetry/report.js` y `modules/00-security.js`):**

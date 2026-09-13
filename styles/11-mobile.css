@@ -48,7 +48,7 @@
   }
 
   .brand-title {
-    font-size: 1.02rem;
+    font-size: 1.45rem;
     letter-spacing: -0.025em;
   }
 
@@ -277,18 +277,41 @@
 
 /* REGLAS EXCLUSIVAS PARA MÓVIL (Android / iOS) */
 @media (max-width: 768px) {
-  /* 1. Ocultar menús de la cabecera de escritorio para dejar el logo solo (Estándar App Nativa) */
+  /* 1. Cabecera móvil balanceada: Logo a la izquierda, botón de créditos/planes a la derecha */
   .header-left-nav,
-  .header-spacer,
-  .nav-actions {
+  .header-spacer {
     display: none !important;
   }
 
-  /* Centrar identidad de marca institucional al ocultar los laterales (Estándar App Nativa) */
   .site-header-inner {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    padding: 0.45rem 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .nav-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .btn-vip-header {
+    padding: 0.32rem 0.72rem;
+    font-size: 0.74rem;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
+
+  /* La barra de comandos en móvil fluye con el scroll natural para no asfixiar la pantalla */
+  .command-bar-wrapper {
+    position: relative !important;
+    top: auto !important;
+    z-index: 20;
+    margin: 0.35rem auto 0.75rem;
   }
 
   /* El estado de saldo y membresía se despliega en la barra inferior táctil y en el menú lateral */

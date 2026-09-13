@@ -71,9 +71,7 @@
 
   <!-- Fuentes e Iconos Optimizados (No bloqueantes para Lighthouse Performance) -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap"></noscript>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Hoja de Estilos Principal Minificada y Verificada -->
   <link rel="stylesheet" href="./style.min.css?v=20260912-seo">
@@ -800,10 +798,12 @@
     <div class="modal-card push-prompt-card" id="pushPromptCard">
       <button type="button" class="btn-modal-close" id="btnPushPromptClose" aria-label="Cerrar sugerencia de alertas">&times;</button>
       
-      <div class="push-prompt-badge">
-        <span class="push-radar-ping"></span>
-        <img src="./assets/img/origgo-icon.svg" alt="" class="push-prompt-iso" width="24" height="24" />
-        <span>RADAR EN TIEMPO REAL</span>
+      <div class="push-prompt-header">
+        <img src="./assets/img/origgo-logo.svg" alt="Origgo" class="push-prompt-brand-logo" width="124" height="42" />
+        <div class="push-prompt-badge">
+          <span class="push-radar-ping"></span>
+          <span>RADAR EN TIEMPO REAL</span>
+        </div>
       </div>
 
       <h2 class="modal-title push-prompt-title" id="pushPromptTitle">
@@ -815,21 +815,27 @@
 
       <div class="push-prompt-features">
         <div class="push-feature-row">
-          <div class="push-feature-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="push-feature-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
           <div class="push-feature-text">
             <strong>Primicia total:</strong>
             <span>Entérate antes de que el inmueble llegue a portales o agencias con comisiones.</span>
           </div>
         </div>
         <div class="push-feature-row">
-          <div class="push-feature-icon"><i class="fa-solid fa-location-crosshairs"></i></div>
+          <div class="push-feature-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+          </div>
           <div class="push-feature-text">
             <strong>Filtro por tu ciudad:</strong>
             <span>Avisos geolocalizados de tu zona de interés o inversión comercial.</span>
           </div>
         </div>
         <div class="push-feature-row">
-          <div class="push-feature-icon"><i class="fa-solid fa-bell-slash"></i></div>
+          <div class="push-feature-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+          </div>
           <div class="push-feature-text">
             <strong>100% libre de spam:</strong>
             <span>Solo señales cuando se confirme una oportunidad real negociada entre particulares.</span>
