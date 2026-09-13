@@ -241,3 +241,139 @@ function inicializarPerroGuardian() {
   });
 }
 
+/**
+ * Guarda una cookie segura en el navegador con directivas OWASP (SameSite=Lax, Secure en HTTPS).
+ * @param {string} nombre
+ * @param {string} valor
+ * @param {number} [dias=365]
+ */
+function guardarCookieSegura(nombre, valor, dias = 365) {
+  if (typeof document === 'undefined' || !nombre) return;
+  const nombreSeguro = encodeURIComponent(String(nombre).trim());
+  const valorSeguro = encodeURIComponent(String(valor || '').trim());
+  let expiracion = '';
+  if (dias > 0) {
+    const d = new Date();
+    d.setTime(d.getTime() + (dias * 24 * 60 * 60 * 1000));
+    expiracion = `; expires=${d.toUTCString()}; max-age=${dias * 86400}`;
+  } else if (dias < 0) {
+    expiracion = '; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0';
+  }
+  const esHttps = typeof window !== 'undefined' && window.location && window.location.protocol === 'https:';
+  const flagSecure = esHttps ? '; Secure' : '';
+  document.cookie = `${nombreSeguro}=${valorSeguro}${expiracion}; path=/; SameSite=Lax${flagSecure}`;
+}
+
+/**
+ * Recupera el valor de una cookie segura por su nombre.
+ * @param {string} nombre
+ * @returns {string|null}
+ */
+function obtenerCookieSegura(nombre) {
+  if (typeof document === 'undefined' || !nombre) return null;
+  const nombreClave = encodeURIComponent(String(nombre).trim()) + '=';
+  const cookies = document.cookie ? document.cookie.split(';') : [];
+  for (let c of cookies) {
+    c = c.trim();
+    if (c.indexOf(nombreClave) === 0) {
+      try {
+        return decodeURIComponent(c.substring(nombreClave.length));
+      } catch (e) {
+        return c.substring(nombreClave.length);
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Elimina una cookie segura expirando su fecha de inmediato.
+ * @param {string} nombre
+ */
+function borrarCookieSegura(nombre) {
+  guardarCookieSegura(nombre, '', -1);
+}
+
+/**
+ * Retorna el tema actual configurado en el DOM o en persistencia.
+ * @returns {'dark'|'light'}
+ */
+function obtenerTemaActual() {
+  if (typeof document !== 'undefined' && document.documentElement) {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr === 'light' || attr === 'dark') return attr;
+  }
+  try {
+    const local = localStorage.getItem('hunter_theme');
+    if (local === 'light' || local === 'dark') return local;
+  } catch (e) {}
+  const c = obtenerCookieSegura('origgo_theme');
+  if (c === 'light' || c === 'dark') return c;
+  return 'dark';
+}
+
+/**
+ * Aplica un tema ('dark'|'light') con aceleración GPU (View Transitions) y persistencia en cookie.
+ * @param {'dark'|'light'} nuevoTema
+ */
+function aplicarTema(nuevoTema) {
+  if (nuevoTema !== 'dark' && nuevoTema !== 'light') return;
+  const actual = obtenerTemaActual();
+  if (actual === nuevoTema) return;
+
+  const mutar = () => {
+    document.documentElement.setAttribute('data-theme', nuevoTema);
+    if (typeof actualizarIconoTema === 'function') actualizarIconoTema(nuevoTema);
+  };
+
+  if (typeof ejecutarConTransicionSuave === 'function') {
+    ejecutarConTransicionSuave(mutar);
+  } else {
+    mutar();
+  }
+
+  try { localStorage.setItem('hunter_theme', nuevoTema); } catch (e) {}
+  guardarCookieSegura('origgo_theme', nuevoTema, 365);
+}
+
+/**
+ * Sincroniza en segundo plano las preferencias de idioma y tema en cookie y en el servidor.
+ * @param {string|null} [nuevoLang]
+ * @param {string|null} [nuevoTheme]
+ */
+function sincronizarPreferenciasEnServidor(nuevoLang, nuevoTheme) {
+  const lang = nuevoLang || (typeof obtenerIdiomaActual === 'function' ? obtenerIdiomaActual() : 'es');
+  const theme = nuevoTheme || (typeof obtenerTemaActual === 'function' ? obtenerTemaActual() : 'dark');
+
+  guardarCookieSegura('origgo_prefs', JSON.stringify({ lang, theme }), 365);
+  if (nuevoLang) guardarCookieSegura('origgo_lang', nuevoLang, 365);
+  if (nuevoTheme) guardarCookieSegura('origgo_theme', nuevoTheme, 365);
+
+  const sesion = (typeof sesionUsuario !== 'undefined' && sesionUsuario) ? sesionUsuario : null;
+  const token = sesion?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('hunter_pro_token') : null);
+
+  if (token) {
+    fetch('/api/user/balance', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ preferredLang: lang, preferredTheme: theme })
+    }).catch(() => {});
+  }
+}
+
+if (typeof window !== 'undefined') {
+  Object.assign(window, {
+    guardarCookieSegura,
+    obtenerCookieSegura,
+    borrarCookieSegura,
+    obtenerTemaActual,
+    aplicarTema,
+    sincronizarPreferenciasEnServidor
+  });
+}
+
+
+

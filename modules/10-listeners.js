@@ -396,8 +396,9 @@ function configurarListeners() {
   const btnTheme = document.getElementById("btnThemeToggle");
   const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
   const temaInicial = document.documentElement.getAttribute("data-theme") || (function() {
-    try { return localStorage.getItem("hunter_theme"); } catch (e) { return null; }
-  })() || "dark";
+    try { const local = localStorage.getItem("hunter_theme"); if (local) return local; } catch (e) {}
+    return (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_theme') : null) || "dark";
+  })();
 
   document.documentElement.setAttribute("data-theme", temaInicial);
   actualizarIconoTema(temaInicial);
@@ -405,13 +406,16 @@ function configurarListeners() {
   const toggleTheme = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-    ejecutarConTransicionSuave(() => {
-      document.documentElement.setAttribute("data-theme", newTheme);
-      actualizarIconoTema(newTheme);
-    });
-
-    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
+    if (typeof aplicarTema === 'function') {
+      aplicarTema(newTheme);
+    } else {
+      ejecutarConTransicionSuave(() => {
+        document.documentElement.setAttribute("data-theme", newTheme);
+        actualizarIconoTema(newTheme);
+      });
+      try { localStorage.setItem("hunter_theme", newTheme); } catch (e) {}
+    }
+    if (typeof sincronizarPreferenciasEnServidor === 'function') sincronizarPreferenciasEnServidor(null, newTheme);
   };
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);

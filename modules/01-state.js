@@ -15,7 +15,13 @@ let paginaActual = 1;
 // Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
 let sesionUsuario = null; // { token, phone, credits, plan, planCity, unlockedLeads: [] }
 try {
-  const tokenLocal = localStorage.getItem('hunter_pro_token');
+  let tokenLocal = localStorage.getItem('hunter_pro_token');
+  if (!tokenLocal && typeof obtenerCookieSegura === 'function') {
+    tokenLocal = obtenerCookieSegura('origgo_token');
+    if (tokenLocal) {
+      try { localStorage.setItem('hunter_pro_token', tokenLocal); } catch (_) {}
+    }
+  }
   if (tokenLocal) {
     sesionUsuario = { token: tokenLocal };
   }
@@ -141,10 +147,20 @@ async function inicializarSesionUsuario() {
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
+        if (typeof guardarCookieSegura === 'function') {
+          guardarCookieSegura('origgo_token', tokenGuardado, 30);
+        }
+        if (data.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.preferredLang !== obtenerIdiomaActual()) {
+          cambiarIdioma(data.preferredLang);
+        }
+        if (data.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.preferredTheme !== obtenerTemaActual()) {
+          aplicarTema(data.preferredTheme);
+        }
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
       } else if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('hunter_pro_token');
+        if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
         localStorage.removeItem('hunter_user_data');
         localStorage.removeItem('hunter_unlocked_contacts');
         cacheContactosDesbloqueados = {};
@@ -357,10 +373,17 @@ async function restaurarSesionConPin() {
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
+    if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
     localStorage.removeItem('origgo_pending_ref');
     const pinDevuelto = data.user?.pin || null;
     sesionUsuario = { ...data.user, token: data.token };
     delete sesionUsuario.pin;
+    if (data.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.user.preferredLang !== obtenerIdiomaActual()) {
+      cambiarIdioma(data.user.preferredLang);
+    }
+    if (data.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.user.preferredTheme !== obtenerTemaActual()) {
+      aplicarTema(data.user.preferredTheme);
+    }
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);
@@ -395,6 +418,7 @@ async function restaurarSesionConPin() {
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
+  if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
   localStorage.removeItem('hunter_user_data');
   localStorage.removeItem('hunter_unlocked_contacts');
   cacheContactosDesbloqueados = {};

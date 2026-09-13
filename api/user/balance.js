@@ -28,8 +28,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Método no permitido. Utilice GET.' });
+  if (req.method !== 'GET' && req.method !== 'PATCH' && req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido. Utilice GET o PATCH.' });
   }
 
   try {
@@ -45,6 +45,29 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: 'Sesión expirada' });
     }
 
+    // Caso 1: Actualización atómica de preferencias de usuario (PATCH o POST)
+    if (req.method === 'PATCH' || req.method === 'POST') {
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (_) {}
+      }
+      body = body || {};
+
+      const { preferredLang, preferredTheme } = body;
+      const updatedUser = await db.updateUserPreferences(session.phone, { preferredLang, preferredTheme });
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      return res.status(200).json({
+        ok: true,
+        phone: updatedUser.phone,
+        preferredLang: updatedUser.preferredLang || 'es',
+        preferredTheme: updatedUser.preferredTheme || 'dark'
+      });
+    }
+
+    // Caso 2: Consulta estándar de balance y perfil (GET)
     const user = await db.getUserByPhone(session.phone);
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -57,10 +80,12 @@ module.exports = async function handler(req, res) {
       plan: user.plan,
       planCity: user.planCity,
       planExpiresAt: user.planExpiresAt,
-      unlockedLeads: user.unlockedLeads || []
+      unlockedLeads: user.unlockedLeads || [],
+      preferredLang: user.preferredLang || 'es',
+      preferredTheme: user.preferredTheme || 'dark'
     });
   } catch (error) {
     console.error('[balance] Error:', error);
-    return res.status(500).json({ error: 'Error consultando balance de usuario' });
+    return res.status(500).json({ error: 'Error procesando balance o preferencias de usuario' });
   }
 };

@@ -1,10 +1,40 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 11:00 (GMT-5)
+Última actualización: 2026-09-13 11:15 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-45. **Fase 2 (Frontend y Backend): Sincronización Automática de Idioma (`preferredLang`) y Tema (`preferredTheme`) en la Sesión de Usuario, Persistencia Dual en Cookies Seguras (`SameSite=Lax`) y Ledger en Firestore**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Pérdida de preferencias entre dispositivos:* Cuando un usuario VIP configuraba inglés (`en`) o modo claro (`light`) en su computadora, estas selecciones no se trasladaban a su teléfono móvil al iniciar sesión vía WhatsApp y PIN, forzándolo a reconfigurar sus preferencias en cada dispositivo.
+      2. *Volatilidad ante borrado de almacenamiento local:* El estado dependía exclusivamente de `localStorage`. Si el usuario limpiaba los datos de navegación o accedía desde un webview/PWA donde el almacenamiento local se reiniciaba, sus selecciones se perdían.
+      3. *Falta de sincronización en endpoints de usuario:* `api/user/balance.js` únicamente admitía `GET` y no exponía ni persistía preferencias de perfil.
+    - **Solución Implementada:**
+      1. **Capa de Cookies Seguras OWASP (`modules/00-security.js`, 380 líneas < 500):**
+         - Funciones `guardarCookieSegura(nombre, valor, dias)`, `obtenerCookieSegura(nombre)` y `borrarCookieSegura(nombre)` con `SameSite=Lax`, `path=/` y directiva condicional `Secure` para entornos HTTPS.
+         - Cookie unificada `origgo_prefs` (`{ lang, theme }`), cookies individuales `origgo_lang` y `origgo_theme`, y cookie de sesión `origgo_token` (30 días).
+         - Función `aplicarTema(nuevoTema)` con soporte de `View Transitions API`, actualización de iconos, almacenamiento local y cookie.
+         - Función `sincronizarPreferenciasEnServidor(nuevoLang, nuevoTheme)`: sincroniza en segundo plano no bloqueante (`PATCH /api/user/balance`) con el token JWT si la sesión está activa.
+      2. **Hidratación Automática y Resiliencia en Arranque (`modules/01-state.js`, 490 líneas < 500):**
+         - Si `localStorage` no contiene `hunter_pro_token`, el arranque rescata la sesión desde la cookie segura `origgo_token`.
+         - Al revalidar balance (`/api/user/balance`) o iniciar sesión por PIN/recuperación, el cliente hidrata de inmediato `data.preferredLang` y `data.preferredTheme` aplicando `cambiarIdioma()` y `aplicarTema()` sin parpadeos.
+         - Al cerrar sesión (`cerrarSesionUsuario`), se eliminan simultáneamente `localStorage` y la cookie `origgo_token`.
+      3. **Reactividad en Conmutadores de Idioma y Tema (`modules/13-i18n.js`, 492 líneas; `modules/10-listeners.js`, 493 líneas):**
+         - `obtenerIdiomaActual()` y arranque de tema evalúan en cascada: `localStorage` $\rightarrow$ cookie segura $\rightarrow$ `navigator.language` / `dark`.
+         - Al alternar idioma o tema, se invoca automáticamente `sincronizarPreferenciasEnServidor()` para replicar el cambio en la base de datos sin fricción.
+      4. **Endpoint Serverless de Balance y Preferencias (`api/user/balance.js`, 89 líneas):**
+         - `GET /api/user/balance`: Retorna `preferredLang` y `preferredTheme` junto con los créditos y plan activo.
+         - `PATCH /api/user/balance`: Valida el Bearer JWT y actualiza de manera atómica `preferredLang` y `preferredTheme` en Firestore.
+      5. **Persistencia en Firestore y Sesiones (`lib/db.js`, 613 líneas; `api/auth/session.js`, 354 líneas):**
+         - Nueva función `updateUserPreferences(phone, { preferredLang, preferredTheme })` con tolerancia a fallos `withRetry`.
+         - `payloadUsuarioPublico(user)` en `api/auth/session.js` incluye `preferredLang` y `preferredTheme` en todos los flujos de login, reclamo de pago y recuperación.
+      6. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite de pruebas de integración (`test_fase2.js`): 100% aprobada.
+         - Suite DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas por módulo JS y CSS).
 
 -44. **Fase 1 (Frontend): Optimización Responsiva y Paralela de Imágenes (LCP Crítico, Decodificación Asíncrona, Carga Prioritaria y Fallback Shimmer SVG Corporativo)**:
     - **Diagnóstico y Causa Raíz:**

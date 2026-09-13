@@ -241,6 +241,142 @@ function inicializarPerroGuardian() {
   });
 }
 
+/**
+ * Guarda una cookie segura en el navegador con directivas OWASP (SameSite=Lax, Secure en HTTPS).
+ * @param {string} nombre
+ * @param {string} valor
+ * @param {number} [dias=365]
+ */
+function guardarCookieSegura(nombre, valor, dias = 365) {
+  if (typeof document === 'undefined' || !nombre) return;
+  const nombreSeguro = encodeURIComponent(String(nombre).trim());
+  const valorSeguro = encodeURIComponent(String(valor || '').trim());
+  let expiracion = '';
+  if (dias > 0) {
+    const d = new Date();
+    d.setTime(d.getTime() + (dias * 24 * 60 * 60 * 1000));
+    expiracion = `; expires=${d.toUTCString()}; max-age=${dias * 86400}`;
+  } else if (dias < 0) {
+    expiracion = '; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0';
+  }
+  const esHttps = typeof window !== 'undefined' && window.location && window.location.protocol === 'https:';
+  const flagSecure = esHttps ? '; Secure' : '';
+  document.cookie = `${nombreSeguro}=${valorSeguro}${expiracion}; path=/; SameSite=Lax${flagSecure}`;
+}
+
+/**
+ * Recupera el valor de una cookie segura por su nombre.
+ * @param {string} nombre
+ * @returns {string|null}
+ */
+function obtenerCookieSegura(nombre) {
+  if (typeof document === 'undefined' || !nombre) return null;
+  const nombreClave = encodeURIComponent(String(nombre).trim()) + '=';
+  const cookies = document.cookie ? document.cookie.split(';') : [];
+  for (let c of cookies) {
+    c = c.trim();
+    if (c.indexOf(nombreClave) === 0) {
+      try {
+        return decodeURIComponent(c.substring(nombreClave.length));
+      } catch (e) {
+        return c.substring(nombreClave.length);
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Elimina una cookie segura expirando su fecha de inmediato.
+ * @param {string} nombre
+ */
+function borrarCookieSegura(nombre) {
+  guardarCookieSegura(nombre, '', -1);
+}
+
+/**
+ * Retorna el tema actual configurado en el DOM o en persistencia.
+ * @returns {'dark'|'light'}
+ */
+function obtenerTemaActual() {
+  if (typeof document !== 'undefined' && document.documentElement) {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr === 'light' || attr === 'dark') return attr;
+  }
+  try {
+    const local = localStorage.getItem('hunter_theme');
+    if (local === 'light' || local === 'dark') return local;
+  } catch (e) {}
+  const c = obtenerCookieSegura('origgo_theme');
+  if (c === 'light' || c === 'dark') return c;
+  return 'dark';
+}
+
+/**
+ * Aplica un tema ('dark'|'light') con aceleración GPU (View Transitions) y persistencia en cookie.
+ * @param {'dark'|'light'} nuevoTema
+ */
+function aplicarTema(nuevoTema) {
+  if (nuevoTema !== 'dark' && nuevoTema !== 'light') return;
+  const actual = obtenerTemaActual();
+  if (actual === nuevoTema) return;
+
+  const mutar = () => {
+    document.documentElement.setAttribute('data-theme', nuevoTema);
+    if (typeof actualizarIconoTema === 'function') actualizarIconoTema(nuevoTema);
+  };
+
+  if (typeof ejecutarConTransicionSuave === 'function') {
+    ejecutarConTransicionSuave(mutar);
+  } else {
+    mutar();
+  }
+
+  try { localStorage.setItem('hunter_theme', nuevoTema); } catch (e) {}
+  guardarCookieSegura('origgo_theme', nuevoTema, 365);
+}
+
+/**
+ * Sincroniza en segundo plano las preferencias de idioma y tema en cookie y en el servidor.
+ * @param {string|null} [nuevoLang]
+ * @param {string|null} [nuevoTheme]
+ */
+function sincronizarPreferenciasEnServidor(nuevoLang, nuevoTheme) {
+  const lang = nuevoLang || (typeof obtenerIdiomaActual === 'function' ? obtenerIdiomaActual() : 'es');
+  const theme = nuevoTheme || (typeof obtenerTemaActual === 'function' ? obtenerTemaActual() : 'dark');
+
+  guardarCookieSegura('origgo_prefs', JSON.stringify({ lang, theme }), 365);
+  if (nuevoLang) guardarCookieSegura('origgo_lang', nuevoLang, 365);
+  if (nuevoTheme) guardarCookieSegura('origgo_theme', nuevoTheme, 365);
+
+  const sesion = (typeof sesionUsuario !== 'undefined' && sesionUsuario) ? sesionUsuario : null;
+  const token = sesion?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('hunter_pro_token') : null);
+
+  if (token) {
+    fetch('/api/user/balance', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ preferredLang: lang, preferredTheme: theme })
+    }).catch(() => {});
+  }
+}
+
+if (typeof window !== 'undefined') {
+  Object.assign(window, {
+    guardarCookieSegura,
+    obtenerCookieSegura,
+    borrarCookieSegura,
+    obtenerTemaActual,
+    aplicarTema,
+    sincronizarPreferenciasEnServidor
+  });
+}
+
+
+
 
 
 /**
@@ -260,7 +396,13 @@ let paginaActual = 1;
 // Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
 let sesionUsuario = null; // { token, phone, credits, plan, planCity, unlockedLeads: [] }
 try {
-  const tokenLocal = localStorage.getItem('hunter_pro_token');
+  let tokenLocal = localStorage.getItem('hunter_pro_token');
+  if (!tokenLocal && typeof obtenerCookieSegura === 'function') {
+    tokenLocal = obtenerCookieSegura('origgo_token');
+    if (tokenLocal) {
+      try { localStorage.setItem('hunter_pro_token', tokenLocal); } catch (_) {}
+    }
+  }
   if (tokenLocal) {
     sesionUsuario = { token: tokenLocal };
   }
@@ -386,10 +528,20 @@ async function inicializarSesionUsuario() {
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
+        if (typeof guardarCookieSegura === 'function') {
+          guardarCookieSegura('origgo_token', tokenGuardado, 30);
+        }
+        if (data.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.preferredLang !== obtenerIdiomaActual()) {
+          cambiarIdioma(data.preferredLang);
+        }
+        if (data.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.preferredTheme !== obtenerTemaActual()) {
+          aplicarTema(data.preferredTheme);
+        }
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
       } else if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('hunter_pro_token');
+        if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
         localStorage.removeItem('hunter_user_data');
         localStorage.removeItem('hunter_unlocked_contacts');
         cacheContactosDesbloqueados = {};
@@ -602,10 +754,17 @@ async function restaurarSesionConPin() {
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
+    if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
     localStorage.removeItem('origgo_pending_ref');
     const pinDevuelto = data.user?.pin || null;
     sesionUsuario = { ...data.user, token: data.token };
     delete sesionUsuario.pin;
+    if (data.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.user.preferredLang !== obtenerIdiomaActual()) {
+      cambiarIdioma(data.user.preferredLang);
+    }
+    if (data.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.user.preferredTheme !== obtenerTemaActual()) {
+      aplicarTema(data.user.preferredTheme);
+    }
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);
@@ -640,6 +799,7 @@ async function restaurarSesionConPin() {
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
+  if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
   localStorage.removeItem('hunter_user_data');
   localStorage.removeItem('hunter_unlocked_contacts');
   cacheContactosDesbloqueados = {};
@@ -3888,8 +4048,9 @@ function configurarListeners() {
   const btnTheme = document.getElementById("btnThemeToggle");
   const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
   const temaInicial = document.documentElement.getAttribute("data-theme") || (function() {
-    try { return localStorage.getItem("hunter_theme"); } catch (e) { return null; }
-  })() || "dark";
+    try { const local = localStorage.getItem("hunter_theme"); if (local) return local; } catch (e) {}
+    return (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_theme') : null) || "dark";
+  })();
 
   document.documentElement.setAttribute("data-theme", temaInicial);
   actualizarIconoTema(temaInicial);
@@ -3897,13 +4058,16 @@ function configurarListeners() {
   const toggleTheme = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-    ejecutarConTransicionSuave(() => {
-      document.documentElement.setAttribute("data-theme", newTheme);
-      actualizarIconoTema(newTheme);
-    });
-
-    try { localStorage.setItem("hunter_theme", newTheme); } catch (e) { /* ignore */ }
+    if (typeof aplicarTema === 'function') {
+      aplicarTema(newTheme);
+    } else {
+      ejecutarConTransicionSuave(() => {
+        document.documentElement.setAttribute("data-theme", newTheme);
+        actualizarIconoTema(newTheme);
+      });
+      try { localStorage.setItem("hunter_theme", newTheme); } catch (e) {}
+    }
+    if (typeof sincronizarPreferenciasEnServidor === 'function') sincronizarPreferenciasEnServidor(null, newTheme);
   };
 
   if (btnTheme) btnTheme.addEventListener("click", toggleTheme);
@@ -4667,9 +4831,9 @@ function obtenerIdiomaActual() {
     const almacenado = localStorage.getItem('origgo_lang');
     if (almacenado === 'es' || almacenado === 'en') return almacenado;
   } catch (e) {}
-  if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) {
-    return 'en';
-  }
+  const c = typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_lang') : null;
+  if (c === 'es' || c === 'en') return c;
+  if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) return 'en';
   return 'es';
 }
 
@@ -4844,6 +5008,7 @@ function cambiarIdioma(nuevoIdioma) {
   if (actual === nuevoIdioma) return;
 
   try { localStorage.setItem('origgo_lang', nuevoIdioma); } catch (e) {}
+  if (typeof sincronizarPreferenciasEnServidor === 'function') sincronizarPreferenciasEnServidor(nuevoIdioma, null);
 
   aplicarTraduccionesAlDOM();
 

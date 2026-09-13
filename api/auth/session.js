@@ -26,7 +26,9 @@ function payloadUsuarioPublico(user, extras = {}) {
     plan: user.plan,
     planCity: user.planCity,
     planExpiresAt: user.planExpiresAt,
-    unlockedLeads: user.unlockedLeads || []
+    unlockedLeads: user.unlockedLeads || [],
+    preferredLang: user.preferredLang || 'es',
+    preferredTheme: user.preferredTheme || 'dark'
   };
 }
 

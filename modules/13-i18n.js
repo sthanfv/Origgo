@@ -189,9 +189,9 @@ function obtenerIdiomaActual() {
     const almacenado = localStorage.getItem('origgo_lang');
     if (almacenado === 'es' || almacenado === 'en') return almacenado;
   } catch (e) {}
-  if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) {
-    return 'en';
-  }
+  const c = typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_lang') : null;
+  if (c === 'es' || c === 'en') return c;
+  if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) return 'en';
   return 'es';
 }
 
@@ -366,6 +366,7 @@ function cambiarIdioma(nuevoIdioma) {
   if (actual === nuevoIdioma) return;
 
   try { localStorage.setItem('origgo_lang', nuevoIdioma); } catch (e) {}
+  if (typeof sincronizarPreferenciasEnServidor === 'function') sincronizarPreferenciasEnServidor(nuevoIdioma, null);
 
   aplicarTraduccionesAlDOM();
 
