@@ -4,7 +4,15 @@
 
 ---
 
-## 1. Qué cambió
+-58. **Saneamiento del Espacio de Trabajo, Depuración de Módulos Obsoletos de Retail y Desmantelamiento del Proceso Dashboard en PM2 para el Samsung Galaxy J7**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Sobrecarga de memoria RAM y dispersión de procesos en el Samsung Galaxy J7:* La configuración previa de PM2 contemplaba la gestión dual de `scraper` (150MB) y `dashboard` (80MB). Con la consolidación definitiva del portal web comercial serverless en Vercel (`hunter-portal-showcase`), el panel web local en el teléfono quedó obsoleto, consumiendo descriptores de archivo, ciclos de CPU y ~80MB de memoria en el procesador Exynos 7870.
+      2. *Acumulación de artefactos legacy y carpetas en desuso:* Existían carpetas y archivos obsoletos (`cloud-scraper`, `staging_deploy`, `Scripts_Sueltos_Historico`, `hunter_update.zip`, `update_termux.sh`, `ofertas-hunter-pro/historico_tiendas_obsoletas/`, scripts de deploy y pruebas viejas de retail) que generaban confusión operativa y ruido en el repositorio.
+    - **Solución Implementada:**
+      1. **Purga total de directorios y archivos huérfanos:** Eliminados del workspace `cloud-scraper`, `staging_deploy`, `Scripts_Sueltos_Historico`, `hunter_update.zip`, `update_termux.sh`, y dentro del scraper `ROADMAP.md`, `historico_tiendas_obsoletas/`, `scripts/pruebas/` y scripts obsoletos de inyección/reinicio de dashboard (`deploy_ui.js`, `inyectar_dashboard.js`, `sync_dashboard_ui.js`, `restart_dashboard.js`).
+      2. **Configuración Monoproceso en PM2 (`ecosystem.config.js`, 51 líneas $\le 500$):** Eliminada la declaración de la app `dashboard`. PM2 gestiona exclusivamente el orquestador `scraper` con límite estricto de 150MB de RAM (`--expose-gc --max-old-space-size=120`), auto-reinicio y política de tolerancia a fallos.
+      3. **Auditoría de Telemetría y Notificaciones a Telegram (`telegram.js`, `watchdog_hardware.js`):** Verificación técnica de los canales de emisión: Canal Privado VIP (contacto real, WhatsApp directo y enlace original), Canal Público de Captación (número ofuscado `315 ••• ••••` y redirección a ficha Origgo anti-canibalización), y Alertas de Salud de Hardware (temperatura $\ge 41^\circ\text{C}$, batería $\le 20\%$, desconexión AC).
+      4. **Validación:** Pruebas unitarias de anti-canibalización y despacho (`tests/telegram_anti_cannibalization.test.js`, `tests/dispatcher.test.js`) 100% aprobadas.
 
 -57. **Fase 6: Desafío Anti-Fuerza Bruta Invisible en Autenticación con PIN (Proof-of-Work Criptográfico Autónomo, Prevención Anti-Replay y Adaptador Cloudflare Turnstile Opcional)**:
     - **Diagnóstico y Causa Raíz:**
