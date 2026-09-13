@@ -1,10 +1,36 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-12 23:25 (GMT-5)
+Última actualización: 2026-09-12 23:35 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-23. **Perro Guardián Serverless ($0 Coste), Telemetría con Sanitización PII, Cola Universal de Reintentos con Backoff Exponencial y Validación de Integridad de Catálogo**:
+    - **Perro Guardián Serverless y Telemetría de Errores a Coste $0 (`api/telemetry/report.js` y `modules/00-security.js`):**
+      - Diseñado e implementado el endpoint serverless `POST /api/telemetry/report` con CORS seguro y rate limiting distribuido mediante Upstash Redis (máximo 20 reportes/minuto por IP) para prevenir saturación de logs.
+      - Sanitización y desinfección estricta de PII / PCI-DSS mediante expresiones regulares: antes de procesar o emitir logs estructurados en Vercel, el endpoint detecta y ofusca automáticamente tokens JWT (`[JWT_OFUSCADO]`), números de tarjeta de crédito (`[TARJETA_OFUSCADA]`), números de teléfono celular colombianos (`[TEL_OFUSCADO]`) y PINs maestros.
+      - En el cliente (`modules/00-security.js`), la función `inicializarPerroGuardian` escucha `window.onerror` y `window.onunhandledrejection`. Cuenta con deduplicación por huella digital en memoria con ventana de 60 segundos para evitar bucles de spam ante errores repetitivos, e ignora excepciones externas generadas por extensiones del navegador (`chrome-extension://`).
+      - El reporte hacia el servidor utiliza `navigator.sendBeacon` o `fetch` con `keepalive: true` de forma asíncrona y no bloqueante. Conectado en el ciclo de arranque de `modules/10-listeners.js`.
+    - **Cola Universal de Reintentos con Backoff Exponencial y Jitter (`modules/03-api.js`):**
+      - Creada la utilidad `fetchConReintentos(url, opciones, config)` que ejecuta reintentos automáticos ante errores de red (microcortes) o respuestas 5xx del servidor, calculando el retardo con backoff exponencial y variación aleatoria (jitter).
+      - No reintenta errores 4xx (salvo 429 Too Many Requests), garantizando un comportamiento determinista.
+    - **Validación Estructural de Catálogo e Integridad Zero-Trust (`modules/03-api.js` y `styles/16-utilities.css`):**
+      - Creada la función `validarContratoCatalogo(json)` que audita la presencia de claves críticas (`leads`, `config`) y formato de arreglo antes de permitir la renderización en el DOM, blindando al usuario contra pantallas en blanco ante archivos JSON corruptos o incompletos.
+      - `cargarDatos(rutaJson)` implementa una estrategia de tolerancia extrema a fallos: primero consulta Cloudflare R2 con reintento rápido; si falla o no supera la validación estructural, conmuta automáticamente a la ruta local empaquetada con 2 reintentos.
+      - Si la conexión está totalmente caída, inyecta un estado visual amigable con botón de reintento interactivo (`.btn-retry-catalog`) y emite una alerta estructurada al Perro Guardián.
+    - **Arquitectura Zero-Trust Clarificada y Auditada (Flujo del JSON del Teléfono):**
+      - El bot en el Samsung Galaxy J7 extrae los leads, cifra los teléfonos con AES-256-GCM y firma el archivo `inmobiliario.json` con HMAC-SHA256 (`inmobiliario.json.sig`), subiendo ambos a Cloudflare R2.
+      - La firma HMAC se valida estrictamente en el backend serverless (`api/leads/unlock.js`) mediante la clave privada `LEADS_ENCRYPTION_KEY`. El frontend no contiene ni puede contener dicha clave para evitar que usuarios maliciosos en DevTools (F12) la extraigan y desencripten el catálogo de Colombia de forma masiva. El frontend valida la integridad de contrato, cabeceras HTTP y conmuta al fallback local si detecta anomalías.
+    - **Modularidad Desmulta (< 500 líneas por submódulo):**
+      - `modules/00-security.js`: 238 líneas (< 500)
+      - `modules/01-state.js`: 463 líneas (< 500)
+      - `modules/03-api.js`: 174 líneas (< 500)
+      - `modules/04-filters.js`: 401 líneas (< 500)
+      - `modules/07-unlock.js`: 314 líneas (< 500)
+      - `modules/10-listeners.js`: 485 líneas (< 500)
+      - `styles/16-utilities.css`: 279 líneas (< 500)
+    - **DevSecOps:** Creada suite unitaria en `tests/telemetry_watchdog.test.js`. 8 de 8 fases aprobadas al 100% (0 errores).
 
 -22. **Blindaje Anti-Dumping (Ctrl+P / @media print), Cuota de Uso Justo (Fair Usage 35/día) y Filtro Táctico "Captados Hoy"**:
     - **Blindaje Anti-Dumping y Anti-Impresión (`styles/16-utilities.css`, `modules/00-security.js` e `index.html`):**

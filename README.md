@@ -53,6 +53,9 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Registro de suscripciones Push** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | POST registro de endpoints y claves W3C Push |
 | **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
 | **Persistencia y deduplicación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido Firestore/local y hash SHA-256 |
+| **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
+| **Perro Guardián y reporte en cliente** | [`modules/00-security.js`](modules/00-security.js) | `inicializarPerroGuardian()`, `sendBeacon` |
+| **Cola de reintentos y contrato de catálogo** | [`modules/03-api.js`](modules/03-api.js) | `fetchConReintentos()`, `validarContratoCatalogo()` |
 | **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
 | **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
 | **Firma criptográfica offline de datasets** | [`scripts/sign-data.js`](scripts/sign-data.js) | Genera firmas `.sig` para JSONs estáticos |

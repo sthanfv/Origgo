@@ -95,6 +95,7 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | **Mitigación DDoS y Rate Limiting** | [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
 | **Validación estricta de esquemas Zod** | [`lib/validation.js`](lib/validation.js) | Validadores para pagos, auth y leads |
 | **Persistencia de suscripciones Web Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Deduplicación SHA-256 y soporte Firestore/local |
+| **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
 | **Clave pública VAPID dinámica** | [`api/notifications/vapid-public-key.js`](api/notifications/vapid-public-key.js) | Endpoint GET protegido por rate limit y caché |
 | **Registro de suscripciones Web Push** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | Validación W3C Push y persistencia |
 | **Despacho masivo de alertas Push** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | Despacho seguro autenticado por x-internal-secret |

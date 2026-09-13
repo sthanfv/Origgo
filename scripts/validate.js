@@ -50,7 +50,8 @@ async function ejecutarValidacionCompleta() {
     'api/notifications/vapid-public-key.js',
     'api/notifications/subscribe.js',
     'api/notifications/dispatch.js',
-    'api/security/honeypot.js'
+    'api/security/honeypot.js',
+    'api/telemetry/report.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -268,6 +269,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de política de uso justo (35 desbloqueos/día) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de cuota de uso justo: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'telemetry_watchdog.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de perro guardián y telemetría serverless pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de perro guardián: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

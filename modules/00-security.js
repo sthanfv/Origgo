@@ -148,3 +148,90 @@ function inicializarProteccionAntiImpresion() {
   });
 }
 
+// Memoria volátil de deduplicación de reportes (evita spam ante bucles de error)
+const erroresReportadosRecientemente = new Map();
+
+/**
+ * Despacha un informe de anomalía o fallo de red/render hacia el Perro Guardián (/api/telemetry/report).
+ * @param {object} params
+ * @param {string} params.tipo
+ * @param {string} params.mensaje
+ * @param {string} [params.origen]
+ * @param {string} [params.stack]
+ */
+function reportarFalloCliente({ tipo = 'ERROR_CLIENTE', mensaje = '', origen = 'interfaz_web', stack = '' } = {}) {
+  if (typeof window === 'undefined') return;
+
+  const msgStr = String(mensaje || '').slice(0, 500);
+  const stackStr = String(stack || '').slice(0, 1500);
+
+  // Ignorar errores ajenos introducidos por extensiones de terceros
+  if (stackStr.includes('extension://') || msgStr.includes('extension://')) return;
+
+  // Deduplicación en ventana de 60 segundos
+  const claveError = `${tipo}:${msgStr}`;
+  const ahora = Date.now();
+  const ultimoEnvio = erroresReportadosRecientemente.get(claveError) || 0;
+  if (ahora - ultimoEnvio < 60000) return;
+  erroresReportadosRecientemente.set(claveError, ahora);
+
+  // Limpiar memoria si el mapa crece demasiado
+  if (erroresReportadosRecientemente.size > 50) {
+    erroresReportadosRecientemente.clear();
+  }
+
+  const payload = JSON.stringify({
+    tipo,
+    mensaje: msgStr,
+    origen,
+    stack: stackStr,
+    url: window.location.href,
+    timestamp: ahora
+  });
+
+  try {
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([payload], { type: 'application/json' });
+      navigator.sendBeacon('/api/telemetry/report', blob);
+      return;
+    }
+  } catch (_) {}
+
+  try {
+    fetch('/api/telemetry/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true
+    }).catch(() => {});
+  } catch (_) {}
+}
+
+/**
+ * Inicializa los escuchadores globales de excepciones no capturadas y promesas rechazadas.
+ */
+function inicializarPerroGuardian() {
+  if (typeof window === 'undefined') return;
+
+  window.addEventListener('error', (e) => {
+    reportarFalloCliente({
+      tipo: 'UNCAUGHT_ERROR',
+      mensaje: e.message || 'Error no capturado en script',
+      origen: e.filename ? `${e.filename}:${e.lineno || 0}` : 'window.onerror',
+      stack: e.error ? (e.error.stack || '') : ''
+    });
+  });
+
+  window.addEventListener('unhandledrejection', (e) => {
+    const razon = e.reason;
+    const msg = razon instanceof Error ? razon.message : String(razon || 'Promesa rechazada sin capturar');
+    const st = razon instanceof Error ? (razon.stack || '') : '';
+    reportarFalloCliente({
+      tipo: 'UNHANDLED_REJECTION',
+      mensaje: msg,
+      origen: 'window.onunhandledrejection',
+      stack: st
+    });
+  });
+}
+

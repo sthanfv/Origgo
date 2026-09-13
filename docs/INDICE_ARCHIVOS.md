@@ -89,6 +89,7 @@
 | `api/notifications/vapid-public-key.js` | GET /api/notifications/vapid-public-key | Entrega dinámica de clave pública VAPID (CERO variables frontend) |
 | `api/notifications/subscribe.js` | POST /api/notifications/subscribe | Registro de suscripciones W3C Push API |
 | `api/notifications/dispatch.js` | POST /api/notifications/dispatch | Despacho masivo de alertas push (protegido con secreto interno) |
+| `api/telemetry/report.js` | POST /api/telemetry/report | Perro Guardián serverless: ingesta de errores cliente con desinfección PII |
 
 ### Bibliotecas Backend (lib/)
 | Archivo | Descripción |
