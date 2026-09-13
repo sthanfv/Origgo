@@ -1,10 +1,31 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 12:35 (GMT-5)
+Última actualización: 2026-09-13 12:42 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-51. **Auditoría Forense de Cierre y Endurecimiento Defensivo (Sincronización Bilingüe en Webhook Wompi, Respaldo de Celular por Referencia en Cron, Actualización de `INDICE_ARCHIVOS.md` y Suite Ampliada a 8 Pruebas)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Omisión de preferencia de idioma en el webhook asíncrono:* En `api/payments/webhook-wompi.js`, al despachar el comprobante de pago por Resend (`despacharCorreoConfirmacion`), no se pasaba el parámetro `lang: pendingOrder?.lang || 'es'`, provocando que transacciones aprobadas por webhook enviaran siempre el correo en español, y omitía actualizar `preferredLang` en Firestore vía `db.updateUserPreferences`.
+      2. *Falta de extracción de respaldo de celular en el cron de conciliación:* En `api/payments/reconcile-cron.js`, si una orden pendiente recuperada de Firestore carecía de la propiedad `orden.celular` explícita, fallaba la acreditación en vez de extraer el celular directamente de la referencia canónica `HNT-[celular]-[prodCode]-...`. Además, no persistía `preferredLang` del comprador tras la conciliación exitosa.
+      3. *Desfase documental en `docs/INDICE_ARCHIVOS.md`:* El índice maestro de archivos no listaba el nuevo endpoint de conciliación (`api/payments/reconcile-cron.js`), la biblioteca de correos (`lib/email-templates.js`), los módulos frontend bilingües (`modules/13-i18n.js`), los nuevos estilos (`styles/17-push-modal.css`, `styles/18-i18n.css`) ni el catálogo de suites automatizadas de pruebas en `tests/`.
+    - **Solución Implementada:**
+      1. **Sincronización Bilingüe Completa en Webhooks (`api/payments/webhook-wompi.js`, 271 líneas < 500):**
+         - Inyección de `lang: pendingOrder?.lang || 'es'` en la llamada a `despacharCorreoConfirmacion`.
+         - Actualización atómica de `db.updateUserPreferences(celular, { preferredLang: pendingOrder.lang })` para garantizar que compradores internacionales mantengan su idioma tras el pago.
+      2. **Respaldo Canónico de Celular y Preferencias en Cron (`api/payments/reconcile-cron.js`, 361 líneas < 500):**
+         - Extracción defensiva del número de celular desde la referencia `HNT-[celular]-...` en caso de que la orden en Firestore no lo tenga en el payload de primer nivel.
+         - Actualización automática de `preferredLang` en Firestore si la orden contiene `orden.lang`.
+      3. **Sincronización de Documentación (`docs/INDICE_ARCHIVOS.md` en ambos repositorios):**
+         - Actualizadas las tablas de `api/`, `lib/`, `modules/`, `styles/` y agregada la tabla de suites de pruebas (`tests/`).
+         - Sincronizado idénticamente en `C:\Workspace\ofertas-hunter-pro\docs\INDICE_ARCHIVOS.md`.
+      4. **Ampliación de Suite Automatizada (`tests/reconciliation_cron.test.js`):**
+         - Añadida prueba número 8 que certifica la extracción de celular desde la referencia sintética y la persistencia de `preferredLang: 'en'` en Firestore.
+      5. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: `style.min.css`, `app.min.js` y `dist/` sincronizados.
+         - Suite de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -50. **Implementación de Tarea Programada de Conciliación Automática (Vercel Cron Fail-Safe Wompi, Ledger Atómico y Suite Automatizada)**:
     - **Diagnóstico y Causa Raíz:**

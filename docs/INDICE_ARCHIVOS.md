@@ -81,6 +81,7 @@
 |---|---|---|
 | `api/payments/create-order.js` | POST /api/payments/create-order | Crea órdenes, firma integridad Wompi |
 | `api/payments/webhook-wompi.js` | POST /api/payments/webhook-wompi | Recibe eventos asíncronos de Wompi, acredita créditos |
+| `api/payments/reconcile-cron.js` | GET/POST /api/payments/reconcile-cron | Conciliación periódica Vercel Cron Fail-Safe de pagos PENDING |
 | `api/auth/session.js` | POST /api/auth/session | Login con WhatsApp+PIN, reclamo de sesión post-pago |
 | `api/auth/recover.js` | POST /api/auth/recover | Recuperación de PIN por correo electrónico |
 | `api/leads/unlock.js` | POST /api/leads/unlock | Desbloqueo seguro de contactos con AES-256-GCM |
@@ -103,6 +104,7 @@
 | `lib/validation.js` | Esquemas Zod para validación estricta de inputs |
 | `lib/leads.js` | Índice de leads por ID desde archivos JSON |
 | `lib/push-subscriptions.js` | Almacén y persistencia de suscripciones Web Push con deduplicación |
+| `lib/email-templates.js` | Plantillas de correos transaccionales bilingües (Resend) con Magic Links |
 
 ### Módulos Frontend (modules/)
 | Archivo | Descripción |
@@ -113,13 +115,14 @@
 | `modules/03-api.js` | Carga de datos JSON, estados de error/vacío |
 | `modules/04-filters.js` | Filtros de ciudad, tipo y rango de precio |
 | `modules/05-carousel.js` | Carrusel de imágenes con swipe táctil |
-| `modules/06-cards.js` | Renderizado de tarjetas bento, skeletons, paginación |
-| `modules/07-unlock.js` | Desbloqueo de contactos y actualización del DOM |
+| `modules/06-cards.js` | Renderizado de tarjetas bento, skeletons, traducción títulos |
+| `modules/07-unlock.js` | Desbloqueo de contactos, DOM y ficha técnica |
 | `modules/08-checkout.js` | Modal de checkout, integración widget Wompi |
 | `modules/09-ui-effects.js` | Efectos visuales: parallax, animaciones, intersección |
 | `modules/10-listeners.js` | Event listeners globales, acordeones, teclado |
 | `modules/11-welcome.js` | Modal de bienvenida VIP, privilegios y credenciales |
 | `modules/12-push.js` | Gestión de suscripciones Web Push nativas PWA en memoria |
+| `modules/13-i18n.js` | Motor bilingüe ES/EN, conversión dinámica USD, View Transitions |
 
 ### Estilos CSS (styles/)
 | Archivo | Descripción |
@@ -140,6 +143,21 @@
 | `styles/14-toast.css` | Notificaciones toast |
 | `styles/15-welcome-modal.css` | Modal de bienvenida VIP |
 | `styles/16-utilities.css` | Utilidades: `.is-hidden`, íconos compactos |
+| `styles/17-push-modal.css` | Modal institucional de activación de alertas Web Push |
+| `styles/18-i18n.css` | Switch flotante y estilos de internacionalización |
+
+### Pruebas Automatizadas (tests/)
+| Archivo | Descripción |
+|---|---|
+| `tests/reconciliation_cron.test.js` | Conciliación periódica Vercel Cron Fail-Safe |
+| `tests/bilingual_infrastructure.test.js` | Infraestructura bilingüe: correos, push, zod, catálogo |
+| `tests/web_push.test.js` | Protocolo VAPID y suscripciones push |
+| `tests/r2_integration.test.js` | Sincronización y fallback Cloudflare R2 |
+| `tests/image_proxy.test.js` | Proxy de medios edge anti-SSRF |
+| `tests/whatsapp_template.test.js` | Generación de plantillas WhatsApp bilingües |
+| `tests/fair_usage_quota.test.js` | Límite de uso justo diario (35 leads/día) |
+| `tests/filters_sorting.test.js` | Ordenamiento táctico por precio/m² |
+| `tests/telemetry_watchdog.test.js` | Perro Guardián y reporte serverless |
 
 ### Configuración y Build
 | Archivo | Descripción |
@@ -148,6 +166,6 @@
 | `scripts/build.js` | Compila modules/ → app.js y styles/ → style.css + minificados |
 | `scripts/validate.js` | Suite DevSecOps de 8 fases: sintaxis, CSS, HTML, seguridad, modularidad |
 | `scripts/sign-data.js` | Firma HMAC-SHA256 de archivos JSON de datos |
-| `vercel.json` | Rutas, cabeceras OWASP, CSP, rewrites para Vercel |
+| `vercel.json` | Rutas, cabeceras OWASP, CSP, rewrites y Vercel Cron |
 | `.env.example` | Plantilla de variables de entorno con documentación |
 | `docs/INTEGRACIONES_EXTERNAS.md` | Manual paso a paso para integraciones externas ($0 coste) |

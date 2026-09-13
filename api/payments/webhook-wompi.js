@@ -234,6 +234,11 @@ module.exports = async function handler(req, res) {
   const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
   console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
 
+  // Sincronizar preferencia de idioma en el perfil si viene en la orden
+  if (pendingOrder?.lang && (pendingOrder.lang === 'es' || pendingOrder.lang === 'en')) {
+    await db.updateUserPreferences(celular, { preferredLang: pendingOrder.lang });
+  }
+
   // 8. Despacho transaccional automático de recibo y PIN por Resend API
   if (customerEmail && !pendingOrder?.emailSent) {
     const enviado = await despacharCorreoConfirmacion({
@@ -245,7 +250,8 @@ module.exports = async function handler(req, res) {
       pin,
       credits: usuarioActualizado.credits,
       plan: usuarioActualizado.plan,
-      planCity: usuarioActualizado.planCity
+      planCity: usuarioActualizado.planCity,
+      lang: pendingOrder?.lang || 'es'
     });
     if (enviado && pendingOrder) {
       pendingOrder.emailSent = true;

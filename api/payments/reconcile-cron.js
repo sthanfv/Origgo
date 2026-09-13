@@ -245,7 +245,21 @@ module.exports = async function handler(req, res) {
           });
 
           // Obtener o generar PIN criptográfico del usuario
-          const celular = orden.celular;
+          let celular = orden.celular;
+          if (!celular && ref.startsWith('HNT-')) {
+            const partes = ref.split('-');
+            if (partes.length >= 2 && partes[1].length === 10 && /^\d+$/.test(partes[1])) {
+              celular = partes[1];
+            }
+          }
+
+          if (!celular) {
+            console.warn(`[reconcile-cron] No se pudo determinar celular para ref ${ref}`);
+            metricas.errores++;
+            detalles.push({ reference: ref, accion: 'ERROR_CELULAR_FALTANTE' });
+            continue;
+          }
+
           const usuarioExistente = await db.getUserByPhone(celular);
           const pin = usuarioExistente ? usuarioExistente.pin : generatePin();
           const emailCliente = trxAprobada.customer_email
@@ -255,13 +269,19 @@ module.exports = async function handler(req, res) {
           // Auto-acreditar saldo en el ledger
           const usuarioActualizado = await db.addCredits(celular, creditos, pin, planData, emailCliente);
 
+          // Sincronizar preferencia de idioma en el perfil si viene en la orden
+          if (orden.lang && (orden.lang === 'es' || orden.lang === 'en')) {
+            await db.updateUserPreferences(celular, { preferredLang: orden.lang });
+          }
+
           // Actualizar estado de la orden a APPROVED
           await db.updateOrderStatus(ref, 'APPROVED', {
             transactionId: trxAprobada.id,
             paymentMethod: trxAprobada.payment_method_type,
             reconciledAt: new Date().toISOString(),
             reconciledBy: 'cron',
-            email: emailCliente
+            email: emailCliente,
+            celular
           });
 
           // Despachar confirmación por correo si no se había enviado antes

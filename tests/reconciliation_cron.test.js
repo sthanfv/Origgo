@@ -321,4 +321,59 @@ describe('🔄 Conciliación Automática Wompi (Vercel Cron Fail-Safe)', () => {
     const ordenSospechosa = await db.getPendingOrder(refFraude);
     assert.equal(ordenSospechosa?.status, 'FRAUD_SUSPECT', 'La orden debe marcarse FRAUD_SUSPECT');
   });
+
+  it('8. Debe extraer el celular de la referencia y persistir preferredLang en el perfil del usuario', async () => {
+    const celularTest = '3114443322';
+    const refSinCelular = `HNT-${celularTest}-1CR-${Date.now()}-i18n`;
+    const fechaOchoMinAtras = new Date(Date.now() - 8 * 60 * 1000).toISOString();
+
+    // Guardar orden SIN la propiedad celular explícita pero con lang: 'en'
+    await db.savePendingOrder(refSinCelular, {
+      reference: refSinCelular,
+      creditos: 1,
+      amountInCents: 500000,
+      status: 'PENDING',
+      lang: 'en',
+      createdAt: fechaOchoMinAtras
+    });
+
+    global.fetch = async (url) => {
+      if (url.includes('transactions?reference=')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            data: [
+              {
+                id: `trx_i18n_${Date.now()}`,
+                reference: refSinCelular,
+                status: 'APPROVED',
+                amount_in_cents: 500000,
+                payment_method_type: 'BANCOLOMBIA_TRANSFER',
+                customer_email: 'investor_reconciled@global.com'
+              }
+            ]
+          })
+        };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    };
+
+    const req = {
+      method: 'POST',
+      headers: { authorization: `Bearer ${cronSecretTest}` }
+    };
+    const res = crearMockRes();
+
+    await cronHandler(req, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.ok(res.payload?.metricas?.aprobadas >= 1);
+
+    // Verificar que el usuario fue creado o acreditado con el celular extraído de la referencia
+    const usuario = await db.getUserByPhone(celularTest);
+    assert.ok(usuario, 'El usuario debió crearse con el celular extraído de la referencia');
+    assert.equal(usuario.preferredLang, 'en', 'El usuario debe tener preferredLang configurado en en');
+    assert.equal(usuario.credits >= 1, true, 'El usuario debe tener sus créditos');
+  });
 });
