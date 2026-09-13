@@ -1,10 +1,38 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 06:55 (GMT-5)
+Última actualización: 2026-09-13 07:14 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-37. **Creación del Modal de Bienvenida y Onboarding Universal (Sin Tecnicismos, Multiactivo y Responsivo en PC y Android)**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario autorizó formalmente la implementación de una experiencia de bienvenida (Onboarding) elegante, de alta gama y responsiva tanto en PC como en Android.
+      2. Se exigió erradicar palabras técnicas complejas, emplear un lenguaje natural, conversacional y de alto prestigio, y comunicar con total claridad qué es Origgo: un punto de encuentro de oportunidades directas sin intermediarios ni comisiones, con enfoque multiactivo (no limitado exclusivamente a lo inmobiliario, sino concebido para expandirse a vehículos y otros activos de alto valor).
+    - **Solución Implementada:**
+      1. **Componente Modal Universal (`index.html`):**
+         - Se implementó `#modalOnboardingWelcome` con la tarjeta `.onboarding-modal-card`, dotada de aura lumínica esmeralda sutil, badge corporativo de alta finanza con el isotipo SVG oficial de Origgo, titular magnético (*"Oportunidades directas, de persona a persona"*) y subtítulo natural sin tecnicismos.
+         - Se integró la matriz de 3 pilares universales:
+           * 💎 *Encuentra antes que los demás*: Rastreo diario de oportunidades recién publicadas por sus dueños reales antes de que pasen a terceros.
+           * 🤝 *Trato directo sin comisiones*: Negociación directa de tú a tú con el propietario, sin agencias ni sobrecostos.
+           * ⚡ *Tú tienes el control*: Exploración libre y desbloqueo del contacto directo en un toque.
+         - Botón de acción principal `[ Comenzar a Explorar Oportunidades ]` y sello de confianza institucional.
+         - Acceso permanente en el menú lateral: se añadió la opción `¿Qué es Origgo?` (`#sideMenuLinkAbout`), permitiendo al usuario reabrir el onboarding en cualquier momento.
+      2. **Estilos de Alta Gama (`styles/15-welcome-modal.css`, 444 líneas < 500):**
+         - Diseño responsive mobile-first adaptado ergonómicamente para Android y pantallas táctiles, y centrado con proporciones armónicas en monitores de PC.
+         - Tokens de modo oscuro y claro integrados de forma nativa.
+      3. **Lógica de Presentación y Persistencia (`modules/11-welcome.js`, 228 líneas < 500):**
+         - Funciones `abrirModalOnboarding()` y `cerrarModalOnboarding()`.
+         - Despliegue automático y suave en la primera visita del usuario (`!localStorage.getItem('origgo_onboarding_seen')`) tras 1300ms de carga fluida.
+         - Persistencia para no interrumpir en visitas recurrentes, con soporte de cierre por clic fuera de la tarjeta, botón de cierre `&times;` o botón CTA.
+      4. **Soporte Bilingüe Internacional (`modules/13-i18n.js`, 485 líneas < 500):**
+         - Traducciones completas en español e inglés para todos los textos del onboarding y del menú lateral.
+      5. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: actualizados `app.js`, `app.min.js`, `style.css` y `style.min.css`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en todos los archivos).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -36. **Erradicación de Deriva Espacial en Ecos del Radar 404 (Fijación Absoluta de Coordenadas) y Arquitectura de Bienvenida Universal**:
     - **Diagnóstico y Causa Raíz:**

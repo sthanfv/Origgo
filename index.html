@@ -706,6 +706,77 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════
+       MODAL DE BIENVENIDA Y ONBOARDING UNIVERSAL
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="modalOnboardingWelcome" role="dialog" aria-modal="true" aria-labelledby="onboardingModalTitle">
+    <div class="modal-card onboarding-modal-card">
+      <button type="button" class="btn-modal-close" id="btnOnboardingClose" aria-label="Cerrar ventana de bienvenida">&times;</button>
+      
+      <div class="onboarding-modal-aura"></div>
+
+      <div class="onboarding-brand-badge">
+        <img src="./assets/img/origgo-icon.svg" alt="Origgo" class="onboarding-brand-icon" width="20" height="20" />
+        <span data-i18n="onboarding_badge">BIENVENIDO A ORIGGO</span>
+      </div>
+
+      <h2 class="onboarding-modal-title" id="onboardingModalTitle" data-i18n="onboarding_title">
+        Oportunidades directas, de persona a persona.
+      </h2>
+      <p class="onboarding-modal-subtitle" data-i18n="onboarding_subtitle">
+        El punto de encuentro donde compradores e inversionistas tratan directamente con los dueños reales, sin intermediarios.
+      </p>
+
+      <div class="onboarding-pillars-grid">
+        <div class="onboarding-pillar-card">
+          <div class="pillar-icon-box">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <div class="pillar-text-block">
+            <strong class="pillar-title" data-i18n="onboarding_p1_title">Encuentra antes que los demás</strong>
+            <p class="pillar-desc" data-i18n="onboarding_p1_desc">
+              Rastreamos el mercado todos los días para encontrar oportunidades recién publicadas por sus dueños, antes de que pasen a terceros.
+            </p>
+          </div>
+        </div>
+
+        <div class="onboarding-pillar-card">
+          <div class="pillar-icon-box">
+            <i class="fa-solid fa-handshake"></i>
+          </div>
+          <div class="pillar-text-block">
+            <strong class="pillar-title" data-i18n="onboarding_p2_title">Trato directo sin comisiones</strong>
+            <p class="pillar-desc" data-i18n="onboarding_p2_desc">
+              Hablas directamente con el propietario. Sin agencias intermediarias, sin comisiones de por medio y sin sobrecostos.
+            </p>
+          </div>
+        </div>
+
+        <div class="onboarding-pillar-card">
+          <div class="pillar-icon-box">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div class="pillar-text-block">
+            <strong class="pillar-title" data-i18n="onboarding_p3_title">Tú tienes el control</strong>
+            <p class="pillar-desc" data-i18n="onboarding_p3_desc">
+              Explora libremente el catálogo. Cuando una oportunidad se ajuste a lo que buscas, desbloqueas el contacto en un solo toque.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-onboarding-cta" id="btnOnboardingCta">
+        <span data-i18n="onboarding_cta_btn">Comenzar a Explorar Oportunidades</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+
+      <div class="onboarding-trust-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span data-i18n="onboarding_footer_note">100% Trato Directo · Cero Comisiones de Agencia · Información Verificada</span>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL ONBOARDING DE BIENVENIDA Y BENEFICIOS VIP (ESTILO GOOGLE ONE / APPLE GOLD) -->
   <div class="modal-backdrop" id="modalWelcomeSuccess">
     <div class="modal-card welcome-modal-card">
@@ -941,6 +1012,7 @@
 
     <nav class="side-menu-nav">
       <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="menu_dashboard">Dashboard Principal</span></a>
+      <a href="#" class="side-menu-link" id="sideMenuLinkAbout" data-side="about"><i class="fa-solid fa-circle-info"></i> <span data-i18n="menu_about">¿Qué es Origgo?</span></a>
       <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> <span data-i18n="menu_direct_leads">Inmuebles Directos</span></a>
       <a href="#" class="side-menu-link" id="sideMenuLinkPush" data-side="push"><i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> <span data-i18n="menu_push">Activar Alertas en Vivo</span></a>
       <a href="#" class="side-menu-link" id="sideMenuThemeToggle" data-side="theme"><i class="fa-solid fa-circle-half-stroke"></i> <span data-i18n="menu_theme">Modo Claro / Oscuro</span></a>

@@ -118,7 +118,30 @@ function cerrarModalBienvenidaVIP() {
   document.body.style.overflow = "";
 }
 
-// Inicialización de Listeners del Modal de Bienvenida
+/**
+ * Despliega el modal de bienvenida y onboarding universal de Origgo.
+ */
+function abrirModalOnboarding() {
+  const modal = document.getElementById("modalOnboardingWelcome");
+  if (!modal) return;
+  if (typeof aplicarTraduccionesAlDOM === 'function') {
+    aplicarTraduccionesAlDOM();
+  }
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+/**
+ * Cierra el modal de bienvenida y onboarding universal.
+ */
+function cerrarModalOnboarding() {
+  const modal = document.getElementById("modalOnboardingWelcome");
+  if (modal) modal.classList.remove("active");
+  document.body.style.overflow = "";
+  try { localStorage.setItem('origgo_onboarding_seen', '1'); } catch (e) {}
+}
+
+// Inicialización de Listeners de Bienvenida y Onboarding
 document.addEventListener("DOMContentLoaded", () => {
   const btnCloseWelcome = document.getElementById("btnWelcomeCloseIcon");
   if (btnCloseWelcome) {
@@ -155,4 +178,50 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Listeners para el Onboarding Universal
+  const btnCloseOnboarding = document.getElementById("btnOnboardingClose");
+  if (btnCloseOnboarding) {
+    btnCloseOnboarding.addEventListener("click", cerrarModalOnboarding);
+  }
+
+  const btnCtaOnboarding = document.getElementById("btnOnboardingCta");
+  if (btnCtaOnboarding) {
+    btnCtaOnboarding.addEventListener("click", cerrarModalOnboarding);
+  }
+
+  const modalOnboarding = document.getElementById("modalOnboardingWelcome");
+  if (modalOnboarding) {
+    modalOnboarding.addEventListener("click", (e) => {
+      if (e.target === modalOnboarding) cerrarModalOnboarding();
+    });
+  }
+
+  const linkAbout = document.getElementById("sideMenuLinkAbout");
+  if (linkAbout) {
+    linkAbout.addEventListener("click", (e) => {
+      e.preventDefault();
+      const btnCloseMenu = document.getElementById('btnCloseSideMenu') || document.getElementById('btnCloseMenu');
+      if (btnCloseMenu) btnCloseMenu.click();
+      abrirModalOnboarding();
+    });
+  }
+
+  // Despliegue automático y suave en la primera visita
+  try {
+    if (!localStorage.getItem('origgo_onboarding_seen')) {
+      setTimeout(() => {
+        if (!localStorage.getItem('origgo_onboarding_seen')) {
+          abrirModalOnboarding();
+        }
+      }, 1300);
+    }
+  } catch (e) {}
 });
+
+if (typeof window !== 'undefined') {
+  window.abrirModalBienvenidaVIP = abrirModalBienvenidaVIP;
+  window.cerrarModalBienvenidaVIP = cerrarModalBienvenidaVIP;
+  window.abrirModalOnboarding = abrirModalOnboarding;
+  window.cerrarModalOnboarding = cerrarModalOnboarding;
+}
