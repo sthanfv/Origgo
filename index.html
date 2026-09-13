@@ -578,18 +578,19 @@
 
           <div class="checkout-form-group">
             <label for="restorePinInput" class="checkout-form-label">
-              <i class="fa-solid fa-key checkout-icon-key"></i> Código de Acceso Origgo:
+              <i class="fa-solid fa-key checkout-icon-key"></i> Código de Acceso (PIN) o Ref. Wompi:
             </label>
             <input 
               type="text" 
               id="restorePinInput" 
               class="checkout-text-input pin-input pin-uppercase"
-              placeholder="Ej: HNT-7489" 
-              maxlength="12" 
+              placeholder="Ej: HNT-7489 o Referencia de Pago" 
+              maxlength="50" 
               autocomplete="one-time-code" 
               autocapitalize="characters" 
               spellcheck="false" 
             />
+            <span class="checkout-input-help">Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.</span>
           </div>
 
           <button type="button" class="btn-restore-session" id="btnRestoreSession">

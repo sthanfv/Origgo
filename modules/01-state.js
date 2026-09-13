@@ -331,19 +331,30 @@ async function restaurarSesionConPin() {
     btn.disabled = true;
   }
 
+  const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
+  const requestBody = esReferencia
+    ? { action: 'claim_reference', reference: pin }
+    : { celular, pin };
+
   try {
     const res = await fetch('/api/auth/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ celular, pin })
+      body: JSON.stringify(requestBody)
     });
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      throw new Error(data.error || 'Credenciales incorrectas');
+      throw new Error(data.message || data.error || 'Credenciales o referencia incorrectas');
+    }
+
+    if (data.requiresLogin) {
+      throw new Error(data.message || 'Pago acreditado. Ingresa tu PIN para continuar.');
     }
 
     localStorage.setItem('hunter_pro_token', data.token);
+    localStorage.removeItem('origgo_pending_ref');
+    const pinDevuelto = data.user?.pin || null;
     sesionUsuario = { ...data.user, token: data.token };
     delete sesionUsuario.pin;
     actualizarBadgeVip();
@@ -352,7 +363,9 @@ async function restaurarSesionConPin() {
 
     if (msgBox) {
       msgBox.className = 'restore-status-msg success';
-      msgBox.textContent = `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
+      msgBox.textContent = pinDevuelto
+        ? `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`
+        : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`;
       msgBox.style.display = 'block';
     }
 

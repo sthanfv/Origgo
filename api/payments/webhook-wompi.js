@@ -11,9 +11,14 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
-const { generatePin } = require('../../lib/crypto');
+const { generatePin, signJwt } = require('../../lib/crypto');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { requireEnv } = require('../../lib/env');
+const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
+
+const JWT_SECRET = requireEnv('JWT_SECRET', {
+  testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
+});
 
 module.exports = async function handler(req, res) {
   // Métodos permitidos para webhooks server-to-server
@@ -228,6 +233,25 @@ module.exports = async function handler(req, res) {
 
   const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
   console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
+
+  // 8. Despacho transaccional automático de recibo y PIN por Resend API
+  if (customerEmail && !pendingOrder?.emailSent) {
+    const enviado = await despacharCorreoConfirmacion({
+      phone: celular,
+      email: customerEmail,
+      reference,
+      productName: pendingOrder?.productName,
+      amountInCents: transaction.amount_in_cents,
+      pin,
+      credits: usuarioActualizado.credits,
+      plan: usuarioActualizado.plan,
+      planCity: usuarioActualizado.planCity
+    });
+    if (enviado && pendingOrder) {
+      pendingOrder.emailSent = true;
+      await db.savePendingOrder(reference, pendingOrder);
+    }
+  }
 
   return res.status(200).json({
     ok: true,

@@ -153,7 +153,8 @@ function abrirModalCheckout(index, pestana = null) {
       if (extraWrap && extraPill) {
         if (sesionUsuario.credits > 0) {
           extraWrap.style.display = 'block';
-          extraPill.textContent = `⚡ +${sesionUsuario.credits} Créditos acumulados`;
+          extraPill.textContent = `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros (no vencen)`;
+          extraPill.title = 'Tus créditos previos están protegidos y congelados. Si tu membresía finaliza, tus créditos seguirán disponibles para ti.';
         } else {
           extraWrap.style.display = 'none';
         }
@@ -161,9 +162,9 @@ function abrirModalCheckout(index, pestana = null) {
       if (benefitsWrap) benefitsWrap.style.display = 'block';
       if (benefitsList) {
         benefitsList.innerHTML = `
-          <li><i class="fa-solid fa-check"></i> Desbloqueo ilimitado nacional por 30 días.</li>
+          <li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados sin consumir tus créditos en bóveda.</li>
           <li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li>
-          <li><i class="fa-solid fa-check"></i> Radar exclusivo de rebajas de precio y arbitraje.</li>
+          <li><i class="fa-solid fa-shield"></i> Al vencer los 30 días, tus créditos previos seguirán intactos.</li>
         `;
       }
     } else if (sesionUsuario.plan === 'city') {
@@ -178,7 +179,8 @@ function abrirModalCheckout(index, pestana = null) {
       if (extraWrap && extraPill) {
         if (sesionUsuario.credits > 0) {
           extraWrap.style.display = 'block';
-          extraPill.textContent = `⚡ +${sesionUsuario.credits} Créditos fuera de cobertura`;
+          extraPill.textContent = `⚡ Bóveda: ${sesionUsuario.credits} Créditos para otras ciudades`;
+          extraPill.title = 'Tus contactos en ' + cNom + ' son ilimitados. Estos créditos se usan para desbloquear fuera de tu ciudad o al terminar tu plan.';
         } else {
           extraWrap.style.display = 'none';
         }
@@ -188,7 +190,7 @@ function abrirModalCheckout(index, pestana = null) {
         benefitsList.innerHTML = `
           <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li>
           <li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li>
-          <li><i class="fa-solid fa-check"></i> Radar de nuevas oportunidades en tiempo real.</li>
+          <li><i class="fa-solid fa-shield"></i> Tus créditos de bóveda te permiten desbloquear en otras ciudades.</li>
         `;
       }
     } else {
