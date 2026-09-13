@@ -187,35 +187,30 @@ async function inicializarSesionUsuario() {
  * Actualiza visualmente el botón VIP del header, chip móvil y menú lateral.
  */
 function actualizarBadgeVip() {
-  const btnHeader = document.getElementById('btnVipHeader');
-  const btnNavVip = document.getElementById('btnNavVip');
-  const btnMobileChip = document.getElementById('btnMobileStatusChip');
-  const sideUserBox = document.getElementById('sideMenuUserAccount');
+  const btnHeader = document.getElementById('btnVipHeader'), btnNavVip = document.getElementById('btnNavVip');
+  const btnMobileChip = document.getElementById('btnMobileStatusChip'), sideUserBox = document.getElementById('sideMenuUserAccount');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
 
   if (sesionUsuario) {
-    let htmlBadge = '';
-    let labelMovil = '';
-    let htmlChipMovil = '';
-    let htmlSideUser = '';
-
-    const phoneFormateado = sesionUsuario.phone ? `+57 ${sesionUsuario.phone}` : 'Cuenta Activa';
+    let htmlBadge = '', labelMovil = '', htmlChipMovil = '', htmlSideUser = '';
+    const phoneFormateado = sesionUsuario.phone ? `+57 ${sesionUsuario.phone}` : (isEn ? 'Active Account' : 'Cuenta Activa');
 
     if (sesionUsuario.plan === 'national') {
-      htmlBadge = '<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP Nacional</span>';
-      labelMovil = 'VIP Nac.';
-      htmlChipMovil = '<i class="fa-solid fa-crown" style="color:#FBBF24;"></i><span>Nacional 30d</span>';
+      htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">${isEn ? 'National VIP' : 'VIP Nacional'}</span>`;
+      labelMovil = isEn ? 'Nat. VIP' : 'VIP Nac.';
+      htmlChipMovil = `<i class="fa-solid fa-crown" style="color:#FBBF24;"></i><span>${isEn ? 'National 30d' : 'Nacional 30d'}</span>`;
       htmlSideUser = `
         <div class="side-user-card side-user-vip-national">
           <div class="side-user-top">
-            <span class="side-user-badge-gold">👑 VIP Nacional</span>
+            <span class="side-user-badge-gold">👑 ${isEn ? 'National VIP' : 'VIP Nacional'}</span>
             <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
           </div>
-          <p class="side-user-desc">Acceso total ilimitado a todo el país activo por 30 días.</p>
+          <p class="side-user-desc">${isEn ? 'Full unlimited nationwide access active for 30 days.' : 'Acceso total ilimitado a todo el país activo por 30 días.'}</p>
         </div>`;
     } else if (sesionUsuario.plan === 'city') {
       const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
       htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
-      labelMovil = 'VIP Ciudad';
+      labelMovil = isEn ? 'City VIP' : 'VIP Ciudad';
       htmlChipMovil = `<i class="fa-solid fa-crown" style="color:#34D399;"></i><span>${ciudad} 30d</span>`;
       htmlSideUser = `
         <div class="side-user-card side-user-vip-city">
@@ -223,22 +218,26 @@ function actualizarBadgeVip() {
             <span class="side-user-badge-emerald">👑 VIP ${ciudad}</span>
             <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
           </div>
-          <p class="side-user-desc">Desbloqueo ilimitado de contactos en ${ciudad} por 30 días.</p>
+          <p class="side-user-desc">${isEn ? `Unlimited contact reveals in ${ciudad} for 30 days.` : `Desbloqueo ilimitado de contactos en ${ciudad} por 30 días.`}</p>
         </div>`;
     } else {
       const cr = Number(sesionUsuario.credits || 0);
-      htmlBadge = `<span class="vip-btn-text">⚡ ${cr} Créditos</span>`;
+      const palabraCred = cr === 1 ? (isEn ? 'Credit' : 'Crédito') : (isEn ? 'Credits' : 'Créditos');
+      htmlBadge = `<span class="vip-btn-text">⚡ ${cr} ${palabraCred}</span>`;
       labelMovil = `${cr} Creds`;
       htmlChipMovil = cr > 0 
         ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>`
         : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
+      const descCreds = cr > 0
+        ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.')
+        : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
       htmlSideUser = `
         <div class="side-user-card">
           <div class="side-user-top">
-            <span class="side-user-badge-creds">⚡ ${cr} ${cr === 1 ? 'Crédito' : 'Créditos'}</span>
+            <span class="side-user-badge-creds">⚡ ${cr} ${palabraCred}</span>
             <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
           </div>
-          <p class="side-user-desc">${cr > 0 ? 'Saldo activo para desbloquear propietarios directos.' : 'Sin saldo activo. Recarga para desbloquear contactos.'}</p>
+          <p class="side-user-desc">${descCreds}</p>
         </div>`;
     }
 
@@ -247,9 +246,7 @@ function actualizarBadgeVip() {
       const span = btnNavVip.querySelector('span');
       if (span) span.textContent = labelMovil;
       const icon = btnNavVip.querySelector('i');
-      if (icon) {
-        icon.className = (sesionUsuario.plan || Number(sesionUsuario.credits || 0) === 0) ? 'fa-solid fa-crown' : 'fa-solid fa-bolt';
-      }
+      if (icon) icon.className = (sesionUsuario.plan || Number(sesionUsuario.credits || 0) === 0) ? 'fa-solid fa-crown' : 'fa-solid fa-bolt';
     }
     if (btnMobileChip) {
       btnMobileChip.innerHTML = htmlChipMovil;
@@ -260,17 +257,15 @@ function actualizarBadgeVip() {
       sideUserBox.classList.remove('is-hidden');
     }
   } else {
-    if (btnHeader) {
-      btnHeader.innerHTML = '<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">Créditos / Planes</span>';
-    }
+    if (btnHeader) btnHeader.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">${isEn ? 'Credits / Plans' : 'Créditos / Planes'}</span>`;
     if (btnNavVip) {
       const span = btnNavVip.querySelector('span');
-      if (span) span.textContent = 'Créditos';
+      if (span) span.textContent = isEn ? 'Credits' : 'Créditos';
       const icon = btnNavVip.querySelector('i');
       if (icon) icon.className = 'fa-solid fa-bolt';
     }
     if (btnMobileChip) {
-      btnMobileChip.innerHTML = '<i class="fa-solid fa-bolt"></i><span>Créditos</span>';
+      btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`;
       btnMobileChip.classList.remove('is-hidden');
     }
     if (sideUserBox) {

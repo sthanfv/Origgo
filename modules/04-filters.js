@@ -115,6 +115,21 @@ const DICCIONARIO_TERMINOS = {
   "bargain": ["ganga", "rebaja", "oportunidad"],
   "deal": ["oportunidad", "directo", "trato"],
   "urgent": ["urgente", "viaje", "motivo"],
+  "studio": ["apartaestudio", "estudio", "apartamento", "apto"],
+  "pool": ["piscina"],
+  "gym": ["gimnasio", "gym"],
+  "balcony": ["balcon", "terraza"],
+  "terrace": ["terraza", "balcon"],
+  "furnished": ["amoblado", "amoblada"],
+  "view": ["vista", "panoramica"],
+  "security": ["vigilancia", "porteria", "seguridad"],
+  "elevator": ["ascensor"],
+  "storage": ["deposito", "bodega"],
+  "rent": ["arriendo", "alquiler", "renta"],
+  "sale": ["venta"],
+  "luxury": ["lujo", "exclusivo", "penthouse"],
+  "investment": ["inversion", "arbitraje", "rentabilidad"],
+  "remodeled": ["remodelado", "estrenar", "nuevo"],
   // Ciudades / Sectores
   "bogota": ["bogota", "rosales", "chico", "cundinamarca"],
   "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
@@ -197,8 +212,9 @@ function restablecerTodosLosFiltros() {
   const btnClear = document.getElementById("cmdSearchClear");
   if (btnClear) btnClear.classList.remove("visible");
 
+  const isEnReset = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const labelLocation = document.getElementById("cmdFilterLocationLabel");
-  if (labelLocation) labelLocation.textContent = "Colombia (Todas)";
+  if (labelLocation) labelLocation.textContent = isEnReset ? "All Cities" : "Colombia (Todas)";
 
   const pillLocation = document.getElementById("cmdFilterLocation");
   if (pillLocation) {
@@ -327,8 +343,10 @@ function filtrarYOrdenarLeads(leads) {
 
     // B. Filtro por Texto Libre (Omnibox)
     if (textoBusquedaActivo) {
+      const detallesValores = item.detalles ? Object.values(item.detalles).join(' ') : '';
+      const detallesEnValores = item.detalles_en ? Object.values(item.detalles_en).join(' ') : '';
       const itemSearchText = normalizarTextoBusqueda(
-        `${item.titulo || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.detalles ? Object.values(item.detalles).join(' ') : ''}`
+        `${item.titulo || ''} ${item.titulo_en || ''} ${item.tipo_inmueble || ''} ${item.tipo_inmueble_en || ''} ${item.ciudad || ''} ${item.ubicacion || ''} ${item.barrio || ''} ${item.precio || ''} ${item.precio_usd || ''} ${item.precio_m2 || ''} ${item.urgencia || ''} ${item.urgencia_en || ''} ${item.rebaja || ''} ${item.dato_1 || ''} ${item.dato_2 || ''} ${detallesValores} ${detallesEnValores} property real estate direct owner fsbo apartment house flat pool studio deal`
       );
       if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
     }
@@ -434,4 +452,8 @@ function inicializarFiltroHoy() {
     btnHoy.setAttribute("aria-pressed", String(filtroHoyActivo));
     aplicarFiltrosOmnibox();
   });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { DICCIONARIO_TERMINOS, normalizarTextoBusqueda, coincideBusquedaInteligente };
 }

@@ -118,11 +118,11 @@ function abrirModalCheckout(index, pestana = null) {
     const extraWrap = document.getElementById('userExtraCreditsWrap'), extraPill = document.getElementById('userExtraCreditsPill');
     const benefitsWrap = document.getElementById('userBenefitsToggleWrap'), benefitsList = document.getElementById('userBenefitsList');
 
-    if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
-    if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
-    if (inputWa) inputWa.value = sesionUsuario.phone;
-
     const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+    if (elPhone) elPhone.textContent = sesionUsuario.phone ? `+57 ${sesionUsuario.phone}` : (isEn ? 'Active Account' : 'Cuenta Activa');
+    if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : (isEn ? 'Protected PIN' : 'PIN protegido');
+    if (inputWa) inputWa.value = sesionUsuario.phone || '';
+
     if (sesionUsuario.plan === 'national') {
       if (cardCredits) cardCredits.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
@@ -232,7 +232,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
       const claimRes = await fetch('/api/auth/session', {
         method: 'POST',
         headers: headersClaim,
-        body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
+        body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference, lang: esIngles ? 'en' : 'es' })
       });
       const claimText = await claimRes.text();
       let claimData = null;

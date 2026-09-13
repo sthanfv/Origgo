@@ -46,7 +46,7 @@ function manejarErrorImagenLead(imgEl) {
   imgEl.src = FALLBACK_INMUEBLE_SVG;
   imgEl.classList.add('img-fallback-applied');
 }
-window.manejarErrorImagenLead = manejarErrorImagenLead;
+if (typeof window !== 'undefined') window.manejarErrorImagenLead = manejarErrorImagenLead;
 
 /**
  * Formatea un precio con el símbolo $ separado sin mostrar jamás 'COP'.
@@ -306,15 +306,16 @@ function renderizarInterfaz(dataset) {
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     const tiempoRelativoTexto = formatearTiempoRelativo(item.timestamp_ms, item.fecha_relativa);
-    const statusBadgeTexto = traducirBadgeUrgencia(item.urgencia, isEn);
+    const statusBadgeTexto = (isEn && item.urgencia_en) ? item.urgencia_en : traducirBadgeUrgencia(item.urgencia, isEn);
     const ubicacionTexto = isEn && item.ubicacion ? item.ubicacion.replace(/Estrato\s*(\d+)/gi, 'Stratum $1') : (item.ubicacion || '');
     const ubicacionFinal = (estaDesbloqueado && datosRev?.ubicacionCompleta) ? datosRev.ubicacionCompleta : ubicacionTexto;
-    const tituloBase = traducirTituloCatalogo(item.titulo, isEn);
+    const tituloBase = (isEn && item.titulo_en) ? item.titulo_en : traducirTituloCatalogo(item.titulo, isEn);
     const tituloFinal = (estaDesbloqueado && datosRev?.tituloOriginal) ? datosRev.tituloOriginal : tituloBase;
     const dato2Texto = traducirDatoDistribucion(item.dato_2, isEn);
 
-    const detalles = item.detalles ? { ...item.detalles, "Ubicación": ubicacionFinal } : { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", "Ubicación": ubicacionFinal, "Tipo": item.tipo_inmueble || "Propiedad Residencial", "Operación": "Venta Directa con Propietario" };
-    const detallesTraducidos = traducirSlideupDetalles(detalles, isEn);
+    const detallesBase = (isEn && item.detalles_en) ? item.detalles_en : (item.detalles || {});
+    const detalles = Object.keys(detallesBase).length > 0 ? { ...detallesBase, [isEn ? "Location" : "Ubicación"]: ubicacionFinal } : { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", [isEn ? "Location" : "Ubicación"]: ubicacionFinal, [isEn ? "Property Type" : "Tipo"]: (isEn && item.tipo_inmueble_en) ? item.tipo_inmueble_en : (item.tipo_inmueble || "Propiedad Residencial"), [isEn ? "Deal Type" : "Operación"]: isEn ? "Direct Deal with Owner" : "Venta Directa con Propietario" };
+    const detallesTraducidos = (isEn && item.detalles_en) ? detalles : traducirSlideupDetalles(detalles, isEn);
 
     const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
@@ -468,4 +469,8 @@ function renderizarInterfaz(dataset) {
       habilitarSwipeTactilCarrusel(track, cardIndex, totalFotos);
     }
   });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { traducirBadgeUrgencia, traducirTituloCatalogo, traducirDatoDistribucion, formatearTiempoRelativo };
 }

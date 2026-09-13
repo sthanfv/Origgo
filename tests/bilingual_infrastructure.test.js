@@ -11,6 +11,8 @@
  * 6. Traducción determinista de títulos y tipos inmobiliarios en el catálogo.
  */
 
+process.env.NODE_ENV = 'test';
+
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 
@@ -31,6 +33,10 @@ const {
 } = require('../lib/validation');
 
 const { registrarSuscripcion, obtenerSuscripcionesActivas } = require('../lib/push-subscriptions');
+const { resetRateLimiter } = require('../lib/rate-limiter');
+const { DICCIONARIO_TERMINOS, normalizarTextoBusqueda, coincideBusquedaInteligente } = require('../modules/04-filters');
+const { traducirBadgeUrgencia, traducirTituloCatalogo, traducirDatoDistribucion } = require('../modules/06-cards');
+const { DICCIONARIO_I18N, calcularReferenciaUSD } = require('../modules/13-i18n');
 
 describe('🌐 Infraestructura Bilingüe — Correos Transaccionales (Resend)', () => {
   it('Debe generar plantilla de restauración en español con textos institucionales correctos', () => {
@@ -318,12 +324,17 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
   });
 
   it('recover endpoint debe responder con mensaje genérico en inglés cuando lang === "en"', async () => {
+    resetRateLimiter();
     const handler = require('../api/auth/recover');
     const req = {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'x-forwarded-for': '203.0.113.88'
+      },
+      socket: { remoteAddress: '203.0.113.88' },
       body: {
-        email: 'investor.global@example.com',
+        email: `investor_${Date.now()}@example.com`,
         lang: 'en'
       }
     };
@@ -340,5 +351,72 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
     assert.equal(statusCode, 202);
     assert.equal(resBody.ok, true);
     assert.ok(resBody.message.includes('If an associated account exists'), 'Debe responder mensaje genérico en inglés');
+  });
+});
+
+describe('🔍 Omnibox y Frontend Bilingüe de Alta Fidelidad', () => {
+  it('DICCIONARIO_TERMINOS debe incluir términos de alta intención inmobiliaria en inglés', () => {
+    const terminosClave = [
+      'apartment', 'house', 'studio', 'pool', 'gym', 'balcony', 'terrace',
+      'furnished', 'view', 'security', 'elevator', 'storage', 'rent', 'sale',
+      'luxury', 'investment', 'remodeled', 'bedroom', 'bathroom', 'parking', 'owner'
+    ];
+    for (const t of terminosClave) {
+      assert.ok(DICCIONARIO_TERMINOS[t], `DICCIONARIO_TERMINOS debe contener la clave "${t}"`);
+      assert.ok(Array.isArray(DICCIONARIO_TERMINOS[t]) && DICCIONARIO_TERMINOS[t].length > 0, `"${t}" debe tener equivalencias en español`);
+    }
+  });
+
+  it('coincideBusquedaInteligente debe resolver búsquedas en inglés sobre leads en español', () => {
+    const textoLead = normalizarTextoBusqueda('Apartamento en Venta — Bogota Chapinero 3 alcobas 2 banos 1 garaje piscina gimnasio directo propietario');
+
+    assert.ok(coincideBusquedaInteligente(textoLead, 'apartment'), 'Debe encontrar "apartment"');
+    assert.ok(coincideBusquedaInteligente(textoLead, 'bedroom'), 'Debe encontrar "bedroom" por alcobas');
+    assert.ok(coincideBusquedaInteligente(textoLead, 'parking'), 'Debe encontrar "parking" por garaje');
+    assert.ok(coincideBusquedaInteligente(textoLead, 'pool'), 'Debe encontrar "pool" por piscina');
+    assert.ok(coincideBusquedaInteligente(textoLead, 'gym'), 'Debe encontrar "gym" por gimnasio');
+    assert.ok(coincideBusquedaInteligente(textoLead, 'owner'), 'Debe encontrar "owner" por propietario');
+  });
+
+  it('traducirBadgeUrgencia, traducirTituloCatalogo y traducirDatoDistribucion deben transformar textos con fidelidad', () => {
+    assert.equal(traducirBadgeUrgencia('🔥 Oportunidad Directa', true), '🔥 Direct Deal');
+    assert.equal(traducirBadgeUrgencia('📉 Rebaja Activa', true), '📉 Price Drop');
+    assert.equal(traducirBadgeUrgencia('🔥 Oportunidad Directa', false), '🔥 Oportunidad Directa');
+
+    assert.equal(traducirTituloCatalogo('Apartamento en Venta — Bogota', true), 'Apartment for Sale — Bogota');
+    assert.equal(traducirTituloCatalogo('Casa en Venta — Medellin', true), 'House for Sale — Medellin');
+    assert.equal(traducirTituloCatalogo('Apartamento en Venta — Bogota', false), 'Apartamento en Venta — Bogota');
+
+    assert.equal(traducirDatoDistribucion('3 Hab • 2 Baños • 1 Garajes', true), '3 Beds • 2 Baths • 1 Parking');
+    assert.equal(traducirDatoDistribucion('1 Hab • 1 Baño • 1 Garajes', true), '1 Bed • 1 Bath • 1 Parking');
+    assert.equal(traducirDatoDistribucion('3 Hab • 2 Baños • 1 Garajes', false), '3 Hab • 2 Baños • 1 Garajes');
+  });
+
+  it('calcularReferenciaUSD debe convertir COP a USD con tasa comercial exacta', () => {
+    const ref1 = calcularReferenciaUSD('$ 410.000.000');
+    assert.ok(ref1.includes('100,000 USD'), 'Debe calcular exactamente 100,000 USD');
+    const refCero = calcularReferenciaUSD('$ 0');
+    assert.equal(refCero, '', 'Monto cero debe retornar cadena vacía');
+  });
+
+  it('Dataset inmobiliario.json debe contener metadatos canónicos bilingües en todos los leads', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const rutaData = path.join(__dirname, '..', 'data', 'inmobiliario.json');
+    const raw = fs.readFileSync(rutaData, 'utf8');
+    const catalogo = JSON.parse(raw);
+
+    assert.ok(Array.isArray(catalogo.leads) && catalogo.leads.length > 0, 'Debe haber leads en el catálogo');
+
+    for (const lead of catalogo.leads) {
+      assert.ok(lead.titulo_en, `Lead ${lead.id} debe tener titulo_en`);
+      assert.ok(lead.tipo_inmueble_en, `Lead ${lead.id} debe tener tipo_inmueble_en`);
+      assert.ok(lead.urgencia_en, `Lead ${lead.id} debe tener urgencia_en`);
+      assert.ok(lead.detalles_en, `Lead ${lead.id} debe tener detalles_en`);
+      assert.ok(lead.detalles_en['Contact'], `Lead ${lead.id} debe tener Contact en detalles_en`);
+      if (lead.precio_raw > 0) {
+        assert.ok(lead.precio_usd, `Lead ${lead.id} con precio debe tener precio_usd`);
+      }
+    }
   });
 });

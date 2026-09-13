@@ -1,10 +1,38 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 13:02 (GMT-5)
+Última actualización: 2026-09-13 13:24 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-55. **Pipeline de Ingesta Bilingüe Canónico (Publisher Web), Omnibox Semántico Multi-Atributo, Sincronización Reactiva de Badges VIP y Aviso Legal Anti-Impresión Localizado**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Falta de metadatos canónicos en origen (`inmobiliario.json`):* El generador de feeds del scraper `publisher_web.js` solo emitía atributos en español, obligando al frontend a traducir mediante expresiones regulares frágiles (`replace(/^Apartamento\s+en\s+Venta/)`). Títulos con redacción no estandarizada o señales de urgencia complejas no se traducían fielmente.
+      2. *Discrepancia léxica en señales de urgencia:* En `publisher_web.js`, las señales específicas de urgencia ('Motivo Viaje', 'Urgencia Manifiesta', 'Herencia/Sucesión', 'Precio de Remate', 'Rebaja de Precio Activa') no contaban con traducciones semánticas 1-a-1 en inglés, emitiendo un genérico 'Urgent Opportunity'.
+      3. *Re-sobrescritura rígida en español en Badges VIP:* Al alternar idioma o al actualizar estado reactivo en `modules/01-state.js` (`actualizarBadgeVip`), se generaban textos estáticos en español ("Créditos / Planes", "VIP Nacional", "VIP Ciudad", "Saldo activo para desbloquear...") sin respetar `isEn`.
+      4. *Omisión de sincronización VIP y aviso legal en `modules/13-i18n.js`:* La conmutación de idioma no invocaba `actualizarBadgeVip()`, dejando el header desalineado, y el aviso anti-impresión (`#printProtectionNotice`) permanecía en español al imprimir en modo inglés.
+      5. *Falta de pruebas de integración de frontend y colisión en rate limiter:* La suite de tests carecía de validación directa del omnibox con términos reales angloparlantes y el test de recuperación colisionaba por acumulación de peticiones en la misma IP/cuenta.
+    - **Solución Implementada:**
+      1. **Scraper / Ingesta con Metadatos Canónicos Bilingües (`ofertas-hunter-pro/publisher_web.js`, 495 líneas $\le 500$):**
+         - Inyección determinista de `titulo_en`, `tipo_inmueble_en`, `urgencia_en`, `precio_usd` y `detalles_en` (Stratum, Built Area, Bedrooms, Bathrooms, Parking, Contact) en el 100% de los leads compilados en `data/inmobiliario.json`.
+         - Matriz `MAPA_SENALES` ampliada con traducciones semánticas directas (`✈️ Relocation / Moving`, `⚡ Urgent Sale`, `⚖️ Estate Sale`, `🔨 Below Market Deal`, `🚚 Job Relocation`, `🔄 Trade-in Accepted`, `🤝 Open to Offers`, `🏷️ Negotiable Price`, `📉 Active Price Drop`, `💎 Investor Deal`).
+      2. **Estado Reactivo Bilingüe (`modules/01-state.js`, 476 líneas $\le 500$):**
+         - `actualizarBadgeVip` condicionado completamente por `isEn` ("National VIP", "Nat. VIP", "City VIP", "Credits / Plans", "Active balance to unlock verified direct owners.").
+      3. **Omnibox y Tarjetas Bento de Alta Fidelidad (`modules/04-filters.js`, 460 líneas; `modules/06-cards.js`, 477 líneas $\le 500$):**
+         - `DICCIONARIO_TERMINOS` enriquecido con términos de alta intención (`studio`, `pool`, `gym`, `balcony`, `terrace`, `furnished`, `view`, `security`, `elevator`, `storage`, `rent`, `sale`, `luxury`, `investment`, `remodeled`).
+         - Búsqueda `itemSearchText` unifica campos en español e inglés.
+         - `renderizarInterfaz` consume de primera mano los campos canónicos bilingües del dataset antes de aplicar fallbacks.
+      4. **Internacionalización y Protección Legal (`modules/13-i18n.js`, 499 líneas $\le 500$):**
+         - `cambiarIdioma` y `aplicarTraduccionesAlDOM` sincronizan atómicamente `actualizarBadgeVip()`.
+         - `#printProtectionNotice` traducido al inglés ante impresión en modo anglosajón.
+      5. **Suite de Pruebas DevSecOps y Blindaje Unitario (`tests/bilingual_infrastructure.test.js`):**
+         - 5 nuevas pruebas unitarias cubriendo omnibox semántico, normalización fonética, badges de urgencia, conversión USD y consistencia del 100% del dataset.
+         - Aislamiento de entorno (`process.env.NODE_ENV = 'test'`, `resetRateLimiter()` e identificadores dinámicos) garantizando 20/20 pruebas aprobadas en la suite y 54/54 en el total del portal.
+      6. **Compilación y Certificación:**
+         - `scripts/build.js` recompiló `app.min.js` y `style.min.css`.
+         - Suite DevSecOps de 8 fases aprobada con 0 errores.
+         - Todos los archivos JS y CSS modificados cumplen estrictamente $\le 500$ líneas.
 
 -54. **Infraestructura Bilingüe Integral en Todo el Ecosistema (Omnibox Semántico EN->ES, Persistencia de Idioma en Órdenes/Checkout, Respuestas Localizadas en Autenticación/Desbloqueo y Referencias USD)**:
     - **Diagnóstico y Causa Raíz:**

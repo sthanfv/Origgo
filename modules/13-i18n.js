@@ -330,6 +330,22 @@ function aplicarTraduccionesAlDOM() {
     document.documentElement.classList.add('notranslate');
     document.documentElement.setAttribute('translate', 'no');
   }
+
+  // 10. Aviso anti-impresión localizado
+  const printNotice = document.getElementById('printProtectionNotice');
+  if (printNotice) {
+    const isEn = lang === 'en';
+    const b = printNotice.querySelector('.print-notice-badge'), t = printNotice.querySelector('.print-notice-title'), l = printNotice.querySelector('.print-notice-lead'), c = printNotice.querySelector('.print-notice-card');
+    if (b) b.textContent = isEn ? 'ORIGGO PRIVACY & SECURITY' : 'SEGURIDAD Y PRIVACIDAD ORIGGO';
+    if (t) t.textContent = isEn ? 'PROTECTED DOCUMENT — LAW 1581 OF 2012' : 'DOCUMENTO PROTEGIDO — LEY 1581 DE 2012';
+    if (l) l.textContent = isEn ? 'Due to constitutional data protection (Habeas Data) and unauthorized brokerage prevention, printing or mass scraping of this catalog is strictly restricted.' : 'Por protección constitucional de datos personales de los propietarios (Habeas Data) y prevención de intermediación inmobiliaria no autorizada, la impresión, exportación a PDF o extracción masiva de este catálogo está estrictamente restringida.';
+    if (c) c.innerHTML = isEn
+      ? '<p><strong>Personal & Exclusive Use:</strong> Direct owner contact details may only be accessed individually by authenticated account holders.</p><p><strong>Active Forensic Traceability:</strong> Mass redistribution, commercial resale, or forwarding this directory to third-party brokers violates platform terms and Colombian Data Protection regulations.</p>'
+      : '<p><strong>Uso Personal y Exclusivo:</strong> Los números telefónicos y datos de contacto directo de los inmuebles únicamente pueden ser consultados de forma individual por el titular de la cuenta autenticada.</p><p><strong>Trazabilidad Forense Activa:</strong> Cualquier redistribución masiva, comercialización o suministro de este directorio a terceras inmobiliarias o bases de datos externas vulnera las políticas de la plataforma y el Régimen General de Protección de Datos Personales de Colombia.</p>';
+  }
+
+  // 11. Sincronizar badge VIP según idioma
+  if (typeof actualizarBadgeVip === 'function') actualizarBadgeVip();
 }
 
 /**
@@ -353,6 +369,9 @@ function cambiarIdioma(nuevoIdioma) {
 
   // Actualizar cualquier ficha técnica abierta
   traducirSlideupDrawer();
+
+  // Actualizar badges y botones VIP
+  if (typeof actualizarBadgeVip === 'function') actualizarBadgeVip();
 
   // Actualizar modales abiertos si están activos en pantalla
   if (typeof renderizarContenidoLegal === 'function') {
@@ -477,4 +496,3 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { DICCIONARIO_I18N, obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer };
 }
-
