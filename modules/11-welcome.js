@@ -207,14 +207,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Despliegue automático y suave en la primera visita
+  const btnHeroAbout = document.getElementById("btnHeroOpenAbout");
+  if (btnHeroAbout) {
+    btnHeroAbout.addEventListener("click", (e) => {
+      e.preventDefault();
+      abrirModalOnboarding();
+    });
+  }
+
+  // Despliegue automático y suave en cada nueva sesión si no se ha cerrado en ella
   try {
-    if (!localStorage.getItem('origgo_onboarding_seen')) {
+    const vistoEnSesion = sessionStorage.getItem('origgo_onboarding_seen');
+    if (!vistoEnSesion) {
       setTimeout(() => {
-        if (!localStorage.getItem('origgo_onboarding_seen')) {
+        const recheck = sessionStorage.getItem('origgo_onboarding_seen');
+        if (!recheck) {
           abrirModalOnboarding();
         }
-      }, 1300);
+      }, 1000);
     }
   } catch (e) {}
 });
@@ -224,4 +234,5 @@ if (typeof window !== 'undefined') {
   window.cerrarModalBienvenidaVIP = cerrarModalBienvenidaVIP;
   window.abrirModalOnboarding = abrirModalOnboarding;
   window.cerrarModalOnboarding = cerrarModalOnboarding;
+  window.mostrarOnboarding = abrirModalOnboarding;
 }

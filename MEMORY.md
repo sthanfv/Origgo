@@ -1,10 +1,36 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 07:14 (GMT-5)
+Última actualización: 2026-09-13 07:32 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-38. **Erradicación Total de Hijacking por Google Translate ("rigramogramoo" y pérdida de cursiva), Animación Táctica de Rompecabezas en Dígitos 4 de 404 y Acceso Prominente a Onboarding**:
+    - **Diagnóstico y Análisis Forense:**
+      1. *Misterio de "rigramogramoo" resuelto:* En la captura compartida por el usuario, el navegador Chrome tenía activada la barra automática de Google Translate (traductor de páginas de Chrome). Al conmutar el idioma a inglés (`EN`), el script aplicó `document.documentElement.lang = 'en'`. Chrome detectó que la página estaba en inglés y, al tener el usuario su navegador en español, forzó una traducción automática de regreso al español por fuerza bruta.
+      2. *Traducción de letras como unidades métricas:* El logotipo tenía sus letras separadas en spans (`<span>r</span><span>i</span><span>g</span><span>g</span><span>o</span>`). El motor de Google Translate analizó cada nodo de forma aislada y tradujo `<span>g</span>` como la abreviatura de "gramo", resultando en `r` + `i` + `gramo` + `gramo` + `o` = `rigramogramoo`.
+      3. *Pérdida de tipografía cursiva (`.editorial-italic`):* Al traducir el titular en inglés `Properties for sale <span class="editorial-italic">directly</span> from owners`, Google Translate sobrescribió el DOM con texto plano `"Propiedades en venta directamente de los propietarios"`, destruyendo el nodo `<span>` interior y perdiendo el estilo cursivo dorado.
+      4. *Frecuencia del Modal de Onboarding:* El modal estaba restringido por `localStorage` para abrirse solo 1 vez en la vida del dispositivo. Al haberlo cerrado previamente, no volvía a abrirse automáticamente al refrescar o borrar caché.
+      5. *Dígitos 4 en 404 estáticos:* El usuario exigió animar los dos números 4 para que entraran por partes/pedazos ensamblándose como un rompecabezas táctico interactivo.
+    - **Solución Implementada:**
+      1. **Blindaje de Inmunidad Notranslate en todo el Ecosistema (`index.html`, `404.html`, `modules/13-i18n.js`):**
+         - Se añadió `<meta name="google" content="notranslate">` en la cabecera de `index.html` y `404.html`.
+         - Se aplicó `class="notranslate" translate="no"` de forma atómica en la etiqueta raíz `<html>` y en los contenedores de identidad corporativa `.brand-badge`, `.brand-title` y `.brand-letters-riggo`.
+         - En `modules/13-i18n.js`, al alternar idiomas, se garantiza que `document.documentElement` conserve inalterados `classList.add('notranslate')` y `setAttribute('translate', 'no')`.
+      2. **Animación Rompecabezas Táctico en Dígitos 4 (`404.html`, 469 líneas < 500):**
+         - Cada dígito 4 se descompuso en 3 piezas vectoriales geométricas SVG independientes: la diagonal (`.part-diag`), el travesaño (`.part-cross`) y el vástago vertical (`.part-stem`).
+         - Animaciones de ensamble cinemático: la diagonal desciende en ángulo y rotación, el travesaño se desliza desde el flanco opuesto y el vástago desciende con inercia elástica, encajando magnéticamente ("snap") en el 4.
+         - Desfase complementario entre el 4 izquierdo (entrada 0.15s - 0.45s) y el 4 derecho (entrada 0.55s - 0.85s).
+         - Micro-interactividad: al hacer clic sobre cualquier dígito 4 o pulsar la lente del radar, los cuatros se desensamblan y reensamblan en vivo.
+      3. **Onboarding Prominente y Frecuencia de Sesión (`modules/11-welcome.js`, `styles/05-hero.css`, `index.html`):**
+         - Se agregó un botón interactivo permanente en el hero eyebrow tag: `[ ✦ ¿Qué es Origgo? ]` (`#btnHeroOpenAbout`), permitiendo abrir el modal en 1 clic sin tener que ir al menú lateral.
+         - Se sincronizó la frecuencia con `sessionStorage`, de modo que en cada nueva sesión de navegación el modal se despliega suavemente a los 1000ms.
+         - Expuesto `window.mostrarOnboarding` para activación inmediata.
+      4. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `app.js`, `app.min.js`, `style.css` y `style.min.css`.
+         - Validación completa de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en todos los módulos JS y CSS).
 
 -37. **Creación del Modal de Bienvenida y Onboarding Universal (Sin Tecnicismos, Multiactivo y Responsivo en PC y Android)**:
     - **Diagnóstico y Necesidad:**

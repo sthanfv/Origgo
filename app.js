@@ -4207,14 +4207,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Despliegue automático y suave en la primera visita
+  const btnHeroAbout = document.getElementById("btnHeroOpenAbout");
+  if (btnHeroAbout) {
+    btnHeroAbout.addEventListener("click", (e) => {
+      e.preventDefault();
+      abrirModalOnboarding();
+    });
+  }
+
+  // Despliegue automático y suave en cada nueva sesión si no se ha cerrado en ella
   try {
-    if (!localStorage.getItem('origgo_onboarding_seen')) {
+    const vistoEnSesion = sessionStorage.getItem('origgo_onboarding_seen');
+    if (!vistoEnSesion) {
       setTimeout(() => {
-        if (!localStorage.getItem('origgo_onboarding_seen')) {
+        const recheck = sessionStorage.getItem('origgo_onboarding_seen');
+        if (!recheck) {
           abrirModalOnboarding();
         }
-      }, 1300);
+      }, 1000);
     }
   } catch (e) {}
 });
@@ -4224,6 +4234,7 @@ if (typeof window !== 'undefined') {
   window.cerrarModalBienvenidaVIP = cerrarModalBienvenidaVIP;
   window.abrirModalOnboarding = abrirModalOnboarding;
   window.cerrarModalOnboarding = cerrarModalOnboarding;
+  window.mostrarOnboarding = abrirModalOnboarding;
 }
 
 
@@ -4489,7 +4500,7 @@ const DICCIONARIO_I18N = {
     sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
-    hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles',
+    hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles', hero_about_pill_text: '¿Qué es Origgo?',
     catalog_heading: 'Inmuebles Directos en Vivo', catalog_eyebrow: 'PORTAFOLIO VERIFICADO',
     catalog_count_suffix: 'oportunidades directas', catalog_count_single: 'oportunidad directa',
     marquee_direct_title: '0% Comisión', marquee_direct_sub: 'Trato directo',
@@ -4568,7 +4579,7 @@ const DICCIONARIO_I18N = {
     sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
-    hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties',
+    hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties', hero_about_pill_text: 'What is Origgo?',
     catalog_heading: 'Live Direct Listings', catalog_eyebrow: 'VERIFIED PORTFOLIO',
     catalog_count_suffix: 'direct opportunities', catalog_count_single: 'direct opportunity',
     marquee_direct_title: '0% Commission', marquee_direct_sub: 'Direct deal',
@@ -4820,9 +4831,11 @@ function aplicarTraduccionesAlDOM() {
     }
   });
 
-  // 9. Atributo lang global en el HTML
+  // 9. Atributo lang global en el HTML con inmunidad notranslate
   if (document.documentElement) {
     document.documentElement.lang = lang;
+    document.documentElement.classList.add('notranslate');
+    document.documentElement.setAttribute('translate', 'no');
   }
 }
 

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="notranslate" translate="no">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   
@@ -69,14 +70,61 @@
       justify-content: center; user-select: none; -webkit-user-select: none; touch-action: manipulation;
     }
     .scanner-digits-wrap {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
       font-family: 'Inter', -apple-system, sans-serif; font-size: 5.6rem; font-weight: 900;
       line-height: 1; letter-spacing: -0.04em; color: var(--text-main); perspective: 800px;
     }
-    .scanner-digit {
-      display: inline-block; line-height: 1; font-variant-numeric: tabular-nums;
-      color: var(--text-main); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Ensamblaje Táctico por Piezas (Rompecabezas de Dígitos 4) */
+    .puzzle-digit-wrap {
+      width: 56px; height: 86px; display: inline-flex; align-items: center;
+      justify-content: center; color: var(--text-main); position: relative; cursor: pointer;
     }
+    .puzzle-digit-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .puzzle-part {
+      transform-box: fill-box; transform-origin: center; will-change: transform, opacity;
+      filter: drop-shadow(0 0 1px rgba(10, 159, 104, 0.4));
+    }
+    .digit-left .part-diag { animation: puzzleDiagInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+    .digit-left .part-cross { animation: puzzleCrossInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+    .digit-left .part-stem { animation: puzzleStemInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+
+    .digit-right .part-diag { animation: puzzleDiagInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+    .digit-right .part-cross { animation: puzzleCrossInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both; }
+    .digit-right .part-stem { animation: puzzleStemInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; }
+
+    @keyframes puzzleDiagInLeft {
+      0% { opacity: 0; transform: translate(-45px, -35px) rotate(-30deg) scale(0.6); filter: blur(4px); }
+      75% { opacity: 1; transform: translate(2px, 1px) rotate(2deg) scale(1.03); filter: none; }
+      100% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); filter: none; }
+    }
+    @keyframes puzzleCrossInLeft {
+      0% { opacity: 0; transform: translateX(-50px) scaleX(0.2); filter: blur(4px); }
+      75% { opacity: 1; transform: translateX(2px) scaleX(1.04); filter: none; }
+      100% { opacity: 1; transform: translateX(0) scaleX(1); filter: none; }
+    }
+    @keyframes puzzleStemInLeft {
+      0% { opacity: 0; transform: translateY(50px) scaleY(0.3); filter: blur(4px); }
+      75% { opacity: 1; transform: translateY(-2px) scaleY(1.03); filter: none; }
+      100% { opacity: 1; transform: translateY(0) scaleY(1); filter: none; }
+    }
+
+    @keyframes puzzleDiagInRight {
+      0% { opacity: 0; transform: translate(45px, -35px) rotate(30deg) scale(0.6); filter: blur(4px); }
+      75% { opacity: 1; transform: translate(-2px, 1px) rotate(-2deg) scale(1.03); filter: none; }
+      100% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); filter: none; }
+    }
+    @keyframes puzzleCrossInRight {
+      0% { opacity: 0; transform: translateX(50px) scaleX(0.2); filter: blur(4px); }
+      75% { opacity: 1; transform: translateX(-2px) scaleX(1.04); filter: none; }
+      100% { opacity: 1; transform: translateX(0) scaleX(1); filter: none; }
+    }
+    @keyframes puzzleStemInRight {
+      0% { opacity: 0; transform: translateY(-50px) scaleY(0.3); filter: blur(4px); }
+      75% { opacity: 1; transform: translateY(2px) scaleY(1.03); filter: none; }
+      100% { opacity: 1; transform: translateY(0) scaleY(1); filter: none; }
+    }
+    .puzzle-digit-wrap:hover .puzzle-part { filter: drop-shadow(0 0 6px rgba(10, 159, 104, 0.7)); }
+    .puzzle-retrigger .part-diag, .puzzle-retrigger .part-cross, .puzzle-retrigger .part-stem { animation-name: none !important; }
 
     /* La Lente Óptica del '0' con Haz Cónico Auténtico de Radar */
     .scanner-optic-lens {
@@ -242,8 +290,14 @@
 
     <!-- Escáner Táctico de Coordenadas 404 (Animación de Autor Interactiva) -->
     <div class="tactical-scanner-stage" id="scannerStage" role="region" aria-label="Error 404: Coordenada no localizada">
-      <div class="scanner-digits-wrap">
-        <span class="scanner-digit">4</span>
+      <div class="scanner-digits-wrap notranslate" translate="no">
+        <div class="puzzle-digit-wrap digit-left" id="puzzleDigitLeft" title="Coordenada táctica 4 (Toca para reensamblar)" aria-label="4">
+          <svg class="puzzle-digit-svg" viewBox="0 0 54 86" fill="currentColor">
+            <path class="puzzle-part part-diag" d="M 36 6 L 6 52 L 18 52 L 44 14 Z" />
+            <rect class="puzzle-part part-cross" x="4" y="48" width="46" height="11" rx="3" />
+            <rect class="puzzle-part part-stem" x="34" y="6" width="12" height="74" rx="3" />
+          </svg>
+        </div>
         <div class="scanner-optic-lens" id="opticLens" title="Toca para reintentar rastreo de coordenada" aria-hidden="true">
           <!-- Haz de barrido cónico continuo (Estela de radar) -->
           <div class="radar-cone-beam"></div>
@@ -270,7 +324,13 @@
             <circle cx="50" cy="50" r="3" class="lens-center-emitter" />
           </svg>
         </div>
-        <span class="scanner-digit">4</span>
+        <div class="puzzle-digit-wrap digit-right" id="puzzleDigitRight" title="Coordenada táctica 4 (Toca para reensamblar)" aria-label="4">
+          <svg class="puzzle-digit-svg" viewBox="0 0 54 86" fill="currentColor">
+            <path class="puzzle-part part-diag" d="M 36 6 L 6 52 L 18 52 L 44 14 Z" />
+            <rect class="puzzle-part part-cross" x="4" y="48" width="46" height="11" rx="3" />
+            <rect class="puzzle-part part-stem" x="34" y="6" width="12" height="74" rx="3" />
+          </svg>
+        </div>
       </div>
 
       <!-- Telemetría de Instrumentación Táctica -->
@@ -373,7 +433,20 @@
         }, 2800);
       }
 
-      lens.addEventListener('pointerdown', onPointerDown);
+      function reensamblarRompecabezas() {
+        const digits = document.querySelectorAll('.puzzle-digit-wrap');
+        digits.forEach(d => d.classList.add('puzzle-retrigger'));
+        void document.body.offsetWidth;
+        digits.forEach(d => d.classList.remove('puzzle-retrigger'));
+      }
+
+      lens.addEventListener('pointerdown', () => {
+        onPointerDown();
+        reensamblarRompecabezas();
+      });
+      document.querySelectorAll('.puzzle-digit-wrap').forEach(el => {
+        el.addEventListener('click', reensamblarRompecabezas);
+      });
       window.addEventListener('pointerup', onPointerUp);
       window.addEventListener('pointercancel', onPointerUp);
     })();
