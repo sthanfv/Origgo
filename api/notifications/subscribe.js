@@ -68,6 +68,7 @@ module.exports = async function handler(req, res) {
 
       const metadata = {
         ciudad: typeof body.ciudad === 'string' ? body.ciudad.substring(0, 50) : 'Colombia',
+        lang: (body.lang === 'en' || body.lang === 'es') ? body.lang : 'es',
         userAgent: req.headers['user-agent'] || ''
       };
 

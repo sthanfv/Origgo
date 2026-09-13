@@ -213,6 +213,7 @@ module.exports = async function handler(req, res) {
           creditos: producto.creditos,
           status: 'PENDING',
           accountExistedAtOrderCreation: Boolean(cuentaExistente),
+          lang: validation.data.lang || 'es',
           idempotencyKey
         });
 

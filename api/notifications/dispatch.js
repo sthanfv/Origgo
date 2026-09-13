@@ -50,17 +50,27 @@ module.exports = async function handler(req, res) {
   try {
     const body = req.body || {};
     const urlDestino = body.url || (body.leadId ? `./?lead=${body.leadId}` : './');
-    const payload = JSON.stringify({
-      title: body.title || '🔥 Nueva Oportunidad Directa — Origgo',
-      body: body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.',
+    const titleEs = body.title || '🔥 Nueva Oportunidad Directa — Origgo';
+    const bodyEs = body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.';
+    const titleEn = body.titleEn || '🔥 New Direct Opportunity — Origgo';
+    const bodyEn = body.messageEn || body.bodyEn || 'New verified property listed directly by its owner with zero commission.';
+
+    const payloadEs = JSON.stringify({
+      title: titleEs,
+      body: bodyEs,
       icon: body.icon || './apple-touch-icon.png',
       badge: body.badge || './favicon-32x32.png',
       image: body.image || undefined,
-      data: {
-        url: urlDestino,
-        leadId: body.leadId || null,
-        ciudad: body.ciudad || 'Colombia'
-      }
+      data: { url: urlDestino, leadId: body.leadId || null, ciudad: body.ciudad || 'Colombia', lang: 'es' }
+    });
+
+    const payloadEn = JSON.stringify({
+      title: titleEn,
+      body: bodyEn,
+      icon: body.icon || './apple-touch-icon.png',
+      badge: body.badge || './favicon-32x32.png',
+      image: body.image || undefined,
+      data: { url: urlDestino, leadId: body.leadId || null, ciudad: body.ciudad || 'Colombia', lang: 'en' }
     });
 
     const suscripcionesTodas = await obtenerSuscripcionesActivas();
@@ -82,7 +92,8 @@ module.exports = async function handler(req, res) {
           endpoint: sub.endpoint,
           keys: sub.keys
         };
-        await webpush.sendNotification(pushSubscription, payload, { TTL: 3600 });
+        const payloadFinal = sub.lang === 'en' ? payloadEn : payloadEs;
+        await webpush.sendNotification(pushSubscription, payloadFinal, { TTL: 3600 });
         enviados++;
       } catch (err) {
         fallidos++;

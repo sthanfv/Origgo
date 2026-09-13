@@ -308,7 +308,10 @@ module.exports = async function handler(req, res) {
           esCelularValido,
           whatsappUrl,
           enlace,
-          portal
+          portal,
+          nota: lang === 'en'
+            ? 'Direct with verified owner. We recommend reviewing the title certificate before closing.'
+            : 'Directo con propietario verificado. Recomendamos verificar certificado de tradición.'
         },
         datosRevelados: {
           tituloOriginal: contactoDescifrado?.tituloOriginal || null,
@@ -323,11 +326,14 @@ module.exports = async function handler(req, res) {
       : await procesarDesbloqueo();
 
     if (respuestaFinal.esError) {
+      const isEn = lang === 'en';
       if (respuestaFinal.error === 'CUOTA_DIARIA_EXCEDIDA') {
         return res.status(429).json({
           ok: false,
           error: 'CUOTA_DIARIA_EXCEDIDA',
-          message: respuestaFinal.message || 'Has alcanzado la cuota de uso justo de 35 contactos diarios. Por seguridad y prevención de intermediación masiva, tu cuota se reiniciará mañana a las 00:00.',
+          message: isEn
+            ? 'You have reached the fair use limit of 35 daily unlocks. For security, your quota resets tomorrow at 00:00.'
+            : (respuestaFinal.message || 'Has alcanzado la cuota de uso justo de 35 contactos diarios. Por seguridad y prevención de intermediación masiva, tu cuota se reiniciará mañana a las 00:00.'),
           credits: respuestaFinal.credits || 0
         });
       }
@@ -335,7 +341,9 @@ module.exports = async function handler(req, res) {
         return res.status(403).json({
           ok: false,
           error: 'PLAN_CIUDAD_DIFERENTE',
-          message: respuestaFinal.message || 'Tu Plan Pro Ciudad no cubre este municipio. Requiere créditos individuales.',
+          message: isEn
+            ? 'Your Pro City Pass does not cover this municipality. Individual credits required.'
+            : (respuestaFinal.message || 'Tu Plan Pro Ciudad no cubre este municipio. Requiere créditos individuales.'),
           credits: respuestaFinal.credits || 0
         });
       }
@@ -343,7 +351,9 @@ module.exports = async function handler(req, res) {
         return res.status(402).json({
           ok: false,
           error: 'SALDO_INSUFICIENTE',
-          message: 'No tienes créditos suficientes. Adquiere un pase individual o una bolsa con descuento.',
+          message: isEn
+            ? 'Insufficient credits to unlock this property. Top up your balance or acquire a pass.'
+            : 'No tienes créditos suficientes. Adquiere un pase individual o una bolsa con descuento.',
           credits: respuestaFinal.credits
         });
       }

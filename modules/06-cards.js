@@ -142,6 +142,34 @@ function traducirDatoDistribucion(val, isEn) {
 }
 
 /**
+ * Traduce títulos de inmuebles del catálogo según el idioma seleccionado.
+ */
+function traducirTituloCatalogo(titulo, isEn) {
+  if (!isEn || !titulo) return titulo || '';
+  return String(titulo)
+    .replace(/^Apartamento\s+en\s+Venta\b/gi, 'Apartment for Sale')
+    .replace(/^Casa\s+en\s+Venta\b/gi, 'House for Sale')
+    .replace(/^Lote\s+en\s+Venta\b/gi, 'Land / Lot for Sale')
+    .replace(/^Oficina\s+en\s+Venta\b/gi, 'Office for Sale')
+    .replace(/^Finca\s+en\s+Venta\b/gi, 'Country Estate for Sale')
+    .replace(/^Local\s+en\s+Venta\b/gi, 'Commercial Space for Sale')
+    .replace(/^Bodega\s+en\s+Venta\b/gi, 'Warehouse for Sale')
+    .replace(/\ben\s+Venta\b/gi, 'for Sale');
+}
+
+/**
+ * Traduce el tipo de propiedad de manera determinista.
+ */
+function traducirTipoInmueble(tipo, isEn) {
+  if (!isEn || !tipo) return tipo || '';
+  const m = {
+    apartamento: 'Apartment', casa: 'House', lote: 'Land / Plot',
+    oficina: 'Office', finca: 'Country Estate', local: 'Commercial Space', bodega: 'Warehouse'
+  };
+  return m[tipo.toLowerCase().trim()] || tipo;
+}
+
+/**
  * Traduce especificaciones del Slide-up Drawer con sello verificado.
  */
 function traducirSlideupDetalles(detalles, isEn) {
@@ -289,7 +317,8 @@ function renderizarInterfaz(dataset) {
     const statusBadgeTexto = traducirBadgeUrgencia(item.urgencia, isEn);
     const ubicacionTexto = isEn && item.ubicacion ? item.ubicacion.replace(/Estrato\s*(\d+)/gi, 'Stratum $1') : (item.ubicacion || '');
     const ubicacionFinal = (estaDesbloqueado && datosRev?.ubicacionCompleta) ? datosRev.ubicacionCompleta : ubicacionTexto;
-    const tituloFinal = (estaDesbloqueado && datosRev?.tituloOriginal) ? datosRev.tituloOriginal : item.titulo;
+    const tituloBase = traducirTituloCatalogo(item.titulo, isEn);
+    const tituloFinal = (estaDesbloqueado && datosRev?.tituloOriginal) ? datosRev.tituloOriginal : tituloBase;
     const dato2Texto = traducirDatoDistribucion(item.dato_2, isEn);
 
     return `

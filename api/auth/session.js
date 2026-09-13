@@ -264,6 +264,13 @@ module.exports = async function handler(req, res) {
         user = await db.addCredits(celular, 0, userPin, null, customerEmail);
       }
 
+      if (order?.lang && typeof db.updateUserPreferences === 'function') {
+        try {
+          await db.updateUserPreferences(celular, { preferredLang: order.lang });
+          if (user) user.preferredLang = order.lang;
+        } catch (_) {}
+      }
+
       const bearer = (((req.headers || {}).authorization) || '').replace(/^Bearer\s+/i, '').trim();
       const sesionActual = bearer ? verifyJwt(bearer, JWT_SECRET) : null;
       const pinValido = pin ? await db.getUserByPin(celular, pin) : null;
@@ -321,6 +328,14 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ 
         error: 'Credenciales inválidas. Verifique el número de WhatsApp y el PIN.' 
       });
+    }
+
+    const reqLang = loginValidation.data.lang;
+    if (reqLang && typeof db.updateUserPreferences === 'function' && !user.preferredLang) {
+      try {
+        await db.updateUserPreferences(normPhone, { preferredLang: reqLang });
+        user.preferredLang = reqLang;
+      } catch (_) {}
     }
 
     // Token JWT con estado criptográfico enriquecido

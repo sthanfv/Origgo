@@ -41,6 +41,7 @@ async function ejecutarValidacionCompleta() {
     'lib/leads.js',
     'lib/cors.js',
     'lib/push-subscriptions.js',
+    'lib/email-templates.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/auth/session.js',
@@ -262,6 +263,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de Web Push VAPID y suscripciones PWA pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de Web Push VAPID: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'bilingual_infrastructure.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas de infraestructura bilingüe (Emails, Push, Zod, Catálogo) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de infraestructura bilingüe: ${e.message}`);
   }
 
   try {

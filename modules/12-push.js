@@ -83,7 +83,8 @@ async function activarNotificacionesPush() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         subscription: suscripcion.toJSON(),
-        ciudad: window.filtroCiudadSeleccionada || 'Colombia'
+        ciudad: window.filtroCiudadSeleccionada || 'Colombia',
+        lang: typeof obtenerIdiomaActual === 'function' ? obtenerIdiomaActual() : (esIngles ? 'en' : 'es')
       })
     });
 

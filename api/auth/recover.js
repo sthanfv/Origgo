@@ -125,6 +125,8 @@ module.exports = async function handler(req, res) {
       new Date(user.planExpiresAt).getTime() > Date.now();
     const tieneCreditos = Number(user.credits || 0) > 0;
 
+    const lang = validation.data?.lang || user.preferredLang || 'es';
+    const isEn = lang === 'en';
     const portalUrl = resolverPortalUrlSeguro();
     const horaDespacho = new Date().toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' });
     const refAleatoria = Math.floor(1000 + Math.random() * 9000);
@@ -143,14 +145,17 @@ module.exports = async function handler(req, res) {
       }, JWT_SECRET, 15 / (24 * 60));
       recoveryUrl.searchParams.set('recovery_token', recoveryToken);
 
-      asuntoEmail = `Restauración de acceso Origgo · [Ref: ${refAleatoria}-${horaDespacho}]`;
+      asuntoEmail = isEn
+        ? `Origgo Access Restoration · [Ref: ${refAleatoria}-${horaDespacho}]`
+        : `Restauración de acceso Origgo · [Ref: ${refAleatoria}-${horaDespacho}]`;
       htmlBody = generarPlantillaRestauracion({
         phone: user.phone,
         email: normEmail,
         recoveryUrl: recoveryUrl.href,
         credits: Number(user.credits || 0),
         plan: user.plan,
-        planCity: user.planCity
+        planCity: user.planCity,
+        lang
       });
     } else {
       // 7b. Usuario registrado sin créditos ni plan: aviso formal con enlace para recargar
@@ -160,11 +165,14 @@ module.exports = async function handler(req, res) {
         checkoutUrl.searchParams.set('phone', user.phone);
       }
 
-      asuntoEmail = `Estado de cuenta Origgo · Saldo actual: 0 créditos [Ref: ${refAleatoria}-${horaDespacho}]`;
+      asuntoEmail = isEn
+        ? `Origgo Account Status · Current Balance: 0 credits [Ref: ${refAleatoria}-${horaDespacho}]`
+        : `Estado de cuenta Origgo · Saldo actual: 0 créditos [Ref: ${refAleatoria}-${horaDespacho}]`;
       htmlBody = generarPlantillaSinCreditos({
         phone: user.phone,
         email: normEmail,
-        checkoutUrl: checkoutUrl.href
+        checkoutUrl: checkoutUrl.href,
+        lang
       });
     }
 

@@ -6,6 +6,37 @@
 
 ## 1. Qué cambió
 
+-49. **Despliegue de Infraestructura Bilingüe y Resiliencia Integral (Backend, Resend, Web Push, Ledger Wompi, Catálogo y Suite Automatizada)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Soporte bilingüe superficial en el frontend:* La internacionalización inicial se limitaba a diccionarios visuales del DOM (`modules/13-i18n.js`). Los canales de fondo (correos de recuperación vía Resend, notificaciones Web Push, órdenes de Wompi y respuestas de la API) operaban rígidamente en español, rompiendo la experiencia para compradores e inversionistas internacionales.
+      2. *Correos transaccionales sin inglés:* `lib/email-templates.js` solo contaba con plantillas fijas en español. Si un usuario angloparlante solicitaba recuperar su PIN o recibía confirmación de pago, el correo se emitía en español.
+      3. *Web Push monolingüe:* Las suscripciones no persistían el idioma del suscriptor (`lib/push-subscriptions.js`), y el despachador (`api/notifications/dispatch.js`) emitía la misma alerta en español a todos los dispositivos.
+      4. *Pérdida de preferencia de idioma en el checkout:* Las órdenes en Wompi (`api/payments/create-order.js`) no registraban el idioma en que el cliente realizó la compra, impidiendo que el ledger de Firestore inicializara `preferredLang` automáticamente tras el pago.
+      5. *Títulos inmobiliarios sin traducción:* En la grilla Bento, los títulos del catálogo ("Apartamento en Venta — Medellin") permanecían en español aun con el modo inglés activado.
+    - **Solución Implementada:**
+      1. **Correos Transaccionales Bilingües (`lib/email-templates.js`, 272 líneas < 500; `api/auth/recover.js`):**
+         - Refactorización modular de `generarPlantillaRestauracion`, `generarPlantillaSinCreditos` y `generarPlantillaConfirmacionPago` con soporte bilingüe nativo (`lang: 'es' | 'en'`) mediante tablas HTML de alta compatibilidad corporativa.
+         - En `api/auth/recover.js`, detección del idioma preferido del usuario y despacho con asunto y cuerpo en el idioma correspondiente.
+      2. **Web Push con Almacenamiento y Segmentación por Idioma (`lib/push-subscriptions.js`, `api/notifications/subscribe.js`, `api/notifications/dispatch.js`, `modules/12-push.js`):**
+         - Persistencia de `lang: metadata.lang === 'en' ? 'en' : 'es'` en el registro de suscripción en Firestore y almacén local.
+         - Despacho segmentado en `api/notifications/dispatch.js` enviando `payloadEn` a usuarios angloparlantes y `payloadEs` a hispanohablantes.
+         - En `modules/12-push.js`, envío automático de `lang: obtenerIdiomaActual()` al solicitar alertas en navegador.
+      3. **Validación Zod y Persistencia en Órdenes y Ledger (`lib/validation.js`, `api/payments/create-order.js`, `api/auth/session.js`):**
+         - Esquemas Zod con validación estricta de `lang: z.enum(['es', 'en'])` en `recoverPinSchema`, `createOrderSchema`, `sessionLoginSchema` y `subscribePushSchema`.
+         - Persistencia de `lang` en `db.savePendingOrder()`.
+         - Propagación automática de `order.lang` hacia `user.preferredLang` en Firestore al reclamar órdenes post-pago o iniciar sesión.
+      4. **Respuestas de Error y Notas de Contacto Bilingües (`api/leads/unlock.js`):**
+         - Inyección de `contacto.nota` bilingüe y mensajes de error HTTP semánticos (429 cuota diaria, 403 cobertura de ciudad, 402 saldo insuficiente) localizados según `lang`.
+      5. **Motor de Traducción de Títulos y Tipos Inmobiliarios (`modules/06-cards.js`, 472 líneas < 500):**
+         - Implementadas funciones deterministas `traducirTituloCatalogo` y `traducirTipoInmueble`, traduciendo títulos en vivo ("Apartment for Sale") mientras se conservan los títulos reales revelados por el propietario.
+      6. **Suite Automatizada de Infraestructura Bilingüe (`tests/bilingual_infrastructure.test.js`, `scripts/validate.js`):**
+         - 9 pruebas de integración certificando correos Resend, esquemas Zod, Web Push y catálogo.
+         - Integración permanente en la Fase 5 de `scripts/validate.js`.
+      7. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `style.css`, `style.min.css`, `app.js`, `app.min.js` y `dist/`.
+         - Suite de validación de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible de $\le 500$ líneas en el 100% de los módulos JS y hojas CSS.
+
 -48. **Desbloqueo Integral de Segunda Capa (Slide-Up Drawer / Ficha Técnica), Protocolo Guiado de Siguientes Pasos y Mensajería WhatsApp Condicionada por Idioma**:
     - **Diagnóstico y Causa Raíz:**
       1. *Expulsión involuntaria a la grilla tras interactuar en segunda capa:* En `modules/10-listeners.js`, al pulsar el CTA dentro de la ficha técnica desplegable (`action === "slideup-cta"`), el evento ejecutaba prematuramente `cerrarFichaTecnica(idx, e)` antes de invocar `manejarClicDesbloquear(idx)`. El usuario era expulsado a la grilla y la ficha se cerraba sin permitirle ver la información revelada in situ.
