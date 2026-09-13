@@ -1,6 +1,12 @@
 {
   "buildCommand": "node scripts/build.js",
   "outputDirectory": "dist",
+  "crons": [
+    {
+      "path": "/api/payments/reconcile-cron",
+      "schedule": "*/15 * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/notifications/vapid-public-key",

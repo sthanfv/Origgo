@@ -44,11 +44,12 @@ A diferencia de las aplicaciones web tradicionales monolíticas, este sistema es
                                                  ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ CAPA 3: SERVICIOS SERVERLESS Y MOTOR FINANCIERO (api/)                                         │
-│  • create-order.js:  Generación determinista de orden y firma de integridad SHA-256 Wompi.     │
-│  • webhook-wompi.js: Validación HMAC dinámica en tiempo constante (timingSafeEqual).           │
-│  • session.js:       Reconciliación server-to-server con Wompi API ante reclamo de referencia. │
-│  • unlock.js:        Deducción atómica de crédito y descifrado AES-256-GCM en memoria volátil. │
-│  • balance.js:       Consulta de estado reactivo y leads desbloqueados para renderizado instant.│
+│  • create-order.js:   Generación determinista de orden y firma de integridad SHA-256 Wompi.    │
+│  • webhook-wompi.js:  Validación HMAC dinámica en tiempo constante (timingSafeEqual).          │
+│  • reconcile-cron.js: Conciliación periódica Vercel Cron fail-safe de órdenes PENDING.         │
+│  • session.js:        Reconciliación server-to-server con Wompi API ante reclamo de referencia.│
+│  • unlock.js:         Deducción atómica de crédito y descifrado AES-256-GCM en memoria volátil.│
+│  • balance.js:        Consulta de estado reactivo y leads desbloqueados para renderizado inst. │
 └────────────────────────────────────────────────┬───────────────────────────────────────────────┘
                                                  │ Operaciones Criptográficas y Datos
                                                  ▼
@@ -85,6 +86,7 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 |---|---|---|
 | **Cálculo de firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | SHA-256 de integridad para widget Wompi |
 | **Validación y procesamiento de webhooks** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | HMAC `timingSafeEqual`, acreditación atómica |
+| **Conciliación automática Vercel Cron** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |
 | **Inicio de sesión y reclamo de referencias** | [`api/auth/session.js`](api/auth/session.js) | Verificación directa con API oficial de Wompi |
 | **Recuperación de PIN por email** | [`api/auth/recover.js`](api/auth/recover.js) | Tokens temporales firmados con Resend |
 | **Desbloqueo seguro y deducción de créditos**| [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y verificación `.sig` |

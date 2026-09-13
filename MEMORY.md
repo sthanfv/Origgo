@@ -1,10 +1,46 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 11:54 (GMT-5)
+Última actualización: 2026-09-13 12:35 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-50. **Implementación de Tarea Programada de Conciliación Automática (Vercel Cron Fail-Safe Wompi, Ledger Atómico y Suite Automatizada)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Órdenes huérfanas en estado `PENDING` por pagos diferidos (PSE / Nequi / Bancolombia):* En transacciones bancarias en Colombia, los pagos vía PSE o transferencias suelen tardar minutos u horas en confirmarse. Si el usuario cerraba la ventana del navegador antes de redirigirse al portal (`claim_reference`) o si ocurrían caídas de red que retrasaban o perdían los webhooks asíncronos de Wompi, la orden quedaba indefinidamente en estado `PENDING` a pesar de que el dinero ya había sido debitado de la cuenta bancaria del cliente.
+      2. *Falta de conciliador periódico serverless:* No existía un proceso background automatizado y programado que verificara de forma proactiva con la API oficial de Wompi el estado de las órdenes pendientes en la base de datos.
+    - **Solución Implementada:**
+      1. **Capa de Persistencia Resiliente (`lib/db.js`, `getPendingOrders`, `updateOrderStatus`):**
+         - Implementadas funciones `getPendingOrders(limitCount = 25)` y `updateOrderStatus(reference, status, extraData)` envueltas en `withRetry` con backoff exponencial.
+         - Soporte en el almacén en memoria para consultas `.where('status', '==', 'PENDING').limit(n).get()` y `.get()` directo.
+      2. **Endpoint Serverless de Conciliación (`api/payments/reconcile-cron.js`, 341 líneas < 500):**
+         - Soporte para métodos `GET` (utilizado por Vercel Cron) y `POST`.
+         - Autenticación criptográfica con `Authorization: Bearer CRON_SECRET` mediante `crypto.timingSafeEqual` contra ataques de temporización (HTTP 401 si es inválido).
+         - **Ventana Anti-Carreras:** Órdenes creadas hace menos de 2 minutos son omitidas del ciclo para no interferir con el webhook natural o la respuesta del widget en el navegador.
+         - **Expiración de Órdenes Huérfanas:** Órdenes pendientes con más de 24 horas de antigüedad se marcan automáticamente como `EXPIRED`.
+         - **Consulta Server-to-Server Oficial Wompi:** Consulta directa a `${wompiApiBase}/transactions?reference=${ref}` usando la llave secreta privada `WOMPI_PRIVATE_KEY`.
+         - **Auto-Acreditación Atómica e Idempotente:** Si la transacción está `APPROVED`, se valida que el monto pagado coincida al centavo con el exigido (`expectedAmount`), se registra la transacción con `db.recordTransaction` para evitar dobles entregas, se determina el plan o saldo de créditos y se acredita atómicamente con `db.addCredits`.
+         - **Despacho Transaccional Bilingüe:** Envío automático del comprobante con Magic Link vía Resend (`despacharCorreoConfirmacion`) con el idioma de la orden (`lang`).
+         - **Manejo de Transacciones Fallidas:** Actualización automática de la orden a `DECLINED`, `VOIDED` o `ERROR`.
+         - **Balance y Telemetría JSON:** Retorna métricas completas (`totalRevisadas`, `aprobadas`, `rechazadas`, `pendientes`, `expiradas`, `omitidasPorRecientes`, `errores`) y traza de auditoría.
+      3. **Programación Vercel Cron (`vercel.json`):**
+         - Configuración de tarea periódica cada 15 minutos:
+           ```json
+           "crons": [
+             {
+               "path": "/api/payments/reconcile-cron",
+               "schedule": "*/15 * * * *"
+             }
+           ]
+           ```
+      4. **Suite Automatizada de Pruebas (`tests/reconciliation_cron.test.js`, `scripts/validate.js`):**
+         - 7 pruebas unitarias certificando: rechazo 401 sin auth, cola vacía, omisión de órdenes recientes (<2 min), auto-acreditación con Wompi APPROVED, marcado DECLINED ante rechazo, expiración tras 24h, y detección de fraude por alteración de montos.
+         - Integración permanente en la Fase 1 y Fase 5 de `scripts/validate.js`.
+      5. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `style.min.css`, `app.min.js` y `dist/`.
+         - Suite de validación de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible de $\le 500$ líneas en el 100% de los módulos JS y hojas CSS.
 
 -49. **Despliegue de Infraestructura Bilingüe y Resiliencia Integral (Backend, Resend, Web Push, Ledger Wompi, Catálogo y Suite Automatizada)**:
     - **Diagnóstico y Causa Raíz:**

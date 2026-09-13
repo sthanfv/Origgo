@@ -44,6 +44,7 @@ async function ejecutarValidacionCompleta() {
     'lib/email-templates.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
+    'api/payments/reconcile-cron.js',
     'api/auth/session.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
@@ -291,6 +292,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de perro guardián y telemetría serverless pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de perro guardián: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'reconciliation_cron.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de conciliación automática (Vercel Cron Fail-Safe) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de conciliación cron: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════
