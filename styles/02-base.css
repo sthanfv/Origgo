@@ -48,76 +48,100 @@
 /* ═══════════════════════════════════════════════════
    IDENTIDAD CORPORATIVA ORIGGO: ESTATUS Y ALTA FINANZA
    - Cero cajas delimitadoras, aros ni artefactos ruidosos
-   - Entrada cinemática noble y sedosa
-   - Respiración esmeralda sutil, profunda y de alta gama (6s)
-   - Micro-interacción táctil y elástica de precisión
+   - Isotipo limpio vectorial sin blur ni neones (46x46, margin-right 1px)
+   - Animación cinemática de arranque letra por letra en 'riggo'
+   - Acabado sobrio, mate y de altísimo estatus institucional
    ═══════════════════════════════════════════════════ */
 
-.brand-title {
-  margin: 0;
-  padding: 0;
-  display: inline-flex;
+.brand-text-block {
+  display: flex;
   align-items: center;
   line-height: 1;
-  position: relative;
+}
+
+.brand-title {
+  font-family: var(--font-display, 'Lufga', sans-serif);
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
   cursor: pointer;
   user-select: none;
   background: none;
   border: none;
 }
 
-.brand-logo-img {
-  height: 40px;
-  width: auto;
-  max-width: 140px;
-  display: block;
-  object-fit: contain;
+.brand-title .brand-logo-container,
+.brand-initial-o-wrap {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1px;
+  flex-shrink: 0;
+  vertical-align: middle;
   position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 0 3px rgba(10, 159, 104, 0.35));
-  animation: logoPrestigeEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards, logoBreathingGlow 6s ease-in-out 0.75s infinite;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-  will-change: transform, filter;
+  filter: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes logoPrestigeEntrance {
+.brand-icon-o {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: none;
+}
+
+.brand-badge:hover .brand-initial-o-wrap {
+  transform: scale(1.06);
+}
+
+/* Letras 'riggo' con animación de arranque cinemática */
+.brand-letters-riggo {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display, 'Lufga', sans-serif);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Animación secuencial cinemática letra por letra de 'riggo' */
+.brand-letter {
+  display: inline-block;
+  color: #0a9f68;
+  -webkit-text-fill-color: #0a9f68;
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  animation: animLetterAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(0.12s + var(--char-i, 1) * 0.08s);
+}
+
+.brand-letter-1 { --char-i: 1; }
+.brand-letter-2 { --char-i: 2; }
+.brand-letter-3 { --char-i: 3; }
+.brand-letter-4 { --char-i: 4; }
+.brand-letter-5 { --char-i: 5; }
+
+[data-theme="light"] .brand-letter {
+  color: #0a9f68;
+  -webkit-text-fill-color: #0a9f68;
+}
+
+@keyframes animLetterAppear {
   0% {
     opacity: 0;
-    transform: translateY(3px) scale(0.98);
+    transform: translateY(8px) scale(0.95);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-}
-
-@keyframes logoBreathingGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 3px rgba(10, 159, 104, 0.35));
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(10, 159, 104, 0.75)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.25));
-  }
-}
-
-[data-theme="light"] .brand-logo-img {
-  filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.15));
-  animation: logoPrestigeEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards, logoBreathingGlowLight 6s ease-in-out 0.75s infinite;
-}
-
-@keyframes logoBreathingGlowLight {
-  0%, 100% {
-    filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.15));
-  }
-  50% {
-    filter: drop-shadow(0 1px 6px rgba(4, 120, 87, 0.3));
-  }
-}
-
-.brand-badge:hover .brand-logo-img,
-.brand-title:hover .brand-logo-img {
-  transform: translateY(-1px) scale(1.025);
-  filter: drop-shadow(0 0 10px rgba(10, 159, 104, 0.85)) drop-shadow(0 0 20px rgba(16, 185, 129, 0.4));
 }
 
 /* Compatibilidad retroactiva */

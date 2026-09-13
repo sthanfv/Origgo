@@ -40,10 +40,25 @@
     gap: 0.55rem;
   }
 
-  .brand-logo-img {
-    height: 34px;
-    width: auto;
-    max-width: 110px;
+  .brand-title {
+    font-size: 1.45rem;
+  }
+
+  .brand-title .brand-logo-container,
+  .brand-initial-o-wrap {
+    width: 36px;
+    height: 36px;
+  }
+
+  @media (max-width: 480px) {
+    .brand-title {
+      font-size: 1.22rem;
+    }
+    .brand-title .brand-logo-container,
+    .brand-initial-o-wrap {
+      width: 30px;
+      height: 30px;
+    }
   }
 
   .brand-tag .tag-desktop {

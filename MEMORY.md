@@ -1,10 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 03:15 (GMT-5)
+Última actualización: 2026-09-13 06:20 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-32. **Rediseño Austero de Página 404 (Estándar Desmulta), Restauración de Animación de Letras en 'riggo', Cero Neones y Purga de Documentos Obsoletos**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario expresó profunda decepción con el diseño inicial de `404.html`: faltaba el número `404` monumental, contenía brillos/neones que rompían la seriedad y, críticamente, incluía un botón de soporte de WhatsApp para reportar errores 404, lo cual comprometía financieramente la operación al generar costos de atención humana innecesarios en enlaces rotos. Se exigió una arquitectura idéntica a la creada por el usuario en el ecosistema Desmulta (`rounded-2xl/3xl`, código de estado 404 monumental, subtítulo claro, cero soporte manual y botón de retorno al inicio).
+      2. El usuario reclamó la restauración de su animación de arranque cinemática sobre la palabra `riggo` (animación secuencial letra por letra `animLetterAppear` con isotipo limpio de 46x46px con 1px de margen y `filter: none`), eliminada previamente de forma inconsulta.
+      3. Se exigió erradicar absolutamente brillos difusos, sombras verdes radioactivas o neones en el logotipo y en la página de error.
+      4. Se denunció la acumulación de documentos basura obsoletos en el proyecto (específicamente en `docs/`) sin mantenimiento ni limpieza periódica.
+    - **Solución Implementada:**
+      1. **Rediseño Profesional y Automatizado de `404.html` (240 líneas < 500):**
+         - Se implementó la estructura austera inspirada en Desmulta: caja táctica con icono `fa-file-circle-question`, número monumental `404` (6rem / peso 900), subtítulo tipográfico "Página No Encontrada / Page Not Found", explicación técnica clara y botón de retorno principal "IR AL INICIO".
+         - Se erradicó por completo el enlace de WhatsApp y cualquier canal de soporte manual en 404, sustituyéndolo por un sello técnico silencioso de auditoría con baja opacidad (`Origgo v1.0.0 — Búsqueda Segura Finalizada`).
+         - Cero neones o resplandores estridentes: estética mate en fondo obsidiana carbón y soporte bilingüe (`ES / EN`) con conmutación instantánea sin parpadeo.
+      2. **Restauración de Animación de Arranque en 'riggo' (`index.html`, `styles/02-base.css` y `styles/11-mobile.css`):**
+         - En `index.html`: restaurada la jerarquía con `.brand-text-block`, isotipo vectorial `.brand-initial-o-wrap` (46x46px, `filter: none`) y contenedor `.brand-letters-riggo` con letras individuales (`.brand-letter-1` a `.brand-letter-5`).
+         - En `styles/02-base.css` (246 líneas < 500): restaurada la cinemática de arranque letra por letra `animLetterAppear` en cascada (`animation-delay: calc(0.12s + var(--char-i) * 0.08s)`), con traslación sutil de 8px a 0 y color verde mate `#0a9f68` sin neones ni halos difusos.
+         - En `styles/11-mobile.css` (497 líneas < 500): calibradas las dimensiones responsivas de `.brand-title` y `.brand-initial-o-wrap` para tablets (1.45rem / 36px) y smartphones (1.22rem / 30px).
+      3. **Purga de Documentación Basura:**
+         - Se eliminó del repositorio el documento histórico obsoleto `docs/REPORTE_AUDITORIA_DEVSECOPS_REMEDIACIONES.md`, manteniendo únicamente la documentación viva y oficial (`INDICE_ARCHIVOS.md`, `INTEGRACIONES_EXTERNAS.md`, `README.md`, `ARCHITECTURE.md` y `MEMORY.md`).
+      4. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: actualizados `style.css` y `style.min.css`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en todos los archivos).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -31. **Estandarización de Identidad Visual, Soporte Bilingüe y Despacho Nativo de la Página Personalizada de Error 404**:
     - **Diagnóstico y Necesidad:**
