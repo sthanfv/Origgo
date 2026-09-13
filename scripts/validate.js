@@ -42,10 +42,12 @@ async function ejecutarValidacionCompleta() {
     'lib/cors.js',
     'lib/push-subscriptions.js',
     'lib/email-templates.js',
+    'lib/challenge.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/payments/reconcile-cron.js',
     'api/auth/session.js',
+    'api/auth/challenge.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
     'api/user/balance.js',
@@ -306,6 +308,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de rotación criptográfica y versionado AES-256 (kid) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de rotación criptográfica: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'anti_bruteforce.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de desafío anti-fuerza bruta invisible (PoW / Turnstile) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de anti-fuerza bruta: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

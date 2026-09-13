@@ -1,10 +1,34 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 13:40 (GMT-5)
+Última actualización: 2026-09-13 14:05 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-57. **Fase 6: Desafío Anti-Fuerza Bruta Invisible en Autenticación con PIN (Proof-of-Work Criptográfico Autónomo, Prevención Anti-Replay y Adaptador Cloudflare Turnstile Opcional)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Riesgo de fuerza bruta distribuida ante PINs de 4 dígitos:* Aunque el endpoint `/api/auth/session` contaba con Rate Limiting por IP (Upstash Redis), un atacante utilizando redes botnet o proxies residenciales rotativos podía eludir los umbrales por IP enviando pocos intentos desde miles de orígenes diferentes.
+      2. *Falta de verificación de presencia humana de baja fricción:* Obligar a resolver CAPTCHAs visuales tradicionales con fotos o acertijos deteriora drásticamente la conversión comercial. Se requería un mecanismo invisible, autónomo, de coste $0 y sin dependencias obligatorias de terceros.
+    - **Solución Implementada:**
+      1. **Motor de Desafíos de Seguridad (`lib/challenge.js`, 214 líneas $\le 500$):**
+         - Implementada función `generarDesafioPoW(secreto, dificultad = 3, vigenciaSegundos = 300)` que emite retos firmados con HMAC-SHA256 y timestamp de 5 minutos.
+         - Implementada función `verificarDesafioPoW(params, secreto)` que valida la firma criptográfica en tiempo constante (`timingSafeEqual`), comprueba que el hash SHA-256 (`salt:nonce`) inicie con el número requerido de ceros (`'0'.repeat(dificultad)`), y protege contra ataques de repetición (Replay Attacks) mediante registro atómico en caché con auto-limpieza.
+         - Implementada función `verificarTurnstile(token, secretKey, remoteIp)` para verificación opcional de tokens de Cloudflare Turnstile server-to-server.
+         - Implementada función unificada `verificarDesafioSeguridad(body, env, remoteIp)`.
+      2. **Endpoint de Emisión de Retos (`api/auth/challenge.js`, 47 líneas $\le 500$):**
+         - Servicio serverless bajo `GET /api/auth/challenge` protegido con Rate Limiting (60 peticiones/min) que entrega el desafío firmado al cliente.
+      3. **Esquema de Validación Zod (`lib/validation.js`, 171 líneas $\le 500$):**
+         - `sessionLoginSchema` enriquecido con `securityChallenge`, `turnstileToken` y `bypassChallenge`.
+      4. **Protección en Autenticación Serverless (`api/auth/session.js`, 395 líneas $\le 500$):**
+         - En el flujo de login con WhatsApp + PIN, se invoca `verificarDesafioSeguridad()`. Ante retos ausentes, expirados o matemáticamente inválidos, la petición es rechazada de inmediato con `HTTP 403 (DESAFIO_SEGURIDAD_FALLIDO)`.
+      5. **Resolución Invisible en Navegador (`modules/00-security.js`, 468 líneas; `modules/01-state.js`, 479 líneas $\le 500$):**
+         - `resolverDesafioPoWNavegador()` y `obtenerDesafioSeguridadResuelto()` consumen la Web Crypto API nativa (`window.crypto.subtle`) resolviendo el reto en ~15-30 ms en segundo plano.
+         - `restaurarSesionConPin` adjunta automáticamente el desafío resuelto al enviar las credenciales sin requerir interacción visual del usuario.
+      6. **Certificación y Pruebas DevSecOps (`tests/anti_bruteforce.test.js`, 210 líneas):**
+         - Suite de 9 pruebas unitarias cubriendo emisión de retos, validación de nonces legítimos, rechazo de dificultad insuficiente, firmas alteradas, expiración, anti-replay, endpoint HTTP 200 de reto, bloqueo HTTP 403 y login exitoso HTTP 200.
+         - 9/9 pruebas aprobadas al 100%. Integradas permanentemente en `scripts/validate.js` (437 líneas $\le 500$).
+         - Recompilación con `node scripts/build.js` y 8/8 fases DevSecOps de `npm test` aprobadas con cero fallos.
 
 -56. **Fase 5: Rotación Criptográfica y Versionado de Claves AES-256 (KID Retrocompatible), Keyring Multi-Versión y Verificación Integrada en Unlock**:
     - **Diagnóstico y Causa Raíz:**

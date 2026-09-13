@@ -354,9 +354,13 @@ async function restaurarSesionConPin() {
   }
 
   const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
+  let securityData = {};
+  if (!esReferencia && typeof obtenerDesafioSeguridadResuelto === 'function') {
+    securityData = await obtenerDesafioSeguridadResuelto();
+  }
   const requestBody = esReferencia
     ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' }
-    : { celular, pin, lang: isEn ? 'en' : 'es' };
+    : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
 
   try {
     const res = await fetch('/api/auth/session', {

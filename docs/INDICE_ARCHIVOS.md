@@ -83,6 +83,7 @@
 | `api/payments/webhook-wompi.js` | POST /api/payments/webhook-wompi | Recibe eventos asíncronos de Wompi, acredita créditos |
 | `api/payments/reconcile-cron.js` | GET/POST /api/payments/reconcile-cron | Conciliación periódica Vercel Cron Fail-Safe de pagos PENDING |
 | `api/auth/session.js` | POST /api/auth/session | Login con WhatsApp+PIN, reclamo de sesión post-pago |
+| `api/auth/challenge.js` | GET /api/auth/challenge | Emisión de desafíos anti-fuerza bruta PoW y Cloudflare Turnstile |
 | `api/auth/recover.js` | POST /api/auth/recover | Recuperación de PIN por correo electrónico |
 | `api/leads/unlock.js` | POST /api/leads/unlock | Desbloqueo seguro de contactos con AES-256-GCM |
 | `api/user/balance.js` | GET /api/user/balance | Consulta de saldo y estado del usuario |
@@ -97,7 +98,8 @@
 |---|---|
 | `lib/env.js` | Carga de .env, validación de variables, control WOMPI_ENV sandbox/producción |
 | `lib/db.js` | Persistencia en Firestore: ledger de usuarios, órdenes, créditos |
-| `lib/crypto.js` | Criptografía: JWT, AES-256-GCM, generación de PIN seguro |
+| `lib/crypto.js` | Criptografía: JWT, AES-256-GCM, Keyring multi-versión, generación de PIN seguro |
+| `lib/challenge.js` | Generador y verificador de Proof-of-Work criptográfico y Cloudflare Turnstile |
 | `lib/cors.js` | CORS seguro con whitelist de dominios |
 | `lib/rate-limiter.js` | Rate limiting por IP con ventanas deslizantes y Upstash Redis distribuido |
 | `lib/idempotency.js` | Idempotencia distribuida con Upstash Redis REST, candados atómicos NX y fail-safe |
@@ -149,6 +151,8 @@
 ### Pruebas Automatizadas (tests/)
 | Archivo | Descripción |
 |---|---|
+| `tests/anti_bruteforce.test.js` | Desafíos de seguridad anti-fuerza bruta invisible (PoW / Turnstile) |
+| `tests/crypto_rotation.test.js` | Rotación criptográfica y versionado de clave AES-256 (KID) |
 | `tests/reconciliation_cron.test.js` | Conciliación periódica Vercel Cron Fail-Safe |
 | `tests/bilingual_infrastructure.test.js` | Infraestructura bilingüe: correos, push, zod, catálogo |
 | `tests/web_push.test.js` | Protocolo VAPID y suscripciones push |

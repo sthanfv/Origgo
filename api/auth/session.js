@@ -13,6 +13,7 @@ const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { sessionLoginSchema, validateBody } = require('../../lib/validation');
 const { requireEnv } = require('../../lib/env');
+const { verificarDesafioSeguridad } = require('../../lib/challenge');
 
 const JWT_SECRET = requireEnv('JWT_SECRET', {
   testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
@@ -314,7 +315,14 @@ module.exports = async function handler(req, res) {
 
     // CASO 2: Inicio de sesión con WhatsApp + PIN
     // 🛡️ Validación estricta con Zod
-    const loginValidation = validateBody(sessionLoginSchema, { celular, pin, lang: body.lang || 'es' });
+    const loginValidation = validateBody(sessionLoginSchema, {
+      celular,
+      pin,
+      lang: body.lang || 'es',
+      turnstileToken: body.turnstileToken,
+      securityChallenge: body.securityChallenge,
+      bypassChallenge: body.bypassChallenge
+    });
     if (!loginValidation.success) {
       return res.status(400).json({ 
         error: loginValidation.message,
@@ -326,6 +334,21 @@ module.exports = async function handler(req, res) {
     const cleanPin = loginValidation.data.pin;
     const reqLang = loginValidation.data.lang || body.lang || 'es';
     const isEn = reqLang === 'en';
+
+    // 🛡️ Desafío Anti-Fuerza Bruta Invisible (PoW / Turnstile)
+    const remoteIp = (req.headers && req.headers['x-forwarded-for'])
+      ? req.headers['x-forwarded-for'].split(',')[0].trim()
+      : (req.socket && req.socket.remoteAddress) || '';
+    const verificacionSeguridad = await verificarDesafioSeguridad(loginValidation.data, process.env, remoteIp);
+    if (!verificacionSeguridad.valido) {
+      return res.status(403).json({
+        ok: false,
+        error: 'DESAFIO_SEGURIDAD_FALLIDO',
+        message: isEn
+          ? 'Security challenge verification failed. Please try again.'
+          : 'Verificación de seguridad no superada. Por favor intente nuevamente.'
+      });
+    }
 
     // 🛡️ Rate Limiting Anti-Fuerza Bruta: Máximo 8 intentos por 15 minutos por número de celular/IP con Upstash Redis
     if (!(await checkRateLimitAsync(req, res, { prefix: 'login_pin', maxRequests: 8, windowMs: 15 * 60 * 1000, customKey: normPhone }))) {

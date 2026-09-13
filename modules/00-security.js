@@ -397,6 +397,62 @@ function generarUUIDv4() {
   });
 }
 
+/**
+ * Resuelve un desafío criptográfico Proof-of-Work en el navegador mediante Web Crypto API.
+ * @param {object} challenge
+ * @param {string} challenge.salt
+ * @param {number} challenge.dificultad
+ * @returns {Promise<number>} Nonce que satisface la dificultad
+ */
+async function resolverDesafioPoWNavegador(challenge) {
+  if (!challenge || !challenge.salt) return 0;
+  const dif = parseInt(challenge.dificultad, 10) || 3;
+  const prefijoRequerido = '0'.repeat(dif);
+  const salt = challenge.salt;
+
+  if (typeof window !== 'undefined' && window.crypto?.subtle) {
+    const encoder = new TextEncoder();
+    let nonce = 0;
+    while (nonce < 1000000) {
+      const data = encoder.encode(`${salt}:${nonce}`);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      if (hashHex.startsWith(prefijoRequerido)) {
+        return nonce;
+      }
+      nonce++;
+    }
+  }
+  return 0;
+}
+
+/**
+ * Obtiene y resuelve de forma invisible un desafío de seguridad para login.
+ * @returns {Promise<{ securityChallenge?: object, turnstileToken?: string }>}
+ */
+async function obtenerDesafioSeguridadResuelto() {
+  try {
+    const res = await fetch('/api/auth/challenge');
+    if (!res.ok) return {};
+    const data = await res.json();
+    if (!data || !data.challenge) return {};
+
+    const turnstileToken = (typeof window !== 'undefined' && window.__turnstileToken) || null;
+    if (turnstileToken) return { turnstileToken };
+
+    const nonce = await resolverDesafioPoWNavegador(data.challenge);
+    return {
+      securityChallenge: {
+        ...data.challenge,
+        nonce
+      }
+    };
+  } catch (e) {
+    return {};
+  }
+}
+
 if (typeof window !== 'undefined') {
   Object.assign(window, {
     guardarCookieSegura,
@@ -405,6 +461,8 @@ if (typeof window !== 'undefined') {
     obtenerTemaActual,
     aplicarTema,
     sincronizarPreferenciasEnServidor,
-    generarUUIDv4
+    generarUUIDv4,
+    resolverDesafioPoWNavegador,
+    obtenerDesafioSeguridadResuelto
   });
 }

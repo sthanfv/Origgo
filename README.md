@@ -25,13 +25,15 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | Generación SHA-256 de integridad para pasarela |
 | **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | Validación HMAC `timingSafeEqual` y ledger |
 | **Login por WhatsApp + PIN y reclamo post-pago** | [`api/auth/session.js`](api/auth/session.js) | `claim_reference`, reconciliación API Wompi |
+| **Emisión de desafíos anti-bot (PoW / Turnstile)** | [`api/auth/challenge.js`](api/auth/challenge.js) | Retos firmados HMAC-SHA256 con ventana temporal |
+| **Motor de desafíos y Proof-of-Work criptográfico**| [`lib/challenge.js`](lib/challenge.js) | Generación y verificación de PoW y Turnstile |
 | **Conciliación automática y Vercel Cron Fail-Safe** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |
 | **Recuperación segura de PIN por correo** | [`api/auth/recover.js`](api/auth/recover.js) | Envío transaccional vía Resend |
 | **Desbloqueo de lead y descifrado de contacto** | [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y deducción de créditos |
 | **Verificación de firma HMAC del dataset JSON** | [`api/leads/unlock.js`](api/leads/unlock.js) | `verificarIntegridadDataset()` con `.json.sig` |
 | **Consulta de saldo, perfil y compras** | [`api/user/balance.js`](api/user/balance.js) | Validación JWT y balance en tiempo real |
 | **Ledger en Firestore y reintentos exponenciales**| [`lib/db.js`](lib/db.js) | `withRetry()`, persistencia de usuarios y órdenes |
-| **Criptografía (AES-256-GCM, JWT, PIN)** | [`lib/crypto.js`](lib/crypto.js) | Cifrado simétrico y generación segura de PIN |
+| **Criptografía (AES-256-GCM, JWT, PIN, Keyring)** | [`lib/crypto.js`](lib/crypto.js) | Cifrado simétrico versionado y rotación de claves |
 | **Control de variables de entorno y sandbox** | [`lib/env.js`](lib/env.js) | Validación de entorno (`WOMPI_ENV=sandbox`) |
 | **Protección anti-fuerza bruta y rate limiting**| [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
 | **Validación estricta de payloads con Zod** | [`lib/validation.js`](lib/validation.js) | Esquemas de checkout, login y desbloqueo |
