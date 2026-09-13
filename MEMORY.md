@@ -1,10 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 02:25 (GMT-5)
+Última actualización: 2026-09-13 03:00 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-30. **Erradicación Total de Pulso y Destello en Logotipo y Elevación Estética de Alto Estatus y Elegancia Arquitectónica**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario solicitó expresamente retirar los efectos de destello líquido oblicuo (`.brand-sheen-sweep`) y el aro/pulso de radar (`.brand-radar-ping`), considerándolos artificios estridentes y de baja gama que restaban seriedad y estatus a la plataforma.
+      2. Se demandó restaurar una animación que transmita auténtica calidad, estatus institucional, exclusividad y alta finanza sobre el logotipo vectorial oficial (`assets/img/origgo-logo.svg`), sin cajas, aros ni brillos invasivos.
+    - **Solución Implementada:**
+      1. **Depuración Estructural del Marcado (`index.html`):**
+         - Se eliminaron los elementos `<span class="brand-radar-ping"></span>` y `<span class="brand-sheen-sweep"></span>` dentro de `.brand-title`.
+         - El encabezado del logotipo queda con la silueta pura del vector SVG oficial de Origgo.
+      2. **Estética Pura, Sobria y de Alto Estatus (`styles/02-base.css`, 223 líneas < 500):**
+         - Se purgaron por completo las clases `.brand-radar-ping`, `.brand-sheen-sweep`, `.brand-sheen-sweep::after` y sus keyframes asociados (`@keyframes radarSonarPing`, `@keyframes prestigeSheenSweep`).
+         - Se diseñó una cinemática de alta finanza basada en la sobriedad:
+           - **Entrada Cinemática Noble (`logoPrestigeEntrance`):** Micro-desplazamiento vertical sutil de 3px y transición de opacidad progresiva en 0.75s con curva `cubic-bezier(0.16, 1, 0.3, 1)`.
+           - **Respiración Esmeralda de Alta Fidelidad (`logoBreathingGlow` / `logoBreathingGlowLight`):** Halo ambiental orgánico profundo y pausado en ciclos de 6 segundos, alternando un resplandor de `drop-shadow(0 0 3px rgba(10, 159, 104, 0.35))` a `drop-shadow(0 0 8px rgba(10, 159, 104, 0.75)) drop-shadow(0 0 16px rgba(16, 185, 129, 0.25))`, evocando una esmeralda tallada sobre fondo obsidiana sin artefactos ruidosos.
+           - **Micro-interacción al Hover / Tap:** Elevación táctil de precisión (`scale(1.025)`) con encendido suave del resplandor esmeralda.
+      3. **Saneamiento Responsivo en Dispositivos Móviles (`styles/11-mobile.css`, 482 líneas < 500):**
+         - Se retiraron las sobreescrituras de `.brand-radar-ping` en las cotas de tablet (max-width: 768px) y smartphone (max-width: 480px), recuperando margen de modularidad (de 494 a 482 líneas).
+      4. **DevSecOps y Compilación Modular:**
+         - Ejecutado `node scripts/build.js`: recompilados `style.css` (159 KB) y `style.min.css` (118 KB) con 0 residuos de radar ni sheen.
+         - Suite de validación DevSecOps de 8 fases (`node scripts/validate.js` / `npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en todos los archivos).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -29. **Internacionalización Integral de Modales (Checkout, Recuperación, Bienvenida VIP, Legal y Ficha) y Cinemática de Alto Prestigio del Logotipo**:
     - **Diagnóstico y Necesidad:**
