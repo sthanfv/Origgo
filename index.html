@@ -85,7 +85,9 @@
 
       <div class="brand-badge" id="brandBadgeHeader">
         <h1 class="brand-title" aria-label="Origgo">
+          <span class="brand-radar-ping"></span>
           <img src="./assets/img/origgo-logo.svg" alt="Origgo" class="brand-logo-img" width="136" height="48" />
+          <span class="brand-sheen-sweep"></span>
         </h1>
       </div>
 
@@ -184,11 +186,11 @@
             </div>
             <div class="cmd-dropdown-item" data-sort="precio_m2_asc">
               <i class="fa-solid fa-calculator"></i>
-              <span>Menor $/m²</span>
+              <span data-i18n="sort_m2_asc">Menor $/m²</span>
             </div>
             <div class="cmd-dropdown-item" data-sort="rebajas">
               <i class="fa-solid fa-tag"></i>
-              <span>Rebaja Reciente</span>
+              <span data-i18n="sort_rebajas">Rebaja Reciente</span>
             </div>
             <div class="cmd-dropdown-item" data-sort="precio_asc">
               <i class="fa-solid fa-arrow-up-1-9"></i>
@@ -454,7 +456,7 @@
 
           <!-- Opción 2: Bolsa 10 Contactos (Recomendado) -->
           <label class="pricing-option-card featured active-option" data-product="pack_10_leads">
-            <div class="featured-ribbon">⭐ Más Popular (-30%)</div>
+            <div class="featured-ribbon" data-i18n="checkout_popular_ribbon">⭐ Más Popular (-30%)</div>
             <input type="radio" name="checkoutProduct" value="pack_10_leads" class="checkout-radio" checked>
             <div class="option-card-inner">
               <div class="option-header-row">
@@ -471,7 +473,7 @@
             <div class="option-card-inner">
               <div class="option-header-row">
                 <span class="option-name" data-i18n="checkout_opt_city_title">Plan Pro Ciudad</span>
-                <span class="option-price">$ 89.000 / mes</span>
+                <span class="option-price">$ 89.000 <span data-i18n="checkout_month_suffix">/ mes</span></span>
               </div>
               <p class="option-desc" data-i18n="checkout_opt_city_desc">Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.</p>
             </div>
@@ -483,7 +485,7 @@
             <div class="option-card-inner">
               <div class="option-header-row">
                 <span class="option-name" data-i18n="checkout_opt_nat_title">Plan Nacional VIP</span>
-                <span class="option-price">$ 149.000 / mes</span>
+                <span class="option-price">$ 149.000 <span data-i18n="checkout_month_suffix">/ mes</span></span>
               </div>
               <p class="option-desc" data-i18n="checkout_opt_nat_desc">Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.</p>
             </div>
@@ -493,11 +495,11 @@
         <!-- Selector de Ciudad Obligatorio (Solo para Plan Pro Ciudad) -->
         <div class="checkout-form-group checkout-form-group-top is-hidden" id="groupCitySelect">
           <label for="checkoutCitySelect" class="checkout-form-label">
-            <i class="fa-solid fa-location-dot checkout-icon-city"></i> Ciudad de Cobertura Ilimitada (Plan Pro):
+            <i class="fa-solid fa-location-dot checkout-icon-city"></i> <span data-i18n="checkout_label_city">Ciudad de Cobertura Ilimitada (Plan Pro):</span>
           </label>
           <div class="checkout-input-wrapper">
             <select id="checkoutCitySelect" class="checkout-text-input checkout-select-input">
-              <option value="">-- Selecciona tu ciudad --</option>
+              <option value="" data-i18n="checkout_city_select_default">-- Selecciona tu ciudad --</option>
               <option value="Bogotá">Bogotá D.C.</option>
               <option value="Medellín">Medellín y Área Metropolitana</option>
               <option value="Cali">Cali</option>
@@ -511,7 +513,7 @@
             </select>
           </div>
           <div id="checkoutCityError" class="checkout-inline-error is-hidden"></div>
-          <span class="checkout-input-help">Tu membresía desbloqueará sin límite todos los contactos directos de la ciudad elegida durante 30 días.</span>
+          <span class="checkout-input-help" data-i18n="checkout_city_help">Tu membresía desbloqueará sin límite todos los contactos directos de la ciudad elegida durante 30 días.</span>
         </div>
 
         <!-- Banner de Advertencia de WhatsApp Real -->
@@ -520,15 +522,15 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <div class="phone-alert-body">
-            <strong>Atención: Ingresa tu WhatsApp REAL y activo</strong>
-            <p>Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, <u>no podrás acceder a tus créditos ni recuperar tu PIN</u>. El sistema no realiza llamadas ni spam.</p>
+            <strong data-i18n="checkout_wa_alert_title">Atención: Ingresa tu WhatsApp REAL y activo</strong>
+            <p data-i18n="checkout_wa_alert_desc">Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, <u>no podrás acceder a tus créditos ni recuperar tu PIN</u>. El sistema no realiza llamadas ni spam.</p>
           </div>
         </div>
 
         <!-- Formulario de Celular para asociar créditos -->
         <div class="checkout-form-group" id="groupWhatsappInput">
           <label for="checkoutWhatsappInput" class="checkout-form-label">
-            <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> WhatsApp de Autenticación (10 dígitos):
+            <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> <span data-i18n="checkout_label_whatsapp">WhatsApp de Autenticación (10 dígitos):</span>
           </label>
           <div class="checkout-input-wrapper" id="checkoutInputWrapper">
             <span class="checkout-input-prefix">+57</span>
@@ -537,6 +539,7 @@
               id="checkoutWhatsappInput" 
               class="checkout-text-input" 
               placeholder="Ej: 300 123 4567" 
+              data-i18n-ph="checkout_ph_whatsapp"
               maxlength="10" 
               inputmode="numeric" 
               pattern="[0-9]*" 
@@ -545,30 +548,30 @@
           </div>
           <!-- Mensaje de error visual en línea (reemplaza a los alerts) -->
           <div id="checkoutPhoneError" class="checkout-inline-error is-hidden"></div>
-          <span class="checkout-input-help">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
+          <span class="checkout-input-help" data-i18n="checkout_help_whatsapp">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
         </div>
 
         <!-- Botón de Acción Wompi -->
         <button type="button" class="btn-confirm-wompi" id="btnConfirmWompi">
-          <i class="fa-solid fa-lock"></i> Continuar al Pago Seguro con Wompi
+          <i class="fa-solid fa-lock"></i> <span data-i18n="checkout_btn_pay">Continuar al Pago Seguro con Wompi</span>
         </button>
 
         <div class="checkout-guarantee-badges">
-          <span><i class="fa-solid fa-shield"></i> Pasarela Segura Wompi (Vigilada SFC)</span>
-          <span><i class="fa-solid fa-bolt"></i> Activación Instantánea</span>
+          <span><i class="fa-solid fa-shield"></i> <span data-i18n="checkout_guarantee_wompi">Pasarela Segura Wompi (Vigilada SFC)</span></span>
+          <span><i class="fa-solid fa-bolt"></i> <span data-i18n="checkout_guarantee_instant">Activación Instantánea</span></span>
         </div>
       </div>
 
       <!-- PANEL 2: ACTIVAR CON CÓDIGO DE ACCESO (RESTAURACIÓN) -->
       <div class="checkout-tab-panel" id="panelTengoPin">
         <div class="pin-restore-box">
-          <p class="pin-restore-intro">
+          <p class="pin-restore-intro" data-i18n="checkout_restore_intro">
             Si ya adquiriste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu Código de Acceso Origgo (ej. <strong>HNT-7489</strong>).
           </p>
 
           <div class="checkout-form-group">
             <label for="restoreWhatsappInput" class="checkout-form-label">
-              <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> WhatsApp Registrado:
+              <i class="fa-brands fa-whatsapp checkout-icon-whatsapp"></i> <span data-i18n="checkout_restore_wa_label">WhatsApp Registrado:</span>
             </label>
             <div class="checkout-input-wrapper">
               <span class="checkout-input-prefix">+57</span>
@@ -577,6 +580,7 @@
                 id="restoreWhatsappInput" 
                 class="checkout-text-input" 
                 placeholder="Ej: 300 123 4567" 
+                data-i18n-ph="checkout_ph_whatsapp"
                 maxlength="10" 
                 inputmode="numeric" 
                 pattern="[0-9]*" 
@@ -587,23 +591,24 @@
 
           <div class="checkout-form-group">
             <label for="restorePinInput" class="checkout-form-label">
-              <i class="fa-solid fa-key checkout-icon-key"></i> Código de Acceso (PIN) o Ref. Wompi:
+              <i class="fa-solid fa-key checkout-icon-key"></i> <span data-i18n="checkout_restore_pin_label">Código de Acceso (PIN) o Ref. Wompi:</span>
             </label>
             <input 
               type="text" 
               id="restorePinInput" 
               class="checkout-text-input pin-input pin-uppercase"
               placeholder="Ej: HNT-7489 o Referencia de Pago" 
+              data-i18n-ph="checkout_restore_pin_ph"
               maxlength="50" 
               autocomplete="one-time-code" 
               autocapitalize="characters" 
               spellcheck="false" 
             />
-            <span class="checkout-input-help">Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.</span>
+            <span class="checkout-input-help" data-i18n="checkout_restore_pin_help">Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.</span>
           </div>
 
           <button type="button" class="btn-restore-session" id="btnRestoreSession">
-            <i class="fa-solid fa-arrows-rotate"></i> Restaurar Mis Créditos
+            <i class="fa-solid fa-arrows-rotate"></i> <span data-i18n="checkout_btn_restore">Restaurar Mis Créditos</span>
           </button>
 
           <div id="restoreStatusMsg" class="restore-status-msg is-hidden"></div>
@@ -611,30 +616,30 @@
           <!-- Recuperación Automática por Correo Electrónico (100% Autoservicio) -->
           <div class="auto-recovery-box" id="autoRecoveryBox">
             <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery">
-              <span><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Olvidaste tu Código? Restaurar por Correo</span>
+              <span><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="checkout_forgot_pin_btn">¿Olvidaste tu Código? Restaurar por Correo</span></span>
               <i class="fa-solid fa-chevron-down recovery-toggle-icon" id="recoveryToggleIcon"></i>
             </button>
             <div id="recoveryContentArea" class="recovery-content-area is-hidden">
-              <p class="recovery-help-text">
+              <p class="recovery-help-text" data-i18n="checkout_forgot_pin_desc">
                 Ingresa el <strong>Correo Electrónico</strong> que utilizaste durante tu pago en Wompi. Te enviaremos instrucciones de recuperación si la cuenta existe.
               </p>
               <div class="checkout-form-group checkout-form-group-compact">
                 <label for="recoveryReferenceInput" class="checkout-form-label checkout-form-label-compact">
-                  <i class="fa-solid fa-envelope"></i> Correo Electrónico de Compra:
+                  <i class="fa-solid fa-envelope"></i> <span data-i18n="checkout_email_label">Correo Electrónico de Compra:</span>
                 </label>
                 <input 
                   type="email" 
                   id="recoveryReferenceInput" 
-                  class="checkout-text-input checkout-input-compact"
-                  placeholder="Ej: tu-correo@email.com" 
-                  inputmode="email" 
+                  class="checkout-text-input pin-input"
+                  placeholder="ejemplo@correo.com" 
+                  data-i18n-ph="checkout_email_ph"
+                  maxlength="120" 
                   autocomplete="email" 
-                  autocapitalize="none" 
                   spellcheck="false" 
                 />
               </div>
               <button type="button" class="btn-confirm-wompi btn-recovery-submit" id="btnExecuteAutoRecovery">
-                <i class="fa-solid fa-paper-plane"></i> Enviar instrucciones
+                <i class="fa-solid fa-paper-plane"></i> <span data-i18n="checkout_btn_send_instructions">Enviar instrucciones</span>
               </button>
               <div id="recoveryResultMsg" class="restore-status-msg restore-status-recovery-result is-hidden"></div>
             </div>
@@ -651,7 +656,7 @@
             </div>
             <div>
               <h3 class="user-phone-title" id="userActivePhone">+57 300 ••• ••••</h3>
-              <span class="user-pin-badge" id="userActivePin">PIN protegido</span>
+              <span class="user-pin-badge" id="userActivePin" data-i18n="checkout_user_pin_protected">PIN protegido</span>
             </div>
           </div>
 
@@ -661,7 +666,7 @@
                 <i class="fa-solid fa-crown"></i> Plan Pro Ciudad
               </span>
             </div>
-            <span class="user-credits-label" id="userCreditsLabel">Saldo Disponible</span>
+            <span class="user-credits-label" id="userCreditsLabel" data-i18n="checkout_user_balance_label">Saldo Disponible</span>
             <div class="user-credits-value" id="userActiveCredits">⚡ 10 Créditos</div>
             <p class="user-plan-status" id="userActivePlan">Plan Estándar por Créditos</p>
 
@@ -671,7 +676,7 @@
 
             <div id="userBenefitsToggleWrap" class="user-benefits-toggle-wrap is-hidden">
               <button type="button" class="user-benefits-toggle-btn" id="btnToggleUserBenefits">
-                <i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía
+                <i class="fa-solid fa-sparkles"></i> <span data-i18n="checkout_user_benefits_btn">Ver Privilegios de mi Membresía</span>
               </button>
               <div class="user-benefits-accordion" id="userBenefitsAccordion">
                 <ul id="userBenefitsList">
@@ -687,10 +692,10 @@
 
           <div class="user-actions-row">
             <button type="button" class="btn-buy-more-credits" id="btnBuyMoreFromProfile">
-              <i class="fa-solid fa-gem"></i> Planes & Recargas
+              <i class="fa-solid fa-gem"></i> <span data-i18n="checkout_user_btn_plans">Planes & Recargas</span>
             </button>
             <button type="button" class="btn-logout-session" id="btnLogoutSession">
-              <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="checkout_user_btn_logout">Cerrar Sesión</span>
             </button>
           </div>
         </div>
@@ -717,15 +722,15 @@
       <div class="welcome-credential-card">
         <div class="credential-info-row">
           <div class="credential-phone-block">
-            <span class="credential-label">WhatsApp Asociado</span>
+            <span class="credential-label" data-i18n="welcome_wa_label">WhatsApp Asociado</span>
             <strong class="credential-val" id="welcomeUserPhone">+57 ••••••••••</strong>
           </div>
           <div class="credential-pin-block">
-            <span class="credential-label">Tu PIN Maestro de Acceso</span>
+            <span class="credential-label" data-i18n="welcome_pin_label">Tu PIN Maestro de Acceso</span>
             <div class="credential-pin-wrap">
               <strong class="credential-pin-code" id="welcomeUserPin">HNT-••••</strong>
               <button type="button" class="btn-copy-pin" id="btnCopyPin" title="Copiar PIN">
-                <i class="fa-solid fa-copy"></i> Copiar
+                <i class="fa-solid fa-copy"></i> <span data-i18n="welcome_copy_btn">Copiar</span>
               </button>
             </div>
           </div>
@@ -737,7 +742,7 @@
 
       <!-- Matriz de Beneficios Desbloqueados -->
       <div class="welcome-benefits-section">
-        <span class="welcome-section-tag">Tus Privilegios Activos</span>
+        <span class="welcome-section-tag" data-i18n="welcome_privileges_tag">Tus Privilegios Activos</span>
         <div class="welcome-benefits-list" id="welcomeBenefitsList">
           <!-- Inyectado dinámicamente por JS según el plan -->
         </div>
@@ -749,7 +754,7 @@
       </button>
 
       <div class="welcome-guarantee-note">
-        <i class="fa-solid fa-lock"></i> 100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos
+        <i class="fa-solid fa-lock"></i> <span data-i18n="welcome_footer_note">100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos</span>
       </div>
     </div>
   </div>
@@ -760,7 +765,7 @@
       <button type="button" class="btn-modal-close" id="btnLegalCloseIcon" aria-label="Cerrar ventana de información">&times;</button>
       
       <div class="modal-header-tag" id="legalHeaderTag">
-        <i class="fa-solid fa-scale-balanced"></i> Transparencia y Confianza
+        <i class="fa-solid fa-scale-balanced"></i> <span data-i18n="legal_header_tag">Transparencia y Confianza</span>
       </div>
       <h2 class="modal-title" id="legalModalTitle" data-i18n="legal_title">¿Cómo Funciona Origgo?</h2>
       <p class="modal-subtitle" id="legalModalSubtitle" data-i18n="legal_subtitle">Información clara para compradores y propietarios</p>

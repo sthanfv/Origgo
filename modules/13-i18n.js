@@ -15,6 +15,7 @@ const DICCIONARIO_I18N = {
     filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
     sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor',
     sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad',
+    sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
     hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles',
@@ -40,22 +41,30 @@ const DICCIONARIO_I18N = {
     slideup_direct_ad: 'Ver Anuncio Original', slideup_unlock_heading: 'Desbloquea el Contacto del Dueño',
     slideup_unlock_desc: 'Obtén de inmediato el número telefónico, enlace directo y WhatsApp del propietario para negociar sin intermediarios.',
     slideup_unlock_btn: 'Desbloquear con Créditos',
-    checkout_badge: 'Pasarela de Pago Segura Wompi', checkout_title: 'Desbloqueo de Propietarios Directos',
-    checkout_subtitle: 'Sin intermediarios, comisiones de agencia ni mensualidades forzosas.',
+    modal_summary_property: 'Inmueble:', modal_summary_location: 'Ubicación:', modal_summary_price: 'Precio Publicado:', modal_summary_unit_value: 'Valor Unitario:',
+    checkout_badge: 'Pasarela de Pago Segura Wompi', checkout_title: 'Desbloqueo de Propietarios Directos', checkout_subtitle: 'Sin intermediarios, comisiones de agencia ni mensualidades forzosas.',
     checkout_tab_buy: 'Comprar Planes', checkout_tab_restore: 'Restaurar Cuenta', checkout_tab_account: 'Mi Membresía',
     checkout_opt_single_title: 'Desbloqueo Individual', checkout_opt_single_desc: '1 Contacto verificado del propietario directo. Ideal para compra puntual.',
     checkout_opt_pack10_title: 'Bolsa 10 Contactos', checkout_opt_pack10_desc: '$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.',
     checkout_opt_city_title: 'Plan Pro Ciudad', checkout_opt_city_desc: 'Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.',
     checkout_opt_nat_title: 'Plan Nacional VIP', checkout_opt_nat_desc: 'Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.',
-    checkout_label_city: 'Ciudad de Cobertura Ilimitada (Plan Pro):', checkout_label_whatsapp: 'WhatsApp de Autenticación (10 dígitos):',
-    checkout_ph_whatsapp: 'Ej: 3001234567', checkout_help_whatsapp: 'Tu número de WhatsApp se vinculará de forma segura a tus créditos adquiridos.',
-    checkout_btn_pay: 'Conectando con pago seguro...', checkout_btn_pay_default: 'Pagar con Wompi',
-    checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Tarjeta Crédito/Débito',
-    checkout_restore_title: 'Restaura tu sesión con tu PIN o Referencia de Pago', checkout_btn_restore: 'Restaurar Mi Cuenta',
-    welcome_badge: 'ACCESO VIP CONFIRMADO', welcome_title: '¡Bienvenido a Origgo!',
-    welcome_subtitle: 'Tu acceso directo a propietarios de inmuebles sin intermediarios.',
-    welcome_pin_desc: 'Guarda tu PIN de 4 dígitos. Te servirá para restaurar tu sesión en cualquier dispositivo.',
-    welcome_btn_explore: 'Comenzar a Explorar Oportunidades',
+    checkout_popular_ribbon: '⭐ Más Popular (-30%)', checkout_month_suffix: '/ mes', checkout_city_select_default: '-- Selecciona tu ciudad --',
+    checkout_label_city: 'Ciudad de Cobertura Ilimitada (Plan Pro):', checkout_city_help: 'Tu membresía desbloqueará sin límite todos los contactos directos de la ciudad elegida durante 30 días.',
+    checkout_wa_alert_title: 'Atención: Ingresa tu WhatsApp REAL y activo',
+    checkout_wa_alert_desc: 'Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, no podrás acceder a tus créditos ni recuperar tu PIN. El sistema no realiza llamadas ni spam.',
+    checkout_label_whatsapp: 'WhatsApp de Autenticación (10 dígitos):', checkout_ph_whatsapp: 'Ej: 300 123 4567', checkout_help_whatsapp: 'Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.',
+    checkout_btn_pay: 'Continuar al Pago Seguro con Wompi', checkout_btn_pay_default: 'Pagar con Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Tarjeta Crédito/Débito',
+    checkout_guarantee_wompi: 'Pasarela Segura Wompi (Vigilada SFC)', checkout_guarantee_instant: 'Activación Instantánea',
+    checkout_restore_title: 'Restaura tu sesión con tu PIN o Referencia de Pago', checkout_btn_restore: 'Restaurar Mis Créditos',
+    checkout_restore_intro: 'Si ya adquiriste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu Código de Acceso Origgo (ej. HNT-7489).',
+    checkout_restore_wa_label: 'WhatsApp Registrado:', checkout_restore_pin_label: 'Código de Acceso (PIN) o Ref. Wompi:', checkout_restore_pin_ph: 'Ej: HNT-7489 o Referencia de Pago',
+    checkout_restore_pin_help: 'Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.',
+    checkout_forgot_pin_btn: '¿Olvidaste tu Código? Restaurar por Correo', checkout_forgot_pin_desc: 'Ingresa el Correo Electrónico que utilizaste durante tu pago en Wompi. Te enviaremos instrucciones de recuperación si la cuenta existe.',
+    checkout_email_label: 'Correo Electrónico de Compra:', checkout_email_ph: 'ejemplo@correo.com', checkout_btn_send_instructions: 'Enviar instrucciones',
+    checkout_user_pin_protected: 'PIN protegido', checkout_user_balance_label: 'Saldo Disponible', checkout_user_benefits_btn: 'Ver Privilegios de mi Membresía', checkout_user_btn_plans: 'Planes & Recargas', checkout_user_btn_logout: 'Cerrar Sesión',
+    welcome_badge: 'ACCESO VIP CONFIRMADO', welcome_title: '¡Bienvenido a Origgo!', welcome_subtitle: 'Tu acceso directo a propietarios de inmuebles sin intermediarios.',
+    welcome_wa_label: 'WhatsApp Asociado', welcome_pin_label: 'Tu PIN Maestro de Acceso', welcome_copy_btn: 'Copiar', welcome_privileges_tag: 'Tus Privilegios Activos', welcome_footer_note: '100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos',
+    welcome_pin_desc: 'Guarda tu PIN de 4 dígitos. Te servirá para restaurar tu sesión en cualquier dispositivo.', welcome_btn_explore: 'Comenzar a Explorar Oportunidades',
     push_badge: 'RADAR EN TIEMPO REAL', push_title: '¿Activar Alertas de Oportunidades Directas?',
     push_subtitle: 'Recibe una alerta en tu teléfono en el segundo exacto en que un propietario publique un inmueble sin comisiones inmobiliarias.',
     push_feature_1: 'Primicia total:', push_feature_1_desc: 'Entérate antes de que el inmueble llegue a portales o agencias con comisiones.',
@@ -67,6 +76,7 @@ const DICCIONARIO_I18N = {
     menu_dashboard: 'Dashboard Principal', menu_direct_leads: 'Inmuebles Directos',
     menu_push: 'Activar Alertas en Vivo', menu_theme: 'Modo Claro / Oscuro', menu_vip: 'Desbloqueo VIP',
     menu_support: 'Soporte VIP WhatsApp', menu_terms: 'Términos & Exoneración',
+    legal_header_tag: 'Transparencia y Confianza',
     legal_title: '¿Cómo Funciona Origgo?', legal_subtitle: 'Información clara para compradores y propietarios',
     legal_tab_how: 'Cómo Funciona', legal_tab_security: 'Seguridad', legal_tab_privacy: 'Tus Datos', legal_tab_guarantee: 'Garantía de Saldo',
     legal_btn_accept: 'Entendido',
@@ -84,6 +94,7 @@ const DICCIONARIO_I18N = {
     filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
     sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High',
     sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount',
+    sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
     hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties',
@@ -93,7 +104,6 @@ const DICCIONARIO_I18N = {
     marquee_alerts_title: 'Alerts < 3 Min', marquee_alerts_sub: 'Real time',
     marquee_arbitrage_title: 'High Arbitrage', marquee_arbitrage_sub: 'Below market',
     marquee_access_title: 'Open Access', marquee_access_sub: 'Verified leads',
-    catalog_count_suffix: 'direct opportunities', catalog_count_single: 'direct opportunity',
     catalog_empty_title: 'No opportunities found in this area',
     catalog_empty_desc: 'No direct owner listings found with the active filters. You can explore other cities or reset filters.',
     catalog_btn_reset: 'Reset all filters',
@@ -110,22 +120,30 @@ const DICCIONARIO_I18N = {
     slideup_direct_ad: 'View Original Listing', slideup_unlock_heading: 'Unlock Direct Owner Contact',
     slideup_unlock_desc: 'Instantly access verified direct phone number, original listing link and direct WhatsApp to negotiate commission-free.',
     slideup_unlock_btn: 'Unlock with Credits',
-    checkout_badge: 'Wompi Certified Secure Payment Gateway', checkout_title: 'Unlock Direct Property Owners',
-    checkout_subtitle: 'Zero middlemen, zero brokerage commissions, zero forced monthly subscriptions.',
+    modal_summary_property: 'Property:', modal_summary_location: 'Location:', modal_summary_price: 'Listed Price:', modal_summary_unit_value: 'Unit Price:',
+    checkout_badge: 'Wompi Certified Secure Payment Gateway', checkout_title: 'Unlock Direct Property Owners', checkout_subtitle: 'Zero middlemen, zero brokerage commissions, zero forced monthly subscriptions.',
     checkout_tab_buy: 'Purchase Plans', checkout_tab_restore: 'Restore Account', checkout_tab_account: 'My Membership',
     checkout_opt_single_title: 'Single Lead Unlock', checkout_opt_single_desc: '1 Verified direct owner contact. Ideal for a single target property.',
     checkout_opt_pack10_title: '10 Direct Unlocks Pack', checkout_opt_pack10_desc: '$3,500 COP (~$0.85 USD) per lead. Credits never expire and attach to your PIN.',
     checkout_opt_city_title: 'City Unlimited Pass', checkout_opt_city_desc: '30-day unlimited unlocks for all direct property owners across your city.',
     checkout_opt_nat_title: 'National VIP Pass', checkout_opt_nat_desc: 'Full access nationwide + exclusive urgent price-drop live radar.',
-    checkout_label_city: 'Unlimited Coverage City (City Pass):', checkout_label_whatsapp: 'Authentication WhatsApp (10 digits):',
-    checkout_ph_whatsapp: 'E.g: 3001234567', checkout_help_whatsapp: 'Your WhatsApp number is securely linked to your purchased credits and PIN.',
-    checkout_btn_pay: 'Connecting to secure payment...', checkout_btn_pay_default: 'Pay Securely with Wompi',
-    checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Credit/Debit Cards',
-    checkout_restore_title: 'Restore session with your PIN or Payment Reference', checkout_btn_restore: 'Restore My Account',
-    welcome_badge: 'VIP ACCESS CONFIRMED', welcome_title: 'Welcome to Origgo!',
-    welcome_subtitle: 'Your direct pipeline to property owners without real estate agency fees.',
-    welcome_pin_desc: 'Keep your 4-digit PIN safe. You can use it to restore your access on any device.',
-    welcome_btn_explore: 'Start Exploring Deals',
+    checkout_popular_ribbon: '⭐ Most Popular (-30%)', checkout_month_suffix: '/ month', checkout_city_select_default: '-- Select your city --',
+    checkout_label_city: 'Unlimited Coverage City (Pro Plan):', checkout_city_help: 'Your membership unlocks unlimited direct owner contacts in the selected city for 30 days.',
+    checkout_wa_alert_title: 'Important: Enter your REAL, active WhatsApp',
+    checkout_wa_alert_desc: 'This number is your unique security ID. If you enter an invalid number, you cannot access your credits or recover your PIN. Zero sales calls or spam.',
+    checkout_label_whatsapp: 'Authentication WhatsApp (10 digits):', checkout_ph_whatsapp: 'E.g: 300 123 4567', checkout_help_whatsapp: 'Your credits are securely sealed to this phone number for access on any phone or PC.',
+    checkout_btn_pay: 'Continue to Secure Payment with Wompi', checkout_btn_pay_default: 'Pay with Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Credit/Debit Cards',
+    checkout_guarantee_wompi: 'Wompi Certified Gateway (Regulated)', checkout_guarantee_instant: 'Instant Activation',
+    checkout_restore_title: 'Restore session with your PIN or Payment Reference', checkout_btn_restore: 'Restore My Credits',
+    checkout_restore_intro: 'If you already purchased credits or a pass on another device or browser, enter your WhatsApp and Origgo Access Code (e.g. HNT-7489).',
+    checkout_restore_wa_label: 'Registered WhatsApp:', checkout_restore_pin_label: 'Access Code (PIN) or Wompi Ref:', checkout_restore_pin_ph: 'E.g: HNT-7489 or Payment Reference',
+    checkout_restore_pin_help: 'Enter your PIN or paste your payment reference from your receipt for instant crediting.',
+    checkout_forgot_pin_btn: 'Forgot your Code? Restore via Email', checkout_forgot_pin_desc: 'Enter the Email address you used during your Wompi payment. We will send recovery instructions if an account exists.',
+    checkout_email_label: 'Billing Email Address:', checkout_email_ph: 'example@email.com', checkout_btn_send_instructions: 'Send instructions',
+    checkout_user_pin_protected: 'Protected PIN', checkout_user_balance_label: 'Available Balance', checkout_user_benefits_btn: 'View Membership Privileges', checkout_user_btn_plans: 'Plans & Top-ups', checkout_user_btn_logout: 'Log Out',
+    welcome_badge: 'VIP ACCESS CONFIRMED', welcome_title: 'Welcome to Origgo!', welcome_subtitle: 'Your direct pipeline to property owners without real estate agency fees.',
+    welcome_wa_label: 'Linked WhatsApp', welcome_pin_label: 'Your Master Access PIN', welcome_copy_btn: 'Copy', welcome_privileges_tag: 'Your Active Privileges', welcome_footer_note: '100% Direct Deal • Zero Middlemen • Zero Hidden Fees',
+    welcome_pin_desc: 'Keep your 4-digit PIN safe. You can use it to restore your access on any device.', welcome_btn_explore: 'Start Exploring Deals',
     push_badge: 'REAL-TIME RADAR', push_title: 'Enable Direct Deal Instant Alerts?',
     push_subtitle: 'Get notified on your phone the exact second an owner lists a property commission-free.',
     push_feature_1: 'First in line:', push_feature_1_desc: 'Get notified before the property reaches agency brokers with markup fees.',
@@ -137,6 +155,7 @@ const DICCIONARIO_I18N = {
     menu_dashboard: 'Main Dashboard', menu_direct_leads: 'Direct Properties',
     menu_push: 'Enable Live Radar Alerts', menu_theme: 'Light / Dark Mode', menu_vip: 'VIP Unlocks',
     menu_support: 'WhatsApp VIP Support', menu_terms: 'Terms & Disclaimers',
+    legal_header_tag: 'Transparency & Trust',
     legal_title: 'How Origgo Works', legal_subtitle: 'Clear, transparent information for buyers and property owners',
     legal_tab_how: 'How It Works', legal_tab_security: 'Security', legal_tab_privacy: 'Your Data', legal_tab_guarantee: 'Balance Guarantee',
     legal_btn_accept: 'Understood',
@@ -146,6 +165,25 @@ const DICCIONARIO_I18N = {
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
     footer_disclaimer_title: 'Trust Notice:',
     footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.'
+  }
+};
+
+const TEXTOS_LEGALES_ORIGGO_EN = {
+  terminos: {
+    titulo: 'How Origgo Works', subtitulo: 'Clear, transparent information for buyers and owners', badge: 'Transparency & Trust', icono: 'fa-solid fa-scale-balanced',
+    html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Direct Owner Connection</div><p>We connect buyers directly with property owners. Zero agency commissions or brokerage fees.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bullseye"></i> 2. Fresh Direct Opportunities</div><p>Direct opportunities and urgent price cuts detected daily in Colombia before reaching agencies.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-shield"></i> 3. Personal & Commercial Use</div><p>Access to contacts is for your direct use. We safeguard data against spam.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Secure Payments with Wompi</div><p>Payments are securely processed via Wompi (regulated by SFC). Origgo never stores card or bank details.</p></div>'
+  },
+  exoneracion: {
+    titulo: 'Security & Direct Deals', subtitulo: 'Important recommendations for a safe, transparent transaction', badge: 'Security', icono: 'fa-solid fa-shield-halved',
+    html: '<div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Zero Brokerage Fees</div><p>Origgo <strong>is not a real estate agency and charges no commissions</strong>. You negotiate directly one-on-one with the property owner.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-magnifying-glass"></i> 2. Inspect Before Paying</div><p>We recommend visiting the property in person, meeting the owner, and requesting an official Title Certificate before transferring funds.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-comments"></i> 3. Direct Agreements</div><p>Listings are sourced from open public listings. Any final agreement or sale deed is strictly between you and the owner.</p></div>'
+  },
+  privacidad: {
+    titulo: 'Privacy & Your Data', subtitulo: 'Data protection under Law 1581 of 2012 and GDPR', badge: 'Protected Data', icono: 'fa-solid fa-user-shield',
+    html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 1. How We Use Phone & Email</div><p>Your WhatsApp and email are only used to deliver access codes, store credits and send receipts. <strong>Zero data selling and zero spam</strong>.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Cataloged Listings</div><p>Information is indexed from open listings published by owners across the web.</p></div><div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Owner Listing Delisting</div><p>If you are the owner of a published property and wish to remove it, message our WhatsApp support and we delist it immediately for free.</p></div>'
+  },
+  reembolsos: {
+    titulo: 'Balance Guarantee & Support', subtitulo: 'Your money and unlocked access are always protected', badge: 'Balance Guarantee', icono: 'fa-solid fa-rotate-left',
+    html: '<div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 1. Your Balance Never Expires</div><p>If you change devices or clear your browser, your credits remain safe. Restore them anytime via <strong>"Restore Account"</strong> with your WhatsApp.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Instant Lead Reveal</div><p>Every time you unlock a lead, verified owner details appear immediately on your screen.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Priority Direct Support</div><p>If you had any issue with a payment or the system, contact us directly on WhatsApp for immediate credit resolution.</p></div>'
   }
 };
 
@@ -326,52 +364,60 @@ function cambiarIdioma(nuevoIdioma) {
   const actual = obtenerIdiomaActual();
   if (actual === nuevoIdioma) return;
 
-  try {
-    localStorage.setItem('origgo_lang', nuevoIdioma);
-  } catch (e) {}
+  try { localStorage.setItem('origgo_lang', nuevoIdioma); } catch (e) {}
 
   aplicarTraduccionesAlDOM();
+
+  // Actualizar modales abiertos si están activos en pantalla
+  if (typeof renderizarContenidoLegal === 'function') {
+    const modalLegal = document.getElementById('modalLegalOverlay');
+    if (modalLegal && modalLegal.classList.contains('active')) {
+      const activeTab = typeof pestanaLegalActiva !== 'undefined' ? pestanaLegalActiva : 'terminos';
+      renderizarContenidoLegal(activeTab);
+    }
+  }
+
+  const checkoutModal = document.getElementById('checkoutModal');
+  if (checkoutModal && checkoutModal.classList.contains('active') && typeof abrirModalCheckout === 'function') {
+    abrirModalCheckout();
+  }
+
+  const welcomeModal = document.getElementById('modalWelcomeSuccess');
+  if (welcomeModal && welcomeModal.classList.contains('active') && typeof abrirModalBienvenidaVIP === 'function') {
+    abrirModalBienvenidaVIP(null, typeof sesionUsuario !== 'undefined' ? sesionUsuario : null);
+  }
+
+  const slideup = document.getElementById('slideupDrawer');
+  if (slideup && slideup.classList.contains('active')) traducirSlideupDrawer();
 
   window.dispatchEvent(new CustomEvent('origgo:languageChanged', { detail: { lang: nuevoIdioma } }));
 }
 
 /**
- * Traduce dinámicamente las especificaciones del Slide-up Drawer al abrirse.
+ * Traduce dinámicamente las especificaciones del Slide-up Drawer al abrirse o cambiar de idioma.
  */
 function traducirSlideupDrawer() {
-  const lang = obtenerIdiomaActual();
-  if (lang !== 'en') return;
-  const dict = DICCIONARIO_I18N.en;
-  document.querySelectorAll('.slideup-title').forEach(t => {
-    t.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${dict.slideup_title}`;
-  });
-  document.querySelectorAll('.trust-badge').forEach(b => {
-    b.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${dict.slideup_trust_badge}`;
-  });
-  document.querySelectorAll('.trust-desc').forEach(d => {
-    d.textContent = dict.slideup_trust_desc;
-  });
-  document.querySelectorAll('.unlocked-phone-label').forEach(l => {
-    l.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.slideup_unlocked_title}`;
-  });
+  const lang = obtenerIdiomaActual(), dict = DICCIONARIO_I18N[lang] || DICCIONARIO_I18N.es, isEn = lang === 'en';
+  document.querySelectorAll('.slideup-title').forEach(t => { t.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${dict.slideup_title}`; });
+  document.querySelectorAll('.trust-badge').forEach(b => { b.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${dict.slideup_trust_badge}`; });
+  document.querySelectorAll('.trust-desc').forEach(d => { d.textContent = dict.slideup_trust_desc; });
+  document.querySelectorAll('.unlocked-phone-label').forEach(l => { l.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.slideup_unlocked_title}`; });
   document.querySelectorAll('.slideup-unlock-cta').forEach(cta => {
-    const h4 = cta.querySelector('h4');
+    const h4 = cta.querySelector('h4'), p = cta.querySelector('p'), btn = cta.querySelector('.btn-slideup-unlock');
     if (h4) h4.textContent = dict.slideup_unlock_heading;
-    const p = cta.querySelector('p');
     if (p) p.textContent = dict.slideup_unlock_desc;
-    const btn = cta.querySelector('.btn-slideup-unlock');
     if (btn) btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ${dict.slideup_unlock_btn}`;
   });
   document.querySelectorAll('.slideup-spec-key').forEach(keyEl => {
     const txt = keyEl.textContent.trim().toLowerCase();
-    if (txt.includes('estrato')) keyEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> Tier / Stratum`;
-    else if (txt.includes('área') || txt.includes('superficie')) keyEl.innerHTML = `<i class="fa-solid fa-ruler-combined"></i> Built Area`;
-    else if (txt.includes('hab') || txt.includes('alcoba')) keyEl.innerHTML = `<i class="fa-solid fa-bed"></i> Bedrooms`;
-    else if (txt.includes('baño')) keyEl.innerHTML = `<i class="fa-solid fa-bath"></i> Bathrooms`;
-    else if (txt.includes('parqueadero') || txt.includes('garaje')) keyEl.innerHTML = `<i class="fa-solid fa-square-parking"></i> Parking`;
-    else if (txt.includes('tipo')) keyEl.innerHTML = `<i class="fa-solid fa-building"></i> Property Type`;
-    else if (txt.includes('ubicación')) keyEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> Location`;
-    else if (txt.includes('operación')) keyEl.innerHTML = `<i class="fa-solid fa-handshake"></i> Deal Type`;
+    if (txt.includes('estrato') || txt.includes('tier')) keyEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> ${isEn ? 'Tier / Stratum' : 'Estrato'}`;
+    else if (txt.includes('área') || txt.includes('superficie') || txt.includes('built area')) keyEl.innerHTML = `<i class="fa-solid fa-ruler-combined"></i> ${isEn ? 'Built Area' : 'Área'}`;
+    else if (txt.includes('hab') || txt.includes('alcoba') || txt.includes('bed')) keyEl.innerHTML = `<i class="fa-solid fa-bed"></i> ${isEn ? 'Bedrooms' : 'Habitaciones'}`;
+    else if (txt.includes('baño') || txt.includes('bath')) keyEl.innerHTML = `<i class="fa-solid fa-bath"></i> ${isEn ? 'Bathrooms' : 'Baños'}`;
+    else if (txt.includes('parqueadero') || txt.includes('garaje') || txt.includes('parking')) keyEl.innerHTML = `<i class="fa-solid fa-square-parking"></i> ${isEn ? 'Parking' : 'Parqueaderos'}`;
+    else if (txt.includes('tipo') || txt.includes('property type')) keyEl.innerHTML = `<i class="fa-solid fa-building"></i> ${isEn ? 'Property Type' : 'Tipo'}`;
+    else if (txt.includes('ubicación') || txt.includes('location')) keyEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${isEn ? 'Location' : 'Ubicación'}`;
+    else if (txt.includes('operación') || txt.includes('deal type')) keyEl.innerHTML = `<i class="fa-solid fa-handshake"></i> ${isEn ? 'Deal Type' : 'Operación'}`;
   });
 }
 
@@ -422,6 +468,7 @@ if (typeof window !== 'undefined') {
   window.calcularReferenciaUSD = calcularReferenciaUSD;
   window.aplicarTraduccionesAlDOM = aplicarTraduccionesAlDOM;
   window.traducirSlideupDrawer = traducirSlideupDrawer;
+  window.TEXTOS_LEGALES_ORIGGO_EN = TEXTOS_LEGALES_ORIGGO_EN;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -13,8 +13,7 @@ function generarIdempotencyKeyPago() {
   if (!c?.getRandomValues) throw new Error('Navegador incompatible para pagos seguros.');
   const b = new Uint8Array(16);
   c.getRandomValues(b);
-  b[6] = (b[6] & 0x0f) | 0x40;
-  b[8] = (b[8] & 0x3f) | 0x80;
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
   const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
@@ -43,26 +42,19 @@ function cargarScriptWompi() {
  * @param {'comprar'|'tengo-pin'|'perfil'|'mi-cuenta'} pestana
  */
 function cambiarPestanaCheckout(pestana) {
-  const tabMiCuenta = document.getElementById('tabBtnMiCuenta');
-  const tabComprar = document.getElementById('tabBtnComprar');
-  const tabPin = document.getElementById('tabBtnTengoPin');
-  const panelComprar = document.getElementById('panelComprar');
-  const panelPin = document.getElementById('panelTengoPin');
-  const panelPerfil = document.getElementById('panelUsuarioActivo');
+  const tabMiCuenta = document.getElementById('tabBtnMiCuenta'), tabComprar = document.getElementById('tabBtnComprar'), tabPin = document.getElementById('tabBtnTengoPin');
+  const panelComprar = document.getElementById('panelComprar'), panelPin = document.getElementById('panelTengoPin'), panelPerfil = document.getElementById('panelUsuarioActivo');
   const tabsBar = document.getElementById('checkoutTabsBar');
 
   [panelComprar, panelPin, panelPerfil, tabMiCuenta, tabComprar, tabPin].forEach(el => el?.classList.remove('active'));
   if (tabsBar) tabsBar.style.display = 'flex';
 
   if (pestana === 'comprar') {
-    tabComprar?.classList.add('active');
-    panelComprar?.classList.add('active');
+    tabComprar?.classList.add('active'); panelComprar?.classList.add('active');
   } else if (pestana === 'tengo-pin') {
-    tabPin?.classList.add('active');
-    panelPin?.classList.add('active');
+    tabPin?.classList.add('active'); panelPin?.classList.add('active');
   } else if (pestana === 'perfil' || pestana === 'mi-cuenta') {
-    tabMiCuenta?.classList.add('active');
-    panelPerfil?.classList.add('active');
+    tabMiCuenta?.classList.add('active'); panelPerfil?.classList.add('active');
   }
 }
 
@@ -94,23 +86,28 @@ function abrirModalCheckout(index, pestana = null) {
         </div>
       ` : '';
 
+      const lblProp = typeof t === 'function' ? t('modal_summary_property', 'Inmueble:') : 'Inmueble:';
+      const lblLoc = typeof t === 'function' ? t('modal_summary_location', 'Ubicación:') : 'Ubicación:';
+      const lblPrice = typeof t === 'function' ? t('modal_summary_price', 'Precio Publicado:') : 'Precio Publicado:';
+      const lblUnit = typeof t === 'function' ? t('modal_summary_unit_value', 'Valor Unitario:') : 'Valor Unitario:';
+
       elSummary.innerHTML = `
         ${imgHtml}
         <div class="modal-summary-item">
-          <span class="modal-summary-label">Inmueble:</span>
+          <span class="modal-summary-label">${lblProp}</span>
           <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong>
         </div>
         <div class="modal-summary-item">
-          <span class="modal-summary-label">Ubicación:</span>
+          <span class="modal-summary-label">${lblLoc}</span>
           <span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span>
         </div>
         <div class="modal-summary-item">
-          <span class="modal-summary-label">Precio Publicado:</span>
+          <span class="modal-summary-label">${lblPrice}</span>
           <strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong>
         </div>
         ${leadSeleccionado.precio_m2 ? `
           <div class="modal-summary-item modal-summary-divider">
-            <span class="modal-summary-label">Valor Unitario:</span>
+            <span class="modal-summary-label">${lblUnit}</span>
             <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
           </div>
         ` : ''}
@@ -143,69 +140,68 @@ function abrirModalCheckout(index, pestana = null) {
     if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
     if (inputWa) inputWa.value = sesionUsuario.phone;
 
+    const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     if (sesionUsuario.plan === 'national') {
       if (cardCredits) cardCredits.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = '<i class="fa-solid fa-crown"></i> Plan Nacional VIP';
-      if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
-      if (elCredits) elCredits.textContent = 'Colombia Ilimitada';
-      if (elPlan) elPlan.textContent = 'Acceso total sin límites a todas las ciudades y categorías.';
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? 'National VIP Pass' : 'Plan Nacional VIP'}`;
+      if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
+      if (elCredits) elCredits.textContent = isEn ? 'Unlimited Colombia' : 'Colombia Ilimitada';
+      if (elPlan) elPlan.textContent = isEn ? 'Full unrestricted access across all Colombian cities.' : 'Acceso total sin límites a todas las ciudades y categorías.';
       if (extraWrap && extraPill) {
         if (sesionUsuario.credits > 0) {
           extraWrap.style.display = 'block';
-          extraPill.textContent = `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros (no vencen)`;
-          extraPill.title = 'Tus créditos previos están protegidos y congelados. Si tu membresía finaliza, tus créditos seguirán disponibles para ti.';
+          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits (never expire)` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros (no vencen)`;
+          extraPill.title = isEn ? 'Your credits are frozen and protected. They remain available when your pass ends.' : 'Tus créditos previos están protegidos y congelados. Si tu membresía finaliza, tus créditos seguirán disponibles para ti.';
         } else {
           extraWrap.style.display = 'none';
         }
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
       if (benefitsList) {
-        benefitsList.innerHTML = `
-          <li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados sin consumir tus créditos en bóveda.</li>
-          <li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li>
-          <li><i class="fa-solid fa-shield"></i> Al vencer los 30 días, tus créditos previos seguirán intactos.</li>
-        `;
+        benefitsList.innerHTML = isEn
+          ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks without spending vault credits.</li><li><i class="fa-solid fa-check"></i> 0% Broker commissions or fees.</li><li><i class="fa-solid fa-shield"></i> When 30 days end, your vault credits remain intact.</li>`
+          : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados sin consumir tus créditos en bóveda.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li><li><i class="fa-solid fa-shield"></i> Al vencer los 30 días, tus créditos previos seguirán intactos.</li>`;
       }
     } else if (sesionUsuario.plan === 'city') {
       const cNom = sesionUsuario.planCity || 'Bogotá';
       const cNomSeguro = escaparHtml(cNom);
       if (cardCredits) cardCredits.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> Plan Pro Ciudad (${cNomSeguro})`;
-      if (labelCredits) labelCredits.textContent = 'Estado de Cobertura';
-      if (elCredits) elCredits.textContent = 'Acceso Ilimitado';
-      if (elPlan) elPlan.textContent = `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? `Pro City Pass (${cNomSeguro})` : `Plan Pro Ciudad (${cNomSeguro})`}`;
+      if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
+      if (elCredits) elCredits.textContent = isEn ? 'Unlimited Access' : 'Acceso Ilimitado';
+      if (elPlan) elPlan.textContent = isEn ? `100% Direct owner unlocks in ${cNom} for 30 days.` : `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
       if (extraWrap && extraPill) {
         if (sesionUsuario.credits > 0) {
           extraWrap.style.display = 'block';
-          extraPill.textContent = `⚡ Bóveda: ${sesionUsuario.credits} Créditos para otras ciudades`;
-          extraPill.title = 'Tus contactos en ' + cNom + ' son ilimitados. Estos créditos se usan para desbloquear fuera de tu ciudad o al terminar tu plan.';
+          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits for other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos para otras ciudades`;
+          extraPill.title = isEn ? 'Your contacts in ' + cNom + ' are unlimited. These credits are for outside cities.' : 'Tus contactos en ' + cNom + ' son ilimitados. Estos créditos se usan para desbloquear fuera de tu ciudad o al terminar tu plan.';
         } else {
           extraWrap.style.display = 'none';
         }
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
       if (benefitsList) {
-        benefitsList.innerHTML = `
-          <li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li>
-          <li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li>
-          <li><i class="fa-solid fa-shield"></i> Tus créditos de bóveda te permiten desbloquear en otras ciudades.</li>
-        `;
+        benefitsList.innerHTML = isEn
+          ? `<li><i class="fa-solid fa-check"></i> Direct owners without spending credits in ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Real estate commission.</li><li><i class="fa-solid fa-shield"></i> Vault credits let you unlock in other cities.</li>`
+          : `<li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li><li><i class="fa-solid fa-shield"></i> Tus créditos de bóveda te permiten desbloquear en otras ciudades.</li>`;
       }
     } else {
       if (cardCredits) cardCredits.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
-      if (labelCredits) labelCredits.textContent = 'Saldo Disponible';
-      if (elCredits) elCredits.textContent = `⚡ ${sesionUsuario.credits} Créditos`;
-      if (elPlan) elPlan.textContent = 'Plan Estándar: 1 crédito = 1 propietario directo de por vida.';
+      if (labelCredits) labelCredits.textContent = isEn ? 'Available Balance' : 'Saldo Disponible';
+      if (elCredits) elCredits.textContent = isEn ? `⚡ ${sesionUsuario.credits} Credits` : `⚡ ${sesionUsuario.credits} Créditos`;
+      if (elPlan) elPlan.textContent = isEn ? 'Standard Plan: 1 credit = 1 direct owner for life.' : 'Plan Estándar: 1 crédito = 1 propietario directo de por vida.';
       if (extraWrap) extraWrap.style.display = 'none';
       if (benefitsWrap) benefitsWrap.style.display = 'none';
     }
 
     if (elCount) {
       const cant = (sesionUsuario.unlockedLeads || []).length;
-      elCount.textContent = `Has desbloqueado ${cant} ${cant === 1 ? 'propiedad' : 'propiedades'} directamente.`;
+      elCount.textContent = isEn
+        ? `You have unlocked ${cant} direct ${cant === 1 ? 'property' : 'properties'}.`
+        : `Has desbloqueado ${cant} ${cant === 1 ? 'propiedad' : 'propiedades'} directamente.`;
     }
 
     if (pestana === 'comprar') {
@@ -485,6 +481,9 @@ document.addEventListener("DOMContentLoaded", () => {
   btnToggle?.addEventListener("click", () => {
     acc?.classList.toggle("active");
     const active = acc?.classList.contains("active");
-    btnToggle.innerHTML = active ? '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía';
+    const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+    btnToggle.innerHTML = active
+      ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios')
+      : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
   });
 });

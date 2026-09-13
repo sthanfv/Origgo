@@ -385,7 +385,9 @@ function cerrarModalLegal() {
  * @param {string} tabKey
  */
 function renderizarContenidoLegal(tabKey) {
-  const data = TEXTOS_LEGALES_ORIGGO[tabKey] || TEXTOS_LEGALES_ORIGGO.terminos;
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const repo = (isEn && window.TEXTOS_LEGALES_ORIGGO_EN) ? window.TEXTOS_LEGALES_ORIGGO_EN : TEXTOS_LEGALES_ORIGGO;
+  const data = repo[tabKey] || repo.terminos || TEXTOS_LEGALES_ORIGGO.terminos;
   const titleEl = document.getElementById('legalModalTitle');
   const subEl = document.getElementById('legalModalSubtitle');
   const tagEl = document.getElementById('legalHeaderTag');
@@ -487,3 +489,4 @@ function inicializarModalLegal() {
 window.abrirModalLegal = abrirModalLegal;
 window.cerrarModalLegal = cerrarModalLegal;
 window.inicializarModalLegal = inicializarModalLegal;
+window.renderizarContenidoLegal = renderizarContenidoLegal;

@@ -330,10 +330,11 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════
-   IDENTIDAD CORPORATIVA ORIGGO: SILUETA PURA Y ELEGANTE
-   - Cero cajas delimitadoras ni aros artificiales
-   - Respiración sutil de luz esmeralda sobre el vector SVG
-   - Micro-interacción fluida al hover / tap
+   IDENTIDAD CORPORATIVA ORIGGO: CINÉTICA DE ALTO PRESTIGIO
+   - Cero cajas delimitadoras ni marcos rectangulares
+   - Pulso de radar concéntrico táctico en la 'O' de Origgo
+   - Destello de cristal líquido enmascarado a la silueta del SVG
+   - Respiración esmeralda activa y micro-interacción refinada
    ═══════════════════════════════════════════════════ */
 
 .brand-title {
@@ -342,51 +343,144 @@ body {
   display: inline-flex;
   align-items: center;
   line-height: 1;
+  position: relative;
   cursor: pointer;
   user-select: none;
   background: none;
   border: none;
+  overflow: visible;
 }
 
+/* 1. Pulso de radar concéntrico táctico en la 'O' de Origgo */
+.brand-radar-ping {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(10, 159, 104, 0.85);
+  pointer-events: none;
+  z-index: 0;
+  animation: radarSonarPing 3.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radarSonarPing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.9;
+    box-shadow: 0 0 6px rgba(10, 159, 104, 0.6);
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.0);
+    opacity: 0;
+    box-shadow: 0 0 16px rgba(10, 159, 104, 0);
+  }
+}
+
+/* 2. Logotipo base con resplandor respirante esmeralda */
 .brand-logo-img {
   height: 40px;
   width: auto;
   max-width: 140px;
   display: block;
   object-fit: contain;
-  filter: drop-shadow(0 0 2px rgba(10, 159, 104, 0.35));
-  animation: logoBreathingGlow 5s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 3px rgba(10, 159, 104, 0.45));
+  animation: logoBreathingGlow 4s ease-in-out infinite;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
   will-change: transform, filter;
 }
 
 @keyframes logoBreathingGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 2px rgba(10, 159, 104, 0.35));
+    filter: drop-shadow(0 0 3px rgba(10, 159, 104, 0.4));
   }
   50% {
-    filter: drop-shadow(0 0 7px rgba(10, 159, 104, 0.75)) drop-shadow(0 0 14px rgba(16, 185, 129, 0.25));
+    filter: drop-shadow(0 0 9px rgba(10, 159, 104, 0.85)) drop-shadow(0 0 18px rgba(16, 185, 129, 0.35));
   }
 }
 
 [data-theme="light"] .brand-logo-img {
-  filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.12));
-  animation: logoBreathingGlowLight 5s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.15));
+  animation: logoBreathingGlowLight 4s ease-in-out infinite;
 }
 
 @keyframes logoBreathingGlowLight {
   0%, 100% {
-    filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.12));
+    filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.15));
   }
   50% {
-    filter: drop-shadow(0 1px 6px rgba(4, 120, 87, 0.28));
+    filter: drop-shadow(0 1px 8px rgba(4, 120, 87, 0.4));
+  }
+}
+
+/* 3. Destello de cristal líquido (Liquid Light Sheen) enmascarado al SVG */
+.brand-sheen-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-image: url('../assets/img/origgo-logo.svg');
+  mask-image: url('../assets/img/origgo-logo.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  overflow: hidden;
+}
+
+.brand-sheen-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(52, 211, 153, 0.85) 65%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  animation: prestigeSheenSweep 4.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes prestigeSheenSweep {
+  0%, 45% {
+    left: -130%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    left: 170%;
+    opacity: 1;
+  }
+  76%, 100% {
+    left: 170%;
+    opacity: 0;
   }
 }
 
 .brand-badge:hover .brand-logo-img,
 .brand-title:hover .brand-logo-img {
-  transform: translateY(-1px) scale(1.02);
-  filter: drop-shadow(0 0 9px rgba(10, 159, 104, 0.85)) drop-shadow(0 0 18px rgba(16, 185, 129, 0.4));
+  transform: translateY(-1px) scale(1.03);
+  filter: drop-shadow(0 0 12px rgba(10, 159, 104, 0.95)) drop-shadow(0 0 24px rgba(16, 185, 129, 0.5));
 }
 
 /* Compatibilidad retroactiva */
@@ -3713,6 +3807,12 @@ main {
     max-width: 110px;
   }
 
+  .brand-radar-ping {
+    left: 17px;
+    width: 20px;
+    height: 20px;
+  }
+
   .brand-tag .tag-desktop {
     display: none;
   }
@@ -3891,6 +3991,12 @@ main {
     height: 29px;
     width: auto;
     max-width: 95px;
+  }
+
+  .brand-radar-ping {
+    left: 14.5px;
+    width: 17px;
+    height: 17px;
   }
 
   .btn-vip-header {

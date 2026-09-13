@@ -1,10 +1,29 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 02:05 (GMT-5)
+Última actualización: 2026-09-13 02:25 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-29. **Internacionalización Integral de Modales (Checkout, Recuperación, Bienvenida VIP, Legal y Ficha) y Cinemática de Alto Prestigio del Logotipo**:
+    - **Diagnóstico y Necesidad:**
+      1. Al conmutar el idioma a inglés (`EN`), los modales (Checkout de planes, Restauración de PIN por WhatsApp y correo, Bienvenida VIP, Información Legal institucional de 4 pestañas y Ficha lateral slide-up) o textos generados dinámicamente por JavaScript aún se mostraban en español.
+      2. El usuario solicitó recuperar la cinemática del logotipo (pulso táctico en la 'O' y destello líquido metálico) pero con una ejecución de alta gama: cero cajas, cero marcos rectangulares y con el efecto integrado orgánicamente en el vector SVG.
+    - **Solución Implementada:**
+      1. **Cinemática Orgánica del Logotipo (`styles/02-base.css`, `styles/11-mobile.css` e `index.html`):**
+         - Se implementó `.brand-radar-ping`: pulso concéntrico táctico originado en el centro del compás de la 'O' de Origgo, expandiéndose libremente sin cortes (`overflow: visible` en `.brand-title`) y calibrado para desktop (`left: 20px`), tablets (`left: 17px`) y móviles (`left: 14.5px`).
+         - Se implementó `.brand-sheen-sweep`: destello de cristal líquido enmascarado matemáticamente al vector SVG (`-webkit-mask-image: url('../assets/img/origgo-logo.svg')`), de modo que la luz recorre exclusivamente las letras sin generar fondos, bordes ni cajas rectangulares.
+      2. **Internacionalización Exhaustiva de Modales (`modules/13-i18n.js`, `modules/08-checkout.js`, `modules/11-welcome.js`, `modules/09-ui-effects.js` e `index.html`):**
+         - Enriquecido `DICCIONARIO_I18N` en ES y EN con todas las claves de modales: resumen de propiedad en checkout (`modal_summary_*`), selector de ciudad, advertencia de WhatsApp único, garantías Wompi, restauración de PIN, recuperación de cuenta por correo, estado de bóveda, planes de membresía y footer institucional.
+         - En `modules/08-checkout.js` y `modules/11-welcome.js`: generadores de tarjetas de beneficios y estados de cuenta adaptados para renderizar dinámicamente en inglés o español según el idioma activo.
+         - En `modules/09-ui-effects.js` y `modules/13-i18n.js`: creado repositorio `TEXTOS_LEGALES_ORIGGO_EN` que traduce al 100% las 4 pestañas legales (Cómo Funciona, Seguridad, Tus Datos, Garantía de Saldo).
+         - En `cambiarIdioma()`: orquestada la sincronización reactiva inmediata de cualquier modal o drawer que se encuentre abierto al conmutar el selector.
+      3. **DevSecOps y Cumplimiento Estricto:**
+         - Build modular (`node scripts/build.js`): recompilados `app.js`, `app.min.js`, `style.css` y `style.min.css`.
+         - Suite de validación DevSecOps de 8 fases (`node scripts/validate.js`): 100% aprobada (0 errores).
+         - Todos los submódulos cumplen estrictamente el estándar Desmulta (< 500 líneas: `08-checkout.js` con 490 líneas, `09-ui-effects.js` con 493 líneas, `11-welcome.js` con 159 líneas, `13-i18n.js` con 485 líneas, `02-base.css` con 302 líneas, `11-mobile.css` con 494 líneas).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -28. **Erradicación de Cajas y Aros en Logotipo, Rediseño Tipográfico Minimalista de Idiomas (Sin Banderas) y Eliminación de Parpadeo en Móviles**:
     - **Diagnóstico y Necesidad:**

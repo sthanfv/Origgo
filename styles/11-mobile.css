@@ -46,6 +46,12 @@
     max-width: 110px;
   }
 
+  .brand-radar-ping {
+    left: 17px;
+    width: 20px;
+    height: 20px;
+  }
+
   .brand-tag .tag-desktop {
     display: none;
   }
@@ -224,6 +230,12 @@
     height: 29px;
     width: auto;
     max-width: 95px;
+  }
+
+  .brand-radar-ping {
+    left: 14.5px;
+    width: 17px;
+    height: 17px;
   }
 
   .btn-vip-header {
