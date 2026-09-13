@@ -283,8 +283,8 @@
         <img src="./assets/img/origgo-icon.svg" alt="Origgo" width="32" height="32" />
       </a>
       <div class="lang-switch-box" role="group" aria-label="Selector de Idioma">
-        <button type="button" class="btn-lang active" id="btnLangEs" onclick="setLang('es')">ES</button>
-        <button type="button" class="btn-lang" id="btnLangEn" onclick="setLang('en')">EN</button>
+        <button type="button" class="btn-lang active" id="btnLangEs">ES</button>
+        <button type="button" class="btn-lang" id="btnLangEn">EN</button>
       </div>
     </div>
 
@@ -461,6 +461,8 @@
       try {
         savedLang = localStorage.getItem('origgo_lang') || (navigator.language && navigator.language.startsWith('en') ? 'en' : 'es');
       } catch (e) {}
+      document.getElementById('btnLangEs')?.addEventListener('click', () => setLang('es'));
+      document.getElementById('btnLangEn')?.addEventListener('click', () => setLang('en'));
       setLang(savedLang);
     })();
   </script>

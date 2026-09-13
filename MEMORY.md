@@ -1,10 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 07:32 (GMT-5)
+Última actualización: 2026-09-13 07:42 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-39. **Erradicación Definitiva de Bloqueo CSP en Fuentes Google, Eliminación de Advertencias de Precarga y Carga Garantizada de Tipografía Cursiva (`Alex Brush`)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. El usuario abrió la consola de DevTools de Chrome y detectó 2 errores rojos de CSP y 2 advertencias amarillas de recursos precargados:
+         * *Error CSP:* `Executing inline event handler violates Content Security Policy directive 'script-src 'self' ...'`.
+         * *Advertencia:* `The resource .../css2?family=Alex+Brush... was preloaded using link preload but not used within a few seconds`.
+      2. **Causa Raíz:** En `index.html` (línea 74), el tag de fuentes utilizaba el truco de carga asíncrona:
+         `<link rel="preload" href="..." as="style" onload="this.onload=null;this.rel='stylesheet'">`.
+         La directiva CSP estricta en `index.html` y `vercel.json` prohíbe scripts inline (`'unsafe-inline'` no está permitido en `script-src` por estándar DevSecOps OWASP). En consecuencia, el navegador bloqueó la ejecución de `onload="..."`, la hoja de estilos nunca cambió a `rel="stylesheet"` y la fuente caligráfica `Alex Brush` **nunca se aplicó**, provocando que el texto cursivo (`.editorial-italic`) utilizara la fuente de respaldo del sistema.
+      3. Adicionalmente, en `404.html`, los botones de idioma tenían atributos inline `onclick="setLang('es')"`.
+    - **Solución Implementada:**
+      1. **Carga Estándar y Segura de Fuentes en `index.html`:**
+         - Se reemplazó el `rel="preload"` con handler `onload` bloqueado por una inclusión directa y estándar:
+           `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@400;500;600;700&display=swap">`.
+         - Cumple al 100% con la política CSP (permitida en `style-src` y `font-src`).
+         - CERO errores de CSP en consola, CERO advertencias de precarga huérfana y descarga garantizada e inmediata de la fuente `Alex Brush`.
+      2. **Erradicación Total de Event Handlers Inline en `404.html`:**
+         - Se eliminaron los atributos `onclick` de los botones `#btnLangEs` y `#btnLangEn`.
+         - Se registraron los escuchadores de eventos mediante `addEventListener` en JavaScript no obstructivo.
+      3. **Compilación y DevSecOps:**
+         - `node scripts/build.js` ejecutado.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en todos los archivos).
 
 -38. **Erradicación Total de Hijacking por Google Translate ("rigramogramoo" y pérdida de cursiva), Animación Táctica de Rompecabezas en Dígitos 4 de 404 y Acceso Prominente a Onboarding**:
     - **Diagnóstico y Análisis Forense:**
