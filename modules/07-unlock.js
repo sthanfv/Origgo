@@ -44,6 +44,8 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
     ? sanitizarContactoCliente(contacto)
     : contacto;
 
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
   card.classList.add('card-unlocked');
 
   // Revelar título y ubicación reales si vienen del backend
@@ -58,14 +60,14 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
     }
   }
 
-  // 1. Badge superior flotante de "Desbloqueado"
+  // 1. Badge superior flotante de "Desbloqueado" / "Unlocked"
   const floatingBadges = card.querySelector('.card-floating-badges');
   if (floatingBadges) {
     let unlockedBadge = floatingBadges.querySelector('.card-unlocked-badge');
     if (!unlockedBadge) {
       unlockedBadge = document.createElement('span');
       unlockedBadge.className = 'card-unlocked-badge';
-      unlockedBadge.innerHTML = '<i class="fa-solid fa-unlock"></i> Desbloqueado';
+      unlockedBadge.innerHTML = `<i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked' : 'Desbloqueado'}`;
       const statusPill = floatingBadges.querySelector('.badge-status-pill');
       if (statusPill) statusPill.remove();
       floatingBadges.appendChild(unlockedBadge);
@@ -87,7 +89,7 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
       }
     }
     phoneBar.innerHTML = `
-      <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || 'Ver en Anuncio')}</strong></span>
+      <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio'))}</strong></span>
       <span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(contacto.portal || 'Finca Raíz')}</span>
     `;
   }
@@ -96,30 +98,30 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
   const bottomRow = card.querySelector('.card-bottom-row');
   if (bottomRow) {
     const existingCluster = bottomRow.querySelector('.unlocked-action-cluster');
-    const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-lead');
+    const existingUnlockBtn = bottomRow.querySelector('.btn-unlock-action, .btn-unlock-lead, [data-action="desbloquear-lead"]');
     const existingDirectBtn = bottomRow.querySelector('button[data-action="contactar-whatsapp"]');
 
     const cluster = existingCluster || document.createElement('div');
     cluster.className = 'unlocked-action-cluster';
     cluster.innerHTML = `
       ${contactoSeguro?.enlace ? `
-        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="Ver anuncio original del propietario directo">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+        <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="${isEn ? 'View original owner listing' : 'Ver anuncio original del propietario directo'}">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}
         </a>
       ` : ''}
       ${contactoSeguro?.whatsappUrl ? `
-        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
+        <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="WhatsApp" aria-label="WhatsApp">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
       ${contactoSeguro?.telLlamar ? `
-        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="Llamar al dueño" aria-label="Llamar al propietario directo">
-          <i class="fa-solid fa-phone"></i> Llamar
+        <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar">
+          <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
         </a>
       ` : ''}
       ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `
-        <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="Revelar contacto y enlace del propietario">
-          <i class="fa-solid fa-unlock"></i> Revelar Contacto
+        <button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="${isEn ? 'Reveal owner contact and link' : 'Revelar contacto y enlace del propietario'}">
+          <i class="fa-solid fa-unlock"></i> ${isEn ? 'Reveal Contact' : 'Revelar Contacto'}
         </button>
       ` : ''}
     `;
@@ -139,23 +141,23 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
         <div class="slideup-unlocked-layout">
           <div class="slideup-unlocked-row">
             ${contactoSeguro?.whatsappUrl ? `
-              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="Chatear por WhatsApp" aria-label="Chatear por WhatsApp con el propietario">
+              <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
             ` : ''}
             ${contactoSeguro?.telLlamar ? `
-              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="Llamar al dueño" aria-label="Llamar al propietario directo">
-                <i class="fa-solid fa-phone"></i> Llamar
+              <a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar">
+                <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
               </a>
             ` : ''}
             ${contactoSeguro?.enlace ? `
-              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="Ver anuncio original del propietario directo" aria-label="Ver anuncio original del propietario directo">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Anuncio
+              <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}
               </a>
             ` : ''}
           </div>
           <span class="slideup-cta-note slideup-cta-note-ok">
-            <i class="fa-solid fa-check-double"></i> Contacto y enlace directo desbloqueados para tu cuenta
+            <i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}
           </span>
         </div>
       `;
@@ -181,11 +183,12 @@ async function ejecutarDesbloqueoLead(lead, index) {
   }
   desbloqueosEnProgreso.add(lead.id);
 
-  const selector = typeof index === 'number' ? `.bento-card[data-index="${index}"] .btn-unlock-lead` : null;
-  const btn = selector ? document.querySelector(selector) : (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"] button[data-action="contactar-whatsapp"]`) : null);
+  const cardEl = typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"]`) : (lead?.id ? document.querySelector(`.bento-card[data-lead-id="${lead.id}"]`) : null);
+  const btn = cardEl ? cardEl.querySelector('.btn-unlock-action, .btn-unlock-lead, [data-action="desbloquear-lead"], [data-action="contactar-whatsapp"]') : null;
   const textoOriginal = btn ? btn.innerHTML : '';
+  const isEnUnlock = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   if (btn) {
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEnUnlock ? 'Unlocking...' : 'Desbloqueando...'}`;
     btn.disabled = true;
   }
 
@@ -194,7 +197,7 @@ async function ejecutarDesbloqueoLead(lead, index) {
   const slideupBtn = slideup ? slideup.querySelector('.slideup-cta-btn[data-action="slideup-cta"]') : null;
   const slideupTextoOriginal = slideupBtn ? slideupBtn.innerHTML : '';
   if (slideupBtn) {
-    slideupBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Desbloqueando...';
+    slideupBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEnUnlock ? 'Unlocking...' : 'Desbloqueando...'}`;
     slideupBtn.disabled = true;
   }
 

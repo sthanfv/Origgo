@@ -1,10 +1,36 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 11:45 (GMT-5)
+Última actualización: 2026-09-13 11:54 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-47. **Segunda Ronda de Auditoría Forense Ultra-Profunda (Fases 1, 2 y 3): Erradicación de Botón Zombi en Desbloqueo, Internacionalización Dinámica de Inyección DOM, Soporte de Fusión `{ merge: true }` en Almacén en Memoria, Hidratación Canónica de Preferencias y Liberación Inmediata de Locks**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Botón zombi tras desbloqueo de lead (Fase 3 / Frontend):* En `modules/07-unlock.js` (`actualizarTarjetaEnElDOM`), la búsqueda del botón anterior utilizaba `card.querySelector('.btn-unlock-lead')`. Debido a que `modules/06-cards.js` genera las tarjetas con la clase `.btn-unlock-action`, el selector devolvía `null`. En consecuencia, el contenedor de botones desbloqueados (`.unlocked-action-cluster`) se añadía al final sin eliminar el botón de desbloqueo, dejando ambos visibles en la tarjeta.
+      2. *Inyección en español con idioma inglés activo (Fase 2 / Frontend):* En `modules/07-unlock.js`, las mutaciones quirúrgicas inyectaban cadenas fijas en español (`Desbloqueado`, `Ver Anuncio`, `Llamar`, `Revelar Contacto`), rompiendo la experiencia bilingüe si el usuario navegaba en inglés.
+      3. *Pérdida de datos en almacén local/testing (Fase 2 / Backend):* En `lib/db.js`, `createMemoryCollection` no interpretaba el segundo argumento de `set(data, options)`. Al ejecutarse `userRef.set(updates, { merge: true })`, el almacén en memoria sobrescribía el documento borrando saldo, teléfono y PIN.
+      4. *Omisión de hidratación de preferencias en flujos de pago y recuperación (Fase 2 / Frontend):* Al retornar de la pasarela Wompi o restaurar mediante `recovery_token`, el cliente no aplicaba `preferredLang` ni `preferredTheme`.
+      5. *Locks zombis de 30s en Upstash Redis (Fase 3 / Backend):* En `lib/idempotency.js`, tras guardar el resultado exitoso en Redis, el candado de exclusividad permanecía retenido hasta su expiración (30 segundos).
+    - **Solución Implementada:**
+      1. **Selector Unificado y Reemplazo Limpio (`modules/07-unlock.js`, 338 líneas < 500):**
+         - Se adoptó el selector robusto `.btn-unlock-action, .btn-unlock-lead, [data-action="desbloquear-lead"]`, garantizando la eliminación instantánea del botón previo y el reemplazo limpio por el cluster de contacto.
+         - En `ejecutarDesbloqueoLead`, se localiza el botón con la misma regla y se muestra el spinner bilingüe (`Unlocking...` / `Desbloqueando...`).
+      2. **Internacionalización Dinámica en Desbloqueo:**
+         - `actualizarTarjetaEnElDOM` evalúa `isEn` e inyecta dinámicamente: `Unlocked`, `View Listing`, `Call`, `Reveal Contact` y notas del Slide-Up Drawer en inglés cuando corresponda.
+      3. **Soporte de Fusión `{ merge: true }` en Memoria (`lib/db.js`):**
+         - `createMemoryCollection` evalúa `options?.merge`: si es verdadero, fusiona `{ ...existing, ...data }`, protegiendo la integridad en pruebas unitarias y entornos sin Firebase.
+      4. **Hidratación Canónica de Preferencias (`modules/01-state.js`, 495 líneas < 500; `modules/08-checkout.js`, 485 líneas < 500):**
+         - Función auxiliar `aplicarPreferenciasUsuario(usr)` centralizada e invocada en los 4 flujos de sesión (recuperación por enlace, retorno Wompi, revalidación de balance y login PIN), y en `modules/08-checkout.js` tras reclamo de pago.
+      5. **Resolución en Cascada con `origgo_prefs` (`modules/00-security.js`, 411 líneas; `modules/13-i18n.js`, 496 líneas):**
+         - `obtenerTemaActual()` y `obtenerIdiomaActual()` inspeccionan la cookie JSON `origgo_prefs` si no hallan las cookies individuales.
+      6. **Liberación Inmediata de Locks (`lib/idempotency.js`):**
+         - Invocación de `await liberarBloqueo(clave)` inmediatamente después de `guardarResultadoIdempotente`.
+      7. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: `style.min.css` y `app.min.js` sincronizados.
+         - Conteo auditado: 100% de los 14 submódulos JS y 18 CSS $\le 500$ líneas.
+         - Suite DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -46. **Auditoría Forense Exhaustiva de Fases 1, 2 y 3 (Frontend y Backend): Corrección de Envenenamiento de Caché en Idempotencia, Extracción Case-Insensitive de Headers, Resiliencia Transaccional Firestore, Sincronización Continua de Cookies y Optimización Eager LCP**:
     - **Diagnóstico y Causa Raíz:**

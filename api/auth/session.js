@@ -326,6 +326,7 @@ module.exports = async function handler(req, res) {
     // Token JWT con estado criptográfico enriquecido
     const token = signJwt({
       phone: user.phone,
+      email: user.email || null,
       credits: user.credits,
       unlockedLeads: user.unlockedLeads || [],
       plan: user.plan || 'free',

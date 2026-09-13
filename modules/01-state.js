@@ -40,6 +40,16 @@ let filtroHoyActivo = false;
 let textoBusquedaActivo = "";
 let criterioOrdenActivo = "recientes";
 
+function aplicarPreferenciasUsuario(usr) {
+  if (!usr) return;
+  if (usr.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && usr.preferredLang !== obtenerIdiomaActual()) {
+    cambiarIdioma(usr.preferredLang);
+  }
+  if (usr.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && usr.preferredTheme !== obtenerTemaActual()) {
+    aplicarTema(usr.preferredTheme);
+  }
+}
+
 /**
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
@@ -65,6 +75,7 @@ async function inicializarSesionUsuario() {
       if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
       sesionUsuario = { ...data.user, token: data.token };
       delete sesionUsuario.pin;
+      aplicarPreferenciasUsuario(data.user);
       actualizarBadgeVip();
       sincronizarFiltroCiudadUsuario();
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
@@ -123,6 +134,7 @@ async function inicializarSesionUsuario() {
         const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
         delete sesionUsuario.pin;
+        aplicarPreferenciasUsuario(data.user);
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
         const notif = typeof generarMensajeBienvenidaToast === 'function' 
@@ -153,12 +165,7 @@ async function inicializarSesionUsuario() {
         if (typeof guardarCookieSegura === 'function') {
           guardarCookieSegura('origgo_token', tokenGuardado, 30);
         }
-        if (data.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.preferredLang !== obtenerIdiomaActual()) {
-          cambiarIdioma(data.preferredLang);
-        }
-        if (data.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.preferredTheme !== obtenerTemaActual()) {
-          aplicarTema(data.preferredTheme);
-        }
+        aplicarPreferenciasUsuario(data);
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
       } else if (res.status === 401 || res.status === 403) {
@@ -381,12 +388,7 @@ async function restaurarSesionConPin() {
     const pinDevuelto = data.user?.pin || null;
     sesionUsuario = { ...data.user, token: data.token };
     delete sesionUsuario.pin;
-    if (data.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && data.user.preferredLang !== obtenerIdiomaActual()) {
-      cambiarIdioma(data.user.preferredLang);
-    }
-    if (data.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && data.user.preferredTheme !== obtenerTemaActual()) {
-      aplicarTema(data.user.preferredTheme);
-    }
+    aplicarPreferenciasUsuario(data.user);
     actualizarBadgeVip();
     sincronizarFiltroCiudadUsuario();
     renderizarInterfaz(datosActuales);

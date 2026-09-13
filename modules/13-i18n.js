@@ -189,8 +189,14 @@ function obtenerIdiomaActual() {
     const almacenado = localStorage.getItem('origgo_lang');
     if (almacenado === 'es' || almacenado === 'en') return almacenado;
   } catch (e) {}
-  const c = typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_lang') : null;
-  if (c === 'es' || c === 'en') return c;
+  if (typeof obtenerCookieSegura === 'function') {
+    const c = obtenerCookieSegura('origgo_lang');
+    if (c === 'es' || c === 'en') return c;
+    try {
+      const p = JSON.parse(obtenerCookieSegura('origgo_prefs') || '{}');
+      if (p.lang === 'es' || p.lang === 'en') return p.lang;
+    } catch (_) {}
+  }
   if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) return 'en';
   return 'es';
 }
@@ -480,11 +486,9 @@ if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicializarSelectorIdiomas);
   else inicializarSelectorIdiomas();
 }
-
 if (typeof window !== 'undefined') {
   Object.assign(window, { obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer, TEXTOS_LEGALES_ORIGGO_EN });
 }
-
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { DICCIONARIO_I18N, obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer };
 }

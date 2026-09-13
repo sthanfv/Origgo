@@ -307,8 +307,14 @@ function obtenerTemaActual() {
     const local = localStorage.getItem('hunter_theme');
     if (local === 'light' || local === 'dark') return local;
   } catch (e) {}
-  const c = obtenerCookieSegura('origgo_theme');
-  if (c === 'light' || c === 'dark') return c;
+  if (typeof obtenerCookieSegura === 'function') {
+    const c = obtenerCookieSegura('origgo_theme');
+    if (c === 'light' || c === 'dark') return c;
+    try {
+      const p = JSON.parse(obtenerCookieSegura('origgo_prefs') || '{}');
+      if (p.theme === 'light' || p.theme === 'dark') return p.theme;
+    } catch (_) {}
+  }
   return 'dark';
 }
 
@@ -348,6 +354,11 @@ function sincronizarPreferenciasEnServidor(nuevoLang, nuevoTheme) {
   guardarCookieSegura('origgo_prefs', JSON.stringify({ lang, theme }), 365);
   if (nuevoLang) guardarCookieSegura('origgo_lang', nuevoLang, 365);
   if (nuevoTheme) guardarCookieSegura('origgo_theme', nuevoTheme, 365);
+
+  if (typeof sesionUsuario !== 'undefined' && sesionUsuario) {
+    if (lang) sesionUsuario.preferredLang = lang;
+    if (theme) sesionUsuario.preferredTheme = theme;
+  }
 
   const sesion = (typeof sesionUsuario !== 'undefined' && sesionUsuario) ? sesionUsuario : null;
   const token = sesion?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('hunter_pro_token') : null);

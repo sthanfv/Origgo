@@ -251,6 +251,12 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
         const pinNuevo = claimData.user?.pin || null;
         sesionUsuario = { ...claimData.user, token: claimData.token };
         delete sesionUsuario.pin;
+        if (claimData.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && claimData.user.preferredLang !== obtenerIdiomaActual()) {
+          cambiarIdioma(claimData.user.preferredLang);
+        }
+        if (claimData.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && claimData.user.preferredTheme !== obtenerTemaActual()) {
+          aplicarTema(claimData.user.preferredTheme);
+        }
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
         renderizarInterfaz(datosActuales);
