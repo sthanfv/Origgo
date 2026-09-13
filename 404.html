@@ -113,20 +113,20 @@
     .lens-cardinal { stroke: var(--accent-emerald); stroke-width: 1.5; stroke-linecap: round; }
     .lens-center-emitter { fill: var(--accent-emerald); }
 
-    /* Ecos de Coordenadas Perdidas que Titilan con Persistencia */
-    .radar-blip-alpha { animation: blipPhosphorAlpha 3.5s ease-in-out infinite; fill: var(--accent-emerald); }
+    /* Ecos de Coordenadas Perdidas que Titilan con Persistencia (Inmóviles en sus coordenadas) */
+    .radar-blip-alpha { animation: blipPhosphorAlpha 3.5s ease-in-out infinite; fill: var(--accent-emerald); opacity: 0; }
     @keyframes blipPhosphorAlpha {
-      0%, 15% { opacity: 0; transform: scale(0.5); }
-      22% { opacity: 1; transform: scale(1.35); }
-      32% { opacity: 0.8; transform: scale(1); }
-      50%, 100% { opacity: 0; transform: scale(0.5); }
+      0%, 14% { opacity: 0; }
+      18% { opacity: 1; }
+      28% { opacity: 0.85; }
+      45%, 100% { opacity: 0; }
     }
-    .radar-blip-beta { animation: blipPhosphorBeta 3.5s ease-in-out infinite; fill: var(--accent-emerald); }
+    .radar-blip-beta { animation: blipPhosphorBeta 3.5s ease-in-out infinite; fill: var(--accent-emerald); opacity: 0; }
     @keyframes blipPhosphorBeta {
-      0%, 55% { opacity: 0; transform: scale(0.5); }
-      62% { opacity: 1; transform: scale(1.35); }
-      72% { opacity: 0.8; transform: scale(1); }
-      88%, 100% { opacity: 0; transform: scale(0.5); }
+      0%, 54% { opacity: 0; }
+      58% { opacity: 1; }
+      68% { opacity: 0.85; }
+      85%, 100% { opacity: 0; }
     }
 
     /* Barra de Telemetría Táctica de Escaneo */

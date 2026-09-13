@@ -1,10 +1,26 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 06:48 (GMT-5)
+Última actualización: 2026-09-13 06:55 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-36. **Erradicación de Deriva Espacial en Ecos del Radar 404 (Fijación Absoluta de Coordenadas) y Arquitectura de Bienvenida Universal**:
+    - **Diagnóstico y Causa Raíz:**
+      1. El usuario descubrió un comportamiento visual anómalo en el escáner de `404.html`: mientras el haz giraba, el punto verde del radar se desplazaba físicamente de un lado a otro.
+      2. **Causa Raíz Técnica:** En SVG, aplicar `transform: scale(...)` a un elemento `<circle>` sin `transform-box: fill-box` ni origen relativo provoca que la escala se calcule respecto al origen `(0, 0)` del lienzo global del SVG. Esto multiplicaba las coordenadas `(cx, cy)` por el factor de escala, provocando que el punto se desplazara físicamente entre `(34, 17)` y `(91.8, 45.9)`, creando la ilusión de un punto errático viajando por la pantalla.
+      3. **Crítica de Enfoque Comercial:** El usuario señaló con precisión dos fallos de enfoque:
+         - El uso de la sigla técnica/local "COP", la cual encasilla y restringe la imagen de una plataforma de alcance internacional y bilingüe.
+         - La necesidad de concebir a Origgo como una plataforma universal de oportunidades directas (no solo inmobiliaria, sino expandible a vehículos y otros activos) y la urgencia de diseñar una experiencia de bienvenida (onboarding) elegante, responsiva y en lenguaje natural/coloquial para PC y Android.
+    - **Solución Implementada:**
+      1. **Inmovilización Absoluta de Ecos en `404.html` (395 líneas < 500):**
+         - Se eliminó al 100% cualquier propiedad `transform: scale(...)` en los keyframes `@keyframes blipPhosphorAlpha` y `@keyframes blipPhosphorBeta`.
+         - Los ecos ahora están anclados espacialmente de forma estática en sus coordenadas `(cx="68" cy="34")` y `(cx="32" cy="66")`.
+         - La animación modula exclusivamente la `opacity` (de 0 a 1 y luego decaimiento gradual a 0), recreando la física pura del fósforo verde de un radar militar sin ningún tipo de bamboleo ni desplazamiento lateral.
+      2. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizado `dist/404.html`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -35. **Transformación del Escáner 404 a Radar Táctico Auténtico con Haz Cónico y Definición de Estrategia Comercial de Producto**:
     - **Diagnóstico y Causa Raíz:**
