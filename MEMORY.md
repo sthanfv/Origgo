@@ -1,10 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 06:20 (GMT-5)
+Última actualización: 2026-09-13 06:30 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-33. **Corrección Milimétrica de Centrado Radial del Radar y Blindaje Espacial del Botón de Cierre en Modal de Alertas Web Push**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario reportó dos fallos visuales críticos en el modal de activación de alertas Web Push (`modalPushPromptOverlay`):
+         - El pulso animado del radar en la píldora verde salía torcido y desplazado hacia la izquierda y abajo del punto central, en lugar de emerger concéntricamente desde el núcleo.
+         - El botón de cierre (`&times;`) estaba pisando directamente el extremo derecho de la píldora "RADAR EN TIEMPO REAL", rompiendo la armonía y la estética de alta gama del producto.
+    - **Solución Implementada:**
+      1. **Alineación Concéntrica Absoluta del Radar Ping (`styles/17-push-modal.css`, 305 líneas < 500):**
+         - Se erradicaron los offsets empíricos (`top: -4px; left: -4px;`) que causaban el desvío visual en subpíxeles.
+         - Se estructuró `.push-radar-ping` como una caja contenedora de 10x10px con flex centrado, núcleo sólido central (`::before`) de 6x6px y aro expansivo (`::after`) matemáticamente anclado en `top: 50%; left: 50%; transform: translate(-50%, -50%)` con `transform-origin: center center;`.
+         - La cinemática `pushPulseCenter` ahora expande la onda con simetría radial perfecta de 360°, naciendo con precisión milimétrica del centro del punto verde.
+      2. **Erradicación Total de Colisión con el Botón de Cierre (`styles/17-push-modal.css`):**
+         - Se modificó la distribución de `.push-prompt-header`: cambió de `justify-content: space-between` a `justify-content: flex-start` con `gap: 0.75rem`, y se blindó el lateral derecho con un margen de seguridad de `padding-right: 3.5rem` (56px) en desktop y `3.25rem` en móvil.
+         - El logo y la píldora ahora fluyen ordenadamente hacia la izquierda sin invadir jamás el cuadrante superior derecho.
+         - Se redefinió `.push-prompt-card .btn-modal-close` con círculo táctil de 36x36px en vidrio esmerilado, z-index protegido y aislamiento absoluto sin pisar ninguna sección.
+      3. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: actualizados `style.css` y `style.min.css`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Todos los módulos bajo el estándar Desmulta (< 500 líneas: `17-push-modal.css` en 305 líneas).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -32. **Rediseño Austero de Página 404 (Estándar Desmulta), Restauración de Animación de Letras en 'riggo', Cero Neones y Purga de Documentos Obsoletos**:
     - **Diagnóstico y Necesidad:**
