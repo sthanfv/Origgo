@@ -1,10 +1,28 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 06:42 (GMT-5)
+Última actualización: 2026-09-13 06:48 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-35. **Transformación del Escáner 404 a Radar Táctico Auténtico con Haz Cónico y Definición de Estrategia Comercial de Producto**:
+    - **Diagnóstico y Causa Raíz:**
+      1. El usuario señaló con agudeza que la aguja lineal rotatoria en el `0` central de `404.html` creaba la ilusión visual de un reloj de manecillas en lugar de un radar táctico. En percepción visual, una línea recta giratoria siempre se interpreta como reloj a menos que exista un cono angular con gradiente de estela y decaimiento de persistencia fosforescente.
+      2. Adicionalmente, el usuario cuestionó cómo comunicarle al usuario común de Android qué es Origgo y qué ventaja da sobre el mercado inmobiliario tradicional de forma sutil, no directa, elegante e interactiva ("Show, Don't Tell"), sin aburrir con manuales o pasos lineales de texto.
+    - **Solución Implementada:**
+      1. **Haz de Barrido Cónico y Estela de Persistencia de Fósforo (`404.html`, 395 líneas < 500):**
+         - Se eliminó por completo la aguja solitaria (`lens-sweep-arm`) que causaba la ilusión de reloj.
+         - Se implementó `.radar-cone-beam` mediante un `conic-gradient` angular de 52° con estela de desvanecimiento esmeralda (`rgba(10, 159, 104, 0.5)` a transparente), rotando a 360° como una auténtica antena de radar militar.
+         - Se integró retícula de precisión óptica con anillos concéntricos, marcas cardinales, muescas diagonales a 45° en los cuatro cuadrantes, núcleo emisor central y 2 ecos de fósforo (`radar-blip-alpha` y `radar-blip-beta`) con cinemáticas independientes de encendido y decaimiento al paso del haz.
+         - Se preservó la interactividad táctil para Android (`pointerdown`/`pointerup`) con aceleración a 1.1s y actualización reactiva de la telemetría.
+         - Optimización modular Desmulta: archivo compactado y reducido de 528 a 395 líneas.
+      2. **Estructuración Estratégica de Marketing y Revelación Progresiva:**
+         - Definición del modelo comercial para Origgo: sustituir la explicación técnica de software por el principio "Show, Don't Tell". El valor se comunica mediante el contraste de dolor financiero (el ahorro del 3%-4% de intermediación inmobiliaria) y la sensación de exclusividad de una "Terminal Confidencial en tu bolsillo".
+      3. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizado `dist/404.html`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Conteo serverless inalterado: exactamente 11 funciones (límite Vercel Hobby <= 12).
 
 -34. **Creación de Escáner Óptico Táctico Interactivo 404 (Animación de Autor Táctil para Android) y Estandarización de Narrativa de Usuario**:
     - **Diagnóstico y Necesidad:**

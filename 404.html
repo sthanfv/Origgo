@@ -65,181 +65,89 @@
 
     /* Escáner Táctico de Coordenadas 404 (Animación de Autor) */
     .tactical-scanner-stage {
-      margin: 0 auto 1.4rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
+      margin: 0 auto 1.4rem; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; user-select: none; -webkit-user-select: none; touch-action: manipulation;
     }
-
     .scanner-digits-wrap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-family: 'Inter', -apple-system, sans-serif;
-      font-size: 5.6rem;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      color: var(--text-main);
-      perspective: 800px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Inter', -apple-system, sans-serif; font-size: 5.6rem; font-weight: 900;
+      line-height: 1; letter-spacing: -0.04em; color: var(--text-main); perspective: 800px;
     }
-
     .scanner-digit {
-      display: inline-block;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-main);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-block; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--text-main); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* La Lente Óptica del '0' */
+    /* La Lente Óptica del '0' con Haz Cónico Auténtico de Radar */
     .scanner-optic-lens {
-      position: relative;
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      background: rgba(10, 159, 104, 0.05);
-      border: 1.5px solid rgba(10, 159, 104, 0.35);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: crosshair;
-      transform-style: preserve-3d;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
-      will-change: transform;
+      position: relative; width: 86px; height: 86px; border-radius: 50%;
+      background: #060E0A; border: 1.5px solid rgba(10, 159, 104, 0.4);
+      display: inline-flex; align-items: center; justify-content: center; cursor: crosshair;
+      overflow: hidden; box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.85);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease; will-change: transform;
     }
-
     [data-theme="light"] .scanner-optic-lens {
-      background: rgba(4, 120, 87, 0.06);
-      border-color: rgba(4, 120, 87, 0.35);
+      background: #EDF5F0; border-color: rgba(4, 120, 87, 0.4); box-shadow: inset 0 0 12px rgba(4, 120, 87, 0.08);
+    }
+    .scanner-optic-lens:active, .scanner-optic-lens.is-scanning {
+      border-color: var(--accent-emerald); transform: scale(1.08) rotateZ(-3deg);
     }
 
-    .scanner-optic-lens:active,
-    .scanner-optic-lens.is-scanning {
-      border-color: var(--accent-emerald);
-      background: rgba(10, 159, 104, 0.12);
-      transform: scale(1.08) rotateZ(-3deg);
+    /* Haz de Barrido Cónico (Estela de Radar Auténtico) */
+    .radar-cone-beam {
+      position: absolute; inset: -1px; border-radius: 50%;
+      background: conic-gradient(from 0deg at 50% 50%, rgba(10, 159, 104, 0.5) 0deg, rgba(10, 159, 104, 0.18) 25deg, rgba(10, 159, 104, 0.03) 50deg, transparent 52deg);
+      animation: sweepRadarRotate 3.5s linear infinite; pointer-events: none; z-index: 1;
     }
-
-    .lens-svg {
-      width: 100%;
-      height: 100%;
-      display: block;
+    [data-theme="light"] .radar-cone-beam {
+      background: conic-gradient(from 0deg at 50% 50%, rgba(4, 120, 87, 0.4) 0deg, rgba(4, 120, 87, 0.14) 25deg, rgba(4, 120, 87, 0.02) 50deg, transparent 52deg);
     }
+    @keyframes sweepRadarRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .scanner-optic-lens.is-scanning .radar-cone-beam { animation-duration: 1.1s; }
 
-    /* Aguja de Barrido del Radar Óptico */
-    .lens-sweep-arm {
-      transform-origin: 50px 50px;
-      animation: sweepRadarRotate 4s linear infinite;
+    .lens-svg { position: relative; z-index: 2; width: 100%; height: 100%; display: block; pointer-events: none; }
+
+    /* Retícula de Cuadrante Militar y Marcas Cardinales */
+    .lens-grid-ring { stroke: rgba(10, 159, 104, 0.22); stroke-width: 1; }
+    [data-theme="light"] .lens-grid-ring { stroke: rgba(4, 120, 87, 0.25); }
+    .lens-cardinal { stroke: var(--accent-emerald); stroke-width: 1.5; stroke-linecap: round; }
+    .lens-center-emitter { fill: var(--accent-emerald); }
+
+    /* Ecos de Coordenadas Perdidas que Titilan con Persistencia */
+    .radar-blip-alpha { animation: blipPhosphorAlpha 3.5s ease-in-out infinite; fill: var(--accent-emerald); }
+    @keyframes blipPhosphorAlpha {
+      0%, 15% { opacity: 0; transform: scale(0.5); }
+      22% { opacity: 1; transform: scale(1.35); }
+      32% { opacity: 0.8; transform: scale(1); }
+      50%, 100% { opacity: 0; transform: scale(0.5); }
     }
-
-    @keyframes sweepRadarRotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .scanner-optic-lens.is-scanning .lens-sweep-arm {
-      animation-duration: 1.2s;
-    }
-
-    /* Puntos de Retícula Concéntrica */
-    .lens-grid-ring {
-      stroke: rgba(10, 159, 104, 0.22);
-      stroke-width: 1;
-    }
-
-    [data-theme="light"] .lens-grid-ring {
-      stroke: rgba(4, 120, 87, 0.25);
-    }
-
-    .lens-cardinal {
-      stroke: var(--accent-emerald);
-      stroke-width: 1.6;
-      stroke-linecap: round;
-    }
-
-    /* Coordenada Perdida Parpadeante (Blip) */
-    .lens-lost-blip {
-      animation: blipFadeInOut 4s ease-in-out infinite;
-      fill: var(--accent-emerald);
-      transform-origin: 64px 36px;
-    }
-
-    @keyframes blipFadeInOut {
-      0%, 20% { opacity: 0; transform: scale(0.4); }
-      25% { opacity: 1; transform: scale(1.3); }
-      35% { opacity: 0.85; transform: scale(1); }
-      50% { opacity: 0; transform: scale(0.4); }
-      100% { opacity: 0; transform: scale(0.4); }
+    .radar-blip-beta { animation: blipPhosphorBeta 3.5s ease-in-out infinite; fill: var(--accent-emerald); }
+    @keyframes blipPhosphorBeta {
+      0%, 55% { opacity: 0; transform: scale(0.5); }
+      62% { opacity: 1; transform: scale(1.35); }
+      72% { opacity: 0.8; transform: scale(1); }
+      88%, 100% { opacity: 0; transform: scale(0.5); }
     }
 
     /* Barra de Telemetría Táctica de Escaneo */
     .scanner-telemetry-bar {
-      margin-top: 0.65rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-pill);
-      padding: 0.32rem 0.85rem;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      font-family: 'Inter', monospace;
-      transition: all 0.2s ease;
+      margin-top: 0.65rem; display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill); padding: 0.32rem 0.85rem; font-size: 0.68rem;
+      font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-dim); font-family: 'Inter', monospace; transition: all 0.2s ease;
     }
-
-    [data-theme="light"] .scanner-telemetry-bar {
-      background: rgba(0, 0, 0, 0.03);
-    }
-
-    .telemetry-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-emerald);
-      display: inline-block;
-      animation: telemetryBlink 1.5s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes telemetryBlink {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-
-    .telemetry-coord {
-      color: var(--accent-emerald);
-      font-weight: 800;
-    }
-
-    .telemetry-status {
-      color: var(--text-muted);
-    }
+    [data-theme="light"] .scanner-telemetry-bar { background: rgba(0, 0, 0, 0.03); }
+    .telemetry-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald); display: inline-block; animation: telemetryBlink 1.5s ease-in-out infinite; flex-shrink: 0; }
+    @keyframes telemetryBlink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    .telemetry-coord { color: var(--accent-emerald); font-weight: 800; }
+    .telemetry-status { color: var(--text-muted); }
 
     /* Responsive en Pantallas Móviles Android */
     @media (max-width: 480px) {
-      .scanner-digits-wrap {
-        font-size: 4.2rem;
-        gap: 0.35rem;
-      }
-      .scanner-optic-lens {
-        width: 64px;
-        height: 64px;
-      }
-      .scanner-telemetry-bar {
-        font-size: 0.62rem;
-        padding: 0.28rem 0.65rem;
-        gap: 0.4rem;
-      }
+      .scanner-digits-wrap { font-size: 4.2rem; gap: 0.35rem; }
+      .scanner-optic-lens { width: 64px; height: 64px; }
+      .scanner-telemetry-bar { font-size: 0.62rem; padding: 0.28rem 0.65rem; gap: 0.4rem; }
     }
 
     .error-title {
@@ -337,23 +245,29 @@
       <div class="scanner-digits-wrap">
         <span class="scanner-digit">4</span>
         <div class="scanner-optic-lens" id="opticLens" title="Toca para reintentar rastreo de coordenada" aria-hidden="true">
+          <!-- Haz de barrido cónico continuo (Estela de radar) -->
+          <div class="radar-cone-beam"></div>
+
           <svg class="lens-svg" viewBox="0 0 100 100" fill="none">
-            <!-- Retícula concéntrica militar de precisión -->
+            <!-- Retícula de alcance del radar -->
             <circle cx="50" cy="50" r="44" class="lens-grid-ring" stroke-dasharray="2 3" />
-            <circle cx="50" cy="50" r="30" class="lens-grid-ring" />
-            <circle cx="50" cy="50" r="15" class="lens-grid-ring" />
-            <!-- Ejes cardinales tácticos -->
-            <line x1="50" y1="5" x2="50" y2="15" class="lens-cardinal" />
-            <line x1="50" y1="85" x2="50" y2="95" class="lens-cardinal" />
-            <line x1="5" y1="50" x2="15" y2="50" class="lens-cardinal" />
-            <line x1="85" y1="50" x2="95" y2="50" class="lens-cardinal" />
-            <!-- Coordenada perdida / Blip esmeralda parpadeante -->
-            <circle cx="64" cy="36" r="3.5" class="lens-lost-blip" />
-            <!-- Aguja rotatoria del escáner -->
-            <g class="lens-sweep-arm">
-              <line x1="50" y1="50" x2="50" y2="7" stroke="#0a9f68" stroke-width="2" stroke-linecap="round" />
-              <circle cx="50" cy="50" r="3" fill="#0a9f68" />
-            </g>
+            <circle cx="50" cy="50" r="28" class="lens-grid-ring" />
+            <circle cx="50" cy="50" r="14" class="lens-grid-ring" />
+            <!-- Marcas cardinales tácticas -->
+            <line x1="50" y1="4" x2="50" y2="16" class="lens-cardinal" />
+            <line x1="50" y1="84" x2="50" y2="96" class="lens-cardinal" />
+            <line x1="4" y1="50" x2="16" y2="50" class="lens-cardinal" />
+            <line x1="84" y1="50" x2="96" y2="50" class="lens-cardinal" />
+            <!-- Muescas de cuadrante a 45° -->
+            <line x1="26" y1="26" x2="32" y2="32" stroke="rgba(10, 159, 104, 0.3)" stroke-width="1" />
+            <line x1="74" y1="74" x2="68" y2="68" stroke="rgba(10, 159, 104, 0.3)" stroke-width="1" />
+            <line x1="74" y1="26" x2="68" y2="32" stroke="rgba(10, 159, 104, 0.3)" stroke-width="1" />
+            <line x1="26" y1="74" x2="32" y2="68" stroke="rgba(10, 159, 104, 0.3)" stroke-width="1" />
+            <!-- Ecos de fósforo que titilan al paso del cono -->
+            <circle cx="68" cy="34" r="3" class="radar-blip-alpha" />
+            <circle cx="32" cy="66" r="2.5" class="radar-blip-beta" />
+            <!-- Núcleo emisor central -->
+            <circle cx="50" cy="50" r="3" class="lens-center-emitter" />
           </svg>
         </div>
         <span class="scanner-digit">4</span>
