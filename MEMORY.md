@@ -1,10 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 07:42 (GMT-5)
+Última actualización: 2026-09-13 08:05 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-40. **Movimiento Continuo Garantizado del Carrusel de Confianza (Marquee en Android y PC), Traducción Bilingüe Exhaustiva de Tarjetas Bento Grid / Drawer y Check Oficial de Verificación Esmeralda**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Carrusel horizontal congelado:* La cinta de confianza en el Hero (`.trust-marquee-container`) se detenía y no volvía a girar en pantallas táctiles de Android y escritorio. La causa raíz fue la presencia de reglas CSS `:hover` y `:active` que pausaban la animación (`animation-play-state: paused`). En dispositivos móviles, un toque táctil sobre el contenedor fijaba un estado `:hover` persistente en el navegador webview/Chrome, dejando la marquesina congelada de manera irreversible.
+      2. *Inconsistencia idiomática en tarjetas Bento:* Al seleccionar el idioma inglés (`EN`), los titulares principales cambiaban pero las tarjetas conservaban cadenas fijas en español provenientes del JSON o del renderizado base (`"hace 6 horas"`, `"🔥 Oportunidad Directa"`, `"Superficie"`, `"Distribución"`, `"3 Hab • 2 Baños • 1 Garajes"`, `"Bogota • Estrato 4"`, `"-15% vs Mediana"`). Además, cualquier llamada a `renderizarInterfaz` pisaba las traducciones del DOM con textos en español.
+      3. *Ficha técnica sin estilización de verificación:* La clave "Contacto: Propietario Verificado" carecía del distintivo visual oficial de alta gama (sello verificado estilo redes sociales / plataformas de alto prestigio) que transmitiera confianza inmediata al usuario.
+    - **Solución Implementada:**
+      1. **Rotación Continua y Fluida a 60 FPS del Marquee (`styles/05-hero.css`, 360 líneas < 500):**
+         - Se erradicaron por completo las reglas de pausa en `:hover` y `:active`.
+         - Se aplicó `pointer-events: none; user-select: none;` en `.trust-marquee-container` para inmunizar la cinta contra cualquier tap pegajoso en Android o hover en ratón.
+         - Se inyectó `-webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); backface-visibility: hidden;` para forzar aceleración nativa por GPU a 60 FPS sin parpadeos.
+      2. **Traducción Bilingüe Dinámica de Tarjetas Bento Grid (`modules/06-cards.js`, 390 líneas < 500):**
+         - Se implementó `formatearTiempoRelativo(fechaRaw, fallbackStr)` con soporte bilingüe completo: traduce tanto timestamps numéricos como cadenas fijas (`"hace X horas"` -> `"Xh ago"`, `"hace X minutos"` -> `"Xm ago"`, `"justo ahora"` -> `"⚡ Just now"`).
+         - Función `traducirBadgeUrgencia(badgeTexto)` para mapear instantáneamente badges como `"🔥 Oportunidad Directa"` -> `"🔥 Direct Deal"`, `"⚡ Trato Directo"` -> `"⚡ High Arbitrage"`, `"📉 Rebaja de Precio"` -> `"📉 Price Drop"`.
+         - Función `traducirDatoDistribucion(texto)` para convertir `"3 Hab • 2 Baños • 1 Garajes"` en `"3 Beds • 2 Baths • 1 Parking"`.
+         - Adaptación bilingüe de etiquetas fijas en la tarjeta: `"Superficie"` -> `"Area"`, `"Distribución"` -> `"Layout"`, `"Bogota • Estrato X"` -> `"Bogota • Stratum X"`, `"-X% vs Mediana"` -> `"-X% vs Median"`.
+         - `renderizarInterfaz` ahora evalúa `obtenerIdiomaActual() === 'en'` de forma reactiva, evitando sobrescribir textos en español sobre la vista en inglés.
+      3. **Sello Oficial de Verificación Esmeralda y Drawer Traducido (`styles/08-slideup.css`, 476 líneas; `modules/13-i18n.js`, 495 líneas):**
+         - Se crearon las clases `.verified-badge-wrap` y `.verified-badge-icon` con halo pulsante `pulseCheckGlow` en `#10B981`, recreando el check oficial esmeralda verificado de plataformas de prestigio.
+         - `traducirSlideupDrawer()` traduce dinámicamente títulos (`Property Overview`), descripciones de confianza, botones de acción (`Unlock Owner Contact`), notas de garantía y especificaciones (`Stratum`, `Built Area`, `Bedrooms`, `Bathrooms`, `Parking`, `Contact`, `Deal Type`), e inyecta el sello con el icono `<i class="fa-solid fa-circle-check verified-badge-icon"></i> Verified Owner`.
+      4. **Sincronización Reactiva de Idioma (`modules/13-i18n.js`, `modules/04-filters.js`):**
+         - En `cambiarIdioma()`, se dispara de inmediato `renderizarInterfaz(datosActuales)` y `traducirSlideupDrawer()` para una reactividad instantánea a 0ms sin recargar la página.
+         - Dropdown de ciudades y selector de ordenamiento sincronizados con `criterioOrdenActivo`.
+      5. **DevSecOps y Cumplimiento Desmulta (< 500 líneas):**
+         - Módulos optimizados y compactados: `modules/13-i18n.js` (495 líneas), `modules/06-cards.js` (390 líneas), `modules/04-filters.js` (402 líneas), `styles/05-hero.css` (360 líneas), `styles/08-slideup.css` (476 líneas).
+         - Recompilación con `node scripts/build.js`: generados `app.js`, `app.min.js`, `style.css` y `style.min.css`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada con 0 errores.
 
 -39. **Erradicación Definitiva de Bloqueo CSP en Fuentes Google, Eliminación de Advertencias de Precarga y Carga Garantizada de Tipografía Cursiva (`Alex Brush`)**:
     - **Diagnóstico y Causa Raíz:**

@@ -1482,6 +1482,8 @@ main {
   overflow: hidden;
   padding: 0.5rem 0 2.5rem;
   display: flex;
+  pointer-events: none; /* Movimiento continuo perpetuo en móvil y PC */
+  user-select: none;
   /* Degradado en los bordes para difuminar la entrada y salida */
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
@@ -1490,20 +1492,21 @@ main {
 .marquee-track {
   display: flex;
   width: max-content;
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   will-change: transform;
+  -webkit-animation: scrollMarquee 24s linear infinite;
   animation: scrollMarquee 24s linear infinite;
 }
 
-/* Pausa elegante al tocar o mantener presionado */
-.trust-marquee-container:hover .marquee-track,
-.trust-marquee-container:active .marquee-track {
-  animation-play-state: paused;
+@keyframes scrollMarquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
-@keyframes scrollMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+@-webkit-keyframes scrollMarquee {
+  0% { -webkit-transform: translate3d(0, 0, 0); }
+  100% { -webkit-transform: translate3d(-50%, 0, 0); }
 }
 
 .marquee-group {
@@ -2803,6 +2806,33 @@ main {
 .modal-summary-value { color: var(--text-main); }
 .modal-summary-price { color: var(--accent-emerald); font-size: 1.15rem; }
 .modal-summary-divider { border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; margin-top: 0.4rem; }
+
+/* Insignia de Verificación Oficial Estilo Redes Sociales (Twitter / WhatsApp / Instagram) */
+.verified-badge-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--accent-emerald, #10B981);
+}
+
+.verified-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #10B981;
+  font-size: 0.95rem;
+  filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.45));
+  animation: pulseCheckGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseCheckGlow {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.4)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 7px rgba(16, 185, 129, 0.7)); }
+}
+
+[data-theme="light"] .verified-badge-wrap { color: #047857; }
+[data-theme="light"] .verified-badge-icon { color: #047857; filter: drop-shadow(0 1px 2px rgba(4, 120, 87, 0.25)); }
 
 /* ═══════════════════════════════════════════════════
    MODAL DE CHECKOUT WOMPI (Glassmorphic Desmulta Shield)

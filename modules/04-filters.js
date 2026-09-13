@@ -212,12 +212,13 @@ function sincronizarDropdownCiudades(leads) {
   const ciudadesOrdenadas = Object.keys(conteoPorCiudad).sort((a, b) => a.localeCompare(b, "es"));
 
   // 1. Dropdown Desktop en la Barra de Comandos
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const dropdown = document.getElementById("cmdLocationDropdown");
   if (dropdown) {
     let html = `
       <div class="cmd-dropdown-item ${filtroCiudadActivo === "" ? "active" : ""}" data-city="">
         <i class="fa-solid fa-earth-americas"></i>
-        <span>Colombia (Todas)</span>
+        <span data-i18n="filter_colombia_all">${isEn ? 'Colombia (All)' : 'Colombia (Todas)'}</span>
         <i class="fa-solid fa-check item-check"></i>
       </div>
     `;
@@ -254,7 +255,7 @@ function sincronizarDropdownCiudades(leads) {
   // 2. Selector Móvil en el Menú Lateral Off-Canvas
   const sideSelect = document.getElementById("sideMenuCitySelect");
   if (sideSelect) {
-    let selHtml = `<option value="">Todas las Ciudades</option>`;
+    let selHtml = `<option value="" data-i18n="filter_all_cities">${isEn ? 'All Cities' : 'Todas las Ciudades'}</option>`;
     ciudadesOrdenadas.forEach(ciudad => {
       const sel = filtroCiudadActivo && filtroCiudadActivo.toLowerCase() === ciudad.toLowerCase() ? "selected" : "";
       selHtml += `<option value="${escaparHtml(ciudad)}" ${sel}>${escaparHtml(ciudad)} (${conteoPorCiudad[ciudad]})</option>`;

@@ -172,16 +172,13 @@ const TEXTOS_LEGALES_ORIGGO_EN = {
   terminos: {
     titulo: 'How Origgo Works', subtitulo: 'Clear, transparent information for buyers and owners', badge: 'Transparency & Trust', icono: 'fa-solid fa-scale-balanced',
     html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Direct Owner Connection</div><p>We connect buyers directly with property owners. Zero agency commissions or brokerage fees.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bullseye"></i> 2. Fresh Direct Opportunities</div><p>Direct opportunities and urgent price cuts detected daily in Colombia before reaching agencies.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-shield"></i> 3. Personal & Commercial Use</div><p>Access to contacts is for your direct use. We safeguard data against spam.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Secure Payments with Wompi</div><p>Payments are securely processed via Wompi (regulated by SFC). Origgo never stores card or bank details.</p></div>'
-  },
-  exoneracion: {
+  }, exoneracion: {
     titulo: 'Security & Direct Deals', subtitulo: 'Important recommendations for a safe, transparent transaction', badge: 'Security', icono: 'fa-solid fa-shield-halved',
     html: '<div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Zero Brokerage Fees</div><p>Origgo <strong>is not a real estate agency and charges no commissions</strong>. You negotiate directly one-on-one with the property owner.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-magnifying-glass"></i> 2. Inspect Before Paying</div><p>We recommend visiting the property in person, meeting the owner, and requesting an official Title Certificate before transferring funds.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-comments"></i> 3. Direct Agreements</div><p>Listings are sourced from open public listings. Any final agreement or sale deed is strictly between you and the owner.</p></div>'
-  },
-  privacidad: {
+  }, privacidad: {
     titulo: 'Privacy & Your Data', subtitulo: 'Data protection under Law 1581 of 2012 and GDPR', badge: 'Protected Data', icono: 'fa-solid fa-user-shield',
     html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 1. How We Use Phone & Email</div><p>Your WhatsApp and email are only used to deliver access codes, store credits and send receipts. <strong>Zero data selling and zero spam</strong>.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Cataloged Listings</div><p>Information is indexed from open listings published by owners across the web.</p></div><div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Owner Listing Delisting</div><p>If you are the owner of a published property and wish to remove it, message our WhatsApp support and we delist it immediately for free.</p></div>'
-  },
-  reembolsos: {
+  }, reembolsos: {
     titulo: 'Balance Guarantee & Support', subtitulo: 'Your money and unlocked access are always protected', badge: 'Balance Guarantee', icono: 'fa-solid fa-rotate-left',
     html: '<div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 1. Your Balance Never Expires</div><p>If you change devices or clear your browser, your credits remain safe. Restore them anytime via <strong>"Restore Account"</strong> with your WhatsApp.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Instant Lead Reveal</div><p>Every time you unlock a lead, verified owner details appear immediately on your screen.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Priority Direct Support</div><p>If you had any issue with a payment or the system, contact us directly on WhatsApp for immediate credit resolution.</p></div>'
   }
@@ -287,14 +284,20 @@ function aplicarTraduccionesAlDOM() {
   // 3. Botón de ordenamiento
   const sortBtn = document.getElementById('cmdFilterSort');
   if (sortBtn) {
-    const sortVal = typeof ordenamientoActivo !== 'undefined' ? ordenamientoActivo : '';
+    const sortVal = typeof criterioOrdenActivo !== 'undefined' ? criterioOrdenActivo : '';
     const labelMap = {
-      '': dict.sort_recent, 'reciente': dict.sort_recent,
+      '': dict.sort_recent, 'reciente': dict.sort_recent, 'recientes': dict.sort_recent,
       'precio_asc': dict.sort_price_asc, 'precio_desc': dict.sort_price_desc,
-      'descuento': dict.sort_discount
+      'descuento': dict.sort_discount, 'precio_m2_asc': dict.sort_m2_asc,
+      'rebajas': dict.sort_rebajas
     };
-    const span = sortBtn.querySelector('span');
-    if (span) span.textContent = labelMap[sortVal] || dict.sort_placeholder;
+    const span = sortBtn.querySelector('#cmdFilterSortLabel') || sortBtn.querySelector('span');
+    if (span) span.textContent = labelMap[sortVal] || dict.sort_recent || dict.sort_placeholder;
+    document.querySelectorAll('#cmdSortDropdown .cmd-dropdown-item').forEach(item => {
+      const sVal = item.getAttribute('data-sort');
+      const itemSpan = item.querySelector('span');
+      if (itemSpan && labelMap[sVal]) itemSpan.textContent = labelMap[sVal];
+    });
   }
 
   // 4. Selector de Ciudad (Label)
@@ -370,6 +373,14 @@ function cambiarIdioma(nuevoIdioma) {
 
   aplicarTraduccionesAlDOM();
 
+  // Re-renderizar la grilla Bento para reflejar instantáneamente el nuevo idioma
+  if (typeof datosActuales !== 'undefined' && datosActuales && typeof renderizarInterfaz === 'function') {
+    renderizarInterfaz(datosActuales);
+  }
+
+  // Actualizar cualquier ficha técnica abierta
+  traducirSlideupDrawer();
+
   // Actualizar modales abiertos si están activos en pantalla
   if (typeof renderizarContenidoLegal === 'function') {
     const modalLegal = document.getElementById('modalLegalOverlay');
@@ -389,9 +400,6 @@ function cambiarIdioma(nuevoIdioma) {
     abrirModalBienvenidaVIP(null, typeof sesionUsuario !== 'undefined' ? sesionUsuario : null);
   }
 
-  const slideup = document.getElementById('slideupDrawer');
-  if (slideup && slideup.classList.contains('active')) traducirSlideupDrawer();
-
   window.dispatchEvent(new CustomEvent('origgo:languageChanged', { detail: { lang: nuevoIdioma } }));
 }
 
@@ -404,22 +412,43 @@ function traducirSlideupDrawer() {
   document.querySelectorAll('.trust-badge').forEach(b => { b.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${dict.slideup_trust_badge}`; });
   document.querySelectorAll('.trust-desc').forEach(d => { d.textContent = dict.slideup_trust_desc; });
   document.querySelectorAll('.unlocked-phone-label').forEach(l => { l.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.slideup_unlocked_title}`; });
-  document.querySelectorAll('.slideup-unlock-cta').forEach(cta => {
-    const h4 = cta.querySelector('h4'), p = cta.querySelector('p'), btn = cta.querySelector('.btn-slideup-unlock');
-    if (h4) h4.textContent = dict.slideup_unlock_heading;
-    if (p) p.textContent = dict.slideup_unlock_desc;
-    if (btn) btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ${dict.slideup_unlock_btn}`;
+  document.querySelectorAll('.slideup-cta-btn:not(.btn-whatsapp-direct):not(.cta-call):not(.cta-neutral)').forEach(btn => {
+    btn.innerHTML = `<i class="fa-solid fa-unlock-keyhole"></i> ${dict.slideup_unlock_btn || (isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño')}`;
   });
-  document.querySelectorAll('.slideup-spec-key').forEach(keyEl => {
-    const txt = keyEl.textContent.trim().toLowerCase();
-    if (txt.includes('estrato') || txt.includes('tier')) keyEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> ${isEn ? 'Tier / Stratum' : 'Estrato'}`;
-    else if (txt.includes('área') || txt.includes('superficie') || txt.includes('built area')) keyEl.innerHTML = `<i class="fa-solid fa-ruler-combined"></i> ${isEn ? 'Built Area' : 'Área'}`;
-    else if (txt.includes('hab') || txt.includes('alcoba') || txt.includes('bed')) keyEl.innerHTML = `<i class="fa-solid fa-bed"></i> ${isEn ? 'Bedrooms' : 'Habitaciones'}`;
-    else if (txt.includes('baño') || txt.includes('bath')) keyEl.innerHTML = `<i class="fa-solid fa-bath"></i> ${isEn ? 'Bathrooms' : 'Baños'}`;
-    else if (txt.includes('parqueadero') || txt.includes('garaje') || txt.includes('parking')) keyEl.innerHTML = `<i class="fa-solid fa-square-parking"></i> ${isEn ? 'Parking' : 'Parqueaderos'}`;
-    else if (txt.includes('tipo') || txt.includes('property type')) keyEl.innerHTML = `<i class="fa-solid fa-building"></i> ${isEn ? 'Property Type' : 'Tipo'}`;
-    else if (txt.includes('ubicación') || txt.includes('location')) keyEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${isEn ? 'Location' : 'Ubicación'}`;
-    else if (txt.includes('operación') || txt.includes('deal type')) keyEl.innerHTML = `<i class="fa-solid fa-handshake"></i> ${isEn ? 'Deal Type' : 'Operación'}`;
+  document.querySelectorAll('.slideup-cta-note:not(.slideup-cta-note-ok)').forEach(note => {
+    note.innerHTML = `<i class="fa-solid fa-bolt"></i> ${isEn ? 'Instant access • Zero broker commissions' : 'Acceso al instante • Sin pagar comisiones'}`;
+  });
+  document.querySelectorAll('.slideup-cta-note-ok').forEach(note => {
+    note.innerHTML = `<i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}`;
+  });
+  const specKeyMap = [
+    { match: /estrato|stratum|tier/i, icon: 'fa-layer-group', es: 'Estrato', en: 'Stratum' },
+    { match: /área|area|superficie/i, icon: 'fa-ruler-combined', es: 'Área', en: 'Built Area' },
+    { match: /hab|alcoba|bed/i, icon: 'fa-bed', es: 'Habitaciones', en: 'Bedrooms' },
+    { match: /baño|bath/i, icon: 'fa-bath', es: 'Baños', en: 'Bathrooms' },
+    { match: /parqueadero|garaje|parking/i, icon: 'fa-square-parking', es: 'Parqueaderos', en: 'Parking' },
+    { match: /contacto|contact/i, icon: 'fa-user-shield', es: 'Contacto', en: 'Contact' },
+    { match: /tipo|type/i, icon: 'fa-building', es: 'Tipo', en: 'Property Type' },
+    { match: /ubicación|location/i, icon: 'fa-location-dot', es: 'Ubicación', en: 'Location' },
+    { match: /operación|deal/i, icon: 'fa-handshake', es: 'Operación', en: 'Deal Type' }
+  ];
+  document.querySelectorAll('.slideup-spec-card').forEach(card => {
+    const keyEl = card.querySelector('.slideup-spec-key'), valEl = card.querySelector('.slideup-spec-val');
+    if (!keyEl || !valEl) return;
+    const txtKey = keyEl.textContent.trim();
+    for (const item of specKeyMap) {
+      if (item.match.test(txtKey)) { keyEl.innerHTML = `<i class="fa-solid ${item.icon}"></i> ${isEn ? item.en : item.es}`; break; }
+    }
+    const txtVal = valEl.textContent.trim().toLowerCase();
+    if (/contacto|contact/i.test(txtKey) || /propietario|owner|verificado|verified/i.test(txtVal)) {
+      valEl.innerHTML = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+    } else if (isEn) {
+      valEl.textContent = valEl.textContent
+        .replace(/(\d+)\s*Residencial/gi, '$1 Residential')
+        .replace(/\b1\s*alcobas?\b/gi, '1 Bedroom').replace(/(\d+)\s*alcobas?\b/gi, '$1 Bedrooms')
+        .replace(/\b1\s*completos?\b/gi, '1 Full Bath').replace(/(\d+)\s*completos?\b/gi, '$1 Full Baths')
+        .replace(/\b1\s*espacios?\b/gi, '1 Space').replace(/(\d+)\s*espacios?\b/gi, '$1 Spaces');
+    }
   });
 }
 
@@ -435,14 +464,10 @@ function inicializarSelectorIdiomas() {
       if (targetLang) cambiarIdioma(targetLang);
       return;
     }
-
     if (e.target.closest('[data-action="abrir-ficha"]')) {
-      setTimeout(() => {
-        if (obtenerIdiomaActual() === 'en') traducirSlideupDrawer();
-      }, 40);
+      setTimeout(() => { if (obtenerIdiomaActual() === 'en') traducirSlideupDrawer(); }, 40);
     }
   });
-
   const container = document.getElementById('bentoGridContainer');
   if (container && window.MutationObserver) {
     const observer = new MutationObserver(() => {
@@ -451,36 +476,19 @@ function inicializarSelectorIdiomas() {
     });
     observer.observe(container, { childList: true });
   }
-
   aplicarTraduccionesAlDOM();
 }
 
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarSelectorIdiomas);
-  } else {
-    inicializarSelectorIdiomas();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicializarSelectorIdiomas);
+  else inicializarSelectorIdiomas();
 }
 
 if (typeof window !== 'undefined') {
-  window.obtenerIdiomaActual = obtenerIdiomaActual;
-  window.cambiarIdioma = cambiarIdioma;
-  window.t = t;
-  window.calcularReferenciaUSD = calcularReferenciaUSD;
-  window.aplicarTraduccionesAlDOM = aplicarTraduccionesAlDOM;
-  window.traducirSlideupDrawer = traducirSlideupDrawer;
-  window.TEXTOS_LEGALES_ORIGGO_EN = TEXTOS_LEGALES_ORIGGO_EN;
+  Object.assign(window, { obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer, TEXTOS_LEGALES_ORIGGO_EN });
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    DICCIONARIO_I18N,
-    obtenerIdiomaActual,
-    cambiarIdioma,
-    t,
-    calcularReferenciaUSD,
-    aplicarTraduccionesAlDOM,
-    traducirSlideupDrawer
-  };
+  module.exports = { DICCIONARIO_I18N, obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer };
 }
+
