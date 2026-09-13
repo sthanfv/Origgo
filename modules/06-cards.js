@@ -171,6 +171,8 @@ function traducirTipoInmueble(tipo, isEn) {
 
 /**
  * Traduce especificaciones del Slide-up Drawer con sello verificado.
+ * ✅ HAL-05: El HTML del badge se genera localmente basándose SOLO en la clave del campo,
+ * nunca en el valor del JSON externo. Todos los valores del dataset se escapan siempre.
  */
 function traducirSlideupDetalles(detalles, isEn) {
   if (!detalles) return {};
@@ -200,10 +202,15 @@ function traducirSlideupDetalles(detalles, isEn) {
       vTrad = vTrad.replace(/\b1 espacios\b/gi, '1 espacio').replace(/\b1 alcobas\b/gi, '1 alcoba').replace(/\b1 completos\b/gi, '1 completo');
     }
 
-    if (kLow.includes('contacto') || vTrad.includes('Verificado') || vTrad.includes('Verified')) {
-      vTrad = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+    // ✅ HAL-05 REMEDIACIÓN: El badge de "Verificado" se genera localmente basándose SOLO en la CLAVE.
+    // Se elimina la detección de strings del valor externo del JSON para evitar XSS.
+    // NUNCA se confía en el valor del dataset para emitir HTML sin escapar.
+    const esCampoContacto = kLow.includes('contacto') || kTrad.toLowerCase().includes('contact');
+    if (esCampoContacto) {
+      salida[kTrad] = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+    } else {
+      salida[kTrad] = escaparHtml(vTrad); // ← SIEMPRE escapar valores del JSON externo
     }
-    salida[kTrad] = vTrad;
   }
   return salida;
 }
@@ -386,8 +393,11 @@ function renderizarInterfaz(dataset) {
               ${Object.entries(detallesTraducidos).map(([k, v]) => {
                 const kLow = k.toLowerCase();
                 const iconClass = (kLow.includes('estrato') || kLow.includes('stratum')) ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('built area') || kLow.includes('superficie')) ? 'fa-ruler-combined' : (kLow.includes('hab') || kLow.includes('bedroom')) ? 'fa-bed' : (kLow.includes('baño') || kLow.includes('bath')) ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero') || kLow.includes('parking')) ? 'fa-square-parking' : (kLow.includes('contacto') || kLow.includes('contact')) ? 'fa-user-shield' : 'fa-circle-info';
-                const tieneHtml = String(v).includes('<span class="verified-badge-wrap">');
-                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${tieneHtml ? v : escaparHtml(v)}</span></div>`;
+                // ✅ HAL-05: Los valores de campo "contacto" son HTML confiable generado localmente
+                // por traducirSlideupDetalles. Todos los demás valores YA están escapados.
+                // Se elimina la detección de strings del JSON externo que era el vector XSS.
+                const esBadgeConfiable = kLow.includes('contacto') || kLow.includes('contact');
+                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${esBadgeConfiable ? v : v}</span></div>`;
               }).join('')}
             </div>
 
@@ -457,9 +467,10 @@ function renderizarInterfaz(dataset) {
 
   iniciarScrollReveal();
 
-  if (!window._timerRelativoCards) {
-    window._timerRelativoCards = setInterval(actualizarTiemposRelativosEnDOM, 60000);
-  }
+  // ✅ HAL-11: Limpiar siempre el timer anterior antes de crear uno nuevo.
+  // Previene la acumulación de setInterval en sesiones largas con múltiples re-renders.
+  if (window._timerRelativoCards) clearInterval(window._timerRelativoCards);
+  window._timerRelativoCards = setInterval(actualizarTiemposRelativosEnDOM, 60000);
 
   container.querySelectorAll('.carousel-track').forEach((track) => {
     const card = track.closest('.bento-card');

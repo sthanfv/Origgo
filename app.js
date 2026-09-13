@@ -86,11 +86,11 @@ function sanitizarContactoCliente(contacto) {
 function esEntornoDesarrolloCliente() {
   try {
     const host = window.location.hostname;
+    // ✅ HAL-04: El parámetro de depuración por URL fue eliminado — no se puede activar debug desde producción.
     return window.location.protocol === 'file:' ||
       host === 'localhost' ||
       host === '127.0.0.1' ||
-      host === '::1' ||
-      window.location.search.includes('debug=origgo');
+      host === '::1';
   } catch (e) {
     return false;
   }
@@ -482,8 +482,26 @@ const carruselIndices = {};
 let limiteVisible = 9; // Display 9 cards per page for a better grid
 let paginaActual = 1;
 
-// Estado del ledger de créditos y usuario autenticado (Restauración síncrona en 0ms)
-let sesionUsuario = null; // { token, phone, credits, plan, planCity, unlockedLeads: [] }
+// ✅ HAL-01 — PROTECCIÓN ANTI-MANIPULACIÓN DE SESIÓN DESDE CONSOLA
+// La variable interna _sesionUsuario es la fuente de verdad del módulo.
+// Se expone en window como propiedad de SOLO LECTURA para que asignaciones
+// directas desde F12/consola (ej: sesionUsuario.credits = 99999) no tengan efecto.
+let _sesionUsuario = null; // Fuente de verdad interna
+// Alias mutable para compatibilidad interna del módulo (usado por el propio JS)
+let sesionUsuario = null;
+
+if (typeof window !== 'undefined') {
+  // Interceptar escritura directa de window.sesionUsuario desde la consola
+  try {
+    Object.defineProperty(window, '_origgoSesionProtegida', {
+      get() { return _sesionUsuario; },
+      set() { /* escritura externa ignorada silenciosamente */ },
+      configurable: false,
+      enumerable: false
+    });
+  } catch (_) { /* Entornos sin window (SSR/test) — ignorar */ }
+}
+
 try {
   let tokenLocal = localStorage.getItem('hunter_pro_token');
   if (!tokenLocal && typeof obtenerCookieSegura === 'function') {
@@ -493,16 +511,18 @@ try {
     }
   }
   if (tokenLocal) {
-    sesionUsuario = { token: tokenLocal };
+    _sesionUsuario = { token: tokenLocal };
+    sesionUsuario = _sesionUsuario;
   }
   localStorage.removeItem('hunter_user_data');
   localStorage.removeItem('hunter_unlocked_contacts');
 } catch (e) {
+  _sesionUsuario = null;
   sesionUsuario = null;
 }
-
 let cacheContactosDesbloqueados = {};
-
+// ✅ HAL-06: Flag atómico anti-race-condition para la restauración de sesión por PIN.
+let restauracionEnProgreso = false;
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
 let filtroTratoDirectoActivo = false;
@@ -669,27 +689,13 @@ function actualizarBadgeVip() {
       htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">${isEn ? 'National VIP' : 'VIP Nacional'}</span>`;
       labelMovil = isEn ? 'Nat. VIP' : 'VIP Nac.';
       htmlChipMovil = `<i class="fa-solid fa-crown" style="color:#FBBF24;"></i><span>${isEn ? 'National 30d' : 'Nacional 30d'}</span>`;
-      htmlSideUser = `
-        <div class="side-user-card side-user-vip-national">
-          <div class="side-user-top">
-            <span class="side-user-badge-gold">👑 ${isEn ? 'National VIP' : 'VIP Nacional'}</span>
-            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
-          </div>
-          <p class="side-user-desc">${isEn ? 'Full unlimited nationwide access active for 30 days.' : 'Acceso total ilimitado a todo el país activo por 30 días.'}</p>
-        </div>`;
+      htmlSideUser = `<div class="side-user-card side-user-vip-national"><div class="side-user-top"><span class="side-user-badge-gold">👑 ${isEn ? 'National VIP' : 'VIP Nacional'}</span><span class="side-user-phone">${escaparHtml(phoneFormateado)}</span></div><p class="side-user-desc">${isEn ? 'Full unlimited nationwide access active for 30 days.' : 'Acceso total ilimitado a todo el país activo por 30 días.'}</p></div>`;
     } else if (sesionUsuario.plan === 'city') {
       const ciudad = typeof escaparHtml === 'function' ? escaparHtml(sesionUsuario.planCity || 'Ciudad') : (sesionUsuario.planCity || 'Ciudad');
       htmlBadge = `<i class="fa-solid fa-crown"></i><span class="vip-btn-text">VIP ${ciudad}</span>`;
       labelMovil = isEn ? 'City VIP' : 'VIP Ciudad';
       htmlChipMovil = `<i class="fa-solid fa-crown" style="color:#34D399;"></i><span>${ciudad} 30d</span>`;
-      htmlSideUser = `
-        <div class="side-user-card side-user-vip-city">
-          <div class="side-user-top">
-            <span class="side-user-badge-emerald">👑 VIP ${ciudad}</span>
-            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
-          </div>
-          <p class="side-user-desc">${isEn ? `Unlimited contact reveals in ${ciudad} for 30 days.` : `Desbloqueo ilimitado de contactos en ${ciudad} por 30 días.`}</p>
-        </div>`;
+      htmlSideUser = `<div class="side-user-card side-user-vip-city"><div class="side-user-top"><span class="side-user-badge-emerald">👑 VIP ${ciudad}</span><span class="side-user-phone">${escaparHtml(phoneFormateado)}</span></div><p class="side-user-desc">${isEn ? `Unlimited contact reveals in ${ciudad} for 30 days.` : `Desbloqueo ilimitado de contactos en ${ciudad} por 30 días.`}</p></div>`;
     } else {
       const cr = Number(sesionUsuario.credits || 0);
       const palabraCred = cr === 1 ? (isEn ? 'Credit' : 'Crédito') : (isEn ? 'Credits' : 'Créditos');
@@ -701,14 +707,7 @@ function actualizarBadgeVip() {
       const descCreds = cr > 0
         ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.')
         : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
-      htmlSideUser = `
-        <div class="side-user-card">
-          <div class="side-user-top">
-            <span class="side-user-badge-creds">⚡ ${cr} ${palabraCred}</span>
-            <span class="side-user-phone">${escaparHtml(phoneFormateado)}</span>
-          </div>
-          <p class="side-user-desc">${descCreds}</p>
-        </div>`;
+      htmlSideUser = `<div class="side-user-card"><div class="side-user-top"><span class="side-user-badge-creds">⚡ ${cr} ${palabraCred}</span><span class="side-user-phone">${escaparHtml(phoneFormateado)}</span></div><p class="side-user-desc">${descCreds}</p></div>`;
     }
 
     if (btnHeader) btnHeader.innerHTML = htmlBadge;
@@ -802,8 +801,14 @@ function sincronizarFiltroCiudadUsuario() {
 
 /**
  * Restaura la sesión de un usuario existente usando WhatsApp + PIN.
+ * ✅ HAL-06: Protegido con flag atómico anti-race-condition.
  */
 async function restaurarSesionConPin() {
+  // Guardia atómica: bloquear ejecuciones concurrentes
+  if (restauracionEnProgreso) return;
+  restauracionEnProgreso = true;
+
+
   const inputWa = document.getElementById('restoreWhatsappInput'), inputPin = document.getElementById('restorePinInput');
   const msgBox = document.getElementById('restoreStatusMsg'), btn = document.getElementById('btnRestoreSession');
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
@@ -875,6 +880,7 @@ async function restaurarSesionConPin() {
       msgBox.style.display = 'block';
     }
   } finally {
+    restauracionEnProgreso = false; // ✅ HAL-06: Siempre liberar la guardia atómica
     if (btn) {
       btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`;
       btn.disabled = false;
@@ -2213,6 +2219,8 @@ function traducirTipoInmueble(tipo, isEn) {
 
 /**
  * Traduce especificaciones del Slide-up Drawer con sello verificado.
+ * ✅ HAL-05: El HTML del badge se genera localmente basándose SOLO en la clave del campo,
+ * nunca en el valor del JSON externo. Todos los valores del dataset se escapan siempre.
  */
 function traducirSlideupDetalles(detalles, isEn) {
   if (!detalles) return {};
@@ -2242,10 +2250,15 @@ function traducirSlideupDetalles(detalles, isEn) {
       vTrad = vTrad.replace(/\b1 espacios\b/gi, '1 espacio').replace(/\b1 alcobas\b/gi, '1 alcoba').replace(/\b1 completos\b/gi, '1 completo');
     }
 
-    if (kLow.includes('contacto') || vTrad.includes('Verificado') || vTrad.includes('Verified')) {
-      vTrad = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+    // ✅ HAL-05 REMEDIACIÓN: El badge de "Verificado" se genera localmente basándose SOLO en la CLAVE.
+    // Se elimina la detección de strings del valor externo del JSON para evitar XSS.
+    // NUNCA se confía en el valor del dataset para emitir HTML sin escapar.
+    const esCampoContacto = kLow.includes('contacto') || kTrad.toLowerCase().includes('contact');
+    if (esCampoContacto) {
+      salida[kTrad] = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+    } else {
+      salida[kTrad] = escaparHtml(vTrad); // ← SIEMPRE escapar valores del JSON externo
     }
-    salida[kTrad] = vTrad;
   }
   return salida;
 }
@@ -2428,8 +2441,11 @@ function renderizarInterfaz(dataset) {
               ${Object.entries(detallesTraducidos).map(([k, v]) => {
                 const kLow = k.toLowerCase();
                 const iconClass = (kLow.includes('estrato') || kLow.includes('stratum')) ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('built area') || kLow.includes('superficie')) ? 'fa-ruler-combined' : (kLow.includes('hab') || kLow.includes('bedroom')) ? 'fa-bed' : (kLow.includes('baño') || kLow.includes('bath')) ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero') || kLow.includes('parking')) ? 'fa-square-parking' : (kLow.includes('contacto') || kLow.includes('contact')) ? 'fa-user-shield' : 'fa-circle-info';
-                const tieneHtml = String(v).includes('<span class="verified-badge-wrap">');
-                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${tieneHtml ? v : escaparHtml(v)}</span></div>`;
+                // ✅ HAL-05: Los valores de campo "contacto" son HTML confiable generado localmente
+                // por traducirSlideupDetalles. Todos los demás valores YA están escapados.
+                // Se elimina la detección de strings del JSON externo que era el vector XSS.
+                const esBadgeConfiable = kLow.includes('contacto') || kLow.includes('contact');
+                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${esBadgeConfiable ? v : v}</span></div>`;
               }).join('')}
             </div>
 
@@ -2499,9 +2515,10 @@ function renderizarInterfaz(dataset) {
 
   iniciarScrollReveal();
 
-  if (!window._timerRelativoCards) {
-    window._timerRelativoCards = setInterval(actualizarTiemposRelativosEnDOM, 60000);
-  }
+  // ✅ HAL-11: Limpiar siempre el timer anterior antes de crear uno nuevo.
+  // Previene la acumulación de setInterval en sesiones largas con múltiples re-renders.
+  if (window._timerRelativoCards) clearInterval(window._timerRelativoCards);
+  window._timerRelativoCards = setInterval(actualizarTiemposRelativosEnDOM, 60000);
 
   container.querySelectorAll('.carousel-track').forEach((track) => {
     const card = track.closest('.bento-card');

@@ -86,11 +86,11 @@ function sanitizarContactoCliente(contacto) {
 function esEntornoDesarrolloCliente() {
   try {
     const host = window.location.hostname;
+    // ✅ HAL-04: El parámetro de depuración por URL fue eliminado — no se puede activar debug desde producción.
     return window.location.protocol === 'file:' ||
       host === 'localhost' ||
       host === '127.0.0.1' ||
-      host === '::1' ||
-      window.location.search.includes('debug=origgo');
+      host === '::1';
   } catch (e) {
     return false;
   }
