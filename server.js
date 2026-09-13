@@ -138,20 +138,31 @@ const server = http.createServer(async (req, res) => {
     return res.end('403 Acceso Denegado: Ruta fuera de los límites del servidor.');
   }
 
+  const responder404 = () => {
+    const ruta404 = path.join(__dirname, '404.html');
+    if (fs.existsSync(ruta404)) {
+      res.writeHead(404, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+      });
+      return fs.createReadStream(ruta404).pipe(res);
+    }
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+    return res.end('404 No encontrado');
+  };
+
   const rel = path.relative(__dirname, rutaArchivo);
   const bloqueado = /(^|[\\/])(\.git|node_modules|api|lib|scripts|modules|\.husky)([\\/]|$)|(^|[\\/])(\.env.*|package(-lock)?\.json|firebase\.json|firestore\.rules|vercel\.json)|service-account.*\.json$|\.(md|map|pem)$|local_db\.json$/i;
   if (rel.startsWith('..') || path.isAbsolute(rel) || bloqueado.test(rel)) {
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
-    return res.end('404 No encontrado');
+    return responder404();
   }
   
   fs.stat(rutaArchivo, (err, stats) => {
     if (err || !stats.isFile()) {
-      res.writeHead(404, { 
-        'Content-Type': 'text/plain; charset=utf-8',
-        'X-Content-Type-Options': 'nosniff'
-      });
-      return res.end('404 No encontrado');
+      return responder404();
     }
     
     const ext = path.extname(rutaArchivo).toLowerCase();

@@ -1,10 +1,26 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 03:00 (GMT-5)
+Última actualización: 2026-09-13 03:15 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-31. **Estandarización de Identidad Visual, Soporte Bilingüe y Despacho Nativo de la Página Personalizada de Error 404**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario consultó por qué nunca había podido ver la página personalizada de error 404 y si existía en la plataforma.
+      2. Una auditoría técnica reveló que `404.html` sí existía físicamente en el proyecto y se empaquetaba para producción en `dist/404.html` (donde Vercel la sirve de forma nativa), pero en el servidor local de desarrollo (`server.js`), ante una ruta inexistente o denegada, se respondía con un mensaje en texto plano `"404 No encontrado"`, impidiendo visualizar la experiencia real en entornos locales.
+      3. Adicionalmente, `404.html` utilizaba un isotipo rasterizado (`/apple-touch-icon.png`), carecía del selector bilingüe internacional (`ES / EN`) implementado en la aplicación principal y no armonizaba automáticamente con los temas claro y oscuro (`data-theme`).
+    - **Solución Implementada:**
+      1. **Despacho Nativo en Servidor Local (`server.js`, 183 líneas < 500):**
+         - Se implementó la función auxiliar `responder404()` que envía deterministamente el archivo `404.html` con código de estado HTTP 404 y cabeceras de seguridad OWASP ante cualquier archivo o ruta inexistente, unificando la experiencia de desarrollo local con el comportamiento nativo de Vercel en producción.
+      2. **Elevación de Identidad y Prestigio en `404.html` (239 líneas < 500):**
+         - Se sustituyó el favicon rasterizado por el logotipo corporativo oficial SVG de Origgo (`./assets/img/origgo-logo.svg`), incorporando el resplandor esmeralda respirante de alta gama.
+         - Se integró un selector bilingüe minimalista (`ES / EN`) sincronizado con `localStorage.getItem('origgo_lang')`, con textos y traducciones completas para el badge de error, titular, descripción, botón de retorno y canal de soporte VIP.
+         - Se adaptaron los tokens de diseño para responder automáticamente al modo oscuro y claro (`origgo_theme`).
+      3. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: actualizado `dist/404.html` sincronizado con la raíz.
+         - Validación completa de 8 fases (`npm test`): 100% aprobada (0 errores), submódulos bajo cota Desmulta (< 500 líneas) y 11 serverless functions inalteradas.
 
 -30. **Erradicación Total de Pulso y Destello en Logotipo y Elevación Estética de Alto Estatus y Elegancia Arquitectónica**:
     - **Diagnóstico y Necesidad:**
