@@ -11,7 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const db = require('../../lib/db');
-const { signJwt, verifyJwt, decryptLeadContact } = require('../../lib/crypto');
+const { signJwt, verifyJwt, decryptLeadContact, obtenerKeyRingLeads } = require('../../lib/crypto');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { unlockLeadSchema, validateBody } = require('../../lib/validation');
@@ -25,11 +25,10 @@ const JWT_SECRET = requireEnv('JWT_SECRET', {
 const LEADS_ENCRYPTION_KEY = requireEnv('LEADS_ENCRYPTION_KEY', {
   testFallback: 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c'
 });
+const keyringLeads = obtenerKeyRingLeads(LEADS_ENCRYPTION_KEY);
 
 /**
- * Verifica la integridad HMAC-SHA256 de un archivo de datos.
- * Si el archivo .sig no existe, se permite (compatibilidad hacia atrás).
- * Si existe y no coincide, rechaza los datos.
+ * Verifica la integridad HMAC-SHA256 de un archivo de datos con soporte de Keyring rotado.
  * @param {string} dataset - Nombre del archivo (ej. "inmobiliario.json")
  * @returns {{ valido: boolean, razon: string }}
  */
@@ -38,7 +37,6 @@ function verificarIntegridadDataset(dataset) {
   const rutaJson = path.join(dataDir, dataset);
   const rutaSig = rutaJson + '.sig';
 
-  // Si no existe archivo de firma, permitir (compatibilidad)
   if (!fs.existsSync(rutaSig)) {
     return { valido: true, razon: 'sin_firma' };
   }
@@ -46,22 +44,17 @@ function verificarIntegridadDataset(dataset) {
   try {
     const contenido = fs.readFileSync(rutaJson, 'utf8');
     const firmaEsperada = fs.readFileSync(rutaSig, 'utf8').trim();
-
-    const firmaCalculada = crypto
-      .createHmac('sha256', LEADS_ENCRYPTION_KEY)
-      .update(contenido)
-      .digest('hex');
-
-    // Comparación en tiempo constante para prevenir ataques de temporización
     const bufEsperada = Buffer.from(firmaEsperada);
-    const bufCalculada = Buffer.from(firmaCalculada);
 
-    if (bufEsperada.length !== bufCalculada.length) {
-      return { valido: false, razon: 'longitud_firma_invalida' };
+    const keys = Array.from(new Set(Object.values(keyringLeads.keys || {}).concat([LEADS_ENCRYPTION_KEY]))).filter(Boolean);
+    for (const k of keys) {
+      const firmaCalculada = crypto.createHmac('sha256', k).update(contenido).digest('hex');
+      const bufCalculada = Buffer.from(firmaCalculada);
+      if (bufEsperada.length === bufCalculada.length && crypto.timingSafeEqual(bufEsperada, bufCalculada)) {
+        return { valido: true, razon: 'firma_valida' };
+      }
     }
-
-    const coincide = crypto.timingSafeEqual(bufEsperada, bufCalculada);
-    return { valido: coincide, razon: coincide ? 'firma_valida' : 'firma_no_coincide' };
+    return { valido: false, razon: 'firma_no_coincide' };
   } catch (e) {
     return { valido: false, razon: 'error_verificacion' };
   }
@@ -211,16 +204,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3. Descifrar el contacto en memoria antes de tocar el ledger para evitar cargos fallidos
-    let contactoDescifrado = null;
-    const keysToTry = [LEADS_ENCRYPTION_KEY].filter(Boolean);
-
-    for (const k of keysToTry) {
-      try {
-        contactoDescifrado = decryptLeadContact(contactoCifradoOficial, k);
-        if (contactoDescifrado) break;
-      } catch (e) {}
-    }
+    // 3. Descifrar el contacto en memoria con Keyring antes de tocar el ledger para evitar cobros fallidos
+    const contactoDescifrado = decryptLeadContact(contactoCifradoOficial, keyringLeads);
 
     if (!contactoDescifrado) {
       return res.status(500).json({

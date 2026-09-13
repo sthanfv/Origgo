@@ -1,10 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 13:24 (GMT-5)
+Última actualización: 2026-09-13 13:40 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-56. **Fase 5: Rotación Criptográfica y Versionado de Claves AES-256 (KID Retrocompatible), Keyring Multi-Versión y Verificación Integrada en Unlock**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Ausencia de soporte para rotación de claves en reposo:* El sistema dependía de una única clave simétrica estática (`LEADS_ENCRYPTION_KEY`). Si dicha clave requería rotación periódica o sufría un ciclo de migración, todos los leads históricos cifrados quedarían inaccesibles o requerirían un re-cifrado sincrónico masivo de alto riesgo operativo.
+      2. *Incompatibilidad de esquema ante múltiples versiones de clave:* El formato cifrado era estrictamente tripartito (`iv:authTag:ciphertext`) sin identificador de versión (`kid`). No existía un estándar para que el backend detectara con qué clave se había cifrado cada lead individual.
+      3. *Falta de Keyring dinámico con fallback defensivo:* No había mecanismo para descifrar contactos cruzados generados con distintas versiones (`v1`, `v2`) ni soporte para verificar firmas de catálogo `.sig` generadas con claves rotadas.
+    - **Solución Implementada:**
+      1. **Núcleo Criptográfico con Keyring y Formato Cuatripartito (`lib/crypto.js`, 292 líneas $\le 500$):**
+         - Implementada función `obtenerKeyRingLeads(fallbackKey)` que construye dinámicamente un keyring a partir de `LEADS_KEYRING_JSON`, variables individuales `LEADS_ENCRYPTION_KEY_V{N}` y `LEADS_KEY_VERSION`.
+         - Actualizada `encryptLeadContact(contacto, claveHex, kid = CURRENT_KID)` para emitir el formato con metadato de versión `kid:iv:authTag:ciphertext`.
+         - Actualizada `decryptLeadContact(contactoCifrado, claveOKeyRing)` para soportar:
+           a) Formato de 4 partes (`kid:iv:tag:cipher`) extrayendo la clave correspondiente del keyring.
+           b) Formato de 3 partes legado (`iv:tag:cipher`) descifrando con la clave activa o probando las claves disponibles.
+           c) Fallback defensivo que itera sobre todas las claves del keyring si el `kid` no coincide directamente o fallara, garantizando cero falsas denegaciones operativas.
+      2. **Endpoint de Desbloqueo Resistente (`api/leads/unlock.js`, 411 líneas $\le 500$):**
+         - Inicialización de `keyringLeads` al arranque del módulo.
+         - `verificarIntegridadDataset()` comprueba la firma HMAC `.sig` iterando sobre las claves del keyring antes de rechazar un catálogo.
+         - Descifrado de contacto en el flujo principal migrado a `decryptLeadContact(contactoCifradoOficial, keyringLeads)`.
+      3. **Scraper / Publicador con Versionado Canónico (`ofertas-hunter-pro/publisher_web.js`, 496 líneas $\le 500$):**
+         - `cifrarContactoLead(datos, claveHex, version = process.env.LEADS_KEY_VERSION || 'v1')` emite el formato versionado `kid:iv:tag:cipher` de forma transparente.
+      4. **Suite Automatizada de Rotación Criptográfica (`tests/crypto_rotation.test.js`, 170 líneas):**
+         - 8 pruebas exhaustivas cubriendo: emisión de formato kid v1/v2, descifrado cruzado multi-versión, compatibilidad con formato legado de 3 partes, fallback defensivo ante kid desconocido, rechazo y protección GCM ante adulteración de datos o tags, parsing de keyring desde variables de entorno, e integración end-to-end con `/api/leads/unlock`.
+         - 8/8 pruebas aprobadas al 100% (0 errores).
+      5. **Certificación DevSecOps y Configuración:**
+         - Integración permanente de la suite en la Fase 5 de `scripts/validate.js` (428 líneas $\le 500$).
+         - Variables documentadas en `.env.example` en ambos proyectos (`LEADS_KEY_VERSION=v1`, `LEADS_KEYRING_JSON`, etc.).
+         - 8/8 fases DevSecOps de `npm test` aprobadas con cero fallos y estricto cumplimiento del límite $\le 500$ líneas.
 
 -55. **Pipeline de Ingesta Bilingüe Canónico (Publisher Web), Omnibox Semántico Multi-Atributo, Sincronización Reactiva de Badges VIP y Aviso Legal Anti-Impresión Localizado**:
     - **Diagnóstico y Causa Raíz:**

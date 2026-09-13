@@ -301,6 +301,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de conciliación cron: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'crypto_rotation.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de rotación criptográfica y versionado AES-256 (kid) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de rotación criptográfica: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS
   // ═════════════════════════════════════════════════════════════════════════
