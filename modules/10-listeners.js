@@ -442,6 +442,8 @@ function configurarListeners() {
   });
 
   if (typeof inicializarBarraOrdenamiento === 'function') inicializarBarraOrdenamiento();
+  if (typeof inicializarFiltroHoy === 'function') inicializarFiltroHoy();
+  if (typeof inicializarProteccionAntiImpresion === 'function') inicializarProteccionAntiImpresion();
 }
 
 // ═════════════════════════════════════════════════════════════════════════

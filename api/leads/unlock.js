@@ -213,6 +213,14 @@ module.exports = async function handler(req, res) {
     const resultado = await db.unlockLead(session.phone, leadId, session, leadCityOficial);
 
     if (!resultado.success) {
+      if (resultado.error === 'CUOTA_DIARIA_EXCEDIDA') {
+        return res.status(429).json({
+          ok: false,
+          error: 'CUOTA_DIARIA_EXCEDIDA',
+          message: resultado.message || 'Has alcanzado la cuota de uso justo de 35 contactos diarios. Por seguridad y prevención de intermediación masiva, tu cuota se reiniciará mañana a las 00:00.',
+          credits: resultado.credits || 0
+        });
+      }
       if (resultado.error === 'PLAN_CIUDAD_DIFERENTE') {
         return res.status(403).json({
           ok: false,
@@ -300,6 +308,7 @@ function obtenerSaludoHorario(fecha = new Date()) {
       unlockedLeads: resultado.unlockedLeads,
       token: newToken,
       planBenefit: Boolean(resultado.planBenefit),
+      dailyUnlocksRemaining: resultado.dailyUnlocksRemaining,
       contacto: {
         telefono: rawTel || telefonoDisplay,
         telefonoDisplay: telefonoDisplay || rawTel,

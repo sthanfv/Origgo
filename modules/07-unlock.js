@@ -214,6 +214,10 @@ async function ejecutarDesbloqueoLead(lead, index) {
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
+      if (res.status === 429 || data.error === 'CUOTA_DIARIA_EXCEDIDA') {
+        mostrarNotificacionToast(`🛡️ ${data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.'}`, 'warning');
+        return;
+      }
       if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
         mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
         abrirModalCheckout(index, 'comprar');
@@ -256,7 +260,8 @@ async function ejecutarDesbloqueoLead(lead, index) {
     if (data.alreadyUnlocked) {
       mensajeExito = '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
     } else if (data.planBenefit) {
-      mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
+      const restHoy = typeof data.dailyUnlocksRemaining === 'number' ? ` (${data.dailyUnlocksRemaining} restantes hoy)` : '';
+      mensajeExito = `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
     } else {
       const palabraCredito = data.creditsRemaining === 1 ? 'crédito' : 'créditos';
       mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;

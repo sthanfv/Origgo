@@ -30,6 +30,7 @@ let cacheContactosDesbloqueados = {};
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
 let filtroTratoDirectoActivo = false;
+let filtroHoyActivo = false;
 let textoBusquedaActivo = "";
 let criterioOrdenActivo = "recientes";
 

@@ -1,10 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-12 22:35 (GMT-5)
+Última actualización: 2026-09-12 23:25 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-22. **Blindaje Anti-Dumping (Ctrl+P / @media print), Cuota de Uso Justo (Fair Usage 35/día) y Filtro Táctico "Captados Hoy"**:
+    - **Blindaje Anti-Dumping y Anti-Impresión (`styles/16-utilities.css`, `modules/00-security.js` e `index.html`):**
+      - Erradicado el riesgo crítico de extracción masiva del directorio mediante atajos de impresión o exportación a PDF (`Ctrl + P` / `Cmd + P`).
+      - En CSS (`@media print`), toda la cuadrícula, tarjetas interactivas y datos del portal se ocultan completamente (`display: none !important`), sustituyéndose por una hoja formal de documento protegido bajo la Ley 1581 de 2012 (Habeas Data de Colombia), señalando la trazabilidad forense activa del ledger y redireccionando al usuario a la sesión oficial en `origgo.online`.
+      - En JavaScript (`modules/00-security.js`), la función `inicializarProteccionAntiImpresion` intercepta los atajos de teclado (`Ctrl + P` / `Cmd + P`) con `preventDefault()` y emite una alerta toast informativa.
+    - **Política de Uso Justo (Fair Usage Policy - 35 Desbloqueos/Día) (`lib/db.js`, `api/leads/unlock.js` y `modules/07-unlock.js`):**
+      - Implementado un límite estricto de 35 desbloqueos nuevos por día calendario para cuentas con membresía ilimitada (Plan Nacional o Plan Ciudad).
+      - Si un usuario o scraper automatizado intenta superar los 35 desbloqueos en 24h, el backend rechaza la transacción con HTTP 429 (`CUOTA_DIARIA_EXCEDIDA`), protegiendo el catálogo contra revendedores o agencias piratas. Los inmuebles previamente desbloqueados pueden ser consultados ilimitadamente sin consumir cuota.
+      - La interfaz informa de forma transparente los contactos diarios restantes (`${dailyUnlocksRemaining} restantes hoy`) tras cada desbloqueo con plan.
+      - Creada suite unitaria automatizada en `tests/fair_usage_quota.test.js` e integrada en la Fase 5 de `scripts/validate.js`.
+    - **Filtro Rápido de Oportunidades "⚡ Captados Hoy" (`index.html`, `modules/01-state.js` y `modules/04-filters.js`):**
+      - Nuevo chip táctico `#cmdFilterToday` integrado en la barra de comandos flotante (`.cmd-filters-group`).
+      - Permite aislar con un solo clic los inmuebles captados en las últimas 24 horas (`Date.now() - timestamp_ms <= 86400000`), respondiendo a la demanda de compradores que buscan primicias del día.
+    - **Modularidad Desmulta (< 500 líneas por submódulo):**
+      - `modules/00-security.js`: 151 líneas (< 500)
+      - `modules/01-state.js`: 463 líneas (< 500)
+      - `modules/04-filters.js`: 401 líneas (< 500)
+      - `modules/07-unlock.js`: 314 líneas (< 500)
+      - `modules/10-listeners.js`: 484 líneas (< 500)
+      - `styles/16-utilities.css`: 256 líneas (< 500)
+    - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (0 errores).
 
 -21. **Automatización Integral de Cobros, Despacho Autónomo por Resend, Bóveda Transparente de Créditos y Auto-Reclamo de Pagos**:
     - **Despacho Autónomo y Recibo Oficial con PIN Maestro (`lib/email-templates.js` + `api/payments/webhook-wompi.js`):**

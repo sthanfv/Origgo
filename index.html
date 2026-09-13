@@ -195,6 +195,12 @@
             </div>
           </div>
         </div>
+
+        <!-- Filtro Rápido de Oportunidades del Día (Últimas 24h) -->
+        <button type="button" class="cmd-filter-pill" id="cmdFilterToday" title="Ver solo oportunidades captadas en las últimas 24 horas" aria-pressed="false">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Captados Hoy</span>
+        </button>
       </div>
       <div class="cmd-niche-group" id="nicheSwitcher">
         <button class="cmd-niche-tab active" data-dataset="./data/inmobiliario.json">
@@ -917,6 +923,30 @@
     </div>
   </aside>
   <div class="menu-overlay" id="sideMenuOverlay"></div>
+
+  <!-- 🛡️ AVISO OFICIAL ANTI-DUMPING / ANTI-IMPRESIÓN (LEY 1581 DE 2012) -->
+  <div id="printProtectionNotice" class="print-protection-notice" aria-hidden="true">
+    <div class="print-notice-box">
+      <div class="print-notice-header">
+        <span class="print-notice-badge">SEGURIDAD Y PRIVACIDAD ORIGGO</span>
+        <h2 class="print-notice-title">DOCUMENTO PROTEGIDO — LEY 1581 DE 2012</h2>
+      </div>
+      <p class="print-notice-lead">
+        Por protección constitucional de datos personales de los propietarios (Habeas Data) y prevención de intermediación inmobiliaria no autorizada, la impresión, exportación a PDF o extracción masiva de este catálogo está estrictamente restringida.
+      </p>
+      <div class="print-notice-card">
+        <p><strong>Uso Personal y Exclusivo:</strong> Los números telefónicos y datos de contacto directo de los inmuebles únicamente pueden ser consultados de forma individual por el titular de la cuenta autenticada.</p>
+        <p><strong>Trazabilidad Forense Activa:</strong> Cualquier redistribución masiva, comercialización o suministro de este directorio a terceras inmobiliarias o bases de datos externas vulnera las políticas de la plataforma y el Régimen General de Protección de Datos Personales de Colombia.</p>
+      </div>
+      <p class="print-notice-action">
+        Para consultar y negociar directamente con los propietarios de sus oportunidades desbloqueadas, acceda a su sesión oficial en:
+        <br><strong class="print-url">https://origgo.online</strong>
+      </p>
+      <div class="print-notice-footer">
+        <span>&copy; Origgo Intelligence &bull; Registro de Seguridad y Ledger Criptográfico Activo</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts Diferidos Anti-Bloqueo de Render -->
   <link rel="prefetch" href="https://checkout.wompi.co/widget.js" as="script">

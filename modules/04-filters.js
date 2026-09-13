@@ -147,6 +147,13 @@ function restablecerTodosLosFiltros() {
   textoBusquedaActivo = "";
   filtroCiudadActivo = "";
   filtroTratoDirectoActivo = false;
+  filtroHoyActivo = false;
+
+  const btnHoy = document.getElementById("cmdFilterToday");
+  if (btnHoy) {
+    btnHoy.classList.remove("active-filter");
+    btnHoy.setAttribute("aria-pressed", "false");
+  }
 
   const omnibox = document.getElementById("omniboxSearch");
   if (omnibox) omnibox.value = "";
@@ -289,10 +296,24 @@ function filtrarYOrdenarLeads(leads) {
       if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
     }
 
+    // C. Filtro Rápido de Oportunidades del Día (Últimas 24 horas)
+    if (filtroHoyActivo) {
+      const ahora = Date.now();
+      const UN_DIA_MS = 24 * 60 * 60 * 1000;
+      const ts = Number(item.timestamp_ms || 0);
+      const rel = String(item.fecha_relativa || '').toLowerCase();
+      const esDeHoy = (ts > 0 && (ahora - ts) <= UN_DIA_MS) ||
+        (Number(item.dias_en_mercado || 0) <= 1) ||
+        rel.includes('ahora') ||
+        rel.includes('min') ||
+        rel.includes('hora');
+      if (!esDeHoy) return false;
+    }
+
     return true;
   });
 
-  // C. Ordenamiento Dinámico
+  // D. Ordenamiento Dinámico
   if (criterioOrdenActivo === 'precio_m2_asc') {
     filtrados.sort((a, b) => {
       const m2A = Number(String(a.precio_m2 || '').replace(/\D/g, '')) || Infinity;
@@ -360,5 +381,20 @@ function inicializarBarraOrdenamiento() {
         pillSort.setAttribute("aria-expanded", "false");
       }
     }
+  });
+}
+
+/**
+ * Inicializa el botón de filtro rápido para oportunidades captadas en el día.
+ */
+function inicializarFiltroHoy() {
+  const btnHoy = document.getElementById("cmdFilterToday");
+  if (!btnHoy) return;
+
+  btnHoy.addEventListener("click", () => {
+    filtroHoyActivo = !filtroHoyActivo;
+    btnHoy.classList.toggle("active-filter", filtroHoyActivo);
+    btnHoy.setAttribute("aria-pressed", String(filtroHoyActivo));
+    aplicarFiltrosOmnibox();
   });
 }

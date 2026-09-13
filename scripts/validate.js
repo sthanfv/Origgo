@@ -263,6 +263,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de Cloudflare R2: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'fair_usage_quota.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de política de uso justo (35 desbloqueos/día) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de cuota de uso justo: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS
   // ═════════════════════════════════════════════════════════════════════════

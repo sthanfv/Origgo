@@ -132,6 +132,22 @@ function ejecutarConTransicionSuave(mutacionDOM) {
   return Promise.resolve(mutacionDOM());
 }
 
+/**
+ * Intercepta y neutraliza atajos de teclado de impresión masiva (Ctrl+P / Cmd+P)
+ * para proteger los datos de contacto de los propietarios conforme a la Ley 1581 de 2012.
+ */
+function inicializarProteccionAntiImpresion() {
+  if (typeof window === 'undefined') return;
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+      e.preventDefault();
+      if (typeof mostrarNotificacionToast === 'function') {
+        mostrarNotificacionToast('🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.', 'warning');
+      }
+    }
+  });
+}
+
 
 
 /**
@@ -166,6 +182,7 @@ let cacheContactosDesbloqueados = {};
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
 let filtroTratoDirectoActivo = false;
+let filtroHoyActivo = false;
 let textoBusquedaActivo = "";
 let criterioOrdenActivo = "recientes";
 
@@ -1117,6 +1134,13 @@ function restablecerTodosLosFiltros() {
   textoBusquedaActivo = "";
   filtroCiudadActivo = "";
   filtroTratoDirectoActivo = false;
+  filtroHoyActivo = false;
+
+  const btnHoy = document.getElementById("cmdFilterToday");
+  if (btnHoy) {
+    btnHoy.classList.remove("active-filter");
+    btnHoy.setAttribute("aria-pressed", "false");
+  }
 
   const omnibox = document.getElementById("omniboxSearch");
   if (omnibox) omnibox.value = "";
@@ -1259,10 +1283,24 @@ function filtrarYOrdenarLeads(leads) {
       if (!coincideBusquedaInteligente(itemSearchText, textoBusquedaActivo)) return false;
     }
 
+    // C. Filtro Rápido de Oportunidades del Día (Últimas 24 horas)
+    if (filtroHoyActivo) {
+      const ahora = Date.now();
+      const UN_DIA_MS = 24 * 60 * 60 * 1000;
+      const ts = Number(item.timestamp_ms || 0);
+      const rel = String(item.fecha_relativa || '').toLowerCase();
+      const esDeHoy = (ts > 0 && (ahora - ts) <= UN_DIA_MS) ||
+        (Number(item.dias_en_mercado || 0) <= 1) ||
+        rel.includes('ahora') ||
+        rel.includes('min') ||
+        rel.includes('hora');
+      if (!esDeHoy) return false;
+    }
+
     return true;
   });
 
-  // C. Ordenamiento Dinámico
+  // D. Ordenamiento Dinámico
   if (criterioOrdenActivo === 'precio_m2_asc') {
     filtrados.sort((a, b) => {
       const m2A = Number(String(a.precio_m2 || '').replace(/\D/g, '')) || Infinity;
@@ -1330,6 +1368,21 @@ function inicializarBarraOrdenamiento() {
         pillSort.setAttribute("aria-expanded", "false");
       }
     }
+  });
+}
+
+/**
+ * Inicializa el botón de filtro rápido para oportunidades captadas en el día.
+ */
+function inicializarFiltroHoy() {
+  const btnHoy = document.getElementById("cmdFilterToday");
+  if (!btnHoy) return;
+
+  btnHoy.addEventListener("click", () => {
+    filtroHoyActivo = !filtroHoyActivo;
+    btnHoy.classList.toggle("active-filter", filtroHoyActivo);
+    btnHoy.setAttribute("aria-pressed", String(filtroHoyActivo));
+    aplicarFiltrosOmnibox();
   });
 }
 
@@ -2196,6 +2249,10 @@ async function ejecutarDesbloqueoLead(lead, index) {
 
     const data = await res.json();
     if (!res.ok || !data.ok) {
+      if (res.status === 429 || data.error === 'CUOTA_DIARIA_EXCEDIDA') {
+        mostrarNotificacionToast(`🛡️ ${data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.'}`, 'warning');
+        return;
+      }
       if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
         mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
         abrirModalCheckout(index, 'comprar');
@@ -2238,7 +2295,8 @@ async function ejecutarDesbloqueoLead(lead, index) {
     if (data.alreadyUnlocked) {
       mensajeExito = '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
     } else if (data.planBenefit) {
-      mensajeExito = '👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!';
+      const restHoy = typeof data.dailyUnlocksRemaining === 'number' ? ` (${data.dailyUnlocksRemaining} restantes hoy)` : '';
+      mensajeExito = `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
     } else {
       const palabraCredito = data.creditsRemaining === 1 ? 'crédito' : 'créditos';
       mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
@@ -3717,6 +3775,8 @@ function configurarListeners() {
   });
 
   if (typeof inicializarBarraOrdenamiento === 'function') inicializarBarraOrdenamiento();
+  if (typeof inicializarFiltroHoy === 'function') inicializarFiltroHoy();
+  if (typeof inicializarProteccionAntiImpresion === 'function') inicializarProteccionAntiImpresion();
 }
 
 // ═════════════════════════════════════════════════════════════════════════

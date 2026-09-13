@@ -132,3 +132,19 @@ function ejecutarConTransicionSuave(mutacionDOM) {
   return Promise.resolve(mutacionDOM());
 }
 
+/**
+ * Intercepta y neutraliza atajos de teclado de impresión masiva (Ctrl+P / Cmd+P)
+ * para proteger los datos de contacto de los propietarios conforme a la Ley 1581 de 2012.
+ */
+function inicializarProteccionAntiImpresion() {
+  if (typeof window === 'undefined') return;
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+      e.preventDefault();
+      if (typeof mostrarNotificacionToast === 'function') {
+        mostrarNotificacionToast('🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.', 'warning');
+      }
+    }
+  });
+}
+
