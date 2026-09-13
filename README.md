@@ -48,9 +48,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax sin reflow y temas |
 | **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
 | **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
-| **Alertas Web Push nativas PWA (Cero variables)** | [`modules/12-push.js`](modules/12-push.js) | `activarNotificacionesPush()`, `inicializarBotonPush()` |
-| **Clave pública VAPID dinámica** | [`api/notifications/vapid-public-key.js`](api/notifications/vapid-public-key.js) | GET clave pública sin quemar tokens en frontend |
-| **Registro de suscripciones Push** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | POST registro de endpoints y claves W3C Push |
+| **Alertas Web Push y Clave VAPID** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | GET clave pública VAPID y POST suscripciones W3C |
 | **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
 | **Persistencia y deduplicación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido Firestore/local y hash SHA-256 |
 | **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |

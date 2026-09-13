@@ -1,10 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 00:04 (GMT-5)
+Última actualización: 2026-09-13 00:52 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-25. **Resolución Crítica de Fallo de Despliegue en Vercel (Límite Estricto de 12 Funciones en Plan Hobby)**:
+    - **Diagnóstico Forense de la Causa Raíz:**
+      - El usuario reportó que los despliegues de Vercel fallaban sistemáticamente en GitHub (`All checks have failed — Vercel Deployment has failed`).
+      - Una auditoría histórica determinó que el commit `573444a` fue el último exitoso y que los fallos comenzaron exactamente en `8fcba2d`.
+      - **Causa Raíz:** El plan Hobby (gratuito) de Vercel impone un límite máximo inflexible de **12 Serverless Functions por despliegue**. En `573444a` el repositorio tenía exactamente 12 funciones. Al añadir `api/telemetry/report.js` (Perro Guardián), el conteo subió a 13 funciones, provocando que Vercel rechazara de inmediato cualquier intento de despliegue con HTTP 400 (`Hobby plan serverless function limit exceeded`).
+    - **Consolidación Arquitectónica Zero-Breaking de Endpoints:**
+      1. **Consolidación de Notificaciones Web Push (`api/notifications/subscribe.js`):**
+         - Se fusionó la entrega dinámica de la clave pública VAPID (GET) y el registro de suscripciones W3C (POST) en un único endpoint multiplexado `api/notifications/subscribe.js`.
+         - Se eliminó el archivo físico `api/notifications/vapid-public-key.js` (-1 función).
+      2. **Consolidación de Verificación de Pasarela Wompi (`api/payments/create-order.js`):**
+         - Se fusionó la verificación server-to-server de transacciones Wompi (GET) y la generación de órdenes con firma SHA-256 (POST) dentro de `api/payments/create-order.js`.
+         - Se eliminó el archivo físico `api/payments/verify.js` (-1 función).
+      3. **Enrutamiento Transparente mediante Rewrites (`vercel.json`):**
+         - Añadidas reglas de `rewrites` para redirigir `/api/notifications/vapid-public-key` hacia `/api/notifications/subscribe` y `/api/payments/verify` hacia `/api/payments/create-order`. Cero roturas para clientes web o cachés previas.
+      4. **Reducción de Funciones Serverless:** Conteo total reducido de 13 a **11 funciones activas**, garantizando despliegues verdes inmediatos en Vercel Hobby con margen de holgura.
+    - **DevSecOps:** Actualizada la suite `tests/web_push.test.js` y `scripts/validate.js`. Las 8 fases de validación pasaron con 100% de éxito (0 errores).
 
 -24. **Corrección Visual Integral Móvil, Regeneración de Assets de Marca a Alta Resolución, Restauración de FontAwesome y Modal Push**:
     - **Diagnóstico y Regeneración Cristalina de Assets de Marca (`scratch/regenerate_assets.js`):**

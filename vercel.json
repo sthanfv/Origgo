@@ -1,6 +1,16 @@
 {
   "buildCommand": "node scripts/build.js",
   "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/api/notifications/vapid-public-key",
+      "destination": "/api/notifications/subscribe"
+    },
+    {
+      "source": "/api/payments/verify",
+      "destination": "/api/payments/create-order"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

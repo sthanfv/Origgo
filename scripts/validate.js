@@ -47,7 +47,6 @@ async function ejecutarValidacionCompleta() {
     'api/leads/unlock.js',
     'api/user/balance.js',
     'api/media/proxy.js',
-    'api/notifications/vapid-public-key.js',
     'api/notifications/subscribe.js',
     'api/notifications/dispatch.js',
     'api/security/honeypot.js',

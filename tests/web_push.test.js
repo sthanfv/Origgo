@@ -13,7 +13,6 @@ const test = require('node:test');
 const assert = require('node:assert');
 require('../lib/env');
 
-const vapidKeyHandler = require('../api/notifications/vapid-public-key');
 const subscribeHandler = require('../api/notifications/subscribe');
 const dispatchHandler = require('../api/notifications/dispatch');
 const { hashEndpoint, registrarSuscripcion, obtenerSuscripcionesActivas } = require('../lib/push-subscriptions');
@@ -55,20 +54,20 @@ function mockReqRes(options = {}) {
 }
 
 test('Suite DevSecOps Web Push PWA (VAPID)', async (t) => {
-  await t.test('1. Endpoint vapid-public-key debe entregar la clave pública y bloquear métodos no GET', async () => {
-    // Prueba GET válido
+  await t.test('1. Endpoint subscribe (GET) debe entregar la clave pública y bloquear métodos no soportados', async () => {
+    // Prueba GET válido (clave pública VAPID)
     const { req, res } = mockReqRes({ method: 'GET' });
-    await vapidKeyHandler(req, res);
+    await subscribeHandler(req, res);
     
     assert.strictEqual(res.getStatusCode(), 200);
     const data = res.getData();
     assert.strictEqual(data.ok, true);
     assert.ok(typeof data.publicKey === 'string' && data.publicKey.length > 30);
 
-    // Prueba método POST rechazado
-    const { req: reqPost, res: resPost } = mockReqRes({ method: 'POST' });
-    await vapidKeyHandler(reqPost, resPost);
-    assert.strictEqual(resPost.getStatusCode(), 405);
+    // Prueba método no soportado (ej. PUT) rechazado
+    const { req: reqPut, res: resPut } = mockReqRes({ method: 'PUT' });
+    await subscribeHandler(reqPut, resPut);
+    assert.strictEqual(resPut.getStatusCode(), 405);
   });
 
   await t.test('2. Endpoint subscribe debe validar el formato W3C Push API', async () => {
