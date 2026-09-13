@@ -253,7 +253,7 @@ function renderizarInterfaz(dataset) {
   const startIndex = (paginaActual - 1) * limiteVisible, endIndex = startIndex + limiteVisible;
   const leadsVisibles = leadsFiltrados.slice(startIndex, endIndex);
 
-  let htmlContenido = leadsVisibles.map((item) => {
+  let htmlContenido = leadsVisibles.map((item, visibleIdx) => {
     const index = dataset.leads.indexOf(item), claseUrgencia = item.urgencia_tipo || "urgente";
     const imgUrl = item.imagen || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80";
     const tieneMultiplesFotos = Array.isArray(item.imagenes) && item.imagenes.length > 1;
@@ -262,13 +262,13 @@ function renderizarInterfaz(dataset) {
     let mediaHtml = '';
     if (tieneMultiplesFotos) {
       mediaHtml = `<div class="carousel-track" id="carousel-${index}">
-        ${fotos.map((foto, fIdx) => `<div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}"><img ${fIdx === 0 ? `src="${escaparHtml(foto)}"` : `data-src="${escaparHtml(foto)}"`} alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" ${index < 3 && fIdx === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" /></div>`).join('')}
+        ${fotos.map((foto, fIdx) => `<div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}"><img ${fIdx === 0 ? `src="${escaparHtml(foto)}"` : `data-src="${escaparHtml(foto)}"`} alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" ${visibleIdx < 3 && fIdx === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" /></div>`).join('')}
         <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="${isEn ? 'Previous photo' : 'Foto Anterior'}"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="carousel-nav-btn next" data-action="carrusel-next" data-index="${index}" data-total="${fotos.length}" title="${isEn ? 'Next photo' : 'Siguiente Foto'}"><i class="fa-solid fa-chevron-right"></i></button>
         <div class="carousel-dots" id="dots-${index}">${fotos.map((_, fIdx) => `<span class="carousel-dot ${fIdx === 0 ? 'active' : ''}" data-dot="${fIdx}"></span>`).join('')}</div>
       </div>`;
     } else {
-      mediaHtml = `<img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 3 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" />`;
+      mediaHtml = `<img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${visibleIdx < 3 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" />`;
     }
 
     const detalles = item.detalles || { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", "Ubicación": item.ubicacion || "Colombia", "Tipo": item.tipo_inmueble || "Propiedad Residencial", "Operación": "Venta Directa con Propietario" };

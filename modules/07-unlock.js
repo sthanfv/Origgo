@@ -243,6 +243,7 @@ async function ejecutarDesbloqueoLead(lead, index) {
     sesionUsuario.credits = data.creditsRemaining;
     if (data.token) {
       localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
       sesionUsuario.token = data.token;
     }
     if (Array.isArray(data.unlockedLeads)) {

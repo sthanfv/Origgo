@@ -62,6 +62,7 @@ async function inicializarSesionUsuario() {
         throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
       }
       localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
       sesionUsuario = { ...data.user, token: data.token };
       delete sesionUsuario.pin;
       actualizarBadgeVip();
@@ -72,6 +73,7 @@ async function inicializarSesionUsuario() {
       return;
     } catch (e) {
       localStorage.removeItem('hunter_pro_token');
+      if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
       sesionUsuario = null;
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
       mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Recovery' : 'Recuperación no válida', duration: 7000 });
@@ -116,6 +118,7 @@ async function inicializarSesionUsuario() {
       }
       if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
+        if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
         localStorage.removeItem('origgo_pending_ref');
         const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
@@ -138,7 +141,7 @@ async function inicializarSesionUsuario() {
   }
 
   // 2. Revalidar sesión persistente en segundo plano desde el servidor
-  const tokenGuardado = localStorage.getItem('hunter_pro_token');
+  const tokenGuardado = (sesionUsuario && sesionUsuario.token) || localStorage.getItem('hunter_pro_token') || (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_token') : null);
   if (tokenGuardado) {
     try {
       const res = await fetch('/api/user/balance', {

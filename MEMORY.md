@@ -1,10 +1,40 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 11:15 (GMT-5)
+Última actualización: 2026-09-13 11:45 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-46. **Auditoría Forense Exhaustiva de Fases 1, 2 y 3 (Frontend y Backend): Corrección de Envenenamiento de Caché en Idempotencia, Extracción Case-Insensitive de Headers, Resiliencia Transaccional Firestore, Sincronización Continua de Cookies y Optimización Eager LCP**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Envenenamiento de caché en errores de negocio (Fase 3):* En `lib/idempotency.js`, si `operacionAsync()` fallaba por un error de validación de negocio (ej. código 402 por saldo insuficiente en desbloqueo), el resultado erróneo quedaba cacheado en Redis durante 120-300s. Si el usuario recargaba saldo de inmediato, seguía recibiendo el error cacheado sin poder desbloquear el contacto.
+      2. *Sensibilidad a mayúsculas en headers HTTP (Fase 3):* Proxies intermedios, CDNs o navegadores normalizan a veces los nombres de cabeceras HTTP a minúsculas o formato PascalCase. En `api/payments/create-order.js` y `api/leads/unlock.js` solo se buscaba `headers['idempotency-key']`.
+      3. *Omisión de preferencias en login con PIN (Fase 2):* En `api/auth/session.js` (login vía WhatsApp + PIN), el payload de usuario devuelto al cliente no incluía `preferredLang` ni `preferredTheme`, impidiendo que el frontend hidratara el idioma del usuario tras autenticarse por credenciales.
+      4. *Riesgo de condición de carrera en Firestore (Fase 2):* En `lib/db.js` (`updateUserPreferences`), la actualización realizaba `userRef.set(updatedUser)` completo en vez de un merge atómico, arriesgando sobreescribir créditos o leads desbloqueados si ocurría un evento concurrente.
+      5. *Desincronización de cookie de sesión `origgo_token` (Fase 2):* Al refrescar token en desbloqueos (`modules/07-unlock.js`), en reclamos tras pago (`modules/08-checkout.js`) o en recovery links (`modules/01-state.js`), solo se actualizaba `localStorage`, dejando la cookie segura desfasada.
+      6. *Prioridad de imágenes eager desfasada al filtrar (Fase 1):* En `modules/06-cards.js`, la prioridad de carga evaluaba `index < 3` (índice absoluto en el catálogo global). Al aplicar filtros de ciudad o búsquedas, las tarjetas resultantes visibles podían tener índices globales mayores a 2, perdiendo el atributo `fetchpriority="high"` y `loading="eager"`.
+    - **Solución Implementada:**
+      1. **Idempotencia Limpia en Negocio (`lib/idempotency.js`):**
+         - Si `operacionAsync()` retorna `{ esError: true }` o `{ noCachear: true }`, se libera inmediatamente el bloqueo y NO se guarda en Redis.
+         - En la cola de espera de solicitudes concurrentes, antes de reintentar la operación, se re-verifica `obtenerResultadoIdempotente(clave)` para devolver la respuesta ya calculada por el líder.
+      2. **Extracción Robusta de Cabeceras (`api/payments/create-order.js`, `api/leads/unlock.js`):**
+         - Búsqueda segura en `headers['idempotency-key'] || headers['Idempotency-Key'] || headers['IDEMPOTENCY-KEY']`.
+      3. **Payload Completo en Autenticación (`api/auth/session.js`):**
+         - Se integró `payloadUsuarioPublico(user)` en el login por PIN, asegurando la transmisión de `preferredLang` y `preferredTheme`.
+      4. **Actualización Atómica en Base de Datos (`lib/db.js`):**
+         - `updateUserPreferences` aplica `await userRef.set(updates, { merge: true })`, garantizando la integridad de saldos y membresías.
+      5. **Sincronización Total de Cookies Seguras (`modules/01-state.js`, `modules/07-unlock.js`, `modules/08-checkout.js`):**
+         - `guardarCookieSegura('origgo_token', token, 30)` se dispara automáticamente en todo refresco o adquisición de token.
+         - Recuperación resiliente en arranque: evalúa `sesionUsuario?.token` $\rightarrow$ `localStorage` $\rightarrow$ cookie segura `origgo_token`.
+      6. **LCP Prioritario según Viewport Real (`modules/06-cards.js`):**
+         - `leadsVisibles.map((item, visibleIdx) => ...)` evalúa `visibleIdx < 3` para aplicar `fetchpriority="high" loading="eager"` exactamente a las 3 primeras tarjetas en pantalla independientemente de filtros o paginación.
+      7. **Modularidad Desmulta (< 500 líneas):**
+         - Se eliminó la función redundante `generarIdempotencyKeyPago()` en `modules/08-checkout.js` (ahora usa `generarUUIDv4()`).
+         - Conteo auditado: los 14 módulos JS y 18 CSS permanecen estrictamente bajo el límite de 500 líneas.
+      8. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -45. **Fase 2 (Frontend y Backend): Sincronización Automática de Idioma (`preferredLang`) y Tema (`preferredTheme`) en la Sesión de Usuario, Persistencia Dual en Cookies Seguras (`SameSite=Lax`) y Ledger en Firestore**:
     - **Diagnóstico y Causa Raíz:**

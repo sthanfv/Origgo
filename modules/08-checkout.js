@@ -7,17 +7,6 @@
 
 let pagoWompiEnProgreso = false;
 
-function generarIdempotencyKeyPago() {
-  const c = window.crypto || window.msCrypto;
-  if (c?.randomUUID) return c.randomUUID();
-  if (!c?.getRandomValues) throw new Error('Navegador incompatible para pagos seguros.');
-  const b = new Uint8Array(16);
-  c.getRandomValues(b);
-  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
-  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
-}
-
 /**
  * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
  */
@@ -257,6 +246,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
       if (claimRes.ok && claimData?.ok && claimData?.token) {
         localStorage.setItem('hunter_pro_token', claimData.token);
+        if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', claimData.token, 30);
         localStorage.removeItem('origgo_pending_ref');
         const pinNuevo = claimData.user?.pin || null;
         sesionUsuario = { ...claimData.user, token: claimData.token };
@@ -371,7 +361,7 @@ async function ejecutarPagoWompi() {
 
   try {
     pagoWompiEnProgreso = true;
-    idempotencyKey = generarIdempotencyKeyPago();
+    idempotencyKey = typeof generarUUIDv4 === 'function' ? generarUUIDv4() : (window.crypto?.randomUUID?.() || '');
     const headersOrden = {
       'Content-Type': 'application/json',
       'Idempotency-Key': idempotencyKey

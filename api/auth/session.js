@@ -337,14 +337,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       token,
-      user: {
-        phone: user.phone,
-        credits: user.credits,
-        plan: user.plan,
-        planCity: user.planCity,
-        planExpiresAt: user.planExpiresAt,
-        unlockedLeads: user.unlockedLeads || []
-      }
+      user: payloadUsuarioPublico(user)
     });
   } catch (err) {
     console.error('[session] Error interno:', err);
