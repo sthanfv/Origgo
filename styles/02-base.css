@@ -21,7 +21,52 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  position: relative;
   cursor: pointer;
+  user-select: none;
+}
+
+/* Halo de Luz Esmeralda Viva (Ambient Glow de Alta Inversión) */
+.brand-badge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%;
+  height: 130%;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(10, 159, 104, 0.28) 0%,
+    rgba(16, 185, 129, 0.1) 45%,
+    transparent 75%
+  );
+  border-radius: 50%;
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+  animation: prestigeAmbientAura 6s ease-in-out infinite;
+}
+
+[data-theme="light"] .brand-badge::before {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(4, 120, 87, 0.16) 0%,
+    rgba(16, 185, 129, 0.06) 50%,
+    transparent 75%
+  );
+  filter: blur(8px);
+}
+
+@keyframes prestigeAmbientAura {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
 }
 
 .brand-logo-container {
@@ -48,89 +93,110 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   CINÉTICA VECTORIAL DEL ISOTIPO HUNTER PRO
-   Instrumentación Táctica Autónoma y Continua (Ciclo de 6s)
-   - Corrección estricta de transform-box: view-box para rotación perfectamente centrada en móviles
-   - Giro continuo en sentido horario del anillo de sonar (12s)
-   - Calibración sincronizada de puntas cardinales, anillos y núcleo visible sin requerir hover
+   CINÉTICA DE ALTA FINANZA Y BIENES RAÍCES (ORIGGO)
+   - Destello de cristal líquido (Liquid Light Sheen)
+   - Pulso táctico de radar en el compás de la 'O'
+   - Respiración lumínica y micro-interacción de grado suizo
    ═══════════════════════════════════════════════════ */
-
-/* Todos los elementos móviles del SVG referencian la caja de vista oficial (0 0 100 100) */
-.radar-sonar-ring,
-.radar-ring-mid,
-.radar-ring-inner,
-.cardinal-pointer,
-.pointer-north,
-.pointer-south,
-.pointer-west,
-.pointer-east,
-.radar-core-lens {
-  transform-box: view-box;
-  transform-origin: 50px 50px;
-  will-change: transform, filter, stroke-opacity;
-}
-
-/* 1. Anillo Isotipo Origgo: Respiración Lumínica Áurea */
-.radar-sonar-ring {
-  animation: animOriggoAura 5s ease-in-out infinite;
-}
-
-@keyframes animOriggoAura {
-  0%, 100% {
-    opacity: 0.65;
-    transform: scale(0.99);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.01);
-  }
-}
-
-/* 2. Puntos Cardinales de Enfoque */
-.pointer-north, .pointer-south, .pointer-west, .pointer-east {
-  opacity: 0.85;
-  transition: opacity 0.3s ease;
-}
-
-/* 3. Anillos Concéntricos Medios */
-.radar-ring-mid {
-  opacity: 0.9;
-}
-
-.radar-ring-inner {
-  opacity: 0.95;
-}
-
-/* 4. Núcleo Óptico de Origen */
-.radar-core-lens {
-  animation: animOriggoCore 5s ease-in-out infinite;
-}
-
-@keyframes animOriggoCore {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-
-.brand-text-block {
-  display: flex;
-  align-items: center;
-  line-height: 1;
-}
 
 .brand-title {
   margin: 0;
-  padding: 0;
+  padding: 0.2rem 0.5rem;
   display: inline-flex;
   align-items: center;
   line-height: 1;
   cursor: pointer;
   user-select: none;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+/* Destello metálico diagonal de cristal de alta gama */
+.brand-title::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -130%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(52, 211, 153, 0.35) 55%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent 100%
+  );
+  transform: rotate(22deg);
+  pointer-events: none;
+  animation: prestigeSheenSweep 6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  mix-blend-mode: screen;
+}
+
+[data-theme="light"] .brand-title::after {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(16, 185, 129, 0.25) 55%,
+    rgba(255, 255, 255, 0.15) 70%,
+    transparent 100%
+  );
+  mix-blend-mode: overlay;
+}
+
+@keyframes prestigeSheenSweep {
+  0%, 55% {
+    left: -130%;
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  80% {
+    left: 170%;
+    opacity: 1;
+  }
+  81%, 100% {
+    left: 170%;
+    opacity: 0;
+  }
+}
+
+/* Pulso de onda de radar táctico en la 'O' de Origgo */
+.brand-title::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 1.1rem;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(10, 159, 104, 0.65);
+  opacity: 0;
+  pointer-events: none;
+  animation: radarSonarPing 4.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radarSonarPing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.65);
+    opacity: 0.8;
+    box-shadow: 0 0 8px rgba(10, 159, 104, 0.5);
+  }
+  50% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.55);
+    opacity: 0;
+    box-shadow: 0 0 16px rgba(10, 159, 104, 0);
+  }
 }
 
 .brand-logo-img {
@@ -139,14 +205,15 @@
   max-width: 140px;
   display: block;
   object-fit: contain;
-  filter: none;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+  filter: drop-shadow(0 2px 8px rgba(10, 159, 104, 0.22));
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.28s ease;
+  will-change: transform, filter;
 }
 
 .brand-badge:hover .brand-logo-img,
 .brand-title:hover .brand-logo-img {
-  transform: scale(1.04);
-  filter: drop-shadow(0 0 10px rgba(10, 159, 104, 0.35));
+  transform: translateY(-1px) scale(1.03);
+  filter: drop-shadow(0 4px 14px rgba(10, 159, 104, 0.55)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
 /* Compatibilidad retroactiva */

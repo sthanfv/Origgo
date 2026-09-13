@@ -1,10 +1,40 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 01:26 (GMT-5)
+Última actualización: 2026-09-13 01:55 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-27. **Sistema Bilingüe Internacional (ES / EN) con Transiciones Suaves Nativas (View Transitions API), Conversión Referencial USD y Elevación de Animación de Cabecera de Alto Prestigio**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario solicitó habilitar el soporte bilingüe (Español e Inglés) de manera fluida y sedosa, idéntica a la experiencia de transiciones de vista de Astro mostrada en el video de referencia, sin recargas de página, sin parpadeos y sin llamadas pesadas al backend (manteniendo las 11 funciones serverless en Vercel Hobby).
+      2. Al unificar previamente el logotipo corporativo como vector `.svg` externo, se había perdido la vida y dinamismo en la cabecera. El usuario exigió recuperar la animación y elevar la estética visual para reflejar "el nivel de dinero que refleja en sus oportunidades de negocios (verse y sentirse premium)".
+      3. Para inversionistas internacionales, los precios en pesos colombianos carecían de referencia internacional inmediata, limitando el atractivo del producto.
+    - **Solución Implementada:**
+      1. **Módulo de Internacionalización Desacoplado (`modules/13-i18n.js`, 419 líneas < 500):**
+         - Diccionario centralizado de ultra alto rendimiento en español e inglés sin dependencias externas.
+         - Conmutador de idioma `cambiarIdioma(nuevoIdioma)` que encapsula la mutación del DOM dentro de `ejecutarConTransicionSuave()`, activando la **View Transitions API nativa de W3C** acelerada por GPU (`::view-transition-old(root)` / `::view-transition-new(root)`), logrando un cross-fade sedoso imperceptible idéntico a Astro.
+         - Conversión financiera automática a dólares estadounidenses referenciales (`calcularReferenciaUSD`) con formato de alta gama (`≈ $109,750 USD` en inglés y `~$109,750 USD` en español), inyectada de forma no invasiva en cada tarjeta Bento (`.card-price-usd`).
+         - Observador reactivo `MutationObserver` sobre el contenedor de la grilla que sincroniza automáticamente las equivalencias en USD y textos de tarjetas sin inflar `modules/06-cards.js`.
+         - Traducción contextual inmersiva del slide-up drawer (`traducirSlideupDrawer`) al abrir la ficha de cualquier propiedad.
+         - Persistencia de preferencia de idioma en `localStorage` con detección automática del navegador.
+      2. **Estilos de Internacionalización y Selector de Cristal (`styles/18-i18n.css`, 192 líneas < 500):**
+         - Selector minimalista de cristal arquitectónico `.lang-switch` en cabecera desktop y móvil con banderas de alta definición (`🇨🇴 ES` | `🇺🇸 EN`), `backdrop-filter: blur(12px)` y micro-interacciones suaves.
+         - Selector complementario en el menú lateral off-canvas (`.side-lang-switch`).
+         - Tipografía de alta fidelidad para el valor referencial USD en tarjetas (`.card-price-usd`).
+      3. **Cinemática de Cabecera de Alta Finanza y Prestigio Inmobiliario (`styles/02-base.css`):**
+         - **Aura Lumínica Esmeralda Viva (`prestigeAmbientAura`):** Halo ambiental respirante detrás del logotipo en ciclos de 6 segundos, otorgando una presencia magnética y viva de joya esmeralda.
+         - **Destello Líquido de Cristal (*Prestige Sheen Sweep*):** Destello diagonal metálico de luz blanca y reflejos esmeralda que recorre suavemente el logotipo cada 6 segundos (`@keyframes prestigeSheenSweep`), transmitiendo la solidez de una terminal financiera de alta gama (Bloomberg / Stripe Climate).
+         - **Pulso de Radar Táctico en el Compás de la 'O' (`radarSonarPing`):** Ondas concéntricas suaves que nacen del compás de localización, simbolizando la detección de oportunidades en tiempo real.
+         - **Micro-interacción al Hover / Tap:** Elevación táctil elástica `scale(1.03)` con encendido inmediato del resplandor esmeralda.
+      4. **Marcado HTML y Accesibilidad (`index.html`):**
+         - Integración de atributos `data-i18n`, `data-i18n-ph`, `data-i18n-title` en hero, omnibox, filtros, modales y footer.
+         - Selector de idioma en barra de navegación y menú lateral.
+    - **DevSecOps:**
+      - Build modular ejecutado con éxito (`node scripts/build.js`): ensamblados 14 módulos JS y 18 módulos CSS.
+      - Suite de 8 fases (`node scripts/validate.js`): 100% aprobada (0 errores).
+      - Todos los archivos cumplen estrictamente la cota Desmulta (< 500 líneas). Conteo serverless inalterado (11 funciones en Vercel Hobby).
 
 -26. **Unificación y Nitidez de Logotipo Oficial en Header, Footer y Menú Lateral, Erradicación de Jerga Residual y Optimización de Interacción**:
     - **Diagnóstico y Causa Raíz:** Se había fragmentado la identidad de marca dividiendo la inicial "O" como imagen rasterizada independiente (`origgo-icon.svg`) y las letras "riggo" como spans de texto HTML. Esto producía un espaciado desalineado, tipografía genérica y una silueta oscura casi imperceptible sobre fondos oscuros.

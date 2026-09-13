@@ -48,6 +48,8 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax sin reflow y temas |
 | **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
 | **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
+| **Suscripción y modal Web Push** | [`modules/12-push.js`](modules/12-push.js) | Manejador de notificaciones push en cliente |
+| **Sistema bilingüe y conversión USD** | [`modules/13-i18n.js`](modules/13-i18n.js) | View Transitions API, diccionario ES/EN y USD |
 | **Alertas Web Push y Clave VAPID** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | GET clave pública VAPID y POST suscripciones W3C |
 | **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
 | **Persistencia y deduplicación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido Firestore/local y hash SHA-256 |
@@ -66,9 +68,9 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 hunter-portal-showcase/
 ├── index.html                  # Maquetación principal con Bento Grid y Modal de Checkout
 ├── style.css                   # Hoja de estilos ensamblada deterministamente
-├── style.min.css               # Hoja de estilos compilada y balanceada (103.2 KB, -27%)
+├── style.min.css               # Hoja de estilos compilada y balanceada (120 KB)
 ├── app.js                      # Controlador orquestador del frontend
-├── app.min.js                  # Script compilado y minificado (-13%)
+├── app.min.js                  # Script compilado y minificado (179 KB)
 ├── config.js                   # Configuración y llaves públicas de cliente
 ├── dist/                       # Paquete público generado por build e ignorado por Git
 ├── package.json                # Dependencias, scripts de build y tests
@@ -89,11 +91,13 @@ hunter-portal-showcase/
 │   ├── 08-checkout.js          # Modal de pago, idempotencia y widget Wompi
 │   ├── 09-ui-effects.js        # Háptica táctil, ondas ripple, parallax GPU y temas
 │   ├── 10-listeners.js         # Event listeners del DOM, atajos de teclado y arranque
-│   └── 11-welcome.js           # Modal de bienvenida y experiencia inicial
+│   ├── 11-welcome.js           # Modal de bienvenida y experiencia inicial
+│   ├── 12-push.js              # Manejo en cliente de notificaciones Web Push y permisos
+│   └── 13-i18n.js              # Sistema bilingüe sin parpadeo (ES/EN) y conversión USD
 ├── styles/                     # Módulos CSS especializados (< 500 líneas)
 │   ├── 01-tokens.css           # Fuentes y tokens de diseño HSL
-│   ├── 02-base.css             # Reseteo y tipografía global
-│   ├── 03-header.css           # Cabecera institucional y branding
+│   ├── 02-base.css             # Reseteo, tipografía y branding con cinemática de prestigio
+│   ├── 03-header.css           # Cabecera institucional, botón VIP y estado
 │   ├── 04-command-bar.css      # Barra táctica y omnibox
 │   ├── 05-hero.css             # Hero en cápsula y cinta editorial
 │   ├── 06-bento-grid.css       # Contenedor Bento Grid
@@ -106,7 +110,9 @@ hunter-portal-showcase/
 │   ├── 13-footer.css           # Footer institucional y legal
 │   ├── 14-toast.css            # Notificaciones toast con ambient glow
 │   ├── 15-welcome-modal.css    # Modal inicial de bienvenida
-│   └── 16-utilities.css        # Utilidades visuales finales sin estilos embebidos
+│   ├── 16-utilities.css        # Transiciones View Transitions y anti-print
+│   ├── 17-push-modal.css       # Modal sugestivo de radar push en tiempo real
+│   └── 18-i18n.css             # Selector de idiomas de cristal y precio referencial USD
 ├── lib/                        # Librerías privadas compartidas por funciones serverless
 │   ├── cors.js                 # CORS estricto para API e idempotencia
 │   ├── crypto.js               # Cifrado AES-256-GCM, tokens JWT y comparación constante

@@ -90,9 +90,22 @@
       </div>
 
       <div class="nav-actions">
-        <button class="btn-vip-header" id="btnVipHeader" title="Ver Créditos y Planes" aria-label="Ver créditos y planes">
+        <!-- Selector Bilingüe ES / EN de Precisión Glassmorphic -->
+        <div class="lang-switch" id="langSwitchHeader" role="group" aria-label="Selector de idioma">
+          <button type="button" class="lang-btn active" data-lang="es" title="Cambiar a Español" aria-label="Español" aria-pressed="true">
+            <span class="lang-flag">🇨🇴</span>
+            <span class="lang-code">ES</span>
+          </button>
+          <span class="lang-divider">|</span>
+          <button type="button" class="lang-btn" data-lang="en" title="Switch to English" aria-label="English" aria-pressed="false">
+            <span class="lang-flag">🇺🇸</span>
+            <span class="lang-code">EN</span>
+          </button>
+        </div>
+
+        <button class="btn-vip-header" id="btnVipHeader" title="Ver Créditos y Planes" aria-label="Ver créditos y planes" data-i18n-title="vip_btn_title">
           <i class="fa-solid fa-bolt"></i>
-          <span class="vip-btn-text">Créditos / Planes</span>
+          <span class="vip-btn-text" data-i18n="vip_btn_default">Créditos / Planes</span>
         </button>
       </div>
     </div>
@@ -103,8 +116,8 @@
     <div class="command-bar-container">
       <div class="cmd-search-box">
         <i class="fa-solid fa-magnifying-glass cmd-search-icon"></i>
-        <input type="text" id="omniboxSearch" class="cmd-search-input" placeholder="Buscar por barrio, ciudad o palabra clave..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true">
-        <button type="button" id="cmdSearchClear" class="cmd-search-clear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+        <input type="text" id="omniboxSearch" class="cmd-search-input" placeholder="Buscar por barrio, ciudad o palabra clave..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-i18n-ph="search_placeholder">
+        <button type="button" id="cmdSearchClear" class="cmd-search-clear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda" data-i18n-title="search_clear">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
@@ -112,13 +125,13 @@
         <div class="cmd-filter-pill-dropdown-wrapper">
           <button type="button" class="cmd-filter-pill" id="cmdFilterLocation" aria-expanded="false" title="Filtrar por ciudad">
             <i class="fa-solid fa-location-dot"></i>
-            <span id="cmdFilterLocationLabel">Todas las Ciudades</span>
+            <span id="cmdFilterLocationLabel" data-i18n="filter_all_cities">Todas las Ciudades</span>
             <i class="fa-solid fa-chevron-down cmd-dropdown-arrow"></i>
           </button>
           <div class="cmd-dropdown-menu" id="cmdLocationDropdown">
             <div class="cmd-dropdown-item active" data-city="">
               <i class="fa-solid fa-earth-americas"></i>
-              <span>Colombia (Todas)</span>
+              <span data-i18n="filter_colombia_all">Colombia (Todas)</span>
             </div>
             <div class="cmd-dropdown-item" data-city="Santa Marta">
               <i class="fa-solid fa-umbrella-beach"></i>
@@ -163,13 +176,13 @@
         <div class="cmd-filter-pill-dropdown-wrapper">
           <button type="button" class="cmd-filter-pill" id="cmdFilterSort" aria-expanded="false" title="Ordenar oportunidades">
             <i class="fa-solid fa-arrow-down-wide-short"></i>
-            <span id="cmdFilterSortLabel">Más Recientes</span>
+            <span id="cmdFilterSortLabel" data-i18n="sort_recent">Más Recientes</span>
             <i class="fa-solid fa-chevron-down cmd-dropdown-arrow"></i>
           </button>
           <div class="cmd-dropdown-menu" id="cmdSortDropdown">
             <div class="cmd-dropdown-item active" data-sort="recientes">
               <i class="fa-solid fa-bolt"></i>
-              <span>Más Recientes</span>
+              <span data-i18n="sort_recent">Más Recientes</span>
             </div>
             <div class="cmd-dropdown-item" data-sort="precio_m2_asc">
               <i class="fa-solid fa-calculator"></i>
@@ -181,29 +194,29 @@
             </div>
             <div class="cmd-dropdown-item" data-sort="precio_asc">
               <i class="fa-solid fa-arrow-up-1-9"></i>
-              <span>Menor Precio Total</span>
+              <span data-i18n="sort_price_asc">Menor Precio Total</span>
             </div>
             <div class="cmd-dropdown-item" data-sort="precio_desc">
               <i class="fa-solid fa-arrow-down-9-1"></i>
-              <span>Mayor Precio Total</span>
+              <span data-i18n="sort_price_desc">Mayor Precio Total</span>
             </div>
           </div>
         </div>
 
         <!-- Filtro Rápido de Oportunidades del Día (Últimas 24h) -->
-        <button type="button" class="cmd-filter-pill" id="cmdFilterToday" title="Ver solo oportunidades captadas en las últimas 24 horas" aria-pressed="false">
+        <button type="button" class="cmd-filter-pill" id="cmdFilterToday" title="Ver solo oportunidades captadas en las últimas 24 horas" aria-pressed="false" data-i18n-title="filter_today_title">
           <i class="fa-solid fa-bolt"></i>
-          <span>Captados Hoy</span>
+          <span data-i18n="filter_today">Captados Hoy</span>
         </button>
       </div>
       <div class="cmd-niche-group" id="nicheSwitcher">
         <button class="cmd-niche-tab active" data-dataset="./data/inmobiliario.json">
-          <i class="fa-solid fa-building"></i> Inmuebles Directos
+          <i class="fa-solid fa-building"></i> <span data-i18n="menu_direct_leads">Inmuebles Directos</span>
         </button>
       </div>
       <button type="button" class="cmd-filter-pill btn-push-subscribe" id="btnPushSubscribe" title="Activar Alertas de Primicia Inmobiliaria" aria-label="Activar Alertas PWA">
         <i class="fa-solid fa-bell"></i>
-        <span>Alertas en Vivo</span>
+        <span data-i18n="menu_push">Alertas en Vivo</span>
       </button>
     </div>
   </div>
@@ -223,11 +236,11 @@
             <span class="eyebrow-line"></span>
           </div>
 
-          <h1 class="hero-macro-title" id="heroTitle">
+          <h1 class="hero-macro-title" id="heroTitle" data-i18n="hero_title">
             Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños
           </h1>
 
-          <p class="hero-macro-subtitle" id="heroSubtitle">
+          <p class="hero-macro-subtitle" id="heroSubtitle" data-i18n="hero_subtitle">
             Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.
           </p>
 
@@ -296,7 +309,7 @@
       <div class="catalog-header-row" id="catalogHeaderRow">
         <div class="catalog-title-group">
           <span class="catalog-eyebrow">PORTAFOLIO VERIFICADO</span>
-          <h2 class="catalog-heading" id="catalogHeading">Oportunidades en Vivo</h2>
+          <h2 class="catalog-heading" id="catalogHeading" data-i18n="catalog_heading">Inmuebles Directos en Vivo</h2>
         </div>
         <div class="catalog-meta-controls">
           <span class="catalog-count-pill" id="catalogCountPill">
@@ -329,42 +342,42 @@
         </p>
         <div class="footer-status-line">
           <span class="status-pulse"></span>
-          <span>Monitoreo continuo en principales ciudades y polos de inversión inmobiliaria.</span>
+          <span data-i18n="footer_tagline">Monitoreo continuo en principales ciudades y polos de inversión inmobiliaria.</span>
         </div>
       </div>
       
       <!-- Columna 2: Marco Jurídico y Protección -->
       <div class="footer-nav-column">
-        <h4 class="footer-heading">Información y Seguridad</h4>
+        <h4 class="footer-heading" data-i18n="footer_col_info">Información y Seguridad</h4>
         <ul class="footer-link-list">
           <li>
-            <button class="footer-text-link" id="btnOpenTerminos">
+            <button class="footer-text-link" id="btnOpenTerminos" data-i18n="legal_tab_how">
               Cómo Funciona Origgo
             </button>
           </li>
           <li>
-            <button class="footer-text-link" id="btnOpenPrivacidad">
+            <button class="footer-text-link" id="btnOpenPrivacidad" data-i18n="legal_tab_privacy">
               Privacidad y Tus Datos
             </button>
           </li>
           <li>
-            <button class="footer-text-link" id="btnOpenReembolsos">
+            <button class="footer-text-link" id="btnOpenReembolsos" data-i18n="legal_tab_guarantee">
               Garantía de Saldo
             </button>
           </li>
           <li>
-            <span class="footer-text-muted">Sin comisiones ni intermediación</span>
+            <span class="footer-text-muted" data-i18n="footer_no_agency">Sin comisiones ni intermediación</span>
           </li>
         </ul>
       </div>
 
       <!-- Columna 3: Canales Exclusivos -->
       <div class="footer-nav-column">
-        <h4 class="footer-heading">Soporte y Contacto</h4>
+        <h4 class="footer-heading" data-i18n="footer_col_support">Soporte y Contacto</h4>
         <ul class="footer-link-list">
           <li>
             <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="footer-text-link">
-              <i class="fa-brands fa-whatsapp footer-icon-wa"></i> Soporte por WhatsApp
+              <i class="fa-brands fa-whatsapp footer-icon-wa"></i> <span data-i18n="menu_support">Soporte por WhatsApp</span>
             </a>
           </li>
           <li>
@@ -373,7 +386,7 @@
             </a>
           </li>
           <li>
-            <span class="footer-text-muted">Atención directa por WhatsApp</span>
+            <span class="footer-text-muted" data-i18n="footer_wa_support">Atención directa por WhatsApp</span>
           </li>
         </ul>
       </div>
@@ -385,12 +398,12 @@
         <div class="footer-bottom-actions">
           <button type="button" class="btn-theme-toggle footer-theme-toggle" id="btnThemeToggle" title="Cambiar a Modo Claro / Oscuro" aria-label="Cambiar tema de color">
             <i class="fa-solid fa-moon"></i>
-            <span class="footer-theme-label">Modo Visual</span>
+            <span class="footer-theme-label" data-i18n="footer_theme_label">Modo Visual</span>
           </button>
         </div>
-        <p>&copy; 2026 Origgo. Conexión directa entre compradores y propietarios sin intermediarios.</p>
+        <p data-i18n="footer_copy">&copy; 2026 Origgo. Conexión directa entre compradores y propietarios sin intermediarios.</p>
         <p class="footer-disclaimer">
-          <strong>Aviso de Confianza:</strong> Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.
+          <strong data-i18n="footer_disclaimer_title">Aviso de Confianza:</strong> <span data-i18n="footer_disclaimer">Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.</span>
         </p>
       </div>
     </div>
@@ -404,10 +417,10 @@
       <!-- Cabecera del Modal -->
       <div class="checkout-modal-header">
         <div class="checkout-badge-pill">
-          <i class="fa-solid fa-shield-halved"></i> Pasarela de Pago Segura Wompi
+          <i class="fa-solid fa-shield-halved"></i> <span data-i18n="checkout_badge">Pasarela de Pago Segura Wompi</span>
         </div>
-        <h2 class="checkout-modal-title" id="checkoutModalTitle">Desbloqueo de Propietarios Directos</h2>
-        <p class="checkout-modal-subtitle">Sin intermediarios, comisiones de agencia ni mensualidades forzosas.</p>
+        <h2 class="checkout-modal-title" id="checkoutModalTitle" data-i18n="checkout_title">Desbloqueo de Propietarios Directos</h2>
+        <p class="checkout-modal-subtitle" data-i18n="checkout_subtitle">Sin intermediarios, comisiones de agencia ni mensualidades forzosas.</p>
       </div>
 
       <!-- Resumen del Inmueble (Si se abrió desde una tarjeta específica) -->
@@ -416,13 +429,13 @@
       <!-- Pestañas de Navegación del Modal -->
       <div class="checkout-tabs-bar" id="checkoutTabsBar">
         <button type="button" class="checkout-tab-btn vip-tab is-hidden" id="tabBtnMiCuenta" data-tab="mi-cuenta">
-          <i class="fa-solid fa-crown"></i> Mi Membresía
+          <i class="fa-solid fa-crown"></i> <span data-i18n="checkout_tab_account">Mi Membresía</span>
         </button>
         <button type="button" class="checkout-tab-btn active" id="tabBtnComprar" data-tab="comprar">
-          <i class="fa-solid fa-cart-shopping"></i> Comprar Planes
+          <i class="fa-solid fa-cart-shopping"></i> <span data-i18n="checkout_tab_buy">Comprar Planes</span>
         </button>
         <button type="button" class="checkout-tab-btn" id="tabBtnTengoPin" data-tab="tengo-pin">
-          <i class="fa-solid fa-key"></i> Restaurar Cuenta
+          <i class="fa-solid fa-key"></i> <span data-i18n="checkout_tab_restore">Restaurar Cuenta</span>
         </button>
       </div>
 
@@ -434,10 +447,10 @@
             <input type="radio" name="checkoutProduct" value="single_lead" class="checkout-radio">
             <div class="option-card-inner">
               <div class="option-header-row">
-                <span class="option-name">Desbloqueo Individual</span>
+                <span class="option-name" data-i18n="checkout_opt_single_title">Desbloqueo Individual</span>
                 <span class="option-price">$ 5.000</span>
               </div>
-              <p class="option-desc">1 Contacto verificado del propietario directo. Ideal para compra puntual.</p>
+              <p class="option-desc" data-i18n="checkout_opt_single_desc">1 Contacto verificado del propietario directo. Ideal para compra puntual.</p>
             </div>
           </label>
 
@@ -447,10 +460,10 @@
             <input type="radio" name="checkoutProduct" value="pack_10_leads" class="checkout-radio" checked>
             <div class="option-card-inner">
               <div class="option-header-row">
-                <span class="option-name">Bolsa 10 Contactos</span>
+                <span class="option-name" data-i18n="checkout_opt_pack10_title">Bolsa 10 Contactos</span>
                 <span class="option-price">$ 35.000</span>
               </div>
-              <p class="option-desc">$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.</p>
+              <p class="option-desc" data-i18n="checkout_opt_pack10_desc">$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.</p>
             </div>
           </label>
 
@@ -459,10 +472,10 @@
             <input type="radio" name="checkoutProduct" value="subscription_city" class="checkout-radio">
             <div class="option-card-inner">
               <div class="option-header-row">
-                <span class="option-name">Plan Pro Ciudad</span>
+                <span class="option-name" data-i18n="checkout_opt_city_title">Plan Pro Ciudad</span>
                 <span class="option-price">$ 89.000 / mes</span>
               </div>
-              <p class="option-desc">Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.</p>
+              <p class="option-desc" data-i18n="checkout_opt_city_desc">Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.</p>
             </div>
           </label>
 
@@ -471,10 +484,10 @@
             <input type="radio" name="checkoutProduct" value="subscription_national" class="checkout-radio">
             <div class="option-card-inner">
               <div class="option-header-row">
-                <span class="option-name">Plan Nacional VIP</span>
+                <span class="option-name" data-i18n="checkout_opt_nat_title">Plan Nacional VIP</span>
                 <span class="option-price">$ 149.000 / mes</span>
               </div>
-              <p class="option-desc">Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.</p>
+              <p class="option-desc" data-i18n="checkout_opt_nat_desc">Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.</p>
             </div>
           </label>
         </div>
@@ -696,11 +709,11 @@
       <div class="welcome-modal-aura"></div>
 
       <div class="welcome-badge-pill" id="welcomeBadgePill">
-        <i class="fa-solid fa-crown"></i> MEMBRESÍA VIP ACTIVADA
+        <i class="fa-solid fa-crown"></i> <span data-i18n="welcome_badge">MEMBRESÍA VIP ACTIVADA</span>
       </div>
 
-      <h2 class="welcome-modal-title" id="welcomeModalTitle">¡Bienvenido a Origgo!</h2>
-      <p class="welcome-modal-subtitle" id="welcomeModalSubtitle">Tu cuenta y tus créditos están activos y listos para usar.</p>
+      <h2 class="welcome-modal-title" id="welcomeModalTitle" data-i18n="welcome_title">¡Bienvenido a Origgo!</h2>
+      <p class="welcome-modal-subtitle" id="welcomeModalSubtitle" data-i18n="welcome_subtitle">Tu cuenta y tus créditos están activos y listos para usar.</p>
 
       <!-- Tarjeta de Credencial Segura con Copia de PIN en 1 clic -->
       <div class="welcome-credential-card">
@@ -720,7 +733,7 @@
           </div>
         </div>
         <div class="credential-note">
-          <i class="fa-solid fa-shield-check"></i> Guarda este PIN. Te permitirá restaurar tu acceso en cualquier teléfono o computador.
+          <i class="fa-solid fa-shield-check"></i> <span data-i18n="welcome_pin_desc">Guarda tu PIN de 4 dígitos. Te servirá para restaurar tu sesión en cualquier dispositivo.</span>
         </div>
       </div>
 
@@ -734,7 +747,7 @@
 
       <!-- Botón de Acción Principal -->
       <button type="button" class="btn-welcome-cta" id="btnWelcomeCta">
-        <i class="fa-solid fa-bolt"></i> <span id="welcomeCtaText">Comenzar a Cazar Oportunidades</span>
+        <i class="fa-solid fa-bolt"></i> <span id="welcomeCtaText" data-i18n="welcome_btn_explore">Comenzar a Explorar Oportunidades</span>
       </button>
 
       <div class="welcome-guarantee-note">
@@ -751,22 +764,22 @@
       <div class="modal-header-tag" id="legalHeaderTag">
         <i class="fa-solid fa-scale-balanced"></i> Transparencia y Confianza
       </div>
-      <h2 class="modal-title" id="legalModalTitle">¿Cómo Funciona Origgo?</h2>
-      <p class="modal-subtitle" id="legalModalSubtitle">Información clara para compradores y propietarios</p>
+      <h2 class="modal-title" id="legalModalTitle" data-i18n="legal_title">¿Cómo Funciona Origgo?</h2>
+      <p class="modal-subtitle" id="legalModalSubtitle" data-i18n="legal_subtitle">Información clara para compradores y propietarios</p>
       
       <!-- Pestañas de Navegación del Modal Legal -->
       <div class="legal-tabs-bar" role="tablist">
         <button type="button" class="legal-tab-btn active" data-legal-tab="terminos" role="tab" aria-selected="true">
-          <i class="fa-solid fa-file-contract"></i> Cómo Funciona
+          <i class="fa-solid fa-file-contract"></i> <span data-i18n="legal_tab_how">Cómo Funciona</span>
         </button>
         <button type="button" class="legal-tab-btn" data-legal-tab="exoneracion" role="tab" aria-selected="false">
-          <i class="fa-solid fa-shield-halved"></i> Seguridad
+          <i class="fa-solid fa-shield-halved"></i> <span data-i18n="legal_tab_security">Seguridad</span>
         </button>
         <button type="button" class="legal-tab-btn" data-legal-tab="privacidad" role="tab" aria-selected="false">
-          <i class="fa-solid fa-user-shield"></i> Tus Datos
+          <i class="fa-solid fa-user-shield"></i> <span data-i18n="legal_tab_privacy">Tus Datos</span>
         </button>
         <button type="button" class="legal-tab-btn" data-legal-tab="reembolsos" role="tab" aria-selected="false">
-          <i class="fa-solid fa-rotate-left"></i> Garantía de Saldo
+          <i class="fa-solid fa-rotate-left"></i> <span data-i18n="legal_tab_guarantee">Garantía de Saldo</span>
         </button>
       </div>
 
@@ -776,10 +789,10 @@
       
       <div class="legal-modal-actions">
         <a href="https://wa.me/573001234567?text=Hola%2C%20tengo%20una%20consulta%20sobre%20Origgo" target="_blank" rel="noopener noreferrer" class="btn-legal-support" id="btnLegalSupport">
-          <i class="fa-brands fa-whatsapp"></i> Soporte por WhatsApp
+          <i class="fa-brands fa-whatsapp"></i> <span data-i18n="menu_support">Soporte por WhatsApp</span>
         </a>
         <button type="button" class="btn-legal-accept" id="btnLegalCancel">
-          <i class="fa-solid fa-check"></i> Entendido
+          <i class="fa-solid fa-check"></i> <span data-i18n="legal_btn_accept">Entendido</span>
         </button>
       </div>
     </div>
@@ -796,14 +809,14 @@
         <img src="./assets/img/origgo-logo.svg" alt="Origgo" class="push-prompt-brand-logo" width="124" height="42" />
         <div class="push-prompt-badge">
           <span class="push-radar-ping"></span>
-          <span>RADAR EN TIEMPO REAL</span>
+          <span data-i18n="push_badge">RADAR EN TIEMPO REAL</span>
         </div>
       </div>
 
-      <h2 class="modal-title push-prompt-title" id="pushPromptTitle">
+      <h2 class="modal-title push-prompt-title" id="pushPromptTitle" data-i18n="push_title">
         ¿Activar Alertas de Oportunidades Directas?
       </h2>
-      <p class="modal-subtitle push-prompt-subtitle">
+      <p class="modal-subtitle push-prompt-subtitle" data-i18n="push_subtitle">
         Recibe una alerta en tu teléfono en el segundo exacto en que un propietario publique un inmueble sin comisiones inmobiliarias.
       </p>
 
@@ -813,8 +826,8 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
           <div class="push-feature-text">
-            <strong>Primicia total:</strong>
-            <span>Entérate antes de que el inmueble llegue a portales o agencias con comisiones.</span>
+            <strong data-i18n="push_feature_1">Primicia total:</strong>
+            <span data-i18n="push_feature_1_desc">Entérate antes de que el inmueble llegue a portales o agencias con comisiones.</span>
           </div>
         </div>
         <div class="push-feature-row">
@@ -822,8 +835,8 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
           </div>
           <div class="push-feature-text">
-            <strong>Filtro por tu ciudad:</strong>
-            <span>Avisos geolocalizados de tu zona de interés o inversión comercial.</span>
+            <strong data-i18n="push_feature_2">Filtro por tu ciudad:</strong>
+            <span data-i18n="push_feature_2_desc">Avisos geolocalizados de tu zona de interés o inversión comercial.</span>
           </div>
         </div>
         <div class="push-feature-row">
@@ -831,17 +844,17 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
           </div>
           <div class="push-feature-text">
-            <strong>100% libre de spam:</strong>
-            <span>Solo señales cuando se confirme una oportunidad real negociada entre particulares.</span>
+            <strong data-i18n="push_feature_3">100% libre de spam:</strong>
+            <span data-i18n="push_feature_3_desc">Solo señales cuando se confirme una oportunidad real negociada entre particulares.</span>
           </div>
         </div>
       </div>
 
       <div class="push-prompt-actions">
         <button type="button" class="btn-push-prompt-accept" id="btnPushPromptAccept">
-          <i class="fa-solid fa-bell"></i> Activar Radar en mi Teléfono
+          <i class="fa-solid fa-bell"></i> <span data-i18n="push_btn_accept">Activar Radar en mi Teléfono</span>
         </button>
-        <button type="button" class="btn-push-prompt-later" id="btnPushPromptLater">
+        <button type="button" class="btn-push-prompt-later" id="btnPushPromptLater" data-i18n="push_btn_later">
           Quizás más tarde / Explorar primero
         </button>
       </div>
@@ -852,23 +865,23 @@
   <nav class="mobile-bottom-bar" id="mobileBottomBar">
     <button class="mobile-nav-btn active" id="btnNavHome" data-nav="home">
       <i class="fa-solid fa-house"></i>
-      <span>Inicio</span>
+      <span data-i18n="nav_home">Inicio</span>
     </button>
     <button class="mobile-nav-btn" id="btnNavSearch" data-nav="search">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <span>Buscar</span>
+      <span data-i18n="nav_search">Buscar</span>
     </button>
     <button class="mobile-nav-btn" id="btnThemeToggleMobile" data-nav="theme">
       <i class="fa-solid fa-sun"></i>
-      <span>Tema</span>
+      <span data-i18n="nav_theme">Tema</span>
     </button>
     <button class="mobile-nav-btn" id="btnNavVip" data-nav="vip">
       <i class="fa-solid fa-bolt"></i>
-      <span>Créditos</span>
+      <span data-i18n="nav_credits">Créditos</span>
     </button>
     <button class="mobile-nav-btn" id="btnNavMenuBottom" data-nav="menu">
       <i class="fa-solid fa-bars"></i>
-      <span>Menú</span>
+      <span data-i18n="nav_menu">Menú</span>
     </button>
   </nav>
 
@@ -886,10 +899,23 @@
     <!-- Bloque de Estado de Cuenta / Saldo (Dinámico) -->
     <div class="side-menu-user-account is-hidden" id="sideMenuUserAccount"></div>
 
+    <!-- Selector de Idioma en Menú Lateral -->
+    <div class="side-menu-lang-row">
+      <span class="side-menu-lang-label" data-i18n="menu_lang_label">Idioma / Language</span>
+      <div class="side-lang-switch">
+        <button type="button" class="side-lang-btn active" data-lang="es" aria-pressed="true">
+          <span>🇨🇴</span> <span>Español</span>
+        </button>
+        <button type="button" class="side-lang-btn" data-lang="en" aria-pressed="false">
+          <span>🇺🇸</span> <span>English</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Bloque Móvil de Filtro por Ciudad -->
     <div class="side-menu-city-block">
       <div class="side-menu-city-head">
-        <span class="side-menu-city-label">
+        <span class="side-menu-city-label" data-i18n="menu_city_label">
           <i class="fa-solid fa-location-dot"></i> Ciudad de Interés
         </span>
         <span id="sideMenuCityBadge" class="side-menu-city-badge">Todas</span>
@@ -909,13 +935,13 @@
     </div>
 
     <nav class="side-menu-nav">
-      <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard Principal</a>
-      <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> Inmuebles Directos</a>
-      <a href="#" class="side-menu-link" id="sideMenuLinkPush" data-side="push"><i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Activar Alertas en Vivo</a>
-      <a href="#" class="side-menu-link" id="sideMenuThemeToggle" data-side="theme"><i class="fa-solid fa-circle-half-stroke"></i> Modo Claro / Oscuro</a>
-      <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown side-menu-icon-vip"></i> Desbloqueo VIP</a>
-      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp side-menu-icon-whatsapp"></i> Soporte VIP WhatsApp</a>
-      <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> Términos & Exoneración</a>
+      <a href="#" class="side-menu-link active" data-side="dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="menu_dashboard">Dashboard Principal</span></a>
+      <a href="#" class="side-menu-link" data-side="inmuebles"><i class="fa-solid fa-building"></i> <span data-i18n="menu_direct_leads">Inmuebles Directos</span></a>
+      <a href="#" class="side-menu-link" id="sideMenuLinkPush" data-side="push"><i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> <span data-i18n="menu_push">Activar Alertas en Vivo</span></a>
+      <a href="#" class="side-menu-link" id="sideMenuThemeToggle" data-side="theme"><i class="fa-solid fa-circle-half-stroke"></i> <span data-i18n="menu_theme">Modo Claro / Oscuro</span></a>
+      <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown side-menu-icon-vip"></i> <span data-i18n="menu_vip">Desbloqueo VIP</span></a>
+      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp side-menu-icon-whatsapp"></i> <span data-i18n="menu_support">Soporte VIP WhatsApp</span></a>
+      <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> <span data-i18n="menu_terms">Términos & Exoneración</span></a>
     </nav>
       <p class="side-menu-footnote">Origgo v1.0<br>Inmuebles Directos de Propietario</p>
     </div>
