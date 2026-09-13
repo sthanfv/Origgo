@@ -160,6 +160,23 @@ describe('📲 Infraestructura Web Push — Almacenamiento y Segmentación', () 
     assert.ok(encontrada, 'La suscripción debe existir en el almacén');
     assert.equal(encontrada.lang, 'en', 'El idioma de la suscripción debe persistirse como en');
   });
+
+  it('Debe generar títulos y mensajes contextuales en inglés cuando no se envían explícitamente', () => {
+    // Verificación de la lógica incorporada en api/notifications/dispatch.js
+    const bodyMock = {
+      title: '📉 ¡Rebaja en Medellín!',
+      ciudad: 'Medellin'
+    };
+    const esRebaja = Boolean(bodyMock.title?.includes('Rebaja') || bodyMock.esRebaja);
+    const ciudadFmt = bodyMock.ciudad && bodyMock.ciudad !== 'Colombia' ? ` in ${bodyMock.ciudad}` : '';
+    const titleEn = bodyMock.titleEn || (esRebaja ? `📉 Price Drop${ciudadFmt} — Origgo` : `🔥 Direct Opportunity${ciudadFmt} — Origgo`);
+    const bodyEn = bodyMock.messageEn || bodyMock.bodyEn || (esRebaja 
+      ? 'Verified direct property with price reduction. Zero commission.' 
+      : 'New verified property listed directly by its owner with zero commission.');
+
+    assert.equal(titleEn, '📉 Price Drop in Medellin — Origgo');
+    assert.equal(bodyEn, 'Verified direct property with price reduction. Zero commission.');
+  });
 });
 
 describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () => {

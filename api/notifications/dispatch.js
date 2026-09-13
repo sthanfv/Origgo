@@ -52,8 +52,14 @@ module.exports = async function handler(req, res) {
     const urlDestino = body.url || (body.leadId ? `./?lead=${body.leadId}` : './');
     const titleEs = body.title || '🔥 Nueva Oportunidad Directa — Origgo';
     const bodyEs = body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.';
-    const titleEn = body.titleEn || '🔥 New Direct Opportunity — Origgo';
-    const bodyEn = body.messageEn || body.bodyEn || 'New verified property listed directly by its owner with zero commission.';
+
+    // Generación contextual inteligente en inglés si no se provee explícitamente
+    const esRebaja = Boolean(body.title?.includes('Rebaja') || body.esRebaja);
+    const ciudadFmt = body.ciudad && body.ciudad !== 'Colombia' ? ` in ${body.ciudad}` : '';
+    const titleEn = body.titleEn || (esRebaja ? `📉 Price Drop${ciudadFmt} — Origgo` : `🔥 Direct Opportunity${ciudadFmt} — Origgo`);
+    const bodyEn = body.messageEn || body.bodyEn || (esRebaja 
+      ? 'Verified direct property with price reduction. Zero commission.' 
+      : 'New verified property listed directly by its owner with zero commission.');
 
     const payloadEs = JSON.stringify({
       title: titleEs,

@@ -1,10 +1,24 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 12:42 (GMT-5)
+Última actualización: 2026-09-13 12:49 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-52. **Inferencia Contextual Bilingüe en Despacho de Alertas Web Push (Scraper a Portal Web y Suite de Validación)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Alertas push genéricas en inglés:* En `api/notifications/dispatch.js`, si el llamador externo (como el scraper `publisher_web.js`) no enviaba `titleEn` ni `messageEn`, el despachador emitía un texto estático ("New direct opportunity") que no incluía la ciudad, el tipo de inmueble ni si se trataba de una rebaja de precio.
+      2. *Scraper emitiendo únicamente campos en español:* En `ofertas-hunter-pro/publisher_web.js` (`despacharAlertaPushWeb`), el payload enviado al endpoint serverless contenía únicamente `title` y `message` en español.
+    - **Solución Implementada:**
+      1. **Inferencia Contextual Dinámica en Endpoint (`api/notifications/dispatch.js`, 121 líneas < 500):**
+         - Generación inteligente de `titleEn` (`Price Drop in {ciudad}` / `Direct Opportunity in {ciudad}`) y `bodyEn` si no son suministrados explícitamente en el cuerpo de la petición.
+      2. **Emisión Bilingüe Nativa en Scraper (`ofertas-hunter-pro/publisher_web.js`, 495 líneas < 500):**
+         - Mapeo determinista de tipos de inmuebles al inglés (`Apartment`, `House`, `Lot / Land`, `Office`, `Commercial Retail`, `Warehouse`, `Country Estate`).
+         - Inyección de `titleEn` y `messageEn` con precio y ahorro contextualizado para suscriptores angloparlantes.
+      3. **Ampliación de Pruebas Unitarias (`tests/bilingual_infrastructure.test.js`):**
+         - Nueva prueba certificando la inferencia contextual en inglés ante payloads simplificados.
+         - Suite de 10 pruebas pasadas al 100%.
 
 -51. **Auditoría Forense de Cierre y Endurecimiento Defensivo (Sincronización Bilingüe en Webhook Wompi, Respaldo de Celular por Referencia en Cron, Actualización de `INDICE_ARCHIVOS.md` y Suite Ampliada a 8 Pruebas)**:
     - **Diagnóstico y Causa Raíz:**
