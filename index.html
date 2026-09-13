@@ -90,15 +90,13 @@
       </div>
 
       <div class="nav-actions">
-        <!-- Selector Bilingüe ES / EN de Precisión Glassmorphic -->
+        <!-- Selector Bilingüe ES / EN Minimalista de Alta Finanza -->
         <div class="lang-switch" id="langSwitchHeader" role="group" aria-label="Selector de idioma">
-          <button type="button" class="lang-btn active" data-lang="es" title="Cambiar a Español" aria-label="Español" aria-pressed="true">
-            <span class="lang-flag">🇨🇴</span>
+          <button type="button" class="lang-btn active" data-lang="es" title="Español" aria-label="Español" aria-pressed="true">
             <span class="lang-code">ES</span>
           </button>
-          <span class="lang-divider">|</span>
-          <button type="button" class="lang-btn" data-lang="en" title="Switch to English" aria-label="English" aria-pressed="false">
-            <span class="lang-flag">🇺🇸</span>
+          <span class="lang-divider">/</span>
+          <button type="button" class="lang-btn" data-lang="en" title="English" aria-label="English" aria-pressed="false">
             <span class="lang-code">EN</span>
           </button>
         </div>
@@ -246,7 +244,7 @@
 
           <div class="hero-cta-wrapper">
             <button class="btn-hero-cta" id="btnHeroCta">
-              <span>Ver Inmuebles Directos Disponibles</span>
+              <span data-i18n="hero_cta">Ver Inmuebles Directos Disponibles</span>
               <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </button>
           </div>
@@ -259,46 +257,46 @@
         <!-- Grupo 1 -->
         <div class="marquee-group">
           <div class="marquee-item">
-            <span class="marquee-title">0% Comisión</span>
-            <span class="marquee-sub">Trato directo</span>
+            <span class="marquee-title" data-i18n="marquee_direct_title">0% Comisión</span>
+            <span class="marquee-sub" data-i18n="marquee_direct_sub">Trato directo</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Alertas &lt; 3 Min</span>
-            <span class="marquee-sub">Tiempo real</span>
+            <span class="marquee-title" data-i18n="marquee_alerts_title">Alertas &lt; 3 Min</span>
+            <span class="marquee-sub" data-i18n="marquee_alerts_sub">Tiempo real</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Margen Arbitraje</span>
-            <span class="marquee-sub">Bajo mediana</span>
+            <span class="marquee-title" data-i18n="marquee_arbitrage_title">Margen Arbitraje</span>
+            <span class="marquee-sub" data-i18n="marquee_arbitrage_sub">Bajo mediana</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Acceso Abierto</span>
-            <span class="marquee-sub">Avisos reales</span>
+            <span class="marquee-title" data-i18n="marquee_access_title">Acceso Abierto</span>
+            <span class="marquee-sub" data-i18n="marquee_access_sub">Avisos reales</span>
             <span class="marquee-dot"></span>
           </div>
         </div>
         <!-- Grupo 2 (Duplicado para loop infinito sin saltos) -->
         <div class="marquee-group" aria-hidden="true">
           <div class="marquee-item">
-            <span class="marquee-title">0% Comisión</span>
-            <span class="marquee-sub">Trato directo</span>
+            <span class="marquee-title" data-i18n="marquee_direct_title">0% Comisión</span>
+            <span class="marquee-sub" data-i18n="marquee_direct_sub">Trato directo</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Alertas &lt; 3 Min</span>
-            <span class="marquee-sub">Tiempo real</span>
+            <span class="marquee-title" data-i18n="marquee_alerts_title">Alertas &lt; 3 Min</span>
+            <span class="marquee-sub" data-i18n="marquee_alerts_sub">Tiempo real</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Margen Arbitraje</span>
-            <span class="marquee-sub">Bajo mediana</span>
+            <span class="marquee-title" data-i18n="marquee_arbitrage_title">Margen Arbitraje</span>
+            <span class="marquee-sub" data-i18n="marquee_arbitrage_sub">Bajo mediana</span>
             <span class="marquee-dot"></span>
           </div>
           <div class="marquee-item">
-            <span class="marquee-title">Acceso Abierto</span>
-            <span class="marquee-sub">Avisos reales</span>
+            <span class="marquee-title" data-i18n="marquee_access_title">Acceso Abierto</span>
+            <span class="marquee-sub" data-i18n="marquee_access_sub">Avisos reales</span>
             <span class="marquee-dot"></span>
           </div>
         </div>
@@ -308,7 +306,7 @@
     <section class="showcase-container">
       <div class="catalog-header-row" id="catalogHeaderRow">
         <div class="catalog-title-group">
-          <span class="catalog-eyebrow">PORTAFOLIO VERIFICADO</span>
+          <span class="catalog-eyebrow" data-i18n="catalog_eyebrow">PORTAFOLIO VERIFICADO</span>
           <h2 class="catalog-heading" id="catalogHeading" data-i18n="catalog_heading">Inmuebles Directos en Vivo</h2>
         </div>
         <div class="catalog-meta-controls">
@@ -904,10 +902,10 @@
       <span class="side-menu-lang-label" data-i18n="menu_lang_label">Idioma / Language</span>
       <div class="side-lang-switch">
         <button type="button" class="side-lang-btn active" data-lang="es" aria-pressed="true">
-          <span>🇨🇴</span> <span>Español</span>
+          <span class="side-lang-code">ES</span> <span class="side-lang-name">Español</span>
         </button>
         <button type="button" class="side-lang-btn" data-lang="en" aria-pressed="false">
-          <span>🇺🇸</span> <span>English</span>
+          <span class="side-lang-code">EN</span> <span class="side-lang-name">English</span>
         </button>
       </div>
     </div>

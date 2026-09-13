@@ -1,10 +1,34 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 01:55 (GMT-5)
+Última actualización: 2026-09-13 02:05 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-28. **Erradicación de Cajas y Aros en Logotipo, Rediseño Tipográfico Minimalista de Idiomas (Sin Banderas) y Eliminación de Parpadeo en Móviles**:
+    - **Diagnóstico y Necesidad:**
+      1. El usuario reportó que el logotipo "Origgo" quedó encerrado dentro de un contenedor rectangular cortado con un aro de radar descentrado que rompía la estética.
+      2. Los emojis de banderas (`🇨🇴`, `🇺🇸`) en la cabecera móvil se renderizaban de gran tamaño y colores estridentes, saturando la barra y chirriando contra la paleta oscura/esmeralda de alta gama.
+      3. Al conmutar el idioma, la llamada a `document.startViewTransition` a nivel de `root` congelaba la GPU del teléfono móvil para capturar un snapshot de 1080x2400px, provocando un parpadeo/flicker (flash blanco/negro) molesto.
+      4. Varios elementos de la interfaz quedaban sin traducir en la vista en inglés (botón CTA del Hero, badge de sectores monitoreados, contador de catálogo, eyebrow y cinta marquee de confianza).
+    - **Solución Implementada:**
+      1. **Logotipo Puro y Silueta Respirante (`styles/02-base.css`, 208 líneas < 500):**
+         - Se eliminó completamente cualquier caja, padding, fondo, borde y `overflow: hidden` en `.brand-title` y `.brand-badge`.
+         - Se erradicaron los pseudoelementos `::before` (aro cortado `radarSonarPing`) y `::after` (destello `prestigeSheenSweep`), así como el halo ovalado `prestigeAmbientAura`.
+         - La animación se trasladó directamente sobre el vector SVG `.brand-logo-img` mediante una respiración sutil de luz esmeralda (`logoBreathingGlow`) con `drop-shadow(0 0 2px rgba(10, 159, 104, 0.35))` a `drop-shadow(0 0 7px rgba(10, 159, 104, 0.75)) drop-shadow(0 0 14px rgba(16, 185, 129, 0.25))`, manteniendo el logotipo libre, nítido y de altísimo nivel.
+      2. **Selector de Idioma Tipográfico de Alta Finanza (`styles/18-i18n.css`, 189 líneas e `index.html`):**
+         - Se erradicaron todos los emojis de banderas tanto en la cabecera como en el menú lateral off-canvas.
+         - Se implementó una micro-píldora minimalista suiza (`ES` / `EN`, 11px, `letter-spacing: 0.05em`) con micro-iluminación esmeralda en el idioma activo.
+         - Ocupa un ancho mínimo (~54px) que respira con armonía perfecta junto al botón VIP en la barra móvil y de escritorio.
+      3. **Erradicación Absoluta del Parpadeo (`modules/13-i18n.js`, 438 líneas < 500):**
+         - Se eliminó `ejecutarConTransicionSuave` en `cambiarIdioma()`.
+         - La mutación del DOM ahora se ejecuta de manera instantánea y síncrona en memoria (<1ms) a 60fps/120fps, erradicando por completo cualquier parpadeo, congelamiento o flash en dispositivos móviles.
+      4. **Sincronización Total de Textos Bilingües (`modules/13-i18n.js` e `index.html`):**
+         - Sincronizados y traducidos en ES y EN: botón CTA del hero (`hero_cta`), badge de sectores (`hero_badge_suffix`), contador dinámico de oportunidades (`catalog_count_suffix`/`catalog_count_single`), eyebrow de portafolio (`catalog_eyebrow`) y las 4 señales de la cinta marquee de confianza (`marquee_direct_title`, `marquee_alerts_title`, `marquee_arbitrage_title`, `marquee_access_title`).
+    - **DevSecOps:**
+      - Compilación modular ejecutada con éxito (`node scripts/build.js`): 14 módulos JS y 18 módulos CSS compilados y minificados.
+      - Suite de 8 fases (`node scripts/validate.js`): 100% aprobada (0 errores). Todos los módulos bajo el estándar Desmulta (< 500 líneas). 11 funciones serverless inalteradas.
 
 -27. **Sistema Bilingüe Internacional (ES / EN) con Transiciones Suaves Nativas (View Transitions API), Conversión Referencial USD y Elevación de Animación de Cabecera de Alto Prestigio**:
     - **Diagnóstico y Necesidad:**

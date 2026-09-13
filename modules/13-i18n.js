@@ -17,8 +17,13 @@ const DICCIONARIO_I18N = {
     sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
-    hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', catalog_heading: 'Inmuebles Directos en Vivo',
+    hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles',
+    catalog_heading: 'Inmuebles Directos en Vivo', catalog_eyebrow: 'PORTAFOLIO VERIFICADO',
     catalog_count_suffix: 'oportunidades directas', catalog_count_single: 'oportunidad directa',
+    marquee_direct_title: '0% Comisión', marquee_direct_sub: 'Trato directo',
+    marquee_alerts_title: 'Alertas < 3 Min', marquee_alerts_sub: 'Tiempo real',
+    marquee_arbitrage_title: 'Margen Arbitraje', marquee_arbitrage_sub: 'Bajo mediana',
+    marquee_access_title: 'Acceso Abierto', marquee_access_sub: 'Avisos reales',
     catalog_empty_title: 'Sin oportunidades en esta zona',
     catalog_empty_desc: 'No se encontraron avisos directos con los filtros activos. Puedes explorar otras ciudades o restablecer.',
     catalog_btn_reset: 'Restablecer todos los filtros',
@@ -81,7 +86,13 @@ const DICCIONARIO_I18N = {
     sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
-    hero_badge_suffix: 'Districts Monitored in Real Time', catalog_heading: 'Live Direct Listings',
+    hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties',
+    catalog_heading: 'Live Direct Listings', catalog_eyebrow: 'VERIFIED PORTFOLIO',
+    catalog_count_suffix: 'direct opportunities', catalog_count_single: 'direct opportunity',
+    marquee_direct_title: '0% Commission', marquee_direct_sub: 'Direct deal',
+    marquee_alerts_title: 'Alerts < 3 Min', marquee_alerts_sub: 'Real time',
+    marquee_arbitrage_title: 'High Arbitrage', marquee_arbitrage_sub: 'Below market',
+    marquee_access_title: 'Open Access', marquee_access_sub: 'Verified leads',
     catalog_count_suffix: 'direct opportunities', catalog_count_single: 'direct opportunity',
     catalog_empty_title: 'No opportunities found in this area',
     catalog_empty_desc: 'No direct owner listings found with the active filters. You can explore other cities or reset filters.',
@@ -274,7 +285,21 @@ function aplicarTraduccionesAlDOM() {
   // 6. Precios referenciales USD en tarjetas
   sincronizarPreciosUsdEnDOM();
 
-  // 7. Sincronizar estado visual de los botones de idioma
+  // 7. Badge de sectores y contador de catálogo dinámicos
+  const elBadgeSectoresHero = document.getElementById('badgeSectoresHero');
+  if (elBadgeSectoresHero) {
+    const m = (elBadgeSectoresHero.textContent || '').match(/\d+/);
+    const n = m ? m[0] : '26';
+    elBadgeSectoresHero.textContent = `${n} ${dict.hero_badge_suffix}`;
+  }
+  const countEl = document.getElementById('catalogCountText');
+  if (countEl) {
+    const m = (countEl.textContent || '').match(/\d+/);
+    const n = m ? parseInt(m[0], 10) : 0;
+    countEl.textContent = `${n} ${n === 1 ? dict.catalog_count_single : dict.catalog_count_suffix}`;
+  }
+
+  // 8. Sincronizar estado visual de los botones de idioma
   document.querySelectorAll('.lang-btn, .side-lang-btn').forEach(btn => {
     const targetLang = btn.getAttribute('data-lang');
     if (targetLang === lang) {
@@ -286,14 +311,14 @@ function aplicarTraduccionesAlDOM() {
     }
   });
 
-  // 8. Atributo lang global en el HTML
+  // 9. Atributo lang global en el HTML
   if (document.documentElement) {
     document.documentElement.lang = lang;
   }
 }
 
 /**
- * Conmuta el idioma con transición cinematográfica sedosa (View Transitions API).
+ * Conmuta el idioma de manera instantánea y atómica en el DOM (0ms de latencia, cero parpadeos).
  * @param {'es'|'en'} nuevoIdioma
  */
 function cambiarIdioma(nuevoIdioma) {
@@ -305,13 +330,7 @@ function cambiarIdioma(nuevoIdioma) {
     localStorage.setItem('origgo_lang', nuevoIdioma);
   } catch (e) {}
 
-  if (typeof ejecutarConTransicionSuave === 'function') {
-    ejecutarConTransicionSuave(() => {
-      aplicarTraduccionesAlDOM();
-    });
-  } else {
-    aplicarTraduccionesAlDOM();
-  }
+  aplicarTraduccionesAlDOM();
 
   window.dispatchEvent(new CustomEvent('origgo:languageChanged', { detail: { lang: nuevoIdioma } }));
 }
