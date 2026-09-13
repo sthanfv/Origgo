@@ -3,7 +3,7 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'origgo-v6-20260911';
+const NOMBRE_CACHE = 'origgo-v7-20260913';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
@@ -48,8 +48,15 @@ self.addEventListener('fetch', (evento) => {
   // Las peticiones a APIs serverless y CDNs externos deben ir directo a la red
   if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
 
-  // 🌐 Peticiones de Navegación HTML: Network-First para recibir siempre la versión más fresca
-  if (evento.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+  // 🌐 Navegación HTML y activos funcionales (CSS, JS, JSON): Network-First para frescura absoluta
+  const esRecursoFuncional = evento.request.mode === 'navigate' ||
+    url.pathname === '/' ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.json');
+
+  if (esRecursoFuncional) {
     evento.respondWith(
       fetch(evento.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
@@ -62,7 +69,7 @@ self.addEventListener('fetch', (evento) => {
     return;
   }
 
-  // 📦 Recursos estáticos locales: Cache-First con revalidación en segundo plano
+  // 📦 Recursos estáticos secundarios (imágenes, iconos): Cache-First con actualización en fondo
   evento.respondWith(
     caches.match(evento.request).then((cachedResponse) => {
       if (cachedResponse) {

@@ -265,15 +265,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *:not(.marquee-track):not(.marquee-group):not(.marquee-item) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .radar-sonar-ring, .cardinal-pointer, .radar-ring-mid, .radar-ring-inner {
-    animation: none !important;
-  }
+  .radar-sonar-ring, .cardinal-pointer, .radar-ring-mid, .radar-ring-inner { animation: none !important; }
+  .marquee-track { animation: scrollMarquee 24s linear infinite !important; }
 }
 
 /* 📱 Navegación Inferior Nativa (PWA Móvil) */

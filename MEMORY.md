@@ -1,10 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 08:05 (GMT-5)
+Última actualización: 2026-09-13 08:20 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-41. **Transición Cinemática Suave en Modal de Bienvenida (Fade-In Progresivo), Estrategia Network-First en Service Worker PWA (`origgo-v7-20260913`) y Blindaje de Marquee contra Ahorro de Batería en Android**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Entrada abrupta del modal:* El modal de bienvenida (`#modalOnboardingWelcome`) saltaba de golpe frente al usuario debido a una duración minúscula de 250ms (`fadeIn 0.25s`) en el backdrop y una escala agresiva (`scale(0.92)`). Además, la GPU sufría un salto de `display: none` a `display: flex` con cálculo instantáneo de `backdrop-filter: blur(24px)`.
+      2. *Carrusel horizontal estático en móvil:* La causa real no residía en el código subido sino en la caché local del Service Worker (`sw.js`). Al tener `NOMBRE_CACHE = 'origgo-v6-20260911'` con política **Cache-First**, el navegador móvil en Android entregaba el CSS antiguo cacheado hace días, ignorando el archivo nuevo en Vercel. Adicionalmente, si el dispositivo Android tenía activado el ahorro de energía o reducción de animaciones, `@media (prefers-reduced-motion: reduce)` en `styles/11-mobile.css` forzaba `animation-duration: 0.01ms !important;` sobre todos los elementos (`*`), congelando el marquee.
+    - **Solución Implementada:**
+      1. **Transición Cinemática y Sedosa de Modales (`styles/09-checkout-modal.css`, 454 líneas; `styles/15-welcome-modal.css`, 446 líneas):**
+         - `.modal-backdrop.active` ahora utiliza `fadeInBackdrop 0.45s cubic-bezier(0.16, 1, 0.3, 1)` con aceleración GPU (`will-change: opacity, backdrop-filter`), difuminando progresivamente el fondo sin tirones.
+         - `.onboarding-modal-card` y `.welcome-modal-card` fueron calibradas a `0.5s` con `welcomePop`: parten desde `scale(0.96) translateY(18px)` y flotan elásticamente a su posición natural (`scale(1) translateY(0)`), logrando una sensación de levitación de alta gama.
+      2. **Blindaje de Marquee contra Ahorro de Energía (`styles/11-mobile.css`, 496 líneas):**
+         - En `@media (prefers-reduced-motion: reduce)`, se excluyeron explícitamente las clases `.marquee-track`, `.marquee-group` y `.marquee-item` (`*:not(.marquee-track):not(.marquee-group):not(.marquee-item)`).
+         - Se fijó `.marquee-track { animation: scrollMarquee 24s linear infinite !important; }`, garantizando que la cinta de valor gire perpetuamente a 60 FPS sin importar el modo de batería o accesibilidad del sistema.
+      3. **Service Worker PWA con Estrategia Network-First (`sw.js`, 146 líneas):**
+         - Se elevó la versión de caché a `'origgo-v7-20260913'`.
+         - Para todos los activos funcionales (HTML, CSS, JS y JSON), se implementó la estrategia **Network-First**: el navegador siempre descarga de inmediato la versión más fresca desde el CDN de Vercel y actualiza la caché local. Si el dispositivo se queda sin red, la caché entra en acción como fallback offline.
+         - En `index.html`, se actualizaron los query params de cache-busting: `style.min.css?v=20260913-v7` y `app.js?v=20260913-v7`.
+      4. **DevSecOps y Cumplimiento Desmulta (< 500 líneas):**
+         - Módulos auditados: `styles/09-checkout-modal.css` (454 líneas), `styles/11-mobile.css` (496 líneas), `styles/15-welcome-modal.css` (446 líneas), `sw.js` (146 líneas).
+         - Recompilación exitosa con `node scripts/build.js`: sincronizados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -40. **Movimiento Continuo Garantizado del Carrusel de Confianza (Marquee en Android y PC), Traducción Bilingüe Exhaustiva de Tarjetas Bento Grid / Drawer y Check Oficial de Verificación Esmeralda**:
     - **Diagnóstico y Causa Raíz:**

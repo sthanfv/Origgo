@@ -2871,10 +2871,11 @@ main {
   pointer-events: auto;
   justify-content: center;
   align-items: flex-start; /* Crucial: inicia arriba para que NUNCA recorte el encabezado ni el botón X */
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInBackdrop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, backdrop-filter;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInBackdrop {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -4038,15 +4039,14 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *:not(.marquee-track):not(.marquee-group):not(.marquee-item) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .radar-sonar-ring, .cardinal-pointer, .radar-ring-mid, .radar-ring-inner {
-    animation: none !important;
-  }
+  .radar-sonar-ring, .cardinal-pointer, .radar-ring-mid, .radar-ring-inner { animation: none !important; }
+  .marquee-track { animation: scrollMarquee 24s linear infinite !important; }
 }
 
 /* 📱 Navegación Inferior Nativa (PWA Móvil) */
@@ -5392,7 +5392,8 @@ main {
     0 0 0 1px hsla(158, 64%, 52%, 0.25),
     inset 0 1px 0 hsla(43, 90%, 70%, 0.3);
   overflow: hidden;
-  animation: welcomePop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: welcomePop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
 
 [data-theme="light"] .welcome-modal-card {
@@ -5406,7 +5407,7 @@ main {
 @keyframes welcomePop {
   from {
     opacity: 0;
-    transform: scale(0.92) translateY(24px);
+    transform: scale(0.96) translateY(18px);
   }
   to {
     opacity: 1;
@@ -5731,7 +5732,8 @@ main {
   padding: 2.25rem 1.85rem 1.85rem; background: var(--bg-card);
   border: 1px solid rgba(10, 159, 104, 0.3); border-radius: var(--radius-card);
   box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  overflow: hidden; animation: welcomePop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden; animation: welcomePop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
 [data-theme="light"] .onboarding-modal-card {
   border-color: rgba(4, 120, 87, 0.3);

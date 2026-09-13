@@ -35,10 +35,11 @@
   pointer-events: auto;
   justify-content: center;
   align-items: flex-start; /* Crucial: inicia arriba para que NUNCA recorte el encabezado ni el botón X */
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInBackdrop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, backdrop-filter;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInBackdrop {
   from { opacity: 0; }
   to { opacity: 1; }
 }
