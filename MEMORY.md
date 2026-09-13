@@ -6,6 +6,34 @@
 
 ## 1. Qué cambió
 
+-48. **Desbloqueo Integral de Segunda Capa (Slide-Up Drawer / Ficha Técnica), Protocolo Guiado de Siguientes Pasos y Mensajería WhatsApp Condicionada por Idioma**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Expulsión involuntaria a la grilla tras interactuar en segunda capa:* En `modules/10-listeners.js`, al pulsar el CTA dentro de la ficha técnica desplegable (`action === "slideup-cta"`), el evento ejecutaba prematuramente `cerrarFichaTecnica(idx, e)` antes de invocar `manejarClicDesbloquear(idx)`. El usuario era expulsado a la grilla y la ficha se cerraba sin permitirle ver la información revelada in situ.
+      2. *Falta de hidratación y datos revelados en el Slide-Up Drawer:* En `modules/07-unlock.js`, `actualizarTarjetaEnElDOM` solo inyectaba los botones y revelaba datos en la tarjeta Bento de la primera capa. El drawer (`#slideup-${cardIndex}`) no recibía la caja destacada del teléfono (`.unlocked-phone-box`), ni actualizaba su título (`.slideup-title`), ni sus especificaciones de contacto.
+      3. *Ausencia de protocolo de cierre post-desbloqueo ("Siguientes Pasos"):* Una vez entregada la información de contacto, la interfaz no ofrecía una guía clara al usuario sobre el flujo de negociación directa sin comisión (contacto inmediato, agendamiento de visita y protocolo de cierre con promesa de compraventa).
+      4. *Desconexión post-venta en Modal VIP:* Tras comprar créditos o planes en el Checkout y ser recibido en el Modal de Bienvenida VIP (`modules/11-welcome.js`), el botón "Comenzar a Desbloquear" no reabría automáticamente la segunda capa del lead que el usuario intentaba adquirir, perdiendo el hilo de conversión.
+      5. *Plantilla de WhatsApp rígida en español en backend:* En `api/leads/unlock.js`, la plantilla formal de contacto directo se generaba exclusivamente en español, ignorando si el usuario o comprador internacional navegaba con `lang: 'en'`. Además, `lib/validation.js` no aceptaba `lang` en `unlockLeadSchema`.
+    - **Solución Implementada:**
+      1. **Persistencia Activa de Segunda Capa (`modules/10-listeners.js`, 489 líneas; `modules/07-unlock.js`, 377 líneas):**
+         - En `modules/10-listeners.js`, se eliminó el cierre forzado en `slideup-cta` y se configuró `manejarClicDesbloquear(idx, { desdeFicha: true })`.
+         - En `modules/07-unlock.js`, se preserva `leadSeleccionado._desdeFicha`. Si el desbloqueo proviene del drawer o el drawer está abierto, la ficha técnica permanece abierta y enfocada tras la revelación de datos.
+      2. **Hidratación Quirúrgica del Drawer (`modules/07-unlock.js`, 377 líneas):**
+         - `actualizarTarjetaEnElDOM` reconstruye el drawer con el teléfono en grande (`.unlocked-phone-box`), botones de acción directa (`Llamar Directo` / `WhatsApp Directo`), el título real revelado (`datosRevelados.tituloOriginal`), y el protocolo guiado de tres pasos (`.slideup-next-steps`).
+      3. **Protocolo de "Siguientes Pasos" (Next Steps) Bilingüe (`modules/07-unlock.js`, `modules/06-cards.js`, `modules/13-i18n.js`, `styles/08-slideup.css`):**
+         - Estructura visual de alta gama (`.slideup-next-steps`): Paso 1 (Contacto Inmediato / Direct Outreach), Paso 2 (Agendar Visita / On-Site Tour), Paso 3 (Cierre Directo 0% Comisión / Direct Closing).
+         - Soporte en `modules/13-i18n.js` para traducción reactiva a 0ms sin parpadeos mediante `traducirSlideupDrawer()`.
+      4. **Reapertura Fluida Post-Compra VIP (`modules/11-welcome.js`, 248 líneas):**
+         - El botón `#btnWelcomeCta` evalúa si existía un `leadSeleccionado`. De ser así, abre de inmediato la segunda capa con `abrirFichaTecnica(indexToUse)`, desplaza suavemente la vista hacia el inmueble y dispara el desbloqueo automático.
+      5. **Backend Bilingüe en Generación de WhatsApp (`api/leads/unlock.js`, `lib/validation.js`, `tests/whatsapp_template.test.js`):**
+         - `unlockLeadSchema` incorpora validación para `lang: z.enum(['es', 'en']).optional().default('es')`.
+         - `api/leads/unlock.js` genera mensaje formal bilingüe: en español con saludo horario formal (`Buenos días/tardes`) y en inglés para compradores extranjeros (`"Hello, I am interested in negotiating directly regarding your property listed as..."`).
+         - Pruebas unitarias en `tests/whatsapp_template.test.js` adaptadas y ampliadas para certificar ambos idiomas al 100%.
+      6. **Modularidad Desmulta y Estricto Control de Líneas:**
+         - Todos los módulos JS y hojas CSS se mantienen estrictamente bajo el límite de 500 líneas (todos auditados en $\le 496$ líneas).
+      7. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: `style.css`, `style.min.css`, `app.js` y `app.min.js` sincronizados.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+
 -47. **Segunda Ronda de Auditoría Forense Ultra-Profunda (Fases 1, 2 y 3): Erradicación de Botón Zombi en Desbloqueo, Internacionalización Dinámica de Inyección DOM, Soporte de Fusión `{ merge: true }` en Almacén en Memoria, Hidratación Canónica de Preferencias y Liberación Inmediata de Locks**:
     - **Diagnóstico y Causa Raíz:**
       1. *Botón zombi tras desbloqueo de lead (Fase 3 / Frontend):* En `modules/07-unlock.js` (`actualizarTarjetaEnElDOM`), la búsqueda del botón anterior utilizaba `card.querySelector('.btn-unlock-lead')`. Debido a que `modules/06-cards.js` genera las tarjetas con la clase `.btn-unlock-action`, el selector devolvía `null`. En consecuencia, el contenedor de botones desbloqueados (`.unlocked-action-cluster`) se añadía al final sin eliminar el botón de desbloqueo, dejando ambos visibles en la tarjeta.

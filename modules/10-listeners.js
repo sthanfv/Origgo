@@ -5,16 +5,13 @@
  */
 
 
-// ═════════════════════════════════════════════════════════════════════════
-// 🌐 EXPOSICIÓN GLOBAL PARA COMPATIBILIDAD Y TESTING
-// ═════════════════════════════════════════════════════════════════════════
+// Exposición global para compatibilidad y testing
 window.moverCarrusel = moverCarrusel;
 window.irACarrusel = irACarrusel;
 window.abrirFichaTecnica = abrirFichaTecnica;
 window.cerrarFichaTecnica = cerrarFichaTecnica;
 window.abrirModalCheckout = abrirModalCheckout;
 window.aplicarFiltrosOmnibox = aplicarFiltrosOmnibox;
-
 
 /**
  * Configuración de listeners e interactividad.
@@ -99,8 +96,7 @@ function configurarListeners() {
         manejarClicDesbloquear(idx);
       } else if (action === "slideup-cta") {
         e.stopPropagation();
-        cerrarFichaTecnica(idx, e);
-        manejarClicDesbloquear(idx);
+        manejarClicDesbloquear(idx, { desdeFicha: true });
       } else if (action === "contactar-whatsapp") {
         e.stopPropagation();
         manejarContactoWhatsapp(idx);

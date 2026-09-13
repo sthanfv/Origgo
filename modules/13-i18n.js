@@ -42,32 +42,20 @@ const DICCIONARIO_I18N = {
     checkout_opt_nat_title: 'Plan Nacional VIP', checkout_opt_nat_desc: 'Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.',
     checkout_popular_ribbon: '⭐ Más Popular (-30%)', checkout_month_suffix: '/ mes', checkout_city_select_default: '-- Selecciona tu ciudad --',
     checkout_label_city: 'Ciudad de Cobertura Ilimitada (Plan Pro):', checkout_city_help: 'Tu membresía desbloqueará sin límite todos los contactos directos de la ciudad elegida durante 30 días.',
-    checkout_wa_alert_title: 'Atención: Ingresa tu WhatsApp REAL y activo',
-    checkout_wa_alert_desc: 'Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, no podrás acceder a tus créditos ni recuperar tu PIN. El sistema no realiza llamadas ni spam.',
+    checkout_wa_alert_title: 'Atención: Ingresa tu WhatsApp REAL y activo', checkout_wa_alert_desc: 'Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, no podrás acceder a tus créditos ni recuperar tu PIN. El sistema no realiza llamadas ni spam.',
     checkout_label_whatsapp: 'WhatsApp de Autenticación (10 dígitos):', checkout_ph_whatsapp: 'Ej: 300 123 4567', checkout_help_whatsapp: 'Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.',
-    checkout_btn_pay: 'Continuar al Pago Seguro con Wompi', checkout_btn_pay_default: 'Pagar con Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Tarjeta Crédito/Débito',
-    checkout_guarantee_wompi: 'Pasarela Segura Wompi (Vigilada SFC)', checkout_guarantee_instant: 'Activación Instantánea',
-    checkout_restore_title: 'Restaura tu sesión con tu PIN o Referencia de Pago', checkout_btn_restore: 'Restaurar Mis Créditos',
-    checkout_restore_intro: 'Si ya adquiriste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu Código de Acceso Origgo (ej. HNT-7489).',
-    checkout_restore_wa_label: 'WhatsApp Registrado:', checkout_restore_pin_label: 'Código de Acceso (PIN) o Ref. Wompi:', checkout_restore_pin_ph: 'Ej: HNT-7489 o Referencia de Pago',
-    checkout_restore_pin_help: 'Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.',
+    checkout_btn_pay: 'Continuar al Pago Seguro con Wompi', checkout_btn_pay_default: 'Pagar con Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Tarjeta Crédito/Débito', checkout_guarantee_wompi: 'Pasarela Segura Wompi (Vigilada SFC)', checkout_guarantee_instant: 'Activación Instantánea',
+    checkout_restore_title: 'Restaura tu sesión con tu PIN o Referencia de Pago', checkout_btn_restore: 'Restaurar Mis Créditos', checkout_restore_intro: 'Si ya adquiriste créditos o un plan en otro navegador o dispositivo, ingresa tu número de WhatsApp y tu Código de Acceso Origgo (ej. HNT-7489).',
+    checkout_restore_wa_label: 'WhatsApp Registrado:', checkout_restore_pin_label: 'Código de Acceso (PIN) o Ref. Wompi:', checkout_restore_pin_ph: 'Ej: HNT-7489 o Referencia de Pago', checkout_restore_pin_help: 'Ingresa tu PIN o pega la referencia de tu comprobante bancario para auto-acreditarte en vivo.',
     checkout_forgot_pin_btn: '¿Olvidaste tu Código? Restaurar por Correo', checkout_forgot_pin_desc: 'Ingresa el Correo Electrónico que utilizaste durante tu pago en Wompi. Te enviaremos instrucciones de recuperación si la cuenta existe.',
     checkout_email_label: 'Correo Electrónico de Compra:', checkout_email_ph: 'ejemplo@correo.com', checkout_btn_send_instructions: 'Enviar instrucciones',
     checkout_user_pin_protected: 'PIN protegido', checkout_user_balance_label: 'Saldo Disponible', checkout_user_benefits_btn: 'Ver Privilegios de mi Membresía', checkout_user_btn_plans: 'Planes & Recargas', checkout_user_btn_logout: 'Cerrar Sesión',
     welcome_badge: 'ACCESO VIP CONFIRMADO', welcome_title: '¡Bienvenido a Origgo!', welcome_subtitle: 'Tu acceso directo a propietarios de inmuebles sin intermediarios.',
-    welcome_wa_label: 'WhatsApp Asociado', welcome_pin_label: 'Tu PIN Maestro de Acceso', welcome_copy_btn: 'Copiar', welcome_privileges_tag: 'Tus Privilegios Activos', welcome_footer_note: '100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos',
-    welcome_pin_desc: 'Guarda tu PIN de 4 dígitos. Te servirá para restaurar tu sesión en cualquier dispositivo.', welcome_btn_explore: 'Comenzar a Explorar Oportunidades',
-    push_badge: 'RADAR EN TIEMPO REAL', push_title: '¿Activar Alertas de Oportunidades Directas?',
-    push_subtitle: 'Recibe una alerta en tu teléfono en el segundo exacto en que un propietario publique un inmueble sin comisiones inmobiliarias.',
-    push_feature_1: 'Primicia total:', push_feature_1_desc: 'Entérate antes de que el inmueble llegue a portales o agencias con comisiones.',
-    push_feature_2: 'Filtro por tu ciudad:', push_feature_2_desc: 'Avisos geolocalizados de tu zona de interés o inversión comercial.',
-    push_feature_3: '100% libre de spam:', push_feature_3_desc: 'Solo señales cuando se confirme una oportunidad real negociada entre particulares.',
-    push_btn_accept: 'Activar Radar en mi Teléfono', push_btn_later: 'Quizás más tarde / Explorar primero',
-    nav_home: 'Inicio', nav_search: 'Buscar', nav_theme: 'Tema', nav_credits: 'Créditos', nav_menu: 'Menú',
-    menu_lang_label: 'Idioma / Language', menu_city_label: 'Ciudad de Interés',
-    menu_about: '¿Qué es Origgo?', menu_dashboard: 'Dashboard Principal', menu_direct_leads: 'Inmuebles Directos',
-    menu_push: 'Activar Alertas en Vivo', menu_theme: 'Modo Claro / Oscuro', menu_vip: 'Desbloqueo VIP',
-    menu_support: 'Soporte VIP WhatsApp', menu_terms: 'Términos & Exoneración',
+    welcome_wa_label: 'WhatsApp Asociado', welcome_pin_label: 'Tu PIN Maestro de Acceso', welcome_copy_btn: 'Copiar', welcome_privileges_tag: 'Tus Privilegios Activos', welcome_footer_note: '100% Trato Directo • Sin Intermediarios • Sin Cargos Ocultos', welcome_pin_desc: 'Guarda tu PIN de 4 dígitos. Te servirá para restaurar tu sesión en cualquier dispositivo.', welcome_btn_explore: 'Comenzar a Explorar Oportunidades',
+    push_badge: 'RADAR EN TIEMPO REAL', push_title: '¿Activar Alertas de Oportunidades Directas?', push_subtitle: 'Recibe una alerta en tu teléfono en el segundo exacto en que un propietario publique un inmueble sin comisiones inmobiliarias.',
+    push_feature_1: 'Primicia total:', push_feature_1_desc: 'Entérate antes de que el inmueble llegue a portales o agencias con comisiones.', push_feature_2: 'Filtro por tu ciudad:', push_feature_2_desc: 'Avisos geolocalizados de tu zona de interés o inversión comercial.', push_feature_3: '100% libre de spam:', push_feature_3_desc: 'Solo señales cuando se confirme una oportunidad real negociada entre particulares.', push_btn_accept: 'Activar Radar en mi Teléfono', push_btn_later: 'Quizás más tarde / Explorar primero',
+    nav_home: 'Inicio', nav_search: 'Buscar', nav_theme: 'Tema', nav_credits: 'Créditos', nav_menu: 'Menú', menu_lang_label: 'Idioma / Language', menu_city_label: 'Ciudad de Interés',
+    menu_about: '¿Qué es Origgo?', menu_dashboard: 'Dashboard Principal', menu_direct_leads: 'Inmuebles Directos', menu_push: 'Activar Alertas en Vivo', menu_theme: 'Modo Claro / Oscuro', menu_vip: 'Desbloqueo VIP', menu_support: 'Soporte VIP WhatsApp', menu_terms: 'Términos & Exoneración',
     onboarding_badge: 'BIENVENIDO A ORIGGO', onboarding_title: 'Oportunidades directas, de persona a persona.',
     onboarding_subtitle: 'El punto de encuentro donde compradores e inversionistas tratan directamente con los dueños reales, sin intermediarios.',
     onboarding_p1_title: 'Encuentra antes que los demás', onboarding_p1_desc: 'Rastreamos el mercado todos los días para encontrar oportunidades recién publicadas por sus dueños, antes de que pasen a terceros.',
@@ -119,32 +107,20 @@ const DICCIONARIO_I18N = {
     checkout_opt_nat_title: 'National VIP Pass', checkout_opt_nat_desc: 'Full access across Colombia + Exclusive Price Drop radar.',
     checkout_popular_ribbon: '⭐ Most Popular (-30%)', checkout_month_suffix: '/ month', checkout_city_select_default: '-- Select your target city --',
     checkout_label_city: 'Unlimited Coverage City (Pro Pass):', checkout_city_help: 'Your pass unlocks all direct contacts in your chosen city for 30 full days.',
-    checkout_wa_alert_title: 'Important: Enter your REAL active WhatsApp',
-    checkout_wa_alert_desc: 'This number is your unique security key. If you enter an invalid number, you cannot access credits or restore your PIN. We never spam or place phone calls.',
+    checkout_wa_alert_title: 'Important: Enter your REAL active WhatsApp', checkout_wa_alert_desc: 'This number is your unique security key. If you enter an invalid number, you cannot access credits or restore your PIN. We never spam or place phone calls.',
     checkout_label_whatsapp: 'Authentication WhatsApp (10 digits):', checkout_ph_whatsapp: 'E.g., 300 123 4567', checkout_help_whatsapp: 'Your credits are cryptographically sealed to this phone number.',
-    checkout_btn_pay: 'Proceed to Secure Payment with Wompi', checkout_btn_pay_default: 'Pay with Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Credit & Debit Cards',
-    checkout_guarantee_wompi: 'Regulated Wompi Gateway (SFC Monitored)', checkout_guarantee_instant: 'Instant Activation',
-    checkout_restore_title: 'Restore your session with PIN or Payment Reference', checkout_btn_restore: 'Restore My Credits',
-    checkout_restore_intro: 'If you previously bought credits on another device, enter your WhatsApp and Origgo Access PIN (e.g. HNT-7489).',
-    checkout_restore_wa_label: 'Registered WhatsApp:', checkout_restore_pin_label: 'Access PIN or Wompi Ref:', checkout_restore_pin_ph: 'E.g., HNT-7489 or Payment Reference',
-    checkout_restore_pin_help: 'Enter your PIN or paste the bank reference code to auto-credit your balance.',
+    checkout_btn_pay: 'Proceed to Secure Payment with Wompi', checkout_btn_pay_default: 'Pay with Wompi', checkout_btn_wompi_note: 'Bancolombia, Nequi, PSE, Credit & Debit Cards', checkout_guarantee_wompi: 'Regulated Wompi Gateway (SFC Monitored)', checkout_guarantee_instant: 'Instant Activation',
+    checkout_restore_title: 'Restore your session with PIN or Payment Reference', checkout_btn_restore: 'Restore My Credits', checkout_restore_intro: 'If you previously bought credits on another device, enter your WhatsApp and Origgo Access PIN (e.g. HNT-7489).',
+    checkout_restore_wa_label: 'Registered WhatsApp:', checkout_restore_pin_label: 'Access PIN or Wompi Ref:', checkout_restore_pin_ph: 'E.g., HNT-7489 or Payment Reference', checkout_restore_pin_help: 'Enter your PIN or paste the bank reference code to auto-credit your balance.',
     checkout_forgot_pin_btn: 'Forgot your PIN? Restore via Email', checkout_forgot_pin_desc: 'Enter the Email used during your Wompi checkout. We will email your login link.',
     checkout_email_label: 'Checkout Email:', checkout_email_ph: 'user@example.com', checkout_btn_send_instructions: 'Send instructions',
     checkout_user_pin_protected: 'Protected PIN', checkout_user_balance_label: 'Available Balance', checkout_user_benefits_btn: 'View Membership Privileges', checkout_user_btn_plans: 'Plans & Top-Ups', checkout_user_btn_logout: 'Log Out',
     welcome_badge: 'VIP ACCESS CONFIRMED', welcome_title: 'Welcome to Origgo!', welcome_subtitle: 'Your direct pipeline to property owners without real estate agency fees.',
-    welcome_wa_label: 'Linked WhatsApp', welcome_pin_label: 'Your Master Access PIN', welcome_copy_btn: 'Copy', welcome_privileges_tag: 'Your Active Privileges', welcome_footer_note: '100% Direct Deal • Zero Middlemen • Zero Hidden Fees',
-    welcome_pin_desc: 'Keep your 4-digit PIN safe. You can use it to restore your access on any device.', welcome_btn_explore: 'Start Exploring Deals',
-    push_badge: 'LIVE OPPORTUNITY RADAR', push_title: 'Enable Real-Time Direct Listing Alerts?',
-    push_subtitle: 'Receive instant phone alerts the exact second an owner publishes an off-market property with zero brokerage commissions.',
-    push_feature_1: 'Total head-start:', push_feature_1_desc: 'Catch fresh deals before they reach saturated portals or agency catalogs.',
-    push_feature_2: 'Filter by city:', push_feature_2_desc: 'Geolocated alerts tailored to your investment or residential area.',
-    push_feature_3: '100% spam-free:', push_feature_3_desc: 'Only genuine verified direct-owner listings and urgent discounts.',
-    push_btn_accept: 'Activate Radar on Phone', push_btn_later: 'Maybe later / Explore first',
-    nav_home: 'Home', nav_search: 'Search', nav_theme: 'Theme', nav_credits: 'Credits', nav_menu: 'Menu',
-    menu_lang_label: 'Language / Idioma', menu_city_label: 'Target City',
-    menu_about: 'What is Origgo?', menu_dashboard: 'Main Dashboard', menu_direct_leads: 'Direct Properties',
-    menu_push: 'Enable Live Radar Alerts', menu_theme: 'Light / Dark Mode', menu_vip: 'VIP Unlocks',
-    menu_support: 'WhatsApp VIP Support', menu_terms: 'Terms & Disclaimers',
+    welcome_wa_label: 'Linked WhatsApp', welcome_pin_label: 'Your Master Access PIN', welcome_copy_btn: 'Copy', welcome_privileges_tag: 'Your Active Privileges', welcome_footer_note: '100% Direct Deal • Zero Middlemen • Zero Hidden Fees', welcome_pin_desc: 'Keep your 4-digit PIN safe. You can use it to restore your access on any device.', welcome_btn_explore: 'Start Exploring Deals',
+    push_badge: 'LIVE OPPORTUNITY RADAR', push_title: 'Enable Real-Time Direct Listing Alerts?', push_subtitle: 'Receive instant phone alerts the exact second an owner publishes an off-market property with zero brokerage commissions.',
+    push_feature_1: 'Total head-start:', push_feature_1_desc: 'Catch fresh deals before they reach saturated portals or agency catalogs.', push_feature_2: 'Filter by city:', push_feature_2_desc: 'Geolocated alerts tailored to your investment or residential area.', push_feature_3: '100% spam-free:', push_feature_3_desc: 'Only genuine verified direct-owner listings and urgent discounts.', push_btn_accept: 'Activate Radar on Phone', push_btn_later: 'Maybe later / Explore first',
+    nav_home: 'Home', nav_search: 'Search', nav_theme: 'Theme', nav_credits: 'Credits', nav_menu: 'Menu', menu_lang_label: 'Language / Idioma', menu_city_label: 'Target City',
+    menu_about: 'What is Origgo?', menu_dashboard: 'Main Dashboard', menu_direct_leads: 'Direct Properties', menu_push: 'Enable Live Radar Alerts', menu_theme: 'Light / Dark Mode', menu_vip: 'VIP Unlocks', menu_support: 'WhatsApp VIP Support', menu_terms: 'Terms & Disclaimers',
     onboarding_badge: 'WELCOME TO ORIGGO', onboarding_title: 'Direct deals, person to person.',
     onboarding_subtitle: 'Where buyers and investors connect directly with verified owners, zero middlemen.',
     onboarding_p1_title: 'Discover first, before the crowd', onboarding_p1_desc: 'We monitor the market daily to catch deals freshly listed by their owners, before agencies step in.',
@@ -411,10 +387,23 @@ function cambiarIdioma(nuevoIdioma) {
  */
 function traducirSlideupDrawer() {
   const lang = obtenerIdiomaActual(), dict = DICCIONARIO_I18N[lang] || DICCIONARIO_I18N.es, isEn = lang === 'en';
-  document.querySelectorAll('.slideup-title').forEach(t => { t.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${dict.slideup_title}`; });
+  document.querySelectorAll('.card-slideup-overlay').forEach(overlay => {
+    const card = overlay.closest('.bento-card');
+    const isUnlocked = card?.classList.contains('card-unlocked');
+    const cTitle = card?.querySelector('.card-title')?.textContent;
+    const sTitle = overlay.querySelector('.slideup-title');
+    if (sTitle) sTitle.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${isUnlocked && cTitle ? escaparHtml(cTitle) : dict.slideup_title}`;
+  });
   document.querySelectorAll('.trust-badge').forEach(b => { b.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${dict.slideup_trust_badge}`; });
   document.querySelectorAll('.trust-desc').forEach(d => { d.textContent = dict.slideup_trust_desc; });
   document.querySelectorAll('.unlocked-phone-label').forEach(l => { l.innerHTML = `<i class="fa-solid fa-unlock"></i> ${dict.slideup_unlocked_title}`; });
+  document.querySelectorAll('.next-steps-title').forEach(t => { t.innerHTML = `<i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}`; });
+  document.querySelectorAll('.slideup-next-steps').forEach(steps => {
+    const list = steps.querySelector('.next-steps-list');
+    if (list) {
+      list.innerHTML = `<li class="next-step-item"><span class="next-step-num">1</span><span><strong>${isEn ? 'Contact:' : 'Contacto:'}</strong> ${isEn ? 'Send pre-formatted WhatsApp message or place direct phone call.' : 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.'}</span></li><li class="next-step-item"><span class="next-step-num">2</span><span><strong>${isEn ? 'Tour:' : 'Visita:'}</strong> ${isEn ? 'Ask for additional media and arrange property walkthrough.' : 'Pide fotos adicionales y agenda visita presencial al inmueble.'}</span></li><li class="next-step-item"><span class="next-step-num">3</span><span><strong>${isEn ? 'Deal:' : 'Acuerdo:'}</strong> ${isEn ? 'Verify title certificate and negotiate with zero agency fees.' : 'Verifica el certificado de tradición y acuerda sin pagar comisión.'}</span></li>`;
+    }
+  });
   document.querySelectorAll('.slideup-cta-btn:not(.btn-whatsapp-direct):not(.cta-call):not(.cta-neutral)').forEach(btn => {
     btn.innerHTML = `<i class="fa-solid fa-unlock-keyhole"></i> ${dict.slideup_unlock_btn || (isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño')}`;
   });

@@ -152,8 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnCtaWelcome) {
     btnCtaWelcome.addEventListener("click", () => {
       cerrarModalBienvenidaVIP();
-      if (leadSeleccionado && typeof ejecutarDesbloqueoLead === 'function') {
-        ejecutarDesbloqueoLead(leadSeleccionado);
+      if (leadSeleccionado) {
+        const leadIdx = datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : -1;
+        const indexToUse = leadIdx >= 0 ? leadIdx : (typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : undefined);
+        if (typeof indexToUse === 'number' && typeof abrirFichaTecnica === 'function') {
+          abrirFichaTecnica(indexToUse);
+          const cardEl = document.querySelector(`.bento-card[data-index="${indexToUse}"]`);
+          if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        if (typeof ejecutarDesbloqueoLead === 'function') {
+          ejecutarDesbloqueoLead(leadSeleccionado, indexToUse);
+        }
       }
     });
   }

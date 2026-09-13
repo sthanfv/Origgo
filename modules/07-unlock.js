@@ -10,11 +10,16 @@ const desbloqueosEnProgreso = new Set();
 /**
  * Maneja el clic en "Desbloquear": si tiene créditos desbloquea directo, sino abre checkout.
  * @param {number} index
+ * @param {object} [opciones]
  */
-async function manejarClicDesbloquear(index) {
+async function manejarClicDesbloquear(index, opciones = {}) {
   if (!datosActuales?.leads || !datosActuales.leads[index]) return;
   const lead = datosActuales.leads[index];
   leadSeleccionado = lead;
+  if (opciones && opciones.desdeFicha) {
+    leadSeleccionado._desdeFicha = true;
+    leadSeleccionado._fichaIndex = index;
+  }
 
   const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
   const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
@@ -135,10 +140,29 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
   const cardIndex = card.getAttribute('data-index');
   const slideup = document.getElementById(`slideup-${cardIndex}`);
   if (slideup) {
+    if (datosRevelados) {
+      const slideTitle = slideup.querySelector('.slideup-title');
+      if (slideTitle && datosRevelados.tituloOriginal) {
+        slideTitle.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${escaparHtml(datosRevelados.tituloOriginal)}`;
+      }
+    }
+    const specCards = slideup.querySelectorAll('.slideup-spec-card');
+    specCards.forEach(sc => {
+      const k = sc.querySelector('.slideup-spec-key');
+      const v = sc.querySelector('.slideup-spec-val');
+      if (k && v && /contacto|contact/i.test(k.textContent)) {
+        v.innerHTML = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+      }
+    });
+
     const actionGroup = slideup.querySelector('.slideup-action-group');
     if (actionGroup) {
       actionGroup.innerHTML = `
         <div class="slideup-unlocked-layout">
+          <div class="unlocked-phone-box">
+            <div class="unlocked-phone-label"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked Contact Details' : 'Datos de Contacto Desbloqueados'}</div>
+            <div class="unlocked-phone-number">${contacto?.telefono ? escaparHtml(contacto.telefono) : (isEn ? 'Fetching contact...' : 'Consultando contacto...')}</div>
+          </div>
           <div class="slideup-unlocked-row">
             ${contactoSeguro?.whatsappUrl ? `
               <a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp">
@@ -155,6 +179,14 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}
               </a>
             ` : ''}
+          </div>
+          <div class="slideup-next-steps">
+            <div class="next-steps-title"><i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}</div>
+            <ul class="next-steps-list">
+              <li class="next-step-item"><span class="next-step-num">1</span><span><strong>${isEn ? 'Contact:' : 'Contacto:'}</strong> ${isEn ? 'Send pre-formatted WhatsApp message or place direct phone call.' : 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.'}</span></li>
+              <li class="next-step-item"><span class="next-step-num">2</span><span><strong>${isEn ? 'Tour:' : 'Visita:'}</strong> ${isEn ? 'Ask for additional media and arrange property walkthrough.' : 'Pide fotos adicionales y agenda visita presencial al inmueble.'}</span></li>
+              <li class="next-step-item"><span class="next-step-num">3</span><span><strong>${isEn ? 'Deal:' : 'Acuerdo:'}</strong> ${isEn ? 'Verify title certificate and negotiate with zero agency fees.' : 'Verifica el certificado de tradición y acuerda sin pagar comisión.'}</span></li>
+            </ul>
           </div>
           <span class="slideup-cta-note slideup-cta-note-ok">
             <i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}
@@ -216,7 +248,8 @@ async function ejecutarDesbloqueoLead(lead, index) {
       body: JSON.stringify({
         leadId: lead.id,
         contactoCifrado: lead.contacto_cifrado || '',
-        leadCity: lead.ciudad || lead.ubicacion || lead.barrio || ''
+        leadCity: lead.ciudad || lead.ubicacion || lead.barrio || '',
+        lang: isEnUnlock ? 'en' : 'es'
       })
     });
 
@@ -268,6 +301,12 @@ async function ejecutarDesbloqueoLead(lead, index) {
     cerrarModalCheckout();
     actualizarBadgeVip();
     actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index, data.datosRevelados);
+
+    // Si el usuario desbloqueó desde la segunda capa (Ficha Técnica), mantener el drawer abierto
+    if (slideup && (leadSeleccionado?._desdeFicha || slideup.classList.contains('active'))) {
+      slideup.classList.add('active');
+      if (leadSeleccionado) delete leadSeleccionado._desdeFicha;
+    }
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {

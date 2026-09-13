@@ -282,11 +282,14 @@ function renderizarInterfaz(dataset) {
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
     const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
     const contactoSeguro = sanitizarContactoCliente(contacto);
+    const datosRev = contacto?._datosRevelados || null;
     const portalNombre = item.portal || ((item.enlace_bloqueado || item.enlace || '').toLowerCase().includes('metrocuadrado') ? 'Metrocuadrado' : 'Finca Raíz');
 
     const tiempoRelativoTexto = formatearTiempoRelativo(item.timestamp_ms, item.fecha_relativa);
     const statusBadgeTexto = traducirBadgeUrgencia(item.urgencia, isEn);
     const ubicacionTexto = isEn && item.ubicacion ? item.ubicacion.replace(/Estrato\s*(\d+)/gi, 'Stratum $1') : (item.ubicacion || '');
+    const ubicacionFinal = (estaDesbloqueado && datosRev?.ubicacionCompleta) ? datosRev.ubicacionCompleta : ubicacionTexto;
+    const tituloFinal = (estaDesbloqueado && datosRev?.tituloOriginal) ? datosRev.tituloOriginal : item.titulo;
     const dato2Texto = traducirDatoDistribucion(item.dato_2, isEn);
 
     return `
@@ -303,10 +306,10 @@ function renderizarInterfaz(dataset) {
         <div class="card-body">
           <div>
             <div class="card-meta-header">
-              <span class="card-location"><i class="fa-solid fa-location-dot"></i> ${escaparHtml(ubicacionTexto)}</span>
+              <span class="card-location"><i class="fa-solid fa-location-dot"></i> ${escaparHtml(ubicacionFinal)}</span>
               <button class="btn-specs-pill" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'View Full Details' : 'Ver Detalles Completos'}">${isEn ? 'View Details' : 'Ver Detalles'} <i class="fa-solid fa-chevron-up"></i></button>
             </div>
-            <h3 class="card-title" data-action="abrir-ficha" data-index="${index}">${escaparHtml(item.titulo)}</h3>
+            <h3 class="card-title" data-action="abrir-ficha" data-index="${index}">${escaparHtml(tituloFinal)}</h3>
             <div class="card-specs-panel" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'Click to open full overview' : 'Click para abrir especificaciones completas'}">
               <div class="specs-row">
                 <div class="spec-item"><span class="spec-label">${escaparHtml(col1Nombre)}</span><span class="spec-value">${escaparHtml(item.dato_1 || 'N/A')}</span></div>
@@ -344,7 +347,7 @@ function renderizarInterfaz(dataset) {
 
         <div class="card-slideup-overlay" id="slideup-${index}">
           <div class="slideup-header">
-            <div class="slideup-title"><i class="fa-solid fa-circle-info"></i> ${isEn ? 'Property Overview' : 'Detalles de la Propiedad'}</div>
+            <div class="slideup-title"><i class="fa-solid fa-circle-info"></i> ${escaparHtml(estaDesbloqueado && datosRev?.tituloOriginal ? datosRev.tituloOriginal : (isEn ? 'Property Overview' : 'Detalles de la Propiedad'))}</div>
             <button class="btn-slideup-close" data-action="cerrar-ficha" data-index="${index}" title="${isEn ? 'Close Details' : 'Cerrar Detalles'}"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
@@ -374,6 +377,14 @@ function renderizarInterfaz(dataset) {
                     ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                     ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
                     ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : `<button class="slideup-cta-btn btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="${isEn ? 'Reveal Direct Contact' : 'Revelar contacto directo'}"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Reveal Direct Contact' : 'Revelar Contacto Directo'}</button>`}
+                  </div>
+                  <div class="slideup-next-steps">
+                    <div class="next-steps-title"><i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}</div>
+                    <ul class="next-steps-list">
+                      <li class="next-step-item"><span class="next-step-num">1</span><span><strong>${isEn ? 'Contact:' : 'Contacto:'}</strong> ${isEn ? 'Send pre-formatted WhatsApp message or place direct phone call.' : 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.'}</span></li>
+                      <li class="next-step-item"><span class="next-step-num">2</span><span><strong>${isEn ? 'Tour:' : 'Visita:'}</strong> ${isEn ? 'Ask for additional media and arrange property walkthrough.' : 'Pide fotos adicionales y agenda visita presencial al inmueble.'}</span></li>
+                      <li class="next-step-item"><span class="next-step-num">3</span><span><strong>${isEn ? 'Deal:' : 'Acuerdo:'}</strong> ${isEn ? 'Verify title certificate and negotiate with zero agency fees.' : 'Verifica el certificado de tradición y acuerda sin pagar comisión.'}</span></li>
+                    </ul>
                   </div>
                   <span class="slideup-cta-note slideup-cta-note-ok"><i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}</span>
                 </div>

@@ -21,10 +21,15 @@ function obtenerSaludoHorario(fecha = new Date()) {
   }
 }
 
-function generarUrlWhatsApp(waNum, tipoInmueble, ubicacion, fecha = new Date()) {
+function generarUrlWhatsApp(waNum, tipoInmueble, ubicacion, fecha = new Date(), lang = 'es') {
   const tipo = tipoInmueble ? tipoInmueble.toLowerCase() : 'inmueble';
-  const saludo = obtenerSaludoHorario(fecha);
-  const textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
+  let textoMensaje = '';
+  if (lang === 'en') {
+    textoMensaje = `Hello, I am contacting you regarding your property listing for the ${tipo} in ${ubicacion}. I would like to get more details and schedule a viewing if possible. Thank you.`;
+  } else {
+    const saludo = obtenerSaludoHorario(fecha);
+    textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
+  }
   const mensajeWa = encodeURIComponent(textoMensaje);
   return `https://wa.me/${waNum}?text=${mensajeWa}`;
 }
@@ -61,5 +66,14 @@ describe('Plantilla Formal de WhatsApp (Pilar 4.3)', () => {
     const url = generarUrlWhatsApp('573151112233', 'Casa Campestre', 'Chía & Cajicá');
     assert.ok(!url.includes(' ')); // No debe haber espacios en blanco sin codificar
     assert.ok(url.includes('Ch%C3%ADa%20%26%20Cajic%C3%A1'));
+  });
+
+  it('Debe generar la plantilla en inglés cuando lang es "en"', () => {
+    const url = generarUrlWhatsApp('573101234567', 'Penthouse', 'El Poblado, Medellín', new Date(), 'en');
+    assert.ok(url.startsWith('https://wa.me/573101234567?text='));
+    assert.ok(url.includes('Hello%2C%20I%20am%20contacting%20you'));
+    assert.ok(url.includes('regarding%20your%20property%20listing'));
+    assert.ok(url.includes('penthouse'));
+    assert.ok(url.includes('schedule%20a%20viewing'));
   });
 });

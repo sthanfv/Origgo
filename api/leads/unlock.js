@@ -171,7 +171,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const { leadId, contactoCifrado, leadCity } = validation.data;
+    const { leadId, contactoCifrado, leadCity, lang = 'es' } = validation.data;
 
     const leadCatalogo = obtenerLeadPorId(leadId);
     const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
@@ -262,8 +262,13 @@ module.exports = async function handler(req, res) {
         // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
         const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
         const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
-        const saludo = obtenerSaludoHorario();
-        const textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
+        let textoMensaje = '';
+        if (lang === 'en') {
+          textoMensaje = `Hello, I am contacting you regarding your property listing for the ${tipo} in ${ubicacion}. I would like to get more details and schedule a viewing if possible. Thank you.`;
+        } else {
+          const saludo = obtenerSaludoHorario();
+          textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
+        }
         const mensajeWa = encodeURIComponent(textoMensaje);
         whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
       } else if (rawTel) {
