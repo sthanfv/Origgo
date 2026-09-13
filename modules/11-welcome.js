@@ -145,7 +145,18 @@ function cerrarModalOnboarding() {
 document.addEventListener("DOMContentLoaded", () => {
   const btnCloseWelcome = document.getElementById("btnWelcomeCloseIcon");
   if (btnCloseWelcome) {
-    btnCloseWelcome.addEventListener("click", cerrarModalBienvenidaVIP);
+    btnCloseWelcome.addEventListener("click", () => {
+      cerrarModalBienvenidaVIP();
+      if (leadSeleccionado && leadSeleccionado._desdeFicha) {
+        const leadIdx = datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : -1;
+        const indexToUse = leadIdx >= 0 ? leadIdx : leadSeleccionado._fichaIndex;
+        if (typeof indexToUse === 'number' && typeof abrirFichaTecnica === 'function') {
+          abrirFichaTecnica(indexToUse);
+          const cardEl = document.querySelector(`.bento-card[data-index="${indexToUse}"]`);
+          if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
   }
 
   const btnCtaWelcome = document.getElementById("btnWelcomeCta");
@@ -159,8 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
           abrirFichaTecnica(indexToUse);
           const cardEl = document.querySelector(`.bento-card[data-index="${indexToUse}"]`);
           if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const slideupEl = document.getElementById(`slideup-${indexToUse}`);
+          const phoneBox = slideupEl?.querySelector('.unlocked-phone-box');
+          if (phoneBox) setTimeout(() => phoneBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
         }
-        if (typeof ejecutarDesbloqueoLead === 'function') {
+        const yaDesbloqueado = sesionUsuario?.unlockedLeads && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(leadSeleccionado.id);
+        if (typeof ejecutarDesbloqueoLead === 'function' && !yaDesbloqueado) {
           ejecutarDesbloqueoLead(leadSeleccionado, indexToUse);
         }
       }

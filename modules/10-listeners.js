@@ -101,6 +101,13 @@ function configurarListeners() {
         e.stopPropagation();
         manejarContactoWhatsapp(idx);
       }
+
+      const contactLink = e.target.closest('a[href*="wa.me"], a[href^="tel:"]');
+      if (contactLink) {
+        const slideup = contactLink.closest('.card-slideup-overlay');
+        const firstStep = slideup?.querySelector('.next-step-item:first-child');
+        if (firstStep) firstStep.classList.add('completed');
+      }
     });
   }
 

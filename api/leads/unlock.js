@@ -260,8 +260,20 @@ module.exports = async function handler(req, res) {
         telLlamar = `+${waNum}`;
 
         // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
-        const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
-        const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
+        const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || (lang === 'en' ? 'your area' : 'su zona');
+        const tipoRaw = (leadCatalogo?.tipo_inmueble || 'inmueble').toLowerCase();
+        const mapeoTipoEn = {
+          'apartamento': 'apartment',
+          'casa': 'house',
+          'lote': 'lot / land',
+          'oficina': 'office',
+          'local': 'commercial property',
+          'bodega': 'warehouse',
+          'finca': 'country estate',
+          'edificio': 'building',
+          'consultorio': 'medical / office suite'
+        };
+        const tipo = lang === 'en' ? (mapeoTipoEn[tipoRaw] || tipoRaw || 'property') : tipoRaw;
         let textoMensaje = '';
         if (lang === 'en') {
           textoMensaje = `Hello, I am contacting you regarding your property listing for the ${tipo} in ${ubicacion}. I would like to get more details and schedule a viewing if possible. Thank you.`;
@@ -272,9 +284,11 @@ module.exports = async function handler(req, res) {
         const mensajeWa = encodeURIComponent(textoMensaje);
         whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
       } else if (rawTel) {
-        telefonoDisplay = rawTel.includes('...') ? `${rawTel} (Enlace Directo)` : rawTel;
+        telefonoDisplay = rawTel.includes('...')
+          ? (lang === 'en' ? `${rawTel} (Direct Link)` : `${rawTel} (Enlace Directo)`)
+          : rawTel;
       } else {
-        telefonoDisplay = 'Disponible en Anuncio Original';
+        telefonoDisplay = lang === 'en' ? 'Available in Original Listing' : 'Disponible en Anuncio Original';
       }
 
       const enlace = sanitizarUrlServidor(contactoDescifrado?.enlace, HOSTS_ANUNCIOS_PERMITIDOS) || 'https://www.fincaraiz.com.co';
@@ -291,6 +305,46 @@ module.exports = async function handler(req, res) {
         planExpiresAt: userPayload.planExpiresAt || session.planExpiresAt || null,
         role: 'buyer'
       }, JWT_SECRET, 30);
+
+      const siguientesPasos = lang === 'en' ? [
+        {
+          paso: 1,
+          clave: 'contact',
+          titulo: 'Direct Outreach',
+          accion: 'Send pre-formatted WhatsApp message or place direct phone call to owner.'
+        },
+        {
+          paso: 2,
+          clave: 'tour',
+          titulo: 'Schedule Viewing',
+          accion: 'Request additional photos or video walkthrough and coordinate an on-site visit.'
+        },
+        {
+          paso: 3,
+          clave: 'closing',
+          titulo: 'Direct Closing (0% Commission)',
+          accion: 'Review Title Certificate (Certificado de Tradición y Libertad) and agree terms with zero agency fees.'
+        }
+      ] : [
+        {
+          paso: 1,
+          clave: 'contact',
+          titulo: 'Contacto Inmediato',
+          accion: 'Envía el mensaje de WhatsApp preparado o realiza llamada directa al propietario.'
+        },
+        {
+          paso: 2,
+          clave: 'tour',
+          titulo: 'Agendar Visita',
+          accion: 'Pide fotos o videos adicionales y agenda visita presencial al inmueble.'
+        },
+        {
+          paso: 3,
+          clave: 'closing',
+          titulo: 'Cierre Directo (0% Comisión)',
+          accion: 'Verifica el Certificado de Tradición y Libertad y acuerda el precio sin intermediarios.'
+        }
+      ];
 
       return {
         ok: true,
@@ -317,7 +371,8 @@ module.exports = async function handler(req, res) {
           tituloOriginal: contactoDescifrado?.tituloOriginal || null,
           barrioOriginal: contactoDescifrado?.barrioOriginal || null,
           ubicacionCompleta: contactoDescifrado?.ubicacionCompleta || null
-        }
+        },
+        siguientesPasos
       };
     };
 

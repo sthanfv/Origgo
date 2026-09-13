@@ -37,8 +37,9 @@ async function manejarClicDesbloquear(index, opciones = {}) {
  * @param {object} contacto
  * @param {number|undefined} index
  * @param {object|undefined} datosRevelados - Título y ubicación reales (post-desbloqueo)
+ * @param {Array|undefined} siguientesPasos - Protocolo de siguientes pasos bilingüe
  */
-function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
+function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, siguientesPasos) {
   const card = document.querySelector(`.bento-card[data-lead-id="${leadId}"]`) || 
                (typeof index === 'number' ? document.querySelector(`.bento-card[data-index="${index}"]`) : null);
   if (!card) {
@@ -93,8 +94,9 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
         cardBody.appendChild(phoneBar);
       }
     }
+    const telDisplay = contacto.telefonoDisplay || contacto.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio');
     phoneBar.innerHTML = `
-      <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio'))}</strong></span>
+      <span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(telDisplay)}</strong></span>
       <span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(contacto.portal || 'Finca Raíz')}</span>
     `;
   }
@@ -150,10 +152,32 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
     specCards.forEach(sc => {
       const k = sc.querySelector('.slideup-spec-key');
       const v = sc.querySelector('.slideup-spec-val');
-      if (k && v && /contacto|contact/i.test(k.textContent)) {
-        v.innerHTML = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+      if (k && v) {
+        if (/contacto|contact/i.test(k.textContent)) {
+          v.innerHTML = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
+        } else if (/ubicación|location/i.test(k.textContent) && datosRevelados?.ubicacionCompleta) {
+          v.textContent = datosRevelados.ubicacionCompleta;
+        }
       }
     });
+
+    const pasosRender = Array.isArray(siguientesPasos) && siguientesPasos.length > 0
+      ? siguientesPasos
+      : (contacto?._siguientesPasos && Array.isArray(contacto._siguientesPasos)
+        ? contacto._siguientesPasos
+        : (isEn ? [
+            { paso: 1, titulo: 'Contact:', accion: 'Send pre-formatted WhatsApp message or place direct phone call.' },
+            { paso: 2, titulo: 'Tour:', accion: 'Ask for additional media and arrange property walkthrough.' },
+            { paso: 3, titulo: 'Deal:', accion: 'Verify title certificate and negotiate with zero agency fees.' }
+          ] : [
+            { paso: 1, titulo: 'Contacto:', accion: 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.' },
+            { paso: 2, titulo: 'Visita:', accion: 'Pide fotos adicionales y agenda visita presencial al inmueble.' },
+            { paso: 3, titulo: 'Acuerdo:', accion: 'Verifica el certificado de tradición y acuerda sin pagar comisión.' }
+          ]));
+
+    const pasosHtml = pasosRender.map(p => `
+      <li class="next-step-item"><span class="next-step-num">${p.paso}</span><span><strong>${escaparHtml(p.titulo || (p.clave ? p.clave + ':' : ''))}</strong> ${escaparHtml(p.accion || p.descripcion || '')}</span></li>
+    `).join('');
 
     const actionGroup = slideup.querySelector('.slideup-action-group');
     if (actionGroup) {
@@ -161,7 +185,7 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
         <div class="slideup-unlocked-layout">
           <div class="unlocked-phone-box">
             <div class="unlocked-phone-label"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked Contact Details' : 'Datos de Contacto Desbloqueados'}</div>
-            <div class="unlocked-phone-number">${contacto?.telefono ? escaparHtml(contacto.telefono) : (isEn ? 'Fetching contact...' : 'Consultando contacto...')}</div>
+            <div class="unlocked-phone-number">${escaparHtml(contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'Fetching contact...' : 'Consultando contacto...'))}</div>
           </div>
           <div class="slideup-unlocked-row">
             ${contactoSeguro?.whatsappUrl ? `
@@ -183,9 +207,7 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados) {
           <div class="slideup-next-steps">
             <div class="next-steps-title"><i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}</div>
             <ul class="next-steps-list">
-              <li class="next-step-item"><span class="next-step-num">1</span><span><strong>${isEn ? 'Contact:' : 'Contacto:'}</strong> ${isEn ? 'Send pre-formatted WhatsApp message or place direct phone call.' : 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.'}</span></li>
-              <li class="next-step-item"><span class="next-step-num">2</span><span><strong>${isEn ? 'Tour:' : 'Visita:'}</strong> ${isEn ? 'Ask for additional media and arrange property walkthrough.' : 'Pide fotos adicionales y agenda visita presencial al inmueble.'}</span></li>
-              <li class="next-step-item"><span class="next-step-num">3</span><span><strong>${isEn ? 'Deal:' : 'Acuerdo:'}</strong> ${isEn ? 'Verify title certificate and negotiate with zero agency fees.' : 'Verifica el certificado de tradición y acuerda sin pagar comisión.'}</span></li>
+              ${pasosHtml}
             </ul>
           </div>
           <span class="slideup-cta-note slideup-cta-note-ok">
@@ -293,18 +315,23 @@ async function ejecutarDesbloqueoLead(lead, index) {
     cacheContactosDesbloqueados[lead.id] = typeof sanitizarContactoCliente === 'function'
       ? sanitizarContactoCliente(data.contacto)
       : data.contacto;
-    // Cachear datos revelados para re-renderizado futuro
+    // Cachear datos revelados y siguientes pasos para re-renderizado futuro
     if (data.datosRevelados) {
       cacheContactosDesbloqueados[lead.id]._datosRevelados = data.datosRevelados;
+    }
+    if (data.siguientesPasos) {
+      cacheContactosDesbloqueados[lead.id]._siguientesPasos = data.siguientesPasos;
     }
 
     cerrarModalCheckout();
     actualizarBadgeVip();
-    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index, data.datosRevelados);
+    actualizarTarjetaEnElDOM(lead.id, cacheContactosDesbloqueados[lead.id], index, data.datosRevelados, data.siguientesPasos);
 
-    // Si el usuario desbloqueó desde la segunda capa (Ficha Técnica), mantener el drawer abierto
+    // Si el usuario desbloqueó desde la segunda capa (Ficha Técnica), mantener el drawer abierto y enfocar
     if (slideup && (leadSeleccionado?._desdeFicha || slideup.classList.contains('active'))) {
       slideup.classList.add('active');
+      const phoneBox = slideup.querySelector('.unlocked-phone-box');
+      if (phoneBox) setTimeout(() => phoneBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
       if (leadSeleccionado) delete leadSeleccionado._desdeFicha;
     }
 

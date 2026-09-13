@@ -1,10 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 12:49 (GMT-5)
+Última actualización: 2026-09-13 13:02 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-53. **Desbloqueo Integral de Segunda Capa (Ficha Técnica / Slide-Up Drawer), Protocolo de Siguientes Pasos Bilingüe Estructurado y Transición Fluida Post-Venta**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Pérdida de contexto de segunda capa en compra:* Al abrir el checkout desde la ficha técnica (`slideup-cta`), `abrirModalCheckout` sobreescribía `leadSeleccionado` directamente desde el catálogo, borrando los indicadores `_desdeFicha` y `_fichaIndex`.
+      2. *Desincronización y colapso visual tras el pago:* Al completarse el pago (`reclamarSesionPostPago`), se llamaba a `renderizarInterfaz` (recreando el DOM y destruyendo el drawer abierto), y luego `ejecutarDesbloqueoLead` se ejecutaba sin pasar el índice, impidiendo que el drawer mantuviera su estado abierto o hiciera scroll a los datos revelados.
+      3. *Petición redundante en modal de bienvenida:* Al hacer clic en "Ver Teléfono de Mi Inmueble" en el modal de bienvenida VIP, se volvía a disparar `ejecutarDesbloqueoLead` sin verificar si ya había sido desbloqueado.
+      4. *Mezcla de idiomas en plantilla de WhatsApp y backend:* En `/api/leads/unlock`, el tipo de inmueble se inyectaba en español aún cuando `lang === 'en'`, y el endpoint no retornaba el protocolo de `siguientesPasos` condicionado por idioma de forma estructurada.
+      5. *Falta de auto-enfoque y traducción de acciones en la segunda capa:* En la ficha técnica, el teléfono aparecía sin formato legible, los datos no hacían auto-scroll en pantallas pequeñas, y los botones de llamada y ver anuncio no se traducían dinámicamente al alternar idioma.
+    - **Solución Implementada:**
+      1. **Persistencia de Contexto en Checkout (`modules/08-checkout.js`, 488 líneas < 500):**
+         - `abrirModalCheckout` preserva de manera inmutable `_desdeFicha` y `_fichaIndex`.
+         - `reclamarSesionPostPago` pasa el índice exacto a `ejecutarDesbloqueoLead` para activar y enfocar la ficha técnica correspondiente.
+      2. **Transición Cinemática y Cero Peticiones Redundantes (`modules/11-welcome.js`, 263 líneas < 500):**
+         - Al cerrar el modal de bienvenida (con CTA o botón X), se enfoca directamente la segunda capa de la propiedad desbloqueada, realizando scroll suave al contenedor del teléfono sin disparar llamadas duplicadas a la API.
+      3. **Backend con Siguientes Pasos Bilingües y Traducción de Tipos (`api/leads/unlock.js`, 423 líneas < 500):**
+         - Mapeo determinista de tipos de inmuebles al inglés en la plantilla de WhatsApp (`apartment`, `house`, `lot / land`, `office`, etc.).
+         - Objeto estructurado `siguientesPasos` devuelto en la respuesta HTTP condicionado por `lang: 'es' | 'en'`.
+         - `telefonoDisplay` localizado ante anuncios sin celular directo.
+      4. **Segunda Capa Dinámica y Auto-Enfoque (`modules/07-unlock.js`, 404 líneas; `modules/06-cards.js`, 472 líneas; `styles/08-slideup.css`, 473 líneas):**
+         - `actualizarTarjetaEnElDOM` recibe y renderiza `siguientesPasos` dinámicamente, actualiza la ubicación revelada en las especificaciones del drawer y enfoca el scroll automáticamente en el bloque de contacto.
+         - Detección interactiva de clics en WhatsApp o llamada para marcar el Paso 1 como completado.
+      5. **Traducción Integral de Acciones de Segunda Capa (`modules/13-i18n.js`, 487 líneas < 500):**
+         - `traducirSlideupDrawer` actualiza `.cta-call`, `.cta-neutral`, `.btn-call-direct` y `.btn-view-ad-direct` en vivo.
+      6. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: `style.css`, `style.min.css`, `app.js` y `app.min.js` sincronizados.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible de $\le 500$ líneas en todos los archivos.
 
 -52. **Inferencia Contextual Bilingüe en Despacho de Alertas Web Push (Scraper a Portal Web y Suite de Validación)**:
     - **Diagnóstico y Causa Raíz:**

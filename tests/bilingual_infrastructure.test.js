@@ -212,4 +212,28 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
       'Apartamento en Venta — Medellin'
     );
   });
+
+  it('Debe generar el protocolo de siguientesPasos condicionado por idioma (ES/EN)', () => {
+    function generarSiguientesPasos(lang) {
+      return lang === 'en' ? [
+        { paso: 1, clave: 'contact', titulo: 'Direct Outreach' },
+        { paso: 2, clave: 'tour', titulo: 'Schedule Viewing' },
+        { paso: 3, clave: 'closing', titulo: 'Direct Closing (0% Commission)' }
+      ] : [
+        { paso: 1, clave: 'contact', titulo: 'Contacto Inmediato' },
+        { paso: 2, clave: 'tour', titulo: 'Agendar Visita' },
+        { paso: 3, clave: 'closing', titulo: 'Cierre Directo (0% Comisión)' }
+      ];
+    }
+
+    const pasosEn = generarSiguientesPasos('en');
+    assert.equal(pasosEn.length, 3);
+    assert.equal(pasosEn[0].titulo, 'Direct Outreach');
+    assert.equal(pasosEn[2].titulo, 'Direct Closing (0% Commission)');
+
+    const pasosEs = generarSiguientesPasos('es');
+    assert.equal(pasosEs.length, 3);
+    assert.equal(pasosEs[0].titulo, 'Contacto Inmediato');
+    assert.equal(pasosEs[2].titulo, 'Cierre Directo (0% Comisión)');
+  });
 });

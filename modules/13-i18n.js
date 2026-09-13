@@ -407,6 +407,8 @@ function traducirSlideupDrawer() {
   document.querySelectorAll('.slideup-cta-btn:not(.btn-whatsapp-direct):not(.cta-call):not(.cta-neutral)').forEach(btn => {
     btn.innerHTML = `<i class="fa-solid fa-unlock-keyhole"></i> ${dict.slideup_unlock_btn || (isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño')}`;
   });
+  document.querySelectorAll('.slideup-cta-btn.cta-call, .btn-call-direct').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}`; });
+  document.querySelectorAll('.slideup-cta-btn.cta-neutral, .btn-view-ad-direct').forEach(btn => { btn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}`; });
   document.querySelectorAll('.slideup-cta-note:not(.slideup-cta-note-ok)').forEach(note => {
     note.innerHTML = `<i class="fa-solid fa-bolt"></i> ${isEn ? 'Instant access • Zero broker commissions' : 'Acceso al instante • Sin pagar comisiones'}`;
   });

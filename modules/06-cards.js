@@ -299,14 +299,6 @@ function renderizarInterfaz(dataset) {
       mediaHtml = `<img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${visibleIdx < 3 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" />`;
     }
 
-    const detalles = item.detalles || { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", "Ubicación": item.ubicacion || "Colombia", "Tipo": item.tipo_inmueble || "Propiedad Residencial", "Operación": "Venta Directa con Propietario" };
-    const detallesTraducidos = traducirSlideupDetalles(detalles, isEn);
-
-    const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
-    const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
-    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno'].filter(Boolean).join(' ');
-    const searchDataCorpus = normalizarTextoBusqueda(corpusBruto), ciudadNorm = normalizarTextoBusqueda(item.ciudad || ''), barrioNorm = normalizarTextoBusqueda(item.barrio || '');
-
     const estaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(item.id);
     const contacto = estaDesbloqueado ? (cacheContactosDesbloqueados[item.id] || null) : null;
     const contactoSeguro = sanitizarContactoCliente(contacto);
@@ -320,6 +312,14 @@ function renderizarInterfaz(dataset) {
     const tituloBase = traducirTituloCatalogo(item.titulo, isEn);
     const tituloFinal = (estaDesbloqueado && datosRev?.tituloOriginal) ? datosRev.tituloOriginal : tituloBase;
     const dato2Texto = traducirDatoDistribucion(item.dato_2, isEn);
+
+    const detalles = item.detalles ? { ...item.detalles, "Ubicación": ubicacionFinal } : { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", "Ubicación": ubicacionFinal, "Tipo": item.tipo_inmueble || "Propiedad Residencial", "Operación": "Venta Directa con Propietario" };
+    const detallesTraducidos = traducirSlideupDetalles(detalles, isEn);
+
+    const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
+    const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
+    const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno'].filter(Boolean).join(' ');
+    const searchDataCorpus = normalizarTextoBusqueda(corpusBruto), ciudadNorm = normalizarTextoBusqueda(item.ciudad || ''), barrioNorm = normalizarTextoBusqueda(item.barrio || '');
 
     return `
       <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''} ${claseRetrasoEntrada}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}">
@@ -345,7 +345,7 @@ function renderizarInterfaz(dataset) {
                 <div class="spec-item"><span class="spec-label">${escaparHtml(col2Nombre)}</span><span class="spec-value">${escaparHtml(dato2Texto)}</span></div>
               </div>
             </div>
-            ${(estaDesbloqueado && contacto) ? `<div class="card-contact-phone-bar"><span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio'))}</strong></span><span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(portalNombre)}</span></div>` : ''}
+            ${(estaDesbloqueado && contacto) ? `<div class="card-contact-phone-bar"><span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio'))}</strong></span><span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(portalNombre)}</span></div>` : ''}
           </div>
 
           <div class="card-bottom-row">
@@ -400,7 +400,7 @@ function renderizarInterfaz(dataset) {
                 <div class="slideup-unlocked-layout">
                   <div class="unlocked-phone-box">
                     <div class="unlocked-phone-label"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked Contact Details' : 'Datos de Contacto Desbloqueados'}</div>
-                    <div class="unlocked-phone-number">${contacto?.telefono ? escaparHtml(contacto.telefono) : (isEn ? 'Fetching contact...' : 'Consultando contacto...')}</div>
+                    <div class="unlocked-phone-number">${escaparHtml(contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'Fetching contact...' : 'Consultando contacto...'))}</div>
                   </div>
                   <div class="slideup-unlocked-row">
                     ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}

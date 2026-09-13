@@ -53,12 +53,12 @@ function cambiarPestanaCheckout(pestana) {
  * @param {string|null} pestana - Pestaña inicial
  */
 function abrirModalCheckout(index, pestana = null) {
-  if (!wompiScriptCargado) {
-    cargarScriptWompi();
-  }
+  if (!wompiScriptCargado) cargarScriptWompi();
 
   if (typeof index === 'number' && datosActuales?.leads && datosActuales.leads[index]) {
-    leadSeleccionado = datosActuales.leads[index];
+    const prevDesdeFicha = Boolean(leadSeleccionado?._desdeFicha);
+    const prevFichaIdx = typeof leadSeleccionado?._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : index;
+    leadSeleccionado = { ...datosActuales.leads[index], _desdeFicha: prevDesdeFicha, _fichaIndex: prevFichaIdx };
   }
 
   const modal = document.getElementById("checkoutModal");
@@ -269,7 +269,10 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
         if (typeof abrirModalBienvenidaVIP === 'function') {
           abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
         }
-        if (leadSeleccionado) await ejecutarDesbloqueoLead(leadSeleccionado);
+        if (leadSeleccionado) {
+          const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
+          await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+        }
         return true;
       }
 
