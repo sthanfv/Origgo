@@ -1,10 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 09:50 (GMT-5)
+Última actualización: 2026-09-13 11:00 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-44. **Fase 1 (Frontend): Optimización Responsiva y Paralela de Imágenes (LCP Crítico, Decodificación Asíncrona, Carga Prioritaria y Fallback Shimmer SVG Corporativo)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Priorización subóptima del LCP:* Las imágenes solo tenían prioridad alta en los primeros 2 índices y carecían de `loading="eager"`, lo que en conexiones móviles 3G/4G demoraba la descarga inicial de las tarjetas visibles.
+      2. *Bloqueo potencial de CDNs externas:* Si un portal inmobiliario externo bloqueaba hotlinking o retornaba 404, la tarjeta quedaba con marco roto o espacio en blanco sin feedback visual.
+      3. *Contenedor duplicado:* En `modules/06-cards.js`, `mediaHtml` envolvía la imagen en un `.card-media-wrapper` redundante dentro del contenedor principal del mismo nombre.
+    - **Solución Implementada:**
+      1. **Carga Prioritaria y Paralela en Bento Grid (`modules/06-cards.js`, 432 líneas < 500):**
+         - Las 3 primeras tarjetas visibles (*above-the-fold*, `index < 3`) se configuran con `fetchpriority="high"`, `loading="eager"` y `decoding="async"`.
+         - A partir de la 4ta tarjeta (`index >= 3`) y las fotos secundarias del carrusel (`fIdx > 0`), se inyecta `loading="lazy"`, `fetchpriority="low"` y `decoding="async"`.
+         - Se eliminó el `.card-media-wrapper` redundante dentro de `mediaHtml`.
+      2. **Fallback Resiliente Shimmer SVG Corporativo (`FALLBACK_INMUEBLE_SVG` y `manejarErrorImagenLead`):**
+         - Data URI SVG esmeralda (`#10b981`) de alta resolución optimizado a nivel de bytes, independiente de la red.
+         - Manejador seguro `onerror="manejarErrorImagenLead(this)"` que neutraliza el evento para prevenir bucles y aplica `.img-fallback-applied` con `object-fit: cover`.
+      3. **Decodificación Asíncrona en Carrusel y Precarga (`modules/05-carousel.js`, 154 líneas < 500):**
+         - En `actualizarVistaCarrusel`, tanto la imagen activada bajo demanda como la precarga del siguiente slide asignan `img.decoding = 'async'` antes de inyectar el `src`.
+      4. **Estilo de Resiliencia Visual (`styles/16-utilities.css`, 289 líneas < 500):**
+         - Regla `.img-fallback-applied` que asegura cobertura perfecta y filtro cromático armónico con el tema.
+      5. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: sincronizados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas).
 
 -43. **Internacionalización Integral del Sistema de Notificaciones Flotantes (Toasts y Push Prompts), Clarificación de Pagos Internacionales con Wompi y Service Worker PWA (`origgo-v9-20260913`)**:
     - **Diagnóstico y Causa Raíz:**

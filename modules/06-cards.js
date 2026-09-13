@@ -6,6 +6,49 @@
  */
 
 /**
+ * Data URI del SVG vectorial corporativo de fallback en caso de indisponibilidad de imagen externa.
+ * Optimizado a nivel de bytes, no bloqueante y 100% resiliente sin dependencia de red.
+ */
+const FALLBACK_INMUEBLE_SVG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">' +
+  '<defs>' +
+    '<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">' +
+      '<stop offset="0%" stop-color="#0b131e"/>' +
+      '<stop offset="50%" stop-color="#111b2b"/>' +
+      '<stop offset="100%" stop-color="#060a11"/>' +
+    '</linearGradient>' +
+    '<radialGradient id="glow" cx="50%" cy="45%" r="55%">' +
+      '<stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>' +
+      '<stop offset="100%" stop-color="#10b981" stop-opacity="0"/>' +
+    '</radialGradient>' +
+  '</defs>' +
+  '<rect width="800" height="500" fill="url(#bg)"/>' +
+  '<rect width="800" height="500" fill="url(#glow)"/>' +
+  '<g transform="translate(400, 215)" text-anchor="middle">' +
+    '<circle cx="0" cy="-10" r="50" fill="#10b981" fill-opacity="0.08" stroke="#10b981" stroke-width="2" stroke-dasharray="5 3"/>' +
+    '<path d="M-26 10 L0 -16 L26 10 L17 10 L17 28 L-17 28 L-17 10 Z" fill="none" stroke="#10b981" stroke-width="3" stroke-linejoin="round"/>' +
+    '<rect x="-6" y="14" width="12" height="14" fill="#10b981" fill-opacity="0.3" rx="1"/>' +
+    '<text y="78" fill="#e2e8f0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5">ORIGGO DIRECT</text>' +
+    '<text y="100" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500" letter-spacing="1">VERIFIED PROPERTY</text>' +
+  '</g>' +
+  '</svg>'
+);
+
+/**
+ * Manejador resiliente de fallo de carga de imagen de lead.
+ * Sustituye de inmediato la imagen rota por un placeholder SVG esmeralda corporativo.
+ * @param {HTMLImageElement} imgEl
+ */
+function manejarErrorImagenLead(imgEl) {
+  if (!imgEl || imgEl._fallbackAplicado) return;
+  imgEl._fallbackAplicado = true;
+  imgEl.onerror = null;
+  imgEl.src = FALLBACK_INMUEBLE_SVG;
+  imgEl.classList.add('img-fallback-applied');
+}
+window.manejarErrorImagenLead = manejarErrorImagenLead;
+
+/**
  * Formatea un precio con el símbolo $ separado sin mostrar jamás 'COP'.
  * @param {string} precioStr
  * @returns {string}
@@ -216,18 +259,17 @@ function renderizarInterfaz(dataset) {
     const tieneMultiplesFotos = Array.isArray(item.imagenes) && item.imagenes.length > 1;
     const fotos = tieneMultiplesFotos ? item.imagenes : [imgUrl];
 
-    let mediaHtml = '<div class="card-media-wrapper">';
+    let mediaHtml = '';
     if (tieneMultiplesFotos) {
-      mediaHtml += `<div class="carousel-track" id="carousel-${index}">
-        ${fotos.map((foto, fIdx) => `<div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}"><img ${fIdx === 0 ? `src="${escaparHtml(foto)}"` : `data-src="${escaparHtml(foto)}"`} alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" ${index < 2 && fIdx === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" /></div>`).join('')}
+      mediaHtml = `<div class="carousel-track" id="carousel-${index}">
+        ${fotos.map((foto, fIdx) => `<div class="carousel-slide ${fIdx === 0 ? 'active' : ''}" data-slide="${fIdx}"><img ${fIdx === 0 ? `src="${escaparHtml(foto)}"` : `data-src="${escaparHtml(foto)}"`} alt="${escaparHtml(item.titulo)} - Foto ${fIdx + 1}" class="carousel-img" ${index < 3 && fIdx === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" /></div>`).join('')}
         <button class="carousel-nav-btn prev" data-action="carrusel-prev" data-index="${index}" data-total="${fotos.length}" title="${isEn ? 'Previous photo' : 'Foto Anterior'}"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="carousel-nav-btn next" data-action="carrusel-next" data-index="${index}" data-total="${fotos.length}" title="${isEn ? 'Next photo' : 'Siguiente Foto'}"><i class="fa-solid fa-chevron-right"></i></button>
         <div class="carousel-dots" id="dots-${index}">${fotos.map((_, fIdx) => `<span class="carousel-dot ${fIdx === 0 ? 'active' : ''}" data-dot="${fIdx}"></span>`).join('')}</div>
       </div>`;
     } else {
-      mediaHtml += `<img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />`;
+      mediaHtml = `<img src="${escaparHtml(imgUrl)}" alt="${escaparHtml(item.titulo)}" class="card-static-img" ${index < 3 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy" fetchpriority="low"'} decoding="async" onerror="manejarErrorImagenLead(this)" />`;
     }
-    mediaHtml += '</div>';
 
     const detalles = item.detalles || { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", "Ubicación": item.ubicacion || "Colombia", "Tipo": item.tipo_inmueble || "Propiedad Residencial", "Operación": "Venta Directa con Propietario" };
     const detallesTraducidos = traducirSlideupDetalles(detalles, isEn);

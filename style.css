@@ -6096,6 +6096,16 @@ main {
   transform: translateY(-1px);
 }
 
+/* ═══════════════════════════════════════════════════
+   FALLBACK RESILIENTE DE IMÁGENES DE INMUEBLE
+   ═══════════════════════════════════════════════════ */
+.img-fallback-applied {
+  object-fit: cover !important;
+  background-color: var(--bg-card) !important;
+  filter: saturate(1.05);
+  transition: opacity 0.3s ease;
+}
+
 
 /**
  * 🔔 ESTILOS DEL MODAL DE RADAR WEB PUSH (styles/17-push-modal.css)

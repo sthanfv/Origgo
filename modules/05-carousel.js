@@ -50,6 +50,7 @@ function actualizarVistaCarrusel(cardIndex, activeIndex) {
       // Carga bajo demanda de la foto activa si aún no se ha descargado
       const img = slide.querySelector('img[data-src]');
       if (img) {
+        img.decoding = 'async';
         img.src = img.dataset.src;
         img.removeAttribute('data-src');
       }
@@ -63,6 +64,7 @@ function actualizarVistaCarrusel(cardIndex, activeIndex) {
     const nextIdx = (activeIndex + 1) % slides.length;
     const nextImg = slides[nextIdx]?.querySelector('img[data-src]');
     if (nextImg) {
+      nextImg.decoding = 'async';
       nextImg.src = nextImg.dataset.src;
       nextImg.removeAttribute('data-src');
     }
