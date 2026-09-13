@@ -126,33 +126,37 @@ function inicializarEfectosPremium() {
     }, { passive: true });
   }
 
-  // 4. Motor Parallax de Bajo Consumo
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        // Seleccionamos las imágenes renderizadas
-        const images = document.querySelectorAll('.carousel-img, .card-static-img');
-        const windowHeight = window.innerHeight;
+  // 4. Motor Parallax GPU sin Forced Reflow (desactivado en pantallas táctiles/móviles para 60fps)
+  const esTactilOMovil = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768;
+  const prefiereMenorMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        images.forEach(img => {
-          const parent = img.closest('.bento-card');
-          if (parent) {
-            const rect = parent.getBoundingClientRect();
-            // Ejecutar física SOLO si la tarjeta está visible en pantalla
+  if (!esTactilOMovil && !prefiereMenorMovimiento) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const cards = document.querySelectorAll('.bento-card.revealed');
+          const windowHeight = window.innerHeight;
+          // Fase 1: Lecturas en lote (Read Phase)
+          const updates = [];
+          cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
             if (rect.top < windowHeight && rect.bottom > 0) {
-              // Calcular porcentaje de posición y mover de -7.5% a 7.5%
-              const yPos = ((rect.top / windowHeight) * 15) - 7.5; 
-              // translate3d activa el procesador gráfico (GPU) directamente
-              img.style.transform = `translate3d(0, ${yPos}%, 0)`;
+              const yPos = ((rect.top / windowHeight) * 15) - 7.5;
+              const img = card.querySelector('.carousel-slide.active img, .card-static-img');
+              if (img) updates.push({ img, yPos });
             }
-          }
+          });
+          // Fase 2: Escrituras en lote (Write Phase - Cero Forced Reflow)
+          updates.forEach(({ img, yPos }) => {
+            img.style.transform = `translate3d(0, ${yPos}%, 0)`;
+          });
+          ticking = false;
         });
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 
   // 5. Lógica del Menú Lateral Móvil (Off-Canvas)
   const sideMenu = document.getElementById('sideMenu');

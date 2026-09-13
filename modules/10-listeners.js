@@ -470,4 +470,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
+  const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
+  if (waConfig) {
+    document.querySelectorAll('a[href*="wa.me/"]').forEach((a) => {
+      a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`);
+    });
+  }
 });

@@ -44,8 +44,8 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Carrusel fotográfico y gestos táctiles** | [`modules/05-carousel.js`](modules/05-carousel.js) | Swipe táctil en móvil, drawer de ficha |
 | **Renderizado Bento Grid y tarjetas** | [`modules/06-cards.js`](modules/06-cards.js) | `renderizarTarjetas()`, skeletons, botón ver anuncio |
 | **Lógica de desbloqueo y revelación de título** | [`modules/07-unlock.js`](modules/07-unlock.js) | `actualizarTarjetaEnElDOM()`, datos revelados |
-| **Checkout, planes de precios y widget Wompi** | [`modules/08-checkout.js`](modules/08-checkout.js) | Integración Wompi widget, selección de planes |
-| **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax y animaciones |
+| **Checkout, planes y reconciliación Wompi** | [`modules/08-checkout.js`](modules/08-checkout.js) | Integración Wompi widget, reintentos post-pago, planes |
+| **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax sin reflow y temas |
 | **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
 | **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
 | **Alertas Web Push nativas PWA (Cero variables)** | [`modules/12-push.js`](modules/12-push.js) | `activarNotificacionesPush()`, `inicializarBotonPush()` |

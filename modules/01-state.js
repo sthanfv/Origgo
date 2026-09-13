@@ -40,7 +40,7 @@ async function inicializarSesionUsuario() {
   // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
   const urlParams = new URLSearchParams(window.location.search);
   const recoveryToken = urlParams.get('recovery_token');
-  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
 
   if (recoveryToken) {
@@ -106,6 +106,7 @@ async function inicializarSesionUsuario() {
       }
       if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
+        localStorage.removeItem('origgo_pending_ref');
         const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
         delete sesionUsuario.pin;

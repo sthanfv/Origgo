@@ -176,7 +176,7 @@ async function inicializarSesionUsuario() {
   // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
   const urlParams = new URLSearchParams(window.location.search);
   const recoveryToken = urlParams.get('recovery_token');
-  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
 
   if (recoveryToken) {
@@ -242,6 +242,7 @@ async function inicializarSesionUsuario() {
       }
       if (res.ok && data && data.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
+        localStorage.removeItem('origgo_pending_ref');
         const pinNuevo = data.user?.pin || null;
         sesionUsuario = { ...data.user, token: data.token };
         delete sesionUsuario.pin;
@@ -2286,21 +2287,15 @@ async function manejarContactoWhatsapp(index) {
 let pagoWompiEnProgreso = false;
 
 function generarIdempotencyKeyPago() {
-  const cryptoObj = window.crypto || window.msCrypto;
-  if (cryptoObj && typeof cryptoObj.randomUUID === 'function') {
-    return cryptoObj.randomUUID();
-  }
-
-  if (!cryptoObj || typeof cryptoObj.getRandomValues !== 'function') {
-    throw new Error('Tu navegador no permite crear una orden segura. Actualiza el navegador e intenta de nuevo.');
-  }
-
-  const bytes = new Uint8Array(16);
-  cryptoObj.getRandomValues(bytes);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  const c = window.crypto || window.msCrypto;
+  if (c?.randomUUID) return c.randomUUID();
+  if (!c?.getRandomValues) throw new Error('Navegador incompatible para pagos seguros.');
+  const b = new Uint8Array(16);
+  c.getRandomValues(b);
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
 /**
@@ -2335,23 +2330,18 @@ function cambiarPestanaCheckout(pestana) {
   const panelPerfil = document.getElementById('panelUsuarioActivo');
   const tabsBar = document.getElementById('checkoutTabsBar');
 
-  if (panelComprar) panelComprar.classList.remove('active');
-  if (panelPin) panelPin.classList.remove('active');
-  if (panelPerfil) panelPerfil.classList.remove('active');
-  if (tabMiCuenta) tabMiCuenta.classList.remove('active');
-  if (tabComprar) tabComprar.classList.remove('active');
-  if (tabPin) tabPin.classList.remove('active');
+  [panelComprar, panelPin, panelPerfil, tabMiCuenta, tabComprar, tabPin].forEach(el => el?.classList.remove('active'));
   if (tabsBar) tabsBar.style.display = 'flex';
 
   if (pestana === 'comprar') {
-    if (tabComprar) tabComprar.classList.add('active');
-    if (panelComprar) panelComprar.classList.add('active');
+    tabComprar?.classList.add('active');
+    panelComprar?.classList.add('active');
   } else if (pestana === 'tengo-pin') {
-    if (tabPin) tabPin.classList.add('active');
-    if (panelPin) panelPin.classList.add('active');
+    tabPin?.classList.add('active');
+    panelPin?.classList.add('active');
   } else if (pestana === 'perfil' || pestana === 'mi-cuenta') {
-    if (tabMiCuenta) tabMiCuenta.classList.add('active');
-    if (panelPerfil) panelPerfil.classList.add('active');
+    tabMiCuenta?.classList.add('active');
+    panelPerfil?.classList.add('active');
   }
 }
 
@@ -2522,11 +2512,75 @@ function abrirModalCheckout(index, pestana = null) {
  * Cierra el modal de checkout.
  */
 function cerrarModalCheckout() {
-  const modal = document.getElementById("checkoutModal");
-  if (modal) {
-    modal.classList.remove("active");
-  }
+  document.getElementById("checkoutModal")?.classList.remove("active");
   document.body.style.overflow = "";
+}
+
+/**
+ * Reconcilia la acreditación del pago con reintentos para mitigar latencias de pasarela.
+ */
+async function reclamarSesionPostPago(orderData, productType, ciudad) {
+  mostrarNotificacionToast('Confirmando acreditación de pago con tu banco...', 'info', { title: 'Verificando saldo', duration: 4500 });
+  const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
+  const headersClaim = { 'Content-Type': 'application/json' };
+  if (tokenGuardado) headersClaim.Authorization = `Bearer ${tokenGuardado}`;
+
+  for (let intento = 1; intento <= 3; intento++) {
+    try {
+      const claimRes = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: headersClaim,
+        body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
+      });
+      const claimText = await claimRes.text();
+      let claimData = null;
+      try { claimData = JSON.parse(claimText); } catch (_) {}
+
+      if (claimRes.status === 202 && claimData?.requiresLogin) {
+        mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        abrirModalCheckout(undefined, 'tengo-pin');
+        return true;
+      }
+
+      if (claimRes.ok && claimData?.ok && claimData?.token) {
+        localStorage.setItem('hunter_pro_token', claimData.token);
+        localStorage.removeItem('origgo_pending_ref');
+        const pinNuevo = claimData.user?.pin || null;
+        sesionUsuario = { ...claimData.user, token: claimData.token };
+        delete sesionUsuario.pin;
+        actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
+        renderizarInterfaz(datosActuales);
+
+        const notif = typeof generarMensajeBienvenidaToast === 'function'
+          ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
+          : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
+        mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
+
+        if (typeof abrirModalBienvenidaVIP === 'function') {
+          abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
+        }
+        if (leadSeleccionado) await ejecutarDesbloqueoLead(leadSeleccionado);
+        return true;
+      }
+
+      if (claimRes.status === 403 && intento < 3) {
+        await new Promise(r => setTimeout(r, 1500));
+        continue;
+      }
+    } catch (errClaim) {
+      registrarLogDesarrollo('warn', `[Claim Intento ${intento}] Error de red:`, errClaim);
+      if (intento < 3) await new Promise(r => setTimeout(r, 1500));
+    }
+  }
+
+  localStorage.setItem('origgo_pending_ref', orderData.reference);
+  mostrarNotificacionToast(
+    `Pago recibido (Ref: ${orderData.reference}). Tu banco está procesando la confirmación. Si no se refleja, pulsa Restaurar Cuenta.`,
+    'warning',
+    { title: 'Confirmación en proceso', duration: 9000 }
+  );
+  return false;
 }
 
 /**
@@ -2660,61 +2714,26 @@ async function ejecutarPagoWompi() {
 
       checkout.open(async (result) => {
         const trx = result?.transaction;
-        if (trx && trx.status === 'APPROVED') {
-          try {
-            const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
-            const headersClaim = { 'Content-Type': 'application/json' };
-            if (tokenGuardado) {
-              headersClaim.Authorization = `Bearer ${tokenGuardado}`;
-            }
-
-            const claimRes = await fetch('/api/auth/session', {
-              method: 'POST',
-              headers: headersClaim,
-              body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference })
-            });
-            const claimText = await claimRes.text();
-            let claimData = null;
-            try { claimData = JSON.parse(claimText); } catch (_) { /* Respuesta no JSON */ }
-            if (claimRes.status === 202 && claimData?.requiresLogin) {
-              mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
-              abrirModalCheckout(undefined, 'tengo-pin');
-              return;
-            }
-            if (claimRes.ok && claimData && claimData.ok && claimData.token) {
-              localStorage.setItem('hunter_pro_token', claimData.token);
-              const pinNuevo = claimData.user?.pin || null;
-              sesionUsuario = { ...claimData.user, token: claimData.token };
-              delete sesionUsuario.pin;
-              actualizarBadgeVip();
-              sincronizarFiltroCiudadUsuario();
-              renderizarInterfaz(datosActuales);
-
-              const notif = typeof generarMensajeBienvenidaToast === 'function'
-                ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
-                : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
-              mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
-
-              // Abrir modal de bienvenida y beneficios VIP
-              if (typeof abrirModalBienvenidaVIP === 'function') {
-                abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
-              }
-
-              if (leadSeleccionado) {
-                await ejecutarDesbloqueoLead(leadSeleccionado);
-              }
-            }
-          } catch (errClaim) {
-            registrarLogDesarrollo('warn', '[Wompi Callback] Error reclamando sesión:', errClaim);
-          }
+        if (trx?.status === 'APPROVED') {
+          await reclamarSesionPostPago(orderData, productType, ciudad);
+        } else if (trx?.status === 'PENDING') {
+          localStorage.setItem('origgo_pending_ref', orderData.reference);
+          mostrarNotificacionToast(
+            `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
+            'info',
+            { title: 'Pago en Validación (PSE / Nequi)', duration: 8500 }
+          );
+        } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
+          mostrarNotificacionToast('La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.', 'error', { title: 'Pago Rechazado', duration: 7500 });
         }
       });
       return;
     }
 
-    // Fallback si la CDN de Wompi estuviera caída
+    // Fallback comercial si la CDN de Wompi estuviera inaccesible
     const msg = encodeURIComponent(`Hola Origgo, deseo activar ${orderData.productName} para el celular ${celular}. Ref: ${orderData.reference}`);
-    window.open(`https://wa.me/573001234567?text=${msg}`, '_blank', 'noopener,noreferrer');
+    const whatsappNum = window.PORTAL_CONFIG?.contacto?.whatsapp || '573001234567';
+    window.open(`https://wa.me/${whatsappNum}?text=${msg}`, '_blank', 'noopener,noreferrer');
     cerrarModalCheckout();
   } catch (err) {
     registrarLogDesarrollo('error', '[Pago Wompi] Error:', err);
@@ -2737,22 +2756,14 @@ async function ejecutarPagoWompi() {
 
 // Inicialización de Listeners Propios de Pestañas y Acordeón en Checkout
 document.addEventListener("DOMContentLoaded", () => {
-  const tabMiCuenta = document.getElementById("tabBtnMiCuenta");
-  if (tabMiCuenta) {
-    tabMiCuenta.addEventListener("click", () => cambiarPestanaCheckout('mi-cuenta'));
-  }
-
-  const btnToggleBenefits = document.getElementById("btnToggleUserBenefits");
-  const accordionBenefits = document.getElementById("userBenefitsAccordion");
-  if (btnToggleBenefits && accordionBenefits) {
-    btnToggleBenefits.addEventListener("click", () => {
-      accordionBenefits.classList.toggle("active");
-      const isActive = accordionBenefits.classList.contains("active");
-      btnToggleBenefits.innerHTML = isActive 
-        ? '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios' 
-        : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía';
-    });
-  }
+  document.getElementById("tabBtnMiCuenta")?.addEventListener("click", () => cambiarPestanaCheckout('mi-cuenta'));
+  const btnToggle = document.getElementById("btnToggleUserBenefits");
+  const acc = document.getElementById("userBenefitsAccordion");
+  btnToggle?.addEventListener("click", () => {
+    acc?.classList.toggle("active");
+    const active = acc?.classList.contains("active");
+    btnToggle.innerHTML = active ? '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía';
+  });
 });
 
 
@@ -2884,33 +2895,37 @@ function inicializarEfectosPremium() {
     }, { passive: true });
   }
 
-  // 4. Motor Parallax de Bajo Consumo
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        // Seleccionamos las imágenes renderizadas
-        const images = document.querySelectorAll('.carousel-img, .card-static-img');
-        const windowHeight = window.innerHeight;
+  // 4. Motor Parallax GPU sin Forced Reflow (desactivado en pantallas táctiles/móviles para 60fps)
+  const esTactilOMovil = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768;
+  const prefiereMenorMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        images.forEach(img => {
-          const parent = img.closest('.bento-card');
-          if (parent) {
-            const rect = parent.getBoundingClientRect();
-            // Ejecutar física SOLO si la tarjeta está visible en pantalla
+  if (!esTactilOMovil && !prefiereMenorMovimiento) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const cards = document.querySelectorAll('.bento-card.revealed');
+          const windowHeight = window.innerHeight;
+          // Fase 1: Lecturas en lote (Read Phase)
+          const updates = [];
+          cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
             if (rect.top < windowHeight && rect.bottom > 0) {
-              // Calcular porcentaje de posición y mover de -7.5% a 7.5%
-              const yPos = ((rect.top / windowHeight) * 15) - 7.5; 
-              // translate3d activa el procesador gráfico (GPU) directamente
-              img.style.transform = `translate3d(0, ${yPos}%, 0)`;
+              const yPos = ((rect.top / windowHeight) * 15) - 7.5;
+              const img = card.querySelector('.carousel-slide.active img, .card-static-img');
+              if (img) updates.push({ img, yPos });
             }
-          }
+          });
+          // Fase 2: Escrituras en lote (Write Phase - Cero Forced Reflow)
+          updates.forEach(({ img, yPos }) => {
+            img.style.transform = `translate3d(0, ${yPos}%, 0)`;
+          });
+          ticking = false;
         });
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 
   // 5. Lógica del Menú Lateral Móvil (Off-Canvas)
   const sideMenu = document.getElementById('sideMenu');
@@ -3713,6 +3728,14 @@ document.addEventListener("DOMContentLoaded", () => {
       navigator.serviceWorker.register("./sw.js").catch((err) => {
         registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err);
       });
+    });
+  }
+
+  // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
+  const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
+  if (waConfig) {
+    document.querySelectorAll('a[href*="wa.me/"]').forEach((a) => {
+      a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`);
     });
   }
 });

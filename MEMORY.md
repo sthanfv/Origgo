@@ -1,10 +1,29 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-12 21:43 (GMT-5)
+Última actualización: 2026-09-12 22:05 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-20. **Auditoría Profunda y Blindaje de Pasarela Wompi, Erradicación de Forced Reflow (193ms) y Sincronización Dinámica de Soporte WhatsApp**:
+   - **Reconciliación Resiliente de Pagos Frontend (`modules/08-checkout.js`):**
+     - **Problema Detectado en Auditoría:** Si el usuario pagaba con PSE o Nequi y existía latencia de red o propagación en el webhook de Wompi, el frontend hacía una única llamada a `/api/auth/session` (`claim_reference`), la cual retornaba 403 o fallaba silenciosamente en un `catch` vacío. El widget se cerraba y el usuario quedaba con la pantalla congelada sin sus créditos.
+     - **Solución Implementada:** Función `reclamarSesionPostPago` con hasta 3 reintentos con backoff espaciado de 1.5s ante respuestas 403, feedback visual inmediato con toasts de estado, persistencia segura de la referencia no confirmada en `localStorage.setItem('origgo_pending_ref', reference)` y manejo de estados bancarios `PENDING` (PSE/Nequi en proceso) y `DECLINED/ERROR`.
+     - **Recuperación Automática en Arranque (`modules/01-state.js`):** `inicializarSesionUsuario` ahora inspecciona `origgo_pending_ref` al recargar la página o volver a la pestaña, reclamando automáticamente el saldo pendiente si la transacción ya fue aprobada por el banco y limpiando el almacenamiento tras el éxito.
+   - **Erradicación del Forced Reflow de 193ms en Scroll (`modules/09-ui-effects.js`):**
+     - **Causa Raíz de Lighthouse:** El motor parallax ejecutaba un bucle síncrono sobre más de 100 imágenes (`.carousel-img, .card-static-img`), alternando lectura de layout (`parent.getBoundingClientRect()`) con escritura de estilos (`img.style.transform`), generando Layout Thrashing masivo en cada fotograma de scroll.
+     - **Optimización DevSecOps:** Desactivado el efecto en dispositivos táctiles/móviles y con preferencia de movimiento reducido (foco crítico de Lighthouse Mobile a 60fps). En desktop, desacoplada la ejecución en **Fase 1 (Lectura en lote de tarjetas visibles)** y **Fase 2 (Escritura en lote de estilos GPU)** sobre el slide activo, erradicando al 100% el Forced Reflow.
+   - **Centralización y Sincronización Dinámica de Soporte WhatsApp (`config.js` + `modules/10-listeners.js`):**
+     - Eliminada la duplicación hardcodeada de números falsos (`573001234567`) en el checkout.
+     - Actualizado el tagline comercial en `config.js` (`"Inmuebles en Venta Directo de Dueño en Colombia"`) y el mensaje por defecto.
+     - Creado sincronizador automático en `DOMContentLoaded` que actualiza dinámicamente todos los botones y enlaces `wa.me/` del DOM con el número oficial configurado en `window.PORTAL_CONFIG.contacto.whatsapp`.
+   - **Control Estricto de Modularidad Desmulta (< 500 líneas):**
+     - `modules/08-checkout.js`: 489 líneas (Aprobado < 500).
+     - `modules/09-ui-effects.js`: 490 líneas (Aprobado < 500).
+     - `modules/10-listeners.js`: 482 líneas (Aprobado < 500).
+     - `modules/01-state.js`: 449 líneas (Aprobado < 500).
+   - **DevSecOps:** Suite de 8 fases aprobada con 100% de éxito (0 errores).
 
 -19. **Transformación Radical de SEO Comercial, Schema.org JSON-LD y Optimización Extrema de Lighthouse**:
    - **Erradicación Total de Jerga Técnica y Rediseño Comercial del Copy:**

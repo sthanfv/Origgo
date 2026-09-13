@@ -5,7 +5,7 @@
 
 const PORTAL_CONFIG = {
   nombrePlataforma: "Origgo",
-  tagline: "Terminal de Oportunidades Directas y Arbitraje",
+  tagline: "Inmuebles en Venta Directo de Dueño en Colombia",
   moneda: "COP",
   precioMembresiaCop: 89000,
   precioMembresiaFormateado: "$ 89.000 / mes",
@@ -19,7 +19,7 @@ const PORTAL_CONFIG = {
   // Canales de contacto y soporte comercial
   contacto: {
     whatsapp: "573001234567",
-    mensajeWhatsapp: "Hola, deseo activar mi suscripción a la Terminal VIP de Origgo."
+    mensajeWhatsapp: "Hola, deseo consultar sobre los planes y opciones directas en Origgo."
   },
 
   // Catálogo en Vivo en Cloudflare R2 (Object Storage S3 en Tiempo Real sin Egress Fee)
