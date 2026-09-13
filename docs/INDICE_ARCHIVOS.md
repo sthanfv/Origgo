@@ -99,6 +99,7 @@
 | `lib/crypto.js` | Criptografía: JWT, AES-256-GCM, generación de PIN seguro |
 | `lib/cors.js` | CORS seguro con whitelist de dominios |
 | `lib/rate-limiter.js` | Rate limiting por IP con ventanas deslizantes y Upstash Redis distribuido |
+| `lib/idempotency.js` | Idempotencia distribuida con Upstash Redis REST, candados atómicos NX y fail-safe |
 | `lib/validation.js` | Esquemas Zod para validación estricta de inputs |
 | `lib/leads.js` | Índice de leads por ID desde archivos JSON |
 | `lib/push-subscriptions.js` | Almacén y persistencia de suscripciones Web Push con deduplicación |

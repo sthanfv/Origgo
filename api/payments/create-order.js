@@ -14,6 +14,7 @@ const { aplicarCorsSeguro } = require('../../lib/cors');
 const { createOrderSchema, validateBody } = require('../../lib/validation');
 const { verifyJwt } = require('../../lib/crypto');
 const { requireEnv } = require('../../lib/env');
+const { ejecutarConIdempotencia } = require('../../lib/idempotency');
 
 const JWT_SECRET = requireEnv('JWT_SECRET', {
   testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
@@ -131,24 +132,6 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'IDEMPOTENCY_KEY_REQUERIDA' });
     }
 
-    const ordenIdempotente = await db.getPendingOrderByIdempotencyKey(idempotencyKey);
-    if (ordenIdempotente) {
-      const publicKeyCached = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
-      const integritySecretCached = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
-      const integrityChainCached = `${ordenIdempotente.reference}${ordenIdempotente.amountInCents}${ordenIdempotente.currency || 'COP'}${integritySecretCached}`;
-      const signatureCached = crypto.createHash('sha256').update(integrityChainCached).digest('hex');
-      return res.status(200).json({
-        ok: true,
-        reference: ordenIdempotente.reference,
-        amountInCents: ordenIdempotente.amountInCents,
-        currency: ordenIdempotente.currency || 'COP',
-        signature: signatureCached,
-        publicKey: publicKeyCached,
-        productName: ordenIdempotente.productName,
-        idempotent: true
-      });
-    }
-
     const bearer = (headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
     const sesionActual = bearer ? verifyJwt(bearer, JWT_SECRET) : null;
     if (sesionActual?.phone && sesionActual.phone !== normPhone) {
@@ -158,7 +141,6 @@ module.exports = async function handler(req, res) {
         message: 'El número de WhatsApp no coincide con la sesión activa.'
       });
     }
-    const cuentaExistente = await db.getUserByPhone(normPhone);
 
     const producto = PRODUCT_CATALOG[productType];
     if (!producto) {
@@ -168,58 +150,86 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const ciudadLimpia = ciudad ? ciudad.trim() : null;
-    let prodCode = '1CR';
-    if (productType === 'single_lead') prodCode = '1CR';
-    else if (productType === 'pack_10_leads') prodCode = '10CR';
-    else if (productType === 'subscription_city') {
-      const slug = ciudadLimpia 
-        ? ciudadLimpia.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]/g, '').substring(0, 8) 
-        : 'CIU';
-      prodCode = `VIPCIU_${slug}`;
-    } else if (productType === 'subscription_national') {
-      prodCode = 'VIPNAC';
-    }
+    // 🛡️ Orquestación de Idempotencia Distribuida con Clave TTL en Redis (120 segundos)
+    const resultadoOrden = await ejecutarConIdempotencia(
+      `order:${idempotencyKey}`,
+      async () => {
+        // 1. Verificar si ya existe en Firestore (fallback persistente histórico)
+        const ordenIdempotente = await db.getPendingOrderByIdempotencyKey(idempotencyKey);
+        if (ordenIdempotente) {
+          const publicKeyCached = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
+          const integritySecretCached = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
+          const integrityChainCached = `${ordenIdempotente.reference}${ordenIdempotente.amountInCents}${ordenIdempotente.currency || 'COP'}${integritySecretCached}`;
+          const signatureCached = crypto.createHash('sha256').update(integrityChainCached).digest('hex');
+          return {
+            ok: true,
+            reference: ordenIdempotente.reference,
+            amountInCents: ordenIdempotente.amountInCents,
+            currency: ordenIdempotente.currency || 'COP',
+            signature: signatureCached,
+            publicKey: publicKeyCached,
+            productName: ordenIdempotente.productName
+          };
+        }
 
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const reference = `HNT-${normPhone}-${prodCode}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
-    const amountInCents = producto.montoCentavos;
-    const currency = 'COP';
+        const cuentaExistente = await db.getUserByPhone(normPhone);
+        const ciudadLimpia = ciudad ? ciudad.trim() : null;
+        let prodCode = '1CR';
+        if (productType === 'single_lead') prodCode = '1CR';
+        else if (productType === 'pack_10_leads') prodCode = '10CR';
+        else if (productType === 'subscription_city') {
+          const slug = ciudadLimpia 
+            ? ciudadLimpia.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]/g, '').substring(0, 8) 
+            : 'CIU';
+          prodCode = `VIPCIU_${slug}`;
+        } else if (productType === 'subscription_national') {
+          prodCode = 'VIPNAC';
+        }
 
-    // Llaves oficiales de Wompi Sandbox del comercio
-    const publicKey = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
-    const integritySecret = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
+        const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+        const reference = `HNT-${normPhone}-${prodCode}-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
+        const amountInCents = producto.montoCentavos;
+        const currency = 'COP';
 
-    // Cálculo estricto de firma de integridad Wompi:
-    // SHA256(reference + amountInCents + currency + integritySecret)
-    const integrityChain = `${reference}${amountInCents}${currency}${integritySecret}`;
-    const signature = crypto.createHash('sha256').update(integrityChain).digest('hex');
+        // Llaves oficiales de Wompi Sandbox del comercio
+        const publicKey = requireEnv('WOMPI_PUBLIC_KEY', { testFallback: 'pub_test_local_suite' });
+        const integritySecret = requireEnv('WOMPI_INTEGRITY_SECRET', { testFallback: 'test_integrity_local_suite' });
 
-    // Registrar pre-orden en el ledger para conciliación posterior
-    await db.savePendingOrder(reference, {
-      reference,
-      productType,
-      productName: producto.nombre,
-      amountInCents,
-      currency,
-      celular: normPhone,
-      ciudad: ciudadLimpia,
-      tipo: producto.tipo,
-      creditos: producto.creditos,
-      status: 'PENDING',
-      accountExistedAtOrderCreation: Boolean(cuentaExistente),
-      idempotencyKey
-    });
+        // Cálculo estricto de firma de integridad Wompi:
+        // SHA256(reference + amountInCents + currency + integritySecret)
+        const integrityChain = `${reference}${amountInCents}${currency}${integritySecret}`;
+        const signature = crypto.createHash('sha256').update(integrityChain).digest('hex');
 
-    return res.status(200).json({
-      ok: true,
-      reference,
-      amountInCents,
-      currency,
-      signature,
-      publicKey,
-      productName: producto.nombre
-    });
+        // Registrar pre-orden en el ledger para conciliación posterior
+        await db.savePendingOrder(reference, {
+          reference,
+          productType,
+          productName: producto.nombre,
+          amountInCents,
+          currency,
+          celular: normPhone,
+          ciudad: ciudadLimpia,
+          tipo: producto.tipo,
+          creditos: producto.creditos,
+          status: 'PENDING',
+          accountExistedAtOrderCreation: Boolean(cuentaExistente),
+          idempotencyKey
+        });
+
+        return {
+          ok: true,
+          reference,
+          amountInCents,
+          currency,
+          signature,
+          publicKey,
+          productName: producto.nombre
+        };
+      },
+      { ttlSegundos: 120 }
+    );
+
+    return res.status(200).json(resultadoOrden);
   } catch (error) {
     console.error('[create-order] Error interno:', error);
     return res.status(500).json({ error: 'Error interno al generar la orden de pago.' });

@@ -364,6 +364,28 @@ function sincronizarPreferenciasEnServidor(nuevoLang, nuevoTheme) {
   }
 }
 
+/**
+ * Genera un UUID v4 criptográficamente seguro para idempotencia y trazabilidad.
+ * Compatible con window.crypto y fallback RFC4122.
+ * @returns {string} UUID v4
+ */
+function generarUUIDv4() {
+  const c = typeof window !== 'undefined' ? (window.crypto || window.msCrypto) : null;
+  if (c?.randomUUID) return c.randomUUID();
+  if (c?.getRandomValues) {
+    const b = new Uint8Array(16);
+    c.getRandomValues(b);
+    b[6] = (b[6] & 0x0f) | 0x40;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+    return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = Math.random() * 16 | 0;
+    return (ch === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
 if (typeof window !== 'undefined') {
   Object.assign(window, {
     guardarCookieSegura,
@@ -371,12 +393,10 @@ if (typeof window !== 'undefined') {
     borrarCookieSegura,
     obtenerTemaActual,
     aplicarTema,
-    sincronizarPreferenciasEnServidor
+    sincronizarPreferenciasEnServidor,
+    generarUUIDv4
   });
 }
-
-
-
 
 
 /**
@@ -2537,12 +2557,17 @@ async function ejecutarDesbloqueoLead(lead, index) {
   }
 
   try {
+    const unlockHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${sesionUsuario.token}`
+    };
+    if (typeof generarUUIDv4 === 'function') {
+      unlockHeaders['Idempotency-Key'] = generarUUIDv4();
+    }
+
     const res = await fetch('/api/leads/unlock', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sesionUsuario.token}`
-      },
+      headers: unlockHeaders,
       body: JSON.stringify({
         leadId: lead.id,
         contactoCifrado: lead.contacto_cifrado || '',

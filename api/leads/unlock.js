@@ -17,6 +17,7 @@ const { aplicarCorsSeguro } = require('../../lib/cors');
 const { unlockLeadSchema, validateBody } = require('../../lib/validation');
 const { requireEnv } = require('../../lib/env');
 const { obtenerLeadPorId } = require('../../lib/leads');
+const { ejecutarConIdempotencia } = require('../../lib/idempotency');
 
 const JWT_SECRET = requireEnv('JWT_SECRET', {
   testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
@@ -98,6 +99,23 @@ function ciudadLeadOficial(lead) {
 function portalSeguro(portalRaw) {
   const portal = String(portalRaw || 'fincaraiz').replace(/[^a-z0-9 ._-]/gi, '').trim();
   return (portal || 'fincaraiz').slice(0, 40).toUpperCase();
+}
+
+/**
+ * Determina el saludo cortés formal según la hora local de Colombia (UTC-5).
+ * @param {Date} [fecha]
+ * @returns {string} 'Buen día', 'Buenas tardes' o 'Buenas noches'
+ */
+function obtenerSaludoHorario(fecha = new Date()) {
+  try {
+    const hora = fecha.toLocaleString('en-US', { timeZone: 'America/Bogota', hour: 'numeric', hour12: false });
+    const h = parseInt(hora, 10);
+    if (h >= 5 && h < 12) return 'Buen día';
+    if (h >= 12 && h < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  } catch (e) {
+    return 'Buen día';
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -209,122 +227,125 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
-    const resultado = await db.unlockLead(session.phone, leadId, session, leadCityOficial);
+    const headers = req.headers || {};
+    const idempotencyKey = String(headers['idempotency-key'] || '').trim();
+    const esIdempotente = Boolean(idempotencyKey && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey));
 
-    if (!resultado.success) {
-      if (resultado.error === 'CUOTA_DIARIA_EXCEDIDA') {
+    const procesarDesbloqueo = async () => {
+      // 3. Ejecutar desbloqueo en el ledger con rehidratación stateless desde sesión
+      const resultado = await db.unlockLead(session.phone, leadId, session, leadCityOficial);
+
+      if (!resultado.success) {
+        return {
+          esError: true,
+          error: resultado.error,
+          message: resultado.message,
+          credits: resultado.credits || 0
+        };
+      }
+
+      // 4. Normalizar teléfono y enlace original del inmueble
+      const rawTel = contactoDescifrado?.telefono || '';
+      const telLimpio = rawTel.replace(/\D/g, '');
+      const esCelularValido = !rawTel.includes('...') && telLimpio.length >= 10 && (telLimpio.startsWith('573') || telLimpio.startsWith('3'));
+
+      let whatsappUrl = null;
+      let telLlamar = null;
+      let telefonoDisplay = rawTel;
+
+      if (esCelularValido) {
+        const waNum = telLimpio.startsWith('57') ? telLimpio : `57${telLimpio}`;
+        const cel10 = telLimpio.startsWith('57') ? telLimpio.substring(2) : telLimpio;
+        telefonoDisplay = `+57 ${cel10.substring(0, 3)} ${cel10.substring(3, 6)} ${cel10.substring(6)}`;
+        telLlamar = `+${waNum}`;
+
+        // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
+        const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
+        const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
+        const saludo = obtenerSaludoHorario();
+        const textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
+        const mensajeWa = encodeURIComponent(textoMensaje);
+        whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
+      } else if (rawTel) {
+        telefonoDisplay = rawTel.includes('...') ? `${rawTel} (Enlace Directo)` : rawTel;
+      } else {
+        telefonoDisplay = 'Disponible en Anuncio Original';
+      }
+
+      const enlace = sanitizarUrlServidor(contactoDescifrado?.enlace, HOSTS_ANUNCIOS_PERMITIDOS) || 'https://www.fincaraiz.com.co';
+      const portal = portalSeguro(contactoDescifrado?.portal || leadCatalogo?.portal || leadCatalogo?.dataset);
+
+      // 6. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
+      const userPayload = resultado.user || {};
+      const newToken = signJwt({
+        phone: session.phone,
+        credits: resultado.credits,
+        unlockedLeads: resultado.unlockedLeads || [],
+        plan: userPayload.plan || session.plan || 'free',
+        planCity: userPayload.planCity || session.planCity || null,
+        planExpiresAt: userPayload.planExpiresAt || session.planExpiresAt || null,
+        role: 'buyer'
+      }, JWT_SECRET, 30);
+
+      return {
+        ok: true,
+        leadId,
+        alreadyUnlocked: resultado.alreadyUnlocked,
+        creditsRemaining: resultado.credits,
+        unlockedLeads: resultado.unlockedLeads,
+        token: newToken,
+        planBenefit: Boolean(resultado.planBenefit),
+        dailyUnlocksRemaining: resultado.dailyUnlocksRemaining,
+        contacto: {
+          telefono: rawTel || telefonoDisplay,
+          telefonoDisplay: telefonoDisplay || rawTel,
+          telLlamar,
+          esCelularValido,
+          whatsappUrl,
+          enlace,
+          portal
+        },
+        datosRevelados: {
+          tituloOriginal: contactoDescifrado?.tituloOriginal || null,
+          barrioOriginal: contactoDescifrado?.barrioOriginal || null,
+          ubicacionCompleta: contactoDescifrado?.ubicacionCompleta || null
+        }
+      };
+    };
+
+    const respuestaFinal = esIdempotente
+      ? await ejecutarConIdempotencia(`unlock:${session.phone}:${idempotencyKey}`, procesarDesbloqueo, { ttlSegundos: 300 })
+      : await procesarDesbloqueo();
+
+    if (respuestaFinal.esError) {
+      if (respuestaFinal.error === 'CUOTA_DIARIA_EXCEDIDA') {
         return res.status(429).json({
           ok: false,
           error: 'CUOTA_DIARIA_EXCEDIDA',
-          message: resultado.message || 'Has alcanzado la cuota de uso justo de 35 contactos diarios. Por seguridad y prevención de intermediación masiva, tu cuota se reiniciará mañana a las 00:00.',
-          credits: resultado.credits || 0
+          message: respuestaFinal.message || 'Has alcanzado la cuota de uso justo de 35 contactos diarios. Por seguridad y prevención de intermediación masiva, tu cuota se reiniciará mañana a las 00:00.',
+          credits: respuestaFinal.credits || 0
         });
       }
-      if (resultado.error === 'PLAN_CIUDAD_DIFERENTE') {
+      if (respuestaFinal.error === 'PLAN_CIUDAD_DIFERENTE') {
         return res.status(403).json({
           ok: false,
           error: 'PLAN_CIUDAD_DIFERENTE',
-          message: resultado.message || 'Tu Plan Pro Ciudad no cubre este municipio. Requiere créditos individuales.',
-          credits: resultado.credits || 0
+          message: respuestaFinal.message || 'Tu Plan Pro Ciudad no cubre este municipio. Requiere créditos individuales.',
+          credits: respuestaFinal.credits || 0
         });
       }
-      if (resultado.error === 'SALDO_INSUFICIENTE') {
+      if (respuestaFinal.error === 'SALDO_INSUFICIENTE') {
         return res.status(402).json({
           ok: false,
           error: 'SALDO_INSUFICIENTE',
           message: 'No tienes créditos suficientes. Adquiere un pase individual o una bolsa con descuento.',
-          credits: resultado.credits
+          credits: respuestaFinal.credits
         });
       }
-      return res.status(400).json({ ok: false, error: resultado.error });
+      return res.status(400).json({ ok: false, error: respuestaFinal.error });
     }
 
-    // 4. Normalizar teléfono y enlace original del inmueble
-    const rawTel = contactoDescifrado?.telefono || '';
-    const telLimpio = rawTel.replace(/\D/g, '');
-    const esCelularValido = !rawTel.includes('...') && telLimpio.length >= 10 && (telLimpio.startsWith('573') || telLimpio.startsWith('3'));
-
-    let whatsappUrl = null;
-    let telLlamar = null;
-    let telefonoDisplay = rawTel;
-
-    if (esCelularValido) {
-      const waNum = telLimpio.startsWith('57') ? telLimpio : `57${telLimpio}`;
-      const cel10 = telLimpio.startsWith('57') ? telLimpio.substring(2) : telLimpio;
-      telefonoDisplay = `+57 ${cel10.substring(0, 3)} ${cel10.substring(3, 6)} ${cel10.substring(6)}`;
-      telLlamar = `+${waNum}`;
-
-/**
- * Determina el saludo cortés formal según la hora local de Colombia (UTC-5).
- * @param {Date} [fecha]
- * @returns {string} 'Buen día', 'Buenas tardes' o 'Buenas noches'
- */
-function obtenerSaludoHorario(fecha = new Date()) {
-  try {
-    const hora = fecha.toLocaleString('en-US', { timeZone: 'America/Bogota', hour: 'numeric', hour12: false });
-    const h = parseInt(hora, 10);
-    if (h >= 5 && h < 12) return 'Buen día';
-    if (h >= 12 && h < 19) return 'Buenas tardes';
-    return 'Buenas noches';
-  } catch (e) {
-    return 'Buen día';
-  }
-}
-
-      // Plantilla Formal y Respetuosa para contacto directo con propietarios de alto patrimonio
-      const ubicacion = contactoDescifrado?.barrioOriginal || leadCatalogo?.barrio || leadCatalogo?.ciudad || 'su zona';
-      const tipo = leadCatalogo?.tipo_inmueble ? leadCatalogo.tipo_inmueble.toLowerCase() : 'inmueble';
-      const saludo = obtenerSaludoHorario();
-      const textoMensaje = `${saludo}, le escribo con respecto a su publicación del ${tipo} en ${ubicacion}. Me gustaría conocer más detalles sobre la propiedad y coordinar una visita, de ser posible. Quedo atento a su respuesta, muchas gracias.`;
-      const mensajeWa = encodeURIComponent(textoMensaje);
-      whatsappUrl = `https://wa.me/${waNum}?text=${mensajeWa}`;
-    } else if (rawTel) {
-      telefonoDisplay = rawTel.includes('...') ? `${rawTel} (Enlace Directo)` : rawTel;
-    } else {
-      telefonoDisplay = 'Disponible en Anuncio Original';
-    }
-
-    const enlace = sanitizarUrlServidor(contactoDescifrado?.enlace, HOSTS_ANUNCIOS_PERMITIDOS) || 'https://www.fincaraiz.com.co';
-    const portal = portalSeguro(contactoDescifrado?.portal || leadCatalogo?.portal || leadCatalogo?.dataset);
-
-    // 6. Emitir nuevo JWT firmado con el estado actualizado (Stateless Signed Token)
-    const userPayload = resultado.user || {};
-    const newToken = signJwt({
-      phone: session.phone,
-      credits: resultado.credits,
-      unlockedLeads: resultado.unlockedLeads || [],
-      plan: userPayload.plan || session.plan || 'free',
-      planCity: userPayload.planCity || session.planCity || null,
-      planExpiresAt: userPayload.planExpiresAt || session.planExpiresAt || null,
-      role: 'buyer'
-    }, JWT_SECRET, 30);
-
-    return res.status(200).json({
-      ok: true,
-      leadId,
-      alreadyUnlocked: resultado.alreadyUnlocked,
-      creditsRemaining: resultado.credits,
-      unlockedLeads: resultado.unlockedLeads,
-      token: newToken,
-      planBenefit: Boolean(resultado.planBenefit),
-      dailyUnlocksRemaining: resultado.dailyUnlocksRemaining,
-      contacto: {
-        telefono: rawTel || telefonoDisplay,
-        telefonoDisplay: telefonoDisplay || rawTel,
-        telLlamar,
-        esCelularValido,
-        whatsappUrl,
-        enlace,
-        portal
-      },
-      // Datos revelados post-desbloqueo (venían cifrados en AES-256-GCM)
-      datosRevelados: {
-        tituloOriginal: contactoDescifrado?.tituloOriginal || null,
-        barrioOriginal: contactoDescifrado?.barrioOriginal || null,
-        ubicacionCompleta: contactoDescifrado?.ubicacionCompleta || null
-      }
-    });
+    return res.status(200).json(respuestaFinal);
   } catch (error) {
     console.error('[unlock] Error en desbloqueo:', error);
     return res.status(500).json({ error: 'Error procesando el desbloqueo del inmueble.' });

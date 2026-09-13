@@ -199,12 +199,17 @@ async function ejecutarDesbloqueoLead(lead, index) {
   }
 
   try {
+    const unlockHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${sesionUsuario.token}`
+    };
+    if (typeof generarUUIDv4 === 'function') {
+      unlockHeaders['Idempotency-Key'] = generarUUIDv4();
+    }
+
     const res = await fetch('/api/leads/unlock', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sesionUsuario.token}`
-      },
+      headers: unlockHeaders,
       body: JSON.stringify({
         leadId: lead.id,
         contactoCifrado: lead.contacto_cifrado || '',

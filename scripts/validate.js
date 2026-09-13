@@ -35,6 +35,7 @@ async function ejecutarValidacionCompleta() {
     'lib/crypto.js',
     'lib/db.js',
     'lib/rate-limiter.js',
+    'lib/idempotency.js',
     'lib/validation.js',
     'lib/env.js',
     'lib/leads.js',
@@ -226,6 +227,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de Upstash Redis distribuido y Fail-Safe pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de Upstash Redis: ${e.message}`);
+  }
+
+  try {
+    execSync(`node "${path.join(ROOT_DIR, 'scripts', 'test_idempotency_concurrency.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de concurrencia e idempotencia distribuida (Redis/Memoria) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de concurrencia e idempotencia: ${e.message}`);
   }
 
   try {
