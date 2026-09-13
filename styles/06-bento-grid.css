@@ -10,6 +10,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.4rem;
+  min-height: 700px;
 }
 
 /* Tarjeta Bento: Arquitectura de Curvatura Extrema (2.5rem) y Contorno Sutil */

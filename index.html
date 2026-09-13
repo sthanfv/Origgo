@@ -75,7 +75,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Hoja de Estilos Principal Minificada y Verificada -->
-  <link rel="stylesheet" href="./style.min.css?v=20260913-v7">
+  <link rel="stylesheet" href="./style.min.css?v=20260913-v8">
 </head>
 <body>
 
@@ -326,7 +326,33 @@
       </div>
 
       <div class="bento-grid" id="bentoGridContainer">
-        <!-- Renderizado dinámico vía app.js -->
+        <article class="bento-card skeleton-card skeleton-delay-0">
+          <div class="skeleton-media skeleton-shimmer"></div>
+          <div class="card-body skeleton-body">
+            <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
+            <div class="skeleton-line skeleton-shimmer skeleton-line-lg"></div>
+            <div class="skeleton-box skeleton-shimmer skeleton-box-data"></div>
+            <div class="skeleton-footer"><div class="skeleton-line skeleton-shimmer skeleton-line-price"></div><div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div></div>
+          </div>
+        </article>
+        <article class="bento-card skeleton-card skeleton-delay-1">
+          <div class="skeleton-media skeleton-shimmer"></div>
+          <div class="card-body skeleton-body">
+            <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
+            <div class="skeleton-line skeleton-shimmer skeleton-line-lg"></div>
+            <div class="skeleton-box skeleton-shimmer skeleton-box-data"></div>
+            <div class="skeleton-footer"><div class="skeleton-line skeleton-shimmer skeleton-line-price"></div><div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div></div>
+          </div>
+        </article>
+        <article class="bento-card skeleton-card skeleton-delay-2">
+          <div class="skeleton-media skeleton-shimmer"></div>
+          <div class="card-body skeleton-body">
+            <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
+            <div class="skeleton-line skeleton-shimmer skeleton-line-lg"></div>
+            <div class="skeleton-box skeleton-shimmer skeleton-box-data"></div>
+            <div class="skeleton-footer"><div class="skeleton-line skeleton-shimmer skeleton-line-price"></div><div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div></div>
+          </div>
+        </article>
       </div>
     </section>
   </main>
@@ -343,7 +369,7 @@
             <img src="./assets/img/origgo-logo.svg" alt="Origgo" class="footer-logo-img" width="125" height="44" />
           </div>
         </div>
-        <p class="footer-bio">
+        <p class="footer-bio" data-i18n="footer_bio">
           Plataforma de conexión directa con propietarios de inmuebles en Colombia. Sin intermediarios, sin comisiones de agencia y con oportunidades verificadas en tiempo real.
         </p>
         <div class="footer-status-line">
@@ -388,7 +414,7 @@
           </li>
           <li>
             <a href="https://t.me/" target="_blank" rel="noopener noreferrer" class="footer-text-link">
-              <i class="fa-brands fa-telegram footer-icon-tg"></i> Canal de Telegram
+              <i class="fa-brands fa-telegram footer-icon-tg"></i> <span data-i18n="footer_telegram">Canal de Telegram</span>
             </a>
           </li>
           <li>
@@ -1056,6 +1082,6 @@
   <!-- Scripts Diferidos Anti-Bloqueo de Render -->
   <link rel="prefetch" href="https://checkout.wompi.co/widget.js" as="script">
   <script defer src="./config.js"></script>
-  <script defer src="./app.js?v=20260913-v7"></script>
+  <script defer src="./app.js?v=20260913-v8"></script>
 </body>
 </html>

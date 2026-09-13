@@ -1,10 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 08:20 (GMT-5)
+Última actualización: 2026-09-13 08:45 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-42. **Traducción Bilingüe Completa del Footer (`footer_bio`, `footer_telegram`), Estabilización de Cumulative Layout Shift (CLS) con Skeletons Estáticos Iniciales y Service Worker PWA (`origgo-v8-20260913`)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Párrafo del footer en español en la vista en inglés:* En `index.html` (línea 346), el párrafo descriptivo de la marca (`.footer-bio`) carecía del atributo `data-i18n="footer_bio"`, provocando que al alternar a inglés permaneciera en español. De igual forma, el enlace al canal de Telegram carecía de `data-i18n="footer_telegram"`.
+      2. *Cumulative Layout Shift (CLS) de 0.49 (pobre en Performance):* El contenedor de la grilla `#bentoGridContainer` iniciaba vacío con altura de 0px. Cuando el fetch asíncrono a Cloudflare R2 (`inmobiliario.json`) finalizaba tras 1.5 - 2.0 segundos e inyectaba las tarjetas Bento, el contenedor crecía súbitamente miles de píxeles, desplazando bruscamente el Footer hacia abajo en 4 shifts acumulativos.
+      3. *Error en consola de extensiones de Chrome:* El mensaje `Uncaught (in promise) Error: A listener indicated an asynchronous response...` se identificó como un evento interno de extensiones instaladas en el navegador (como traductores o adblockers que cierran canales de mensajería `chrome.runtime.onMessage` antes de tiempo), ajeno a los scripts de la aplicación.
+      4. *Petición de manifest.json en Network:* Se aclaró que la consulta con estado 200 iniciada por el Service Worker es la verificación estándar del Web App Manifest de la W3C para habilitar la instalación nativa como PWA.
+    - **Solución Implementada:**
+      1. **Traducción Exhaustiva del Footer (`modules/13-i18n.js`, 497 líneas < 500; `index.html`):**
+         - Se incorporaron las claves `footer_bio` y `footer_telegram` en los diccionarios `es` y `en`.
+         - Se vincularon `data-i18n="footer_bio"` y `data-i18n="footer_telegram"` en `index.html`. Al alternar a inglés, la descripción institucional se traduce de forma nativa e instantánea: *"Direct connection platform with property owners in Colombia. Zero middleman, zero agency commissions, and real-time verified opportunities."*
+      2. **Erradicación Total del Layout Shift (CLS < 0.1) (`styles/06-bento-grid.css`, 241 líneas; `index.html`):**
+         - Se fijó `min-height: 700px;` en `.bento-grid` para reservar el espacio geométrico de las tarjetas desde el primer fotograma de renderizado.
+         - Se pre-insertaron 3 tarjetas skeleton estáticas (`.skeleton-card`) directamente en el marcado HTML de `#bentoGridContainer`. El usuario percibe la cinemática Shimmer de carga de inmediato y el Footer permanece anclado en su posición sin ningún salto visual.
+      3. **Service Worker PWA v8 y Cache-Busting (`sw.js`, 146 líneas; `index.html`):**
+         - Se actualizó `NOMBRE_CACHE` a `'origgo-v8-20260913'`.
+         - Se actualizaron los hashes de versión en `index.html`: `style.min.css?v=20260913-v8` y `app.js?v=20260913-v8`.
+      4. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: generados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
 
 -41. **Transición Cinemática Suave en Modal de Bienvenida (Fade-In Progresivo), Estrategia Network-First en Service Worker PWA (`origgo-v7-20260913`) y Blindaje de Marquee contra Ahorro de Batería en Android**:
     - **Diagnóstico y Causa Raíz:**

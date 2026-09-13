@@ -3,7 +3,7 @@
  * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
  */
 
-const NOMBRE_CACHE = 'origgo-v7-20260913';
+const NOMBRE_CACHE = 'origgo-v8-20260913';
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
