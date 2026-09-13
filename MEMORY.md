@@ -1,8 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 14:05 (GMT-5)
+Última actualización: 2026-09-13 17:00 (GMT-5)
 
 ---
+
+-59. **Auditoría Ética de Seguridad (Pentest Frontend y DevSecOps) y Remediación Integral de Vulnerabilidades**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Manipulación de Estado en Consola (HAL-01):* `sesionUsuario` se encontraba expuesto y mutable en el entorno global del cliente, permitiendo que un usuario en DevTools alterara saldos visuales o simulara planes VIP activos.
+      2. *Validación TLS Omitida en Telegram Scraper (HAL-02):* En `ofertas-hunter-pro/telegram.js`, las peticiones salientes empleaban `rejectUnauthorized: false` y una IP estática, desactivando la verificación estricta de certificados TLS y dejando el canal susceptible a ataques Man-in-the-Middle.
+      3. *Parámetro de Depuración por URL Expuesto (HAL-04):* `modules/00-security.js` admitía `?debug=origgo` en la URL para activar el modo de desarrollo en producción, filtrando trazas de depuración y respuestas del servidor en la consola.
+      4. *Inyección XSS Potencial en Ficha de Especificaciones (HAL-05):* `modules/06-cards.js` evaluaba cadenas sin escapar buscando marcas HTML en los datos crudos del dataset, arriesgando inyección de script si los datos del catálogo fuesen alterados.
+      5. *Condición de Carrera en Restauración de PIN (HAL-06):* Múltiples clics simultáneos o scripts de fuerza bruta podían saturar el endpoint de autenticación sin un semáforo atómico en el cliente.
+      6. *Fuga de Recursos por Temporizadores Acumulados (HAL-11):* `_timerRelativoCards` no limpiaba instancias anteriores al re-renderizar, provocando fugas de memoria en sesiones prolongadas.
+      7. *Riesgo Operativo en Simulación de Mensajes (HAL-12):* `scripts/simular_todos_los_mensajes.js` carecía de validación de entorno, arriesgando ejecuciones accidentales en producción dentro del dispositivo móvil.
+    - **Solución Implementada:**
+      1. **Blindaje de Sesión de Usuario (`modules/01-state.js`, 486 líneas $\le 500$):** `_sesionUsuario` encapsulado de forma inmutable con getter seguro `_origgoSesionProtegida` y setter pasivo; implementado semáforo atómico `restauracionEnProgreso` con liberación obligatoria en bloque `finally`.
+      2. **Endurecimiento Criptográfico de Conexiones TLS (`ofertas-hunter-pro/telegram.js`):** Removida la bandera `rejectUnauthorized: false` y la IP estática en `httpsPost` y `enviarDocumento`, forzando la validación del certificado contra `api.telegram.org` mediante el agente DNS local.
+      3. **Erradicación de Parámetros de Depuración (`modules/00-security.js`, 469 líneas $\le 500$):** Restricción exclusiva del modo debug a orígenes locales (`localhost`, `127.0.0.1`, `file:`).
+      4. **Sanitización Estricta de Fichas Técnicas (`modules/06-cards.js`, 488 líneas $\le 500$):** Generación 100% autónoma y segura del badge de verificación a partir de nombres de clave, garantizando `escaparHtml()` sobre cualquier valor del dataset externo; limpieza previa con `clearInterval(window._timerRelativoCards)`.
+      5. **Guardia de Producción Anti-Contaminación (`ofertas-hunter-pro/scripts/simular_todos_los_mensajes.js`):** Bloqueo inmediato de ejecución si se detecta Termux o `NODE_ENV === 'production'`.
+      6. **Suites de Pruebas de Seguridad DevSecOps Creadas:**
+         - `ofertas-hunter-pro/tests/security_pentest.test.js`: 5/5 pruebas aprobadas al 100% (HAL-02, HAL-12 e integridad).
+         - `hunter-portal-showcase/tests/security_pentest.test.js`: 6/6 pruebas aprobadas al 100% (HAL-01, HAL-04, HAL-05, HAL-06, HAL-09, HAL-11).
+      7. **Validación y Despliegue:**
+         - `hunter-portal-showcase`: 77/77 tests unitarios aprobados; 8/8 fases de validación DevSecOps pasadas con cero errores. Commit `e5148bf` empujado a `origin/main`.
+         - `ofertas-hunter-pro`: Commit `06293fa` registrado localmente.
 
 -58. **Saneamiento del Espacio de Trabajo, Depuración de Módulos Obsoletos de Retail y Desmantelamiento del Proceso Dashboard en PM2 para el Samsung Galaxy J7**:
     - **Diagnóstico y Causa Raíz:**
