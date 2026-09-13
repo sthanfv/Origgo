@@ -60,13 +60,15 @@ async function inicializarSesionUsuario() {
       delete sesionUsuario.pin;
       actualizarBadgeVip();
       sincronizarFiltroCiudadUsuario();
-      mostrarNotificacionToast('Sesión restaurada correctamente.', 'success', { title: 'Acceso recuperado', duration: 5000 });
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(esIngles ? 'Session successfully restored.' : 'Sesión restaurada correctamente.', 'success', { title: esIngles ? 'Access Restored' : 'Acceso recuperado', duration: 5000 });
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     } catch (e) {
       localStorage.removeItem('hunter_pro_token');
       sesionUsuario = null;
-      mostrarNotificacionToast(e.message || 'El enlace de recuperación no es válido o expiró.', 'warning', { title: 'Recuperación no válida', duration: 7000 });
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Recovery' : 'Recuperación no válida', duration: 7000 });
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -99,8 +101,9 @@ async function inicializarSesionUsuario() {
       const dataText = await res.text();
       let data = null;
       try { data = JSON.parse(dataText); } catch (_) {}
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
       if (data && data.requiresLogin) {
-        mostrarNotificacionToast(data.message || 'Pago acreditado. Inicia sesión con tu PIN.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        mostrarNotificacionToast(data.message || (esIngles ? 'Payment credited. Sign in with your PIN.' : 'Pago acreditado. Inicia sesión con tu PIN.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -115,7 +118,7 @@ async function inicializarSesionUsuario() {
         sincronizarFiltroCiudadUsuario();
         const notif = typeof generarMensajeBienvenidaToast === 'function' 
           ? generarMensajeBienvenidaToast(sesionUsuario)
-          : { titulo: '🎉 ¡Pago confirmado!', mensaje: 'Tu acceso quedó acreditado.', tipo: 'success' };
+          : { titulo: esIngles ? '🎉 Payment confirmed!' : '🎉 ¡Pago confirmado!', mensaje: esIngles ? 'Your access has been accredited.' : 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
         if (typeof abrirModalBienvenidaVIP === 'function') {
           abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
@@ -398,8 +401,8 @@ function cerrarSesionUsuario() {
   sesionUsuario = null;
   actualizarBadgeVip();
   renderizarInterfaz(datosActuales);
-  cerrarModalCheckout();
-  mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? 'Logged out successfully.' : 'Sesión cerrada correctamente.', 'info');
 }
 
 /**

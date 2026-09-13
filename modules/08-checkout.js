@@ -121,20 +121,13 @@ function abrirModalCheckout(index, pestana = null) {
   if (sesionUsuario) {
     if (tabMiCuenta) tabMiCuenta.style.display = 'flex';
 
-    const elPhone = document.getElementById('userActivePhone');
-    const elPin = document.getElementById('userActivePin');
-    const elCredits = document.getElementById('userActiveCredits');
-    const elPlan = document.getElementById('userActivePlan');
-    const elCount = document.getElementById('userActiveUnlockedCount');
-    const inputWa = document.getElementById('checkoutWhatsappInput');
-    const cardCredits = document.getElementById('userCreditsCard');
-    const badgeWrap = document.getElementById('userMembershipBadgeWrap');
-    const badgeEl = document.getElementById('userMembershipBadge');
-    const labelCredits = document.getElementById('userCreditsLabel');
-    const extraWrap = document.getElementById('userExtraCreditsWrap');
-    const extraPill = document.getElementById('userExtraCreditsPill');
-    const benefitsWrap = document.getElementById('userBenefitsToggleWrap');
-    const benefitsList = document.getElementById('userBenefitsList');
+    const elPhone = document.getElementById('userActivePhone'), elPin = document.getElementById('userActivePin');
+    const elCredits = document.getElementById('userActiveCredits'), elPlan = document.getElementById('userActivePlan');
+    const elCount = document.getElementById('userActiveUnlockedCount'), inputWa = document.getElementById('checkoutWhatsappInput');
+    const cardCredits = document.getElementById('userCreditsCard'), badgeWrap = document.getElementById('userMembershipBadgeWrap');
+    const badgeEl = document.getElementById('userMembershipBadge'), labelCredits = document.getElementById('userCreditsLabel');
+    const extraWrap = document.getElementById('userExtraCreditsWrap'), extraPill = document.getElementById('userExtraCreditsPill');
+    const benefitsWrap = document.getElementById('userBenefitsToggleWrap'), benefitsList = document.getElementById('userBenefitsList');
 
     if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
     if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
@@ -239,7 +232,8 @@ function cerrarModalCheckout() {
  * Reconcilia la acreditación del pago con reintentos para mitigar latencias de pasarela.
  */
 async function reclamarSesionPostPago(orderData, productType, ciudad) {
-  mostrarNotificacionToast('Confirmando acreditación de pago con tu banco...', 'info', { title: 'Verificando saldo', duration: 4500 });
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? 'Confirming payment accreditation with your bank...' : 'Confirmando acreditación de pago con tu banco...', 'info', { title: esIngles ? 'Verifying balance' : 'Verificando saldo', duration: 4500 });
   const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
   const headersClaim = { 'Content-Type': 'application/json' };
   if (tokenGuardado) headersClaim.Authorization = `Bearer ${tokenGuardado}`;
@@ -256,7 +250,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
       try { claimData = JSON.parse(claimText); } catch (_) {}
 
       if (claimRes.status === 202 && claimData?.requiresLogin) {
-        mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        mostrarNotificacionToast(claimData.message || (esIngles ? 'Payment credited. Sign in with your existing PIN.' : 'Pago acreditado. Inicia sesión con tu PIN existente.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         abrirModalCheckout(undefined, 'tengo-pin');
         return true;
       }
@@ -273,7 +267,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
         const notif = typeof generarMensajeBienvenidaToast === 'function'
           ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
-          : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
+          : { titulo: esIngles ? '🎉 Payment Successful!' : '🎉 ¡Pago Exitoso!', mensaje: esIngles ? 'Your access has been secured.' : 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
 
         if (typeof abrirModalBienvenidaVIP === 'function') {
@@ -295,9 +289,11 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
   localStorage.setItem('origgo_pending_ref', orderData.reference);
   mostrarNotificacionToast(
-    `Pago recibido (Ref: ${orderData.reference}). Tu banco está procesando la confirmación. Si no se refleja, pulsa Restaurar Cuenta.`,
+    esIngles
+      ? `Payment received (Ref: ${orderData.reference}). Your bank is finalizing processing. If not reflected, tap Restore Account.`
+      : `Pago recibido (Ref: ${orderData.reference}). Tu banco está procesando la confirmación. Si no se refleja, pulsa Restaurar Cuenta.`,
     'warning',
-    { title: 'Confirmación en proceso', duration: 9000 }
+    { title: esIngles ? 'Processing Confirmation' : 'Confirmación en proceso', duration: 9000 }
   );
   return false;
 }
@@ -433,17 +429,26 @@ async function ejecutarPagoWompi() {
 
       checkout.open(async (result) => {
         const trx = result?.transaction;
+        const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
         } else if (trx?.status === 'PENDING') {
           localStorage.setItem('origgo_pending_ref', orderData.reference);
           mostrarNotificacionToast(
-            `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
+            esIngles
+              ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.`
+              : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
             'info',
-            { title: 'Pago en Validación (PSE / Nequi)', duration: 8500 }
+            { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
           );
         } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
-          mostrarNotificacionToast('La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.', 'error', { title: 'Pago Rechazado', duration: 7500 });
+          mostrarNotificacionToast(
+            esIngles
+              ? 'The transaction was declined by the financial institution. Please try another payment method.'
+              : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
+            'error',
+            { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
+          );
         }
       });
       return;
@@ -459,29 +464,23 @@ async function ejecutarPagoWompi() {
     const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
     if (errorBox) {
       errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
-      errorBox.classList.remove('is-hidden');
-      errorBox.style.display = 'block';
+      errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block';
     } else {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);
     }
   } finally {
     pagoWompiEnProgreso = false;
-    if (btnPagar) {
-      btnPagar.innerHTML = textoOriginal;
-      btnPagar.disabled = false;
-    }
+    if (btnPagar) { btnPagar.innerHTML = textoOriginal; btnPagar.disabled = false; }
   }
 }
 
 // Inicialización de Listeners Propios de Pestañas y Acordeón en Checkout
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("tabBtnMiCuenta")?.addEventListener("click", () => cambiarPestanaCheckout('mi-cuenta'));
-  const btnToggle = document.getElementById("btnToggleUserBenefits");
-  const acc = document.getElementById("userBenefitsAccordion");
+  const btnToggle = document.getElementById("btnToggleUserBenefits"), acc = document.getElementById("userBenefitsAccordion");
   btnToggle?.addEventListener("click", () => {
     acc?.classList.toggle("active");
-    const active = acc?.classList.contains("active");
-    const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+    const active = acc?.classList.contains("active"), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     btnToggle.innerHTML = active
       ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios')
       : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');

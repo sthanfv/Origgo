@@ -213,22 +213,26 @@ async function ejecutarDesbloqueoLead(lead, index) {
     });
 
     const data = await res.json();
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
     if (!res.ok || !data.ok) {
       if (res.status === 429 || data.error === 'CUOTA_DIARIA_EXCEDIDA') {
-        mostrarNotificacionToast(`🛡️ ${data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.'}`, 'warning');
+        const msgCuota = esIngles ? 'Fair use daily limit reached (35 contacts/day). Resets tomorrow.' : (data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.');
+        mostrarNotificacionToast(`🛡️ ${msgCuota}`, 'warning');
         return;
       }
       if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
-        mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
+        const msgCiudad = esIngles ? 'Your active pass does not cover this city.' : (data.message || 'Tu membresía no cubre esta ciudad.');
+        mostrarNotificacionToast(`📍 ${msgCiudad}`, 'error');
         abrirModalCheckout(index, 'comprar');
         return;
       }
       if (res.status === 402) {
-        mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
+        mostrarNotificacionToast(esIngles ? '⚠️ Insufficient credits to unlock this owner contact.' : '⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
         abrirModalCheckout(index, 'comprar');
         return;
       }
-      throw new Error(data.error || 'Error al desbloquear contacto');
+      throw new Error(data.error || (esIngles ? 'Error unlocking contact' : 'Error al desbloquear contacto'));
     }
 
     sesionUsuario.credits = data.creditsRemaining;
@@ -258,22 +262,33 @@ async function ejecutarDesbloqueoLead(lead, index) {
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {
-      mensajeExito = '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
+      mensajeExito = esIngles
+        ? '✅ Property already unlocked previously (Cost: 0 credits). Contact restored.'
+        : '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
     } else if (data.planBenefit) {
-      const restHoy = typeof data.dailyUnlocksRemaining === 'number' ? ` (${data.dailyUnlocksRemaining} restantes hoy)` : '';
-      mensajeExito = `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
+      const restHoy = typeof data.dailyUnlocksRemaining === 'number'
+        ? (esIngles ? ` (${data.dailyUnlocksRemaining} left today)` : ` (${data.dailyUnlocksRemaining} restantes hoy)`)
+        : '';
+      mensajeExito = esIngles
+        ? `👑 Contact unlocked at zero cost via your Pro Pass!${restHoy}`
+        : `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
     } else {
-      const palabraCredito = data.creditsRemaining === 1 ? 'crédito' : 'créditos';
-      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
+      const palabraCredito = data.creditsRemaining === 1
+        ? (esIngles ? 'credit' : 'crédito')
+        : (esIngles ? 'credits' : 'créditos');
+      mensajeExito = esIngles
+        ? `🎉 Contact unlocked! Remaining balance: ${data.creditsRemaining} ${palabraCredito}.`
+        : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
     }
     mostrarNotificacionToast(mensajeExito);
   } catch (err) {
     registrarLogDesarrollo('error', '[Desbloqueo] Error:', err);
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     const esErrorRed = !navigator.onLine || err.name === 'TypeError' || String(err.message || '').toLowerCase().includes('failed to fetch') || String(err.message || '').toLowerCase().includes('network');
     if (esErrorRed) {
-      mostrarNotificacionToast('📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
+      mostrarNotificacionToast(esIngles ? '📡 Unstable network or offline. Your credits are safe; please try again.' : '📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
     } else {
-      mostrarNotificacionToast(err.message || 'Error de conexión durante el desbloqueo', 'error');
+      mostrarNotificacionToast(err.message || (esIngles ? 'Connection error during contact unlock' : 'Error de conexión durante el desbloqueo'), 'error');
     }
   } finally {
     desbloqueosEnProgreso.delete(lead.id);

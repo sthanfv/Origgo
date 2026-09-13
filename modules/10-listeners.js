@@ -241,8 +241,9 @@ function configurarListeners() {
         document.body.style.overflow = '';
       }
 
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
       const nombreLimpio = cityVal ? cityVal : 'Colombia';
-      mostrarNotificacionToast(`📍 Mostrando oportunidades en ${nombreLimpio}`, 'info');
+      mostrarNotificacionToast(esIngles ? `📍 Showing direct deals in ${nombreLimpio}` : `📍 Mostrando oportunidades en ${nombreLimpio}`, 'info');
     });
   }
 

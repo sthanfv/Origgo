@@ -142,7 +142,13 @@ function inicializarProteccionAntiImpresion() {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
       e.preventDefault();
       if (typeof mostrarNotificacionToast === 'function') {
-        mostrarNotificacionToast('🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.', 'warning');
+        const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+        mostrarNotificacionToast(
+          esIngles
+            ? '🛡️ Printing blocked for data protection (Law 1581 of 2012). View contacts on screen.'
+            : '🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.',
+          'warning'
+        );
       }
     }
   });

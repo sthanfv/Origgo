@@ -20,38 +20,39 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   let tipoFinal = tipo;
   let titulo = opts.title || '';
   let mensajeLimpio = String(mensaje || '').trim();
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
 
   // Detección e interpretación inteligente de prefijos y emojis
   if (mensajeLimpio.startsWith('👑')) {
     tipoFinal = 'vip';
-    if (!titulo) titulo = 'Membresía VIP Pro';
+    if (!titulo) titulo = esIngles ? 'VIP Pro Membership' : 'Membresía VIP Pro';
     mensajeLimpio = mensajeLimpio.replace(/^👑\s*/, '');
   } else if (mensajeLimpio.startsWith('🎉')) {
-    if (!titulo) titulo = '¡Operación Exitosa!';
+    if (!titulo) titulo = esIngles ? 'Success!' : '¡Operación Exitosa!';
     mensajeLimpio = mensajeLimpio.replace(/^🎉\s*/, '');
   } else if (mensajeLimpio.startsWith('📍')) {
-    if (!titulo) titulo = 'Cobertura Regional';
+    if (!titulo) titulo = esIngles ? 'Regional Coverage' : 'Cobertura Regional';
     mensajeLimpio = mensajeLimpio.replace(/^📍\s*/, '');
   } else if (mensajeLimpio.startsWith('⚠️')) {
     tipoFinal = 'warning';
-    if (!titulo) titulo = 'Aviso del Sistema';
+    if (!titulo) titulo = esIngles ? 'System Notice' : 'Aviso del Sistema';
     mensajeLimpio = mensajeLimpio.replace(/^⚠️\s*/, '');
   } else if (mensajeLimpio.startsWith('✅')) {
-    if (!titulo) titulo = 'Confirmación';
+    if (!titulo) titulo = esIngles ? 'Confirmation' : 'Confirmación';
     mensajeLimpio = mensajeLimpio.replace(/^✅\s*/, '');
   } else if (mensajeLimpio.startsWith('❌')) {
     tipoFinal = 'error';
-    if (!titulo) titulo = 'Acceso Restringido';
+    if (!titulo) titulo = esIngles ? 'Access Restricted' : 'Acceso Restringido';
     mensajeLimpio = mensajeLimpio.replace(/^❌\s*/, '');
   }
 
   // Títulos por defecto según el tipo si no se asignaron previamente
   if (!titulo) {
-    if (tipoFinal === 'vip') titulo = 'Membresía VIP Pro';
-    else if (tipoFinal === 'error') titulo = 'Acción Requerida';
-    else if (tipoFinal === 'warning') titulo = 'Atención';
-    else if (tipoFinal === 'info') titulo = 'Información';
-    else titulo = 'Notificación Origgo';
+    if (tipoFinal === 'vip') titulo = esIngles ? 'VIP Pro Membership' : 'Membresía VIP Pro';
+    else if (tipoFinal === 'error') titulo = esIngles ? 'Action Required' : 'Acción Requerida';
+    else if (tipoFinal === 'warning') titulo = esIngles ? 'Attention' : 'Atención';
+    else if (tipoFinal === 'info') titulo = esIngles ? 'Information' : 'Información';
+    else titulo = esIngles ? 'Origgo Notification' : 'Notificación Origgo';
   }
 
   // Contenedor global de toasts
@@ -112,7 +113,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       <div class="hunter-toast-content">
         <div class="hunter-toast-header">
           <h4 class="hunter-toast-title">${tituloSeguro}</h4>
-          <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
+          <button type="button" class="hunter-toast-close" aria-label="${esIngles ? 'Close notification' : 'Cerrar notificación'}" title="${esIngles ? 'Close' : 'Cerrar'}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -121,7 +122,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       </div>
     </div>
     <div class="hunter-toast-footer">
-      <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
+      <span class="hunter-toast-timer-label">${esIngles ? `Closes in ${segundosTotal}s · Click to pause` : `Cierra en ${segundosTotal}s · Clic para pausar`}</span>
       <div class="hunter-toast-progress-track">
         <div class="hunter-toast-progress-bar"></div>
       </div>
@@ -193,7 +194,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
     toast.classList.add('hunter-toast--paused');
     if (animacionProgreso) animacionProgreso.pause();
-    if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
+    if (timerLabel) timerLabel.textContent = esIngles ? 'Paused · Swipe up to dismiss' : 'En pausa · Desliza hacia arriba para cerrar';
   }
 
   function reanudarTimer() {
@@ -201,7 +202,8 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     estaPausado = false;
     toast.classList.remove('hunter-toast--paused');
     if (animacionProgreso && animacionProgreso.playState !== 'finished') animacionProgreso.play();
-    if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
+    const segsRest = Math.ceil(tiempoRestante / 1000);
+    if (timerLabel) timerLabel.textContent = esIngles ? `Closes in ${segsRest}s · Click to pause` : `Cierra en ${segsRest}s · Clic para pausar`;
     iniciarTimer(tiempoRestante);
   }
 
@@ -252,36 +254,45 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
  * @returns {{ titulo: string, mensaje: string, tipo: string }}
  */
 function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = null) {
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const plan = usuario?.plan || 'free';
-  const city = ciudad || usuario?.planCity || 'tu ciudad';
+  const city = ciudad || usuario?.planCity || (esIngles ? 'your city' : 'tu ciudad');
 
   if (plan === 'national' || tipoProducto === 'subscription_national') {
     return {
-      titulo: '👑 ¡Élite Nacional Desbloqueada!',
-      mensaje: '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
+      titulo: esIngles ? '👑 National Elite Unlocked!' : '👑 ¡Élite Nacional Desbloqueada!',
+      mensaje: esIngles
+        ? 'Welcome to the National VIP Pass! Full access across Colombia and price drop radar activated. Save your PIN; restore anytime via email.'
+        : '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
       tipo: 'vip'
     };
   }
 
   if (plan === 'city' || tipoProducto === 'subscription_city') {
     return {
-      titulo: `👑 ¡Membresía Pro ${city} Activa!`,
-      mensaje: `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
+      titulo: esIngles ? `👑 Pro Pass ${city} Active!` : `👑 ¡Membresía Pro ${city} Activa!`,
+      mensaje: esIngles
+        ? `Welcome! Enjoy 30 days of unlimited access to direct property owners in ${city}.`
+        : `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
       tipo: 'vip'
     };
   }
 
   if (tipoProducto === 'pack_10_leads' || (usuario?.credits >= 10)) {
     return {
-      titulo: '⭐ ¡Paquete Pro 10 Contactos Activo!',
-      mensaje: `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
+      titulo: esIngles ? '⭐ 10 Contacts Pro Pack Active!' : '⭐ ¡Paquete Pro 10 Contactos Activo!',
+      mensaje: esIngles
+        ? `30% savings secured! You have ${usuario?.credits || 10} verified contacts with no expiration.`
+        : `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
       tipo: 'success'
     };
   }
 
   return {
-    titulo: '🎉 ¡Operación Exitosa!',
-    mensaje: `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
+    titulo: esIngles ? '🎉 Payment Successful!' : '🎉 ¡Operación Exitosa!',
+    mensaje: esIngles
+      ? `Payment approved! You have ${usuario?.credits || 1} direct credit available.`
+      : `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
     tipo: 'success'
   };
 }

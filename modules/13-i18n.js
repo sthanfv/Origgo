@@ -9,13 +9,9 @@ const TASA_CAMBIO_USD_COP = 4100; // Tasa de cambio de referencia comercial
 
 const DICCIONARIO_I18N = {
   es: {
-    vip_btn_default: 'Créditos / Planes', vip_btn_title: 'Ver Créditos y Planes', lang_btn_label: 'Cambiar idioma',
-    search_placeholder: 'Buscar por barrio, ciudad o palabra clave...', search_clear: 'Limpiar búsqueda',
-    filter_all_cities: 'Todas las Ciudades', filter_colombia_all: 'Colombia (Todas)',
-    filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
-    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor',
-    sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad',
-    sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
+    vip_btn_default: 'Créditos / Planes', vip_btn_title: 'Ver Créditos y Planes', lang_btn_label: 'Cambiar idioma', search_placeholder: 'Buscar por barrio, ciudad o palabra clave...', search_clear: 'Limpiar búsqueda',
+    filter_all_cities: 'Todas las Ciudades', filter_colombia_all: 'Colombia (Todas)', filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
+    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor', sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad', sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
     hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles', hero_about_pill_text: '¿Qué es Origgo?',
@@ -82,20 +78,17 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'Cómo Funciona', legal_tab_security: 'Seguridad', legal_tab_privacy: 'Tus Datos', legal_tab_guarantee: 'Garantía de Saldo', legal_btn_accept: 'Entendido',
     footer_bio: 'Plataforma de conexión directa con propietarios de inmuebles en Colombia. Sin intermediarios, sin comisiones de agencia y con oportunidades verificadas en tiempo real.',
     footer_tagline: 'Monitoreo continuo en principales ciudades y polos de inversión inmobiliaria.', footer_telegram: 'Canal de Telegram',
-    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto',
-    footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp',
+    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto', footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp',
     footer_theme_label: 'Modo Visual', footer_copy: '© 2026 Origgo. Conexión directa entre compradores y propietarios sin intermediarios.',
-    footer_disclaimer_title: 'Aviso de Confianza:',
-    footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.'
+    footer_disclaimer_title: 'Aviso de Confianza:', footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.',
+    toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
+    toast_radar_active: '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
+    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.'
   },
   en: {
-    vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language',
-    search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
-    filter_all_cities: 'All Cities', filter_colombia_all: 'Colombia (All)',
-    filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
-    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High',
-    sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount',
-    sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
+    vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
+    filter_all_cities: 'All Cities', filter_colombia_all: 'Colombia (All)', filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
+    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High', sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount', sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
     hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties', hero_about_pill_text: 'What is Origgo?',
@@ -162,11 +155,12 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'How It Works', legal_tab_security: 'Security', legal_tab_privacy: 'Your Data', legal_tab_guarantee: 'Balance Guarantee', legal_btn_accept: 'Understood',
     footer_bio: 'Direct connection platform with property owners in Colombia. Zero middleman, zero agency commissions, and real-time verified opportunities.',
     footer_tagline: 'Continuous monitoring across Colombia’s major investment hubs.', footer_telegram: 'Telegram Channel',
-    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact',
-    footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support',
+    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact', footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support',
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
-    footer_disclaimer_title: 'Trust Notice:',
-    footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.'
+    footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
+    toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
+    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.',
+    toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.'
   }
 };
 

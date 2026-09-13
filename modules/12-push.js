@@ -29,9 +29,14 @@ function base64UrlToUint8Array(base64String) {
  * Consulta la clave pública dinámicamente al endpoint serverless sin quemar tokens en el cliente.
  */
 async function activarNotificacionesPush() {
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast('Tu navegador no soporta notificaciones push nativas.', 'error');
+      mostrarNotificacionToast(
+        esIngles ? 'Your browser does not support native push notifications.' : 'Tu navegador no soporta notificaciones push nativas.',
+        'error'
+      );
     }
     return;
   }
@@ -41,7 +46,10 @@ async function activarNotificacionesPush() {
     const permiso = await Notification.requestPermission();
     if (permiso !== 'granted') {
       if (typeof mostrarNotificacionToast === 'function') {
-        mostrarNotificacionToast('Permiso de notificaciones rechazado o bloqueado.', 'error');
+        mostrarNotificacionToast(
+          esIngles ? 'Notification permission was denied or blocked.' : 'Permiso de notificaciones rechazado o bloqueado.',
+          'error'
+        );
       }
       return;
     }
@@ -49,12 +57,12 @@ async function activarNotificacionesPush() {
     // 2. Obtener clave pública VAPID dinámicamente del backend
     const respKey = await fetch('/api/notifications/vapid-public-key');
     if (!respKey.ok) {
-      throw new Error('No se pudo obtener la configuración de notificaciones.');
+      throw new Error(esIngles ? 'Could not retrieve notification settings.' : 'No se pudo obtener la configuración de notificaciones.');
     }
 
     const { publicKey } = await respKey.json();
     if (!publicKey) {
-      throw new Error('Servicio de notificaciones temporalmente no disponible.');
+      throw new Error(esIngles ? 'Notification service temporarily unavailable.' : 'Servicio de notificaciones temporalmente no disponible.');
     }
 
     // 3. Registrar suscripción en el Service Worker
@@ -80,32 +88,37 @@ async function activarNotificacionesPush() {
     });
 
     if (!respSub.ok) {
-      throw new Error('Fallo al registrar la suscripción en el servidor.');
+      throw new Error(esIngles ? 'Failed to register subscription on server.' : 'Fallo al registrar la suscripción en el servidor.');
     }
 
     // 5. Feedback visual exitoso
     const btnBell = document.getElementById('btnPushSubscribe');
     if (btnBell) {
       btnBell.classList.add('active-push');
-      btnBell.title = 'Alertas de Oportunidades Activas';
+      btnBell.title = esIngles ? 'Direct Listing Radar Active' : 'Alertas de Oportunidades Activas';
     }
 
     const linkSide = document.getElementById('sideMenuLinkPush');
     if (linkSide) {
-      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+      linkSide.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> ${esIngles ? 'Live Alerts (Active)' : 'Alertas en Vivo (Activas)'}`;
     }
 
     // Cerrar modal de bienvenida si estuviera visible
     cerrarPushPromptModal(true);
 
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast('🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.', 'success');
+      mostrarNotificacionToast(
+        esIngles
+          ? '🔔 Radar activated! We will notify your phone when a new direct property is captured.'
+          : '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
+        'success'
+      );
     }
 
     // 6. Confirmación de activación silenciosa (las notificaciones llegarán exclusivamente por eventos reales del backend)
   } catch (err) {
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast(err.message || 'Error al activar alertas.', 'error');
+      mostrarNotificacionToast(err.message || (esIngles ? 'Error activating radar alerts.' : 'Error al activar alertas.'), 'error');
     }
   }
 }
@@ -219,12 +232,13 @@ function inicializarBotonPush() {
 
   // Verificar si ya tiene permiso otorgado previamente
   if ('Notification' in window && Notification.permission === 'granted') {
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     if (btnBell) {
       btnBell.classList.add('active-push');
-      btnBell.title = 'Alertas de Oportunidades Activas';
+      btnBell.title = esIngles ? 'Direct Listing Radar Active' : 'Alertas de Oportunidades Activas';
     }
     if (linkSide) {
-      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+      linkSide.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> ${esIngles ? 'Live Alerts (Active)' : 'Alertas en Vivo (Activas)'}`;
     }
   } else {
     // Si no tiene permiso, programar la invitación suave

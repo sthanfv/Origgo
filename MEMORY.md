@@ -1,10 +1,45 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 08:45 (GMT-5)
+Última actualización: 2026-09-13 09:50 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-43. **Internacionalización Integral del Sistema de Notificaciones Flotantes (Toasts y Push Prompts), Clarificación de Pagos Internacionales con Wompi y Service Worker PWA (`origgo-v9-20260913`)**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Toasts en español con idioma inglés activo:* Al conmutar la interfaz a inglés (`EN`), las notificaciones toast emitidas por el sistema seguían imprimiendo cadenas estáticas en español:
+         - Encabezado: *"Notificación Origgo"* en lugar de *"Origgo Notification"*.
+         - Alerta de activación Push: *"🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo."* en lugar de su versión en inglés.
+         - Pie del toast interactivo: *"Cierra en 5s · Clic para pausar"* y *"En pausa · Desliza hacia arriba para cerrar"*.
+         - Toasts de desbloqueo de leads, recargas, reclamo post-pago, estados de transacción de banco, cierre de sesión y atajo anti-impresión.
+      2. *Dudas sobre pagos internacionales y pasarela Wompi:* El usuario consultó cómo opera Wompi para compradores fuera de Colombia, si acepta tarjetas internacionales y si la pasarela se traduce al inglés.
+    - **Solución Implementada:**
+      1. **Motor Toast Bilingüe y Reactivo (`modules/02-toast.js`, 299 líneas < 500):**
+         - Se integró la evaluación `obtenerIdiomaActual() === 'en'` en `mostrarNotificacionToast()`.
+         - Mapeo bilingüe automático de títulos derivados de prefijos y emojis: `👑 VIP Pro Membership`, `🎉 Success!`, `📍 Regional Coverage`, `⚠️ System Notice`, `✅ Confirmation`, `❌ Access Restricted` y fallback `Origgo Notification`.
+         - Pie de micro-barra interactiva traducido: `Closes in {s}s · Click to pause` y `Paused · Swipe up to dismiss`.
+         - Función `generarMensajeBienvenidaToast()` 100% bilingüe para todos los planes (Nacional VIP, Pro Ciudad, Bolsa 10 y Desbloqueo Individual).
+      2. **Internacionalización Exhaustiva de Emisores de Toasts:**
+         - `modules/12-push.js` (255 líneas): Notificación de radar activado (`🔔 Radar activated!...`), advertencia de navegador no soportado y permiso bloqueado.
+         - `modules/07-unlock.js` (329 líneas): Notificaciones de éxito (`✅ Property already unlocked...`, `👑 Contact unlocked at zero cost...`, `🎉 Contact unlocked! Remaining balance: X credits`), cuota de uso justo, saldo insuficiente y error de red.
+         - `modules/08-checkout.js` (489 líneas): Mensajes de verificación bancaria, pago acreditado, validación PSE/Nequi y pago rechazado.
+         - `modules/01-state.js` (466 líneas): Restauración de sesión por enlace, protección de cuenta y toast de cierre de sesión (`Logged out successfully.`).
+         - `modules/10-listeners.js` (489 líneas): Alerta de filtro de ciudad (`📍 Showing direct deals in ${nombreLimpio}`).
+         - `modules/00-security.js` (244 líneas): Alerta de bloqueo de impresión conforme a Ley 1581 de 2012 traducida al inglés.
+         - `modules/11-welcome.js` (239 líneas): Feedback visual de copiado de PIN bilingüe (`Copied!` / `Copy`).
+         - `modules/13-i18n.js` (491 líneas): Nuevas claves de toast incorporadas en los diccionarios `es` y `en`.
+      3. **Claridad Arquitectónica sobre Pagos Internacionales con Wompi:**
+         - **Soporte de Tarjetas Internacionales:** Wompi Bancolombia procesa transacciones de crédito y débito internacionales (Visa, MasterCard, American Express) de cualquier banco del mundo.
+         - **Moneda de Cobro:** Por regulación del Banco de la República de Colombia, la orden se liquida en COP. El banco emisor internacional del cliente convierte automáticamente a USD, EUR u otra divisa a la tasa interbancaria oficial. En Origgo, el usuario ve la referencia aproximada en USD (`~$0.85 USD` por contacto individual).
+         - **Widget Bilingüe:** El checkout oficial de Wompi detecta automáticamente el idioma preferido del navegador del usuario (`navigator.language`).
+      4. **Service Worker PWA v9 y Cache-Busting (`sw.js`, `index.html`):**
+         - Versión de caché actualizada a `'origgo-v9-20260913'`.
+         - Hashes de activos renovados a `style.min.css?v=20260913-v9` y `app.js?v=20260913-v9`.
+      5. **DevSecOps y Compilación:**
+         - Recompilación con `node scripts/build.js`: generados `style.css`, `style.min.css`, `app.js` y `app.min.js`.
+         - Suite de validación DevSecOps de 8 fases (`npm test`): 100% aprobada (0 errores).
+         - Cumplimiento inflexible del estándar Desmulta (< 500 líneas en los 14 módulos JS y 18 archivos CSS).
 
 -42. **Traducción Bilingüe Completa del Footer (`footer_bio`, `footer_telegram`), Estabilización de Cumulative Layout Shift (CLS) con Skeletons Estáticos Iniciales y Service Worker PWA (`origgo-v8-20260913`)**:
     - **Diagnóstico y Causa Raíz:**

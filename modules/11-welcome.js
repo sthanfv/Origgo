@@ -165,12 +165,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const pin = pinCodeEl ? pinCodeEl.textContent.trim() : (sesionUsuario?.pin || '');
       if (pin && navigator.clipboard) {
         try {
-          await navigator.clipboard.writeText(pin);
+          const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
           btnCopy.classList.add("copied");
-          btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
+          btnCopy.innerHTML = `<i class="fa-solid fa-check"></i> ${isEn ? 'Copied!' : '¡Copiado!'}`;
           setTimeout(() => {
             btnCopy.classList.remove("copied");
-            btnCopy.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar';
+            btnCopy.innerHTML = `<i class="fa-solid fa-copy"></i> ${isEn ? 'Copy' : 'Copiar'}`;
           }, 2000);
         } catch (e) {
           registrarLogDesarrollo('warn', '[Clipboard] Error copiando PIN:', e);

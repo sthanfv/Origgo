@@ -142,7 +142,13 @@ function inicializarProteccionAntiImpresion() {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
       e.preventDefault();
       if (typeof mostrarNotificacionToast === 'function') {
-        mostrarNotificacionToast('🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.', 'warning');
+        const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+        mostrarNotificacionToast(
+          esIngles
+            ? '🛡️ Printing blocked for data protection (Law 1581 of 2012). View contacts on screen.'
+            : '🛡️ Impresión bloqueada por protección de datos (Ley 1581 de 2012). Consulta tus contactos en pantalla.',
+          'warning'
+        );
       }
     }
   });
@@ -299,13 +305,15 @@ async function inicializarSesionUsuario() {
       delete sesionUsuario.pin;
       actualizarBadgeVip();
       sincronizarFiltroCiudadUsuario();
-      mostrarNotificacionToast('Sesión restaurada correctamente.', 'success', { title: 'Acceso recuperado', duration: 5000 });
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(esIngles ? 'Session successfully restored.' : 'Sesión restaurada correctamente.', 'success', { title: esIngles ? 'Access Restored' : 'Acceso recuperado', duration: 5000 });
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     } catch (e) {
       localStorage.removeItem('hunter_pro_token');
       sesionUsuario = null;
-      mostrarNotificacionToast(e.message || 'El enlace de recuperación no es válido o expiró.', 'warning', { title: 'Recuperación no válida', duration: 7000 });
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Recovery' : 'Recuperación no válida', duration: 7000 });
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -338,8 +346,9 @@ async function inicializarSesionUsuario() {
       const dataText = await res.text();
       let data = null;
       try { data = JSON.parse(dataText); } catch (_) {}
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
       if (data && data.requiresLogin) {
-        mostrarNotificacionToast(data.message || 'Pago acreditado. Inicia sesión con tu PIN.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        mostrarNotificacionToast(data.message || (esIngles ? 'Payment credited. Sign in with your PIN.' : 'Pago acreditado. Inicia sesión con tu PIN.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -354,7 +363,7 @@ async function inicializarSesionUsuario() {
         sincronizarFiltroCiudadUsuario();
         const notif = typeof generarMensajeBienvenidaToast === 'function' 
           ? generarMensajeBienvenidaToast(sesionUsuario)
-          : { titulo: '🎉 ¡Pago confirmado!', mensaje: 'Tu acceso quedó acreditado.', tipo: 'success' };
+          : { titulo: esIngles ? '🎉 Payment confirmed!' : '🎉 ¡Pago confirmado!', mensaje: esIngles ? 'Your access has been accredited.' : 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
         if (typeof abrirModalBienvenidaVIP === 'function') {
           abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
@@ -637,8 +646,8 @@ function cerrarSesionUsuario() {
   sesionUsuario = null;
   actualizarBadgeVip();
   renderizarInterfaz(datosActuales);
-  cerrarModalCheckout();
-  mostrarNotificacionToast('Sesión cerrada correctamente.', 'info');
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? 'Logged out successfully.' : 'Sesión cerrada correctamente.', 'info');
 }
 
 /**
@@ -723,38 +732,39 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
   let tipoFinal = tipo;
   let titulo = opts.title || '';
   let mensajeLimpio = String(mensaje || '').trim();
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
 
   // Detección e interpretación inteligente de prefijos y emojis
   if (mensajeLimpio.startsWith('👑')) {
     tipoFinal = 'vip';
-    if (!titulo) titulo = 'Membresía VIP Pro';
+    if (!titulo) titulo = esIngles ? 'VIP Pro Membership' : 'Membresía VIP Pro';
     mensajeLimpio = mensajeLimpio.replace(/^👑\s*/, '');
   } else if (mensajeLimpio.startsWith('🎉')) {
-    if (!titulo) titulo = '¡Operación Exitosa!';
+    if (!titulo) titulo = esIngles ? 'Success!' : '¡Operación Exitosa!';
     mensajeLimpio = mensajeLimpio.replace(/^🎉\s*/, '');
   } else if (mensajeLimpio.startsWith('📍')) {
-    if (!titulo) titulo = 'Cobertura Regional';
+    if (!titulo) titulo = esIngles ? 'Regional Coverage' : 'Cobertura Regional';
     mensajeLimpio = mensajeLimpio.replace(/^📍\s*/, '');
   } else if (mensajeLimpio.startsWith('⚠️')) {
     tipoFinal = 'warning';
-    if (!titulo) titulo = 'Aviso del Sistema';
+    if (!titulo) titulo = esIngles ? 'System Notice' : 'Aviso del Sistema';
     mensajeLimpio = mensajeLimpio.replace(/^⚠️\s*/, '');
   } else if (mensajeLimpio.startsWith('✅')) {
-    if (!titulo) titulo = 'Confirmación';
+    if (!titulo) titulo = esIngles ? 'Confirmation' : 'Confirmación';
     mensajeLimpio = mensajeLimpio.replace(/^✅\s*/, '');
   } else if (mensajeLimpio.startsWith('❌')) {
     tipoFinal = 'error';
-    if (!titulo) titulo = 'Acceso Restringido';
+    if (!titulo) titulo = esIngles ? 'Access Restricted' : 'Acceso Restringido';
     mensajeLimpio = mensajeLimpio.replace(/^❌\s*/, '');
   }
 
   // Títulos por defecto según el tipo si no se asignaron previamente
   if (!titulo) {
-    if (tipoFinal === 'vip') titulo = 'Membresía VIP Pro';
-    else if (tipoFinal === 'error') titulo = 'Acción Requerida';
-    else if (tipoFinal === 'warning') titulo = 'Atención';
-    else if (tipoFinal === 'info') titulo = 'Información';
-    else titulo = 'Notificación Origgo';
+    if (tipoFinal === 'vip') titulo = esIngles ? 'VIP Pro Membership' : 'Membresía VIP Pro';
+    else if (tipoFinal === 'error') titulo = esIngles ? 'Action Required' : 'Acción Requerida';
+    else if (tipoFinal === 'warning') titulo = esIngles ? 'Attention' : 'Atención';
+    else if (tipoFinal === 'info') titulo = esIngles ? 'Information' : 'Información';
+    else titulo = esIngles ? 'Origgo Notification' : 'Notificación Origgo';
   }
 
   // Contenedor global de toasts
@@ -815,7 +825,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       <div class="hunter-toast-content">
         <div class="hunter-toast-header">
           <h4 class="hunter-toast-title">${tituloSeguro}</h4>
-          <button type="button" class="hunter-toast-close" aria-label="Cerrar notificación" title="Cerrar">
+          <button type="button" class="hunter-toast-close" aria-label="${esIngles ? 'Close notification' : 'Cerrar notificación'}" title="${esIngles ? 'Close' : 'Cerrar'}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -824,7 +834,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
       </div>
     </div>
     <div class="hunter-toast-footer">
-      <span class="hunter-toast-timer-label">Cierra en ${segundosTotal}s · Clic para pausar</span>
+      <span class="hunter-toast-timer-label">${esIngles ? `Closes in ${segundosTotal}s · Click to pause` : `Cierra en ${segundosTotal}s · Clic para pausar`}</span>
       <div class="hunter-toast-progress-track">
         <div class="hunter-toast-progress-bar"></div>
       </div>
@@ -896,7 +906,7 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     tiempoRestante = Math.max(500, tiempoRestante - transcurrido);
     toast.classList.add('hunter-toast--paused');
     if (animacionProgreso) animacionProgreso.pause();
-    if (timerLabel) timerLabel.textContent = 'En pausa · Desliza hacia arriba para cerrar';
+    if (timerLabel) timerLabel.textContent = esIngles ? 'Paused · Swipe up to dismiss' : 'En pausa · Desliza hacia arriba para cerrar';
   }
 
   function reanudarTimer() {
@@ -904,7 +914,8 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
     estaPausado = false;
     toast.classList.remove('hunter-toast--paused');
     if (animacionProgreso && animacionProgreso.playState !== 'finished') animacionProgreso.play();
-    if (timerLabel) timerLabel.textContent = `Cierra en ${Math.ceil(tiempoRestante / 1000)}s · Clic para pausar`;
+    const segsRest = Math.ceil(tiempoRestante / 1000);
+    if (timerLabel) timerLabel.textContent = esIngles ? `Closes in ${segsRest}s · Click to pause` : `Cierra en ${segsRest}s · Clic para pausar`;
     iniciarTimer(tiempoRestante);
   }
 
@@ -955,36 +966,45 @@ function mostrarNotificacionToast(mensaje, tipo = 'success', opciones = {}) {
  * @returns {{ titulo: string, mensaje: string, tipo: string }}
  */
 function generarMensajeBienvenidaToast(usuario, tipoProducto = null, ciudad = null) {
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const plan = usuario?.plan || 'free';
-  const city = ciudad || usuario?.planCity || 'tu ciudad';
+  const city = ciudad || usuario?.planCity || (esIngles ? 'your city' : 'tu ciudad');
 
   if (plan === 'national' || tipoProducto === 'subscription_national') {
     return {
-      titulo: '👑 ¡Élite Nacional Desbloqueada!',
-      mensaje: '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
+      titulo: esIngles ? '👑 National Elite Unlocked!' : '👑 ¡Élite Nacional Desbloqueada!',
+      mensaje: esIngles
+        ? 'Welcome to the National VIP Pass! Full access across Colombia and price drop radar activated. Save your PIN; restore anytime via email.'
+        : '¡Bienvenido al Plan Nacional VIP! Acceso total en toda Colombia y radar de rebajas activado. Guarda tu PIN; también puedes recuperarlo por correo.',
       tipo: 'vip'
     };
   }
 
   if (plan === 'city' || tipoProducto === 'subscription_city') {
     return {
-      titulo: `👑 ¡Membresía Pro ${city} Activa!`,
-      mensaje: `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
+      titulo: esIngles ? `👑 Pro Pass ${city} Active!` : `👑 ¡Membresía Pro ${city} Activa!`,
+      mensaje: esIngles
+        ? `Welcome! Enjoy 30 days of unlimited access to direct property owners in ${city}.`
+        : `¡Bienvenido! Disfrutas de acceso ilimitado a propietarios directos de ${city} por 30 días.`,
       tipo: 'vip'
     };
   }
 
   if (tipoProducto === 'pack_10_leads' || (usuario?.credits >= 10)) {
     return {
-      titulo: '⭐ ¡Paquete Pro 10 Contactos Activo!',
-      mensaje: `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
+      titulo: esIngles ? '⭐ 10 Contacts Pro Pack Active!' : '⭐ ¡Paquete Pro 10 Contactos Activo!',
+      mensaje: esIngles
+        ? `30% savings secured! You have ${usuario?.credits || 10} verified contacts with no expiration.`
+        : `¡Ahorro del 30% asegurado! Tienes ${usuario?.credits || 10} contactos verificados sin vencimiento.`,
       tipo: 'success'
     };
   }
 
   return {
-    titulo: '🎉 ¡Operación Exitosa!',
-    mensaje: `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
+    titulo: esIngles ? '🎉 Payment Successful!' : '🎉 ¡Operación Exitosa!',
+    mensaje: esIngles
+      ? `Payment approved! You have ${usuario?.credits || 1} direct credit available.`
+      : `¡Pago aprobado! Tienes ${usuario?.credits || 1} crédito disponible sin intermediarios.`,
     tipo: 'success'
   };
 }
@@ -2327,22 +2347,26 @@ async function ejecutarDesbloqueoLead(lead, index) {
     });
 
     const data = await res.json();
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
     if (!res.ok || !data.ok) {
       if (res.status === 429 || data.error === 'CUOTA_DIARIA_EXCEDIDA') {
-        mostrarNotificacionToast(`🛡️ ${data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.'}`, 'warning');
+        const msgCuota = esIngles ? 'Fair use daily limit reached (35 contacts/day). Resets tomorrow.' : (data.message || 'Cuota de uso justo alcanzada (35 contactos/día). Se reiniciará mañana.');
+        mostrarNotificacionToast(`🛡️ ${msgCuota}`, 'warning');
         return;
       }
       if (res.status === 403 && data.error === 'PLAN_CIUDAD_DIFERENTE') {
-        mostrarNotificacionToast(`📍 ${data.message || 'Tu membresía no cubre esta ciudad.'}`, 'error');
+        const msgCiudad = esIngles ? 'Your active pass does not cover this city.' : (data.message || 'Tu membresía no cubre esta ciudad.');
+        mostrarNotificacionToast(`📍 ${msgCiudad}`, 'error');
         abrirModalCheckout(index, 'comprar');
         return;
       }
       if (res.status === 402) {
-        mostrarNotificacionToast('⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
+        mostrarNotificacionToast(esIngles ? '⚠️ Insufficient credits to unlock this owner contact.' : '⚠️ Saldo insuficiente para desbloquear este contacto.', 'error');
         abrirModalCheckout(index, 'comprar');
         return;
       }
-      throw new Error(data.error || 'Error al desbloquear contacto');
+      throw new Error(data.error || (esIngles ? 'Error unlocking contact' : 'Error al desbloquear contacto'));
     }
 
     sesionUsuario.credits = data.creditsRemaining;
@@ -2372,22 +2396,33 @@ async function ejecutarDesbloqueoLead(lead, index) {
 
     let mensajeExito = '';
     if (data.alreadyUnlocked) {
-      mensajeExito = '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
+      mensajeExito = esIngles
+        ? '✅ Property already unlocked previously (Cost: 0 credits). Contact restored.'
+        : '✅ Inmueble ya desbloqueado previamente (Costo: 0 créditos). Contacto restablecido.';
     } else if (data.planBenefit) {
-      const restHoy = typeof data.dailyUnlocksRemaining === 'number' ? ` (${data.dailyUnlocksRemaining} restantes hoy)` : '';
-      mensajeExito = `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
+      const restHoy = typeof data.dailyUnlocksRemaining === 'number'
+        ? (esIngles ? ` (${data.dailyUnlocksRemaining} left today)` : ` (${data.dailyUnlocksRemaining} restantes hoy)`)
+        : '';
+      mensajeExito = esIngles
+        ? `👑 Contact unlocked at zero cost via your Pro Pass!${restHoy}`
+        : `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
     } else {
-      const palabraCredito = data.creditsRemaining === 1 ? 'crédito' : 'créditos';
-      mensajeExito = `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
+      const palabraCredito = data.creditsRemaining === 1
+        ? (esIngles ? 'credit' : 'crédito')
+        : (esIngles ? 'credits' : 'créditos');
+      mensajeExito = esIngles
+        ? `🎉 Contact unlocked! Remaining balance: ${data.creditsRemaining} ${palabraCredito}.`
+        : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
     }
     mostrarNotificacionToast(mensajeExito);
   } catch (err) {
     registrarLogDesarrollo('error', '[Desbloqueo] Error:', err);
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     const esErrorRed = !navigator.onLine || err.name === 'TypeError' || String(err.message || '').toLowerCase().includes('failed to fetch') || String(err.message || '').toLowerCase().includes('network');
     if (esErrorRed) {
-      mostrarNotificacionToast('📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
+      mostrarNotificacionToast(esIngles ? '📡 Unstable network or offline. Your credits are safe; please try again.' : '📡 Red inestable o sin conexión. Tus créditos están protegidos; intenta nuevamente.', 'error');
     } else {
-      mostrarNotificacionToast(err.message || 'Error de conexión durante el desbloqueo', 'error');
+      mostrarNotificacionToast(err.message || (esIngles ? 'Connection error during contact unlock' : 'Error de conexión durante el desbloqueo'), 'error');
     }
   } finally {
     desbloqueosEnProgreso.delete(lead.id);
@@ -2550,20 +2585,13 @@ function abrirModalCheckout(index, pestana = null) {
   if (sesionUsuario) {
     if (tabMiCuenta) tabMiCuenta.style.display = 'flex';
 
-    const elPhone = document.getElementById('userActivePhone');
-    const elPin = document.getElementById('userActivePin');
-    const elCredits = document.getElementById('userActiveCredits');
-    const elPlan = document.getElementById('userActivePlan');
-    const elCount = document.getElementById('userActiveUnlockedCount');
-    const inputWa = document.getElementById('checkoutWhatsappInput');
-    const cardCredits = document.getElementById('userCreditsCard');
-    const badgeWrap = document.getElementById('userMembershipBadgeWrap');
-    const badgeEl = document.getElementById('userMembershipBadge');
-    const labelCredits = document.getElementById('userCreditsLabel');
-    const extraWrap = document.getElementById('userExtraCreditsWrap');
-    const extraPill = document.getElementById('userExtraCreditsPill');
-    const benefitsWrap = document.getElementById('userBenefitsToggleWrap');
-    const benefitsList = document.getElementById('userBenefitsList');
+    const elPhone = document.getElementById('userActivePhone'), elPin = document.getElementById('userActivePin');
+    const elCredits = document.getElementById('userActiveCredits'), elPlan = document.getElementById('userActivePlan');
+    const elCount = document.getElementById('userActiveUnlockedCount'), inputWa = document.getElementById('checkoutWhatsappInput');
+    const cardCredits = document.getElementById('userCreditsCard'), badgeWrap = document.getElementById('userMembershipBadgeWrap');
+    const badgeEl = document.getElementById('userMembershipBadge'), labelCredits = document.getElementById('userCreditsLabel');
+    const extraWrap = document.getElementById('userExtraCreditsWrap'), extraPill = document.getElementById('userExtraCreditsPill');
+    const benefitsWrap = document.getElementById('userBenefitsToggleWrap'), benefitsList = document.getElementById('userBenefitsList');
 
     if (elPhone) elPhone.textContent = `+57 ${sesionUsuario.phone}`;
     if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : 'PIN protegido';
@@ -2668,7 +2696,8 @@ function cerrarModalCheckout() {
  * Reconcilia la acreditación del pago con reintentos para mitigar latencias de pasarela.
  */
 async function reclamarSesionPostPago(orderData, productType, ciudad) {
-  mostrarNotificacionToast('Confirmando acreditación de pago con tu banco...', 'info', { title: 'Verificando saldo', duration: 4500 });
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? 'Confirming payment accreditation with your bank...' : 'Confirmando acreditación de pago con tu banco...', 'info', { title: esIngles ? 'Verifying balance' : 'Verificando saldo', duration: 4500 });
   const tokenGuardado = localStorage.getItem('hunter_pro_token') || sesionUsuario?.token || '';
   const headersClaim = { 'Content-Type': 'application/json' };
   if (tokenGuardado) headersClaim.Authorization = `Bearer ${tokenGuardado}`;
@@ -2685,7 +2714,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
       try { claimData = JSON.parse(claimText); } catch (_) {}
 
       if (claimRes.status === 202 && claimData?.requiresLogin) {
-        mostrarNotificacionToast(claimData.message || 'Pago acreditado. Inicia sesión con tu PIN existente.', 'warning', { title: 'Protección de cuenta', duration: 7000 });
+        mostrarNotificacionToast(claimData.message || (esIngles ? 'Payment credited. Sign in with your existing PIN.' : 'Pago acreditado. Inicia sesión con tu PIN existente.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         abrirModalCheckout(undefined, 'tengo-pin');
         return true;
       }
@@ -2702,7 +2731,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
         const notif = typeof generarMensajeBienvenidaToast === 'function'
           ? generarMensajeBienvenidaToast(sesionUsuario, productType, ciudad)
-          : { titulo: '🎉 ¡Pago Exitoso!', mensaje: 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
+          : { titulo: esIngles ? '🎉 Payment Successful!' : '🎉 ¡Pago Exitoso!', mensaje: esIngles ? 'Your access has been secured.' : 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
 
         if (typeof abrirModalBienvenidaVIP === 'function') {
@@ -2724,9 +2753,11 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
   localStorage.setItem('origgo_pending_ref', orderData.reference);
   mostrarNotificacionToast(
-    `Pago recibido (Ref: ${orderData.reference}). Tu banco está procesando la confirmación. Si no se refleja, pulsa Restaurar Cuenta.`,
+    esIngles
+      ? `Payment received (Ref: ${orderData.reference}). Your bank is finalizing processing. If not reflected, tap Restore Account.`
+      : `Pago recibido (Ref: ${orderData.reference}). Tu banco está procesando la confirmación. Si no se refleja, pulsa Restaurar Cuenta.`,
     'warning',
-    { title: 'Confirmación en proceso', duration: 9000 }
+    { title: esIngles ? 'Processing Confirmation' : 'Confirmación en proceso', duration: 9000 }
   );
   return false;
 }
@@ -2862,17 +2893,26 @@ async function ejecutarPagoWompi() {
 
       checkout.open(async (result) => {
         const trx = result?.transaction;
+        const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
         } else if (trx?.status === 'PENDING') {
           localStorage.setItem('origgo_pending_ref', orderData.reference);
           mostrarNotificacionToast(
-            `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
+            esIngles
+              ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.`
+              : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
             'info',
-            { title: 'Pago en Validación (PSE / Nequi)', duration: 8500 }
+            { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
           );
         } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
-          mostrarNotificacionToast('La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.', 'error', { title: 'Pago Rechazado', duration: 7500 });
+          mostrarNotificacionToast(
+            esIngles
+              ? 'The transaction was declined by the financial institution. Please try another payment method.'
+              : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
+            'error',
+            { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
+          );
         }
       });
       return;
@@ -2888,29 +2928,23 @@ async function ejecutarPagoWompi() {
     const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
     if (errorBox) {
       errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
-      errorBox.classList.remove('is-hidden');
-      errorBox.style.display = 'block';
+      errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block';
     } else {
       mostrarNotificacionToast(`⚠️ ${mensajeError}`);
     }
   } finally {
     pagoWompiEnProgreso = false;
-    if (btnPagar) {
-      btnPagar.innerHTML = textoOriginal;
-      btnPagar.disabled = false;
-    }
+    if (btnPagar) { btnPagar.innerHTML = textoOriginal; btnPagar.disabled = false; }
   }
 }
 
 // Inicialización de Listeners Propios de Pestañas y Acordeón en Checkout
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("tabBtnMiCuenta")?.addEventListener("click", () => cambiarPestanaCheckout('mi-cuenta'));
-  const btnToggle = document.getElementById("btnToggleUserBenefits");
-  const acc = document.getElementById("userBenefitsAccordion");
+  const btnToggle = document.getElementById("btnToggleUserBenefits"), acc = document.getElementById("userBenefitsAccordion");
   btnToggle?.addEventListener("click", () => {
     acc?.classList.toggle("active");
-    const active = acc?.classList.contains("active");
-    const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+    const active = acc?.classList.contains("active"), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     btnToggle.innerHTML = active
       ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios')
       : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
@@ -3655,8 +3689,9 @@ function configurarListeners() {
         document.body.style.overflow = '';
       }
 
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
       const nombreLimpio = cityVal ? cityVal : 'Colombia';
-      mostrarNotificacionToast(`📍 Mostrando oportunidades en ${nombreLimpio}`, 'info');
+      mostrarNotificacionToast(esIngles ? `📍 Showing direct deals in ${nombreLimpio}` : `📍 Mostrando oportunidades en ${nombreLimpio}`, 'info');
     });
   }
 
@@ -4068,12 +4103,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const pin = pinCodeEl ? pinCodeEl.textContent.trim() : (sesionUsuario?.pin || '');
       if (pin && navigator.clipboard) {
         try {
-          await navigator.clipboard.writeText(pin);
+          const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
           btnCopy.classList.add("copied");
-          btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
+          btnCopy.innerHTML = `<i class="fa-solid fa-check"></i> ${isEn ? 'Copied!' : '¡Copiado!'}`;
           setTimeout(() => {
             btnCopy.classList.remove("copied");
-            btnCopy.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar';
+            btnCopy.innerHTML = `<i class="fa-solid fa-copy"></i> ${isEn ? 'Copy' : 'Copiar'}`;
           }, 2000);
         } catch (e) {
           registrarLogDesarrollo('warn', '[Clipboard] Error copiando PIN:', e);
@@ -4172,9 +4207,14 @@ function base64UrlToUint8Array(base64String) {
  * Consulta la clave pública dinámicamente al endpoint serverless sin quemar tokens en el cliente.
  */
 async function activarNotificacionesPush() {
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast('Tu navegador no soporta notificaciones push nativas.', 'error');
+      mostrarNotificacionToast(
+        esIngles ? 'Your browser does not support native push notifications.' : 'Tu navegador no soporta notificaciones push nativas.',
+        'error'
+      );
     }
     return;
   }
@@ -4184,7 +4224,10 @@ async function activarNotificacionesPush() {
     const permiso = await Notification.requestPermission();
     if (permiso !== 'granted') {
       if (typeof mostrarNotificacionToast === 'function') {
-        mostrarNotificacionToast('Permiso de notificaciones rechazado o bloqueado.', 'error');
+        mostrarNotificacionToast(
+          esIngles ? 'Notification permission was denied or blocked.' : 'Permiso de notificaciones rechazado o bloqueado.',
+          'error'
+        );
       }
       return;
     }
@@ -4192,12 +4235,12 @@ async function activarNotificacionesPush() {
     // 2. Obtener clave pública VAPID dinámicamente del backend
     const respKey = await fetch('/api/notifications/vapid-public-key');
     if (!respKey.ok) {
-      throw new Error('No se pudo obtener la configuración de notificaciones.');
+      throw new Error(esIngles ? 'Could not retrieve notification settings.' : 'No se pudo obtener la configuración de notificaciones.');
     }
 
     const { publicKey } = await respKey.json();
     if (!publicKey) {
-      throw new Error('Servicio de notificaciones temporalmente no disponible.');
+      throw new Error(esIngles ? 'Notification service temporarily unavailable.' : 'Servicio de notificaciones temporalmente no disponible.');
     }
 
     // 3. Registrar suscripción en el Service Worker
@@ -4223,32 +4266,37 @@ async function activarNotificacionesPush() {
     });
 
     if (!respSub.ok) {
-      throw new Error('Fallo al registrar la suscripción en el servidor.');
+      throw new Error(esIngles ? 'Failed to register subscription on server.' : 'Fallo al registrar la suscripción en el servidor.');
     }
 
     // 5. Feedback visual exitoso
     const btnBell = document.getElementById('btnPushSubscribe');
     if (btnBell) {
       btnBell.classList.add('active-push');
-      btnBell.title = 'Alertas de Oportunidades Activas';
+      btnBell.title = esIngles ? 'Direct Listing Radar Active' : 'Alertas de Oportunidades Activas';
     }
 
     const linkSide = document.getElementById('sideMenuLinkPush');
     if (linkSide) {
-      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+      linkSide.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> ${esIngles ? 'Live Alerts (Active)' : 'Alertas en Vivo (Activas)'}`;
     }
 
     // Cerrar modal de bienvenida si estuviera visible
     cerrarPushPromptModal(true);
 
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast('🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.', 'success');
+      mostrarNotificacionToast(
+        esIngles
+          ? '🔔 Radar activated! We will notify your phone when a new direct property is captured.'
+          : '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
+        'success'
+      );
     }
 
     // 6. Confirmación de activación silenciosa (las notificaciones llegarán exclusivamente por eventos reales del backend)
   } catch (err) {
     if (typeof mostrarNotificacionToast === 'function') {
-      mostrarNotificacionToast(err.message || 'Error al activar alertas.', 'error');
+      mostrarNotificacionToast(err.message || (esIngles ? 'Error activating radar alerts.' : 'Error al activar alertas.'), 'error');
     }
   }
 }
@@ -4362,12 +4410,13 @@ function inicializarBotonPush() {
 
   // Verificar si ya tiene permiso otorgado previamente
   if ('Notification' in window && Notification.permission === 'granted') {
+    const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     if (btnBell) {
       btnBell.classList.add('active-push');
-      btnBell.title = 'Alertas de Oportunidades Activas';
+      btnBell.title = esIngles ? 'Direct Listing Radar Active' : 'Alertas de Oportunidades Activas';
     }
     if (linkSide) {
-      linkSide.innerHTML = '<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> Alertas en Vivo (Activas)';
+      linkSide.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> ${esIngles ? 'Live Alerts (Active)' : 'Alertas en Vivo (Activas)'}`;
     }
   } else {
     // Si no tiene permiso, programar la invitación suave
@@ -4394,13 +4443,9 @@ const TASA_CAMBIO_USD_COP = 4100; // Tasa de cambio de referencia comercial
 
 const DICCIONARIO_I18N = {
   es: {
-    vip_btn_default: 'Créditos / Planes', vip_btn_title: 'Ver Créditos y Planes', lang_btn_label: 'Cambiar idioma',
-    search_placeholder: 'Buscar por barrio, ciudad o palabra clave...', search_clear: 'Limpiar búsqueda',
-    filter_all_cities: 'Todas las Ciudades', filter_colombia_all: 'Colombia (Todas)',
-    filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
-    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor',
-    sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad',
-    sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
+    vip_btn_default: 'Créditos / Planes', vip_btn_title: 'Ver Créditos y Planes', lang_btn_label: 'Cambiar idioma', search_placeholder: 'Buscar por barrio, ciudad o palabra clave...', search_clear: 'Limpiar búsqueda',
+    filter_all_cities: 'Todas las Ciudades', filter_colombia_all: 'Colombia (Todas)', filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
+    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor', sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad', sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
     hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles', hero_about_pill_text: '¿Qué es Origgo?',
@@ -4467,20 +4512,17 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'Cómo Funciona', legal_tab_security: 'Seguridad', legal_tab_privacy: 'Tus Datos', legal_tab_guarantee: 'Garantía de Saldo', legal_btn_accept: 'Entendido',
     footer_bio: 'Plataforma de conexión directa con propietarios de inmuebles en Colombia. Sin intermediarios, sin comisiones de agencia y con oportunidades verificadas en tiempo real.',
     footer_tagline: 'Monitoreo continuo en principales ciudades y polos de inversión inmobiliaria.', footer_telegram: 'Canal de Telegram',
-    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto',
-    footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp',
+    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto', footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp',
     footer_theme_label: 'Modo Visual', footer_copy: '© 2026 Origgo. Conexión directa entre compradores y propietarios sin intermediarios.',
-    footer_disclaimer_title: 'Aviso de Confianza:',
-    footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.'
+    footer_disclaimer_title: 'Aviso de Confianza:', footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.',
+    toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
+    toast_radar_active: '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
+    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.'
   },
   en: {
-    vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language',
-    search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
-    filter_all_cities: 'All Cities', filter_colombia_all: 'Colombia (All)',
-    filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
-    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High',
-    sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount',
-    sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
+    vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
+    filter_all_cities: 'All Cities', filter_colombia_all: 'Colombia (All)', filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
+    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High', sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount', sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
     hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties', hero_about_pill_text: 'What is Origgo?',
@@ -4547,11 +4589,12 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'How It Works', legal_tab_security: 'Security', legal_tab_privacy: 'Your Data', legal_tab_guarantee: 'Balance Guarantee', legal_btn_accept: 'Understood',
     footer_bio: 'Direct connection platform with property owners in Colombia. Zero middleman, zero agency commissions, and real-time verified opportunities.',
     footer_tagline: 'Continuous monitoring across Colombia’s major investment hubs.', footer_telegram: 'Telegram Channel',
-    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact',
-    footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support',
+    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact', footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support',
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
-    footer_disclaimer_title: 'Trust Notice:',
-    footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.'
+    footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
+    toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
+    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.',
+    toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.'
   }
 };
 
