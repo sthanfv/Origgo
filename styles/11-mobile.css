@@ -40,16 +40,10 @@
     gap: 0.55rem;
   }
 
-  .brand-logo-container {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
-  }
-
-  .brand-title {
-    font-size: 1.45rem;
-    letter-spacing: -0.025em;
+  .brand-logo-img {
+    height: 34px;
+    width: auto;
+    max-width: 110px;
   }
 
   .brand-tag .tag-desktop {
@@ -226,13 +220,10 @@
     gap: 0.5rem;
   }
 
-  .brand-logo-container {
-    width: 36px;
-    height: 36px;
-  }
-
-  .brand-title {
-    font-size: 1.18rem;
+  .brand-logo-img {
+    height: 29px;
+    width: auto;
+    max-width: 95px;
   }
 
   .btn-vip-header {

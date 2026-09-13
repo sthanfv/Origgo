@@ -1,10 +1,19 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 00:52 (GMT-5)
+Última actualización: 2026-09-13 01:26 (GMT-5)
 
 ---
 
 ## 1. Qué cambió
+
+-26. **Unificación y Nitidez de Logotipo Oficial en Header, Footer y Menú Lateral, Erradicación de Jerga Residual y Optimización de Interacción**:
+    - **Diagnóstico y Causa Raíz:** Se había fragmentado la identidad de marca dividiendo la inicial "O" como imagen rasterizada independiente (`origgo-icon.svg`) y las letras "riggo" como spans de texto HTML. Esto producía un espaciado desalineado, tipografía genérica y una silueta oscura casi imperceptible sobre fondos oscuros.
+    - **Solución Implementada:**
+      1. Se unificó la identidad visual en toda la plataforma (`index.html`, `styles/02-base.css`, `styles/11-mobile.css`, `styles/12-sidebar.css`, `styles/13-footer.css`) insertando el logotipo corporativo completo `assets/img/origgo-logo.svg` en la cabecera (`.brand-logo-img`), pie de página (`.footer-logo-img`) y menú lateral (`.side-menu-logo-img`), garantizando nitidez perfecta, color verde esmeralda uniforme (`#0a9f68`) y cero desalineaciones.
+      2. En el pie de página (`index.html`), se sustituyó la jerga técnica antigua ("Terminal privada de inteligencia de mercado y arbitraje comercial...") por una descripción comercial limpia, cercana y enfocada al comprador de vivienda directa en Colombia.
+      3. En la barra móvil inferior y cabecera (`modules/10-listeners.js`), hacer clic en el logotipo o en el botón "Inicio" ahora restablece automáticamente los filtros activos y desplaza la vista con suavidad al inicio del catálogo.
+      4. En el modal de checkout (`modules/08-checkout.js`), se eliminó la jerga técnica en el botón de pago, sustituyendo "Generando firma criptográfica..." por "Conectando con pago seguro...".
+    - **DevSecOps:** Ejecutado `npm run build` y validación completa de 8 fases (`scripts/validate.js`) al 100% (0 errores). Submódulos acotados bajo el límite Desmulta (< 500 líneas).
 
 -25. **Resolución Crítica de Fallo de Despliegue en Vercel (Límite Estricto de 12 Funciones en Plan Hobby)**:
     - **Diagnóstico Forense de la Causa Raíz:**

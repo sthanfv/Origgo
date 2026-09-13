@@ -48,6 +48,17 @@
   padding: 1.25rem;
   border-bottom: 1px solid var(--border-subtle);
 }
+.side-menu-brand {
+  display: flex;
+  align-items: center;
+}
+.side-menu-logo-img {
+  height: 32px;
+  width: auto;
+  max-width: 115px;
+  display: block;
+  object-fit: contain;
+}
 .btn-close-menu {
   background: transparent;
   border: none;

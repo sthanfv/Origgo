@@ -373,7 +373,7 @@ async function ejecutarPagoWompi() {
   const textoOriginal = btnPagar ? btnPagar.innerHTML : '';
   let idempotencyKey = '';
   if (btnPagar) {
-    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando firma criptográfica...';
+    btnPagar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando con pago seguro...';
     btnPagar.disabled = true;
   }
 

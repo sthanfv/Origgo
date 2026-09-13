@@ -130,6 +130,7 @@ function configurarListeners() {
       btn.classList.add("active");
 
       if (navType === "home") {
+        if (typeof restablecerTodosLosFiltros === "function") restablecerTodosLosFiltros();
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (navType === "search") {
         const omnibox = document.getElementById("omniboxSearch");
@@ -422,15 +423,17 @@ function configurarListeners() {
     });
   }
 
-  // Calibración táctil del Isotipo Radar (Feedback háptico-visual en móvil y click en desktop)
+  // Clic o toque en el logotipo principal: volver al inicio y restablecer catálogo
   const brandBadge = document.querySelector(".brand-badge");
   if (brandBadge) {
-    const dispararCalibracion = () => {
+    const volverAlInicio = () => {
       brandBadge.classList.add("calibrating");
       setTimeout(() => brandBadge.classList.remove("calibrating"), 750);
+      if (typeof restablecerTodosLosFiltros === "function") restablecerTodosLosFiltros();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    brandBadge.addEventListener("click", dispararCalibracion);
-    brandBadge.addEventListener("touchstart", dispararCalibracion, { passive: true });
+    brandBadge.addEventListener("click", volverAlInicio);
+    brandBadge.addEventListener("touchstart", volverAlInicio, { passive: true });
   }
 
   // Soporte de accesibilidad: Cerrar modal o ficha técnica con la tecla Escape
