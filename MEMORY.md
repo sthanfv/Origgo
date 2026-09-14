@@ -1,8 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 21:50 (GMT-5)
+Última actualización: 2026-09-13 23:28 (GMT-5)
 
 ---
+
+-62. **Inyección de Prueba Social en Vivo con Contadores Animados, Motor de Dossiers Imprimibles / PDF de Inmuebles Desbloqueados y Despacho Transaccional por Resend**:
+    - **Diagnóstico y Oportunidad Comercial:**
+      1. *Falta de tracción y confianza en la vitrina inicial:* La página de inicio carecía de indicadores de actividad en tiempo real, impidiendo que el visitante percibiera la frescura y volumen del inventario disponible (398 leads únicos monitoreados).
+      2. *Ausencia de un entregable tangible post-desbloqueo:* Tras desbloquear un lead con créditos, el usuario solo visualizaba los datos en pantalla sin la opción de descargar o guardar una ficha técnica profesional para compartir o archivar.
+    - **Solución Implementada:**
+      1. **Prueba Social en Tiempo Real (`index.html`, `modules/09-ui-effects.js`, `style.css`):**
+         - Insertado mini-dashboard `#heroLiveStats` en el Hero con métricas de propietarios directos, ciudades activas y sectores monitoreados.
+         - Implementada función `animarContador()` con `requestAnimationFrame` y curva de desaceleración (ease-out) que anima las cifras desde 0 al cargar la página.
+         - Integrado indicador de frescura `#catalogFreshness` en la cabecera del catálogo con punto verde pulsante (`pulse-freshness`).
+         - Traducciones automáticas bilingües integradas en `modules/13-i18n.js` (`stat_leads_total`, `stat_ciudades`, `stat_sectores`, `catalog_freshness`).
+      2. **Motor de Dossiers Imprimibles y Fichas Técnicas (`lib/report-generator.js`, 186 líneas $\le 500$):**
+         - Diseñado generador HTML de dossiers con diseño esmeralda corporativo de alta gama, métricas detalladas ($/m², área, habitaciones, baños, parqueaderos, estrato), contacto verificado con acceso a WhatsApp, y protocolo de verificación legal para cierre directo.
+         - Hoja de estilos con reglas `@media print` para exportar a PDF en formato carta/A4 de manera nativa sin requerir librerías pesadas.
+         - Función cliente `abrirDossierImprimible(leadId)` añadida a `modules/07-unlock.js` vinculada al botón "Ficha PDF" en las tarjetas desbloqueadas y en el drawer desplegable.
+      3. **Despacho Transaccional Autónomo por Correo (`api/leads/unlock.js`):**
+         - Al confirmarse el desbloqueo de un lead, el backend despacha en segundo plano (`despacharReporteDossierEmail`) la ficha técnica completa al correo del comprador vía Resend API ($0 coste).
+      4. **Certificación DevSecOps:**
+         - Las 8 fases de validación pasaron al 100% con 0 errores y el código fue desplegado a producción en Vercel.
 
 -61. **Cumplimiento Estricto de Capa Hobby de Vercel (Cron Diario), Delegación de Conciliación Wompi al Servidor Samsung J7, Instalación de ACC (Advanced Charging Controller 60/50), Erradicación de Sleep of Death y Restauración de Telemetría Telegram**:
     - **Diagnóstico y Causa Raíz:**
