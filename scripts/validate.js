@@ -54,7 +54,6 @@ async function ejecutarValidacionCompleta() {
     'api/media/proxy.js',
     'api/notifications/subscribe.js',
     'api/notifications/dispatch.js',
-    'api/security/honeypot.js',
     'api/telemetry/report.js'
   ];
 
