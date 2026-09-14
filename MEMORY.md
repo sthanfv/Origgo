@@ -1,8 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 17:00 (GMT-5)
+Última actualización: 2026-09-13 21:00 (GMT-5)
 
 ---
+
+-60. **Transformación y Aprovisionamiento del Samsung Galaxy J7 Prime (LineageOS 17.1 / Android 10 arm64-v8a) en Servidor Dedicado 24/7**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Fallo de Custom ROM previa y reseteo del dispositivo:* El teléfono fue reinstalado con una imagen limpia de LineageOS 17.1 (Android 10, SDK 29, 64-bit arm64-v8a) con root Magisk. El entorno carecía de paquetes base de servidor (Node.js, NPM, PM2, SSH).
+      2. *Restricciones de red en Android 10 (SELinux y grupos Bionic):* Al invocar comandos como usuario de Termux (`u0_a120`) mediante `su`, la falta de los grupos suplementarios `AID_INET` (3003) y `AID_NET_RAW` (3004) impedía la resolución DNS y las conexiones de red salientes.
+      3. *Incompatibilidad de enlaces simbólicos en binarios npm:* Binarios globales como `pm2` apuntaban al intérprete estándar `/usr/bin/env node`, inexistente en la estructura de rutas aislada de Termux.
+    - **Solución Implementada:**
+      1. **Debloat y Optimización de Servidor en el SO Android:**
+         - Desactivadas 19 aplicaciones y servicios del sistema no requeridos (`email`, `dialer`, `messaging`, `eleven`, `snap`, `audiofx`, `recorder`, `etar`, `gallery3d`, `calculator2`, `printspooler`, `updater`, `traceur`, `livepicker`, etc.) mediante `pm disable-user --user 0`.
+         - Liberados más de 1.8 GB de memoria RAM (consumo global del sistema reducido a ~37%).
+         - Configurado perfil de energía permanente: `svc power stayon true`, `stay_on_while_plugged_in = 3`, pantalla con apagado ultrarrápido a 15s para evitar recalentamiento y desgaste del panel, y animaciones del sistema a 0.0x.
+         - Asignados permisos de fondo persistentes para Termux: `RUN_IN_BACKGROUND`, `WAKE_LOCK` y whitelist de `deviceidle` (Doze).
+      2. **Instalación y Configuración del Entorno de Ejecución:**
+         - Actualizado repositorio Termux con resolución asistida por grupos de red (`-G 3003 -G 3004`).
+         - Instalados paquetes de servidor: `nodejs-lts` (v24.18.0), `npm` (v11.19.1), `git` (v2.55.0), `openssh` (v10.5p1).
+         - Actualizadas librerías compartidas (OpenSSL 3.6.3, libcurl, c-ares).
+         - Instalado PM2 7.0.4 globalmente con corrección de shebang (`termux-fix-shebang`).
+         - Configurado `pm2-logrotate` (rotación a 10MB, retención de 5 archivos, compresión gzip activa).
+      3. **Despliegue y Certificación de Ofertas Hunter Pro:**
+         - Empaquetada y transferida la versión de producción a `/data/data/com.termux/files/home/ofertas-hunter-pro`.
+         - Instaladas dependencias de producción limpias (`npm install --production`).
+         - Certificación de sintaxis (`node -c`) y pruebas unitarias de seguridad (`security_pentest.test.js`) y telemetría (`telegram_messages_suite.test.js`) ejecutadas directamente sobre el procesador Exynos 7870: **12/12 pruebas aprobadas al 100%**.
+         - Orquestador arrancado con PM2: `pm2 start ecosystem.config.js` y estado guardado (`pm2 save`). Proceso `scraper` en ejecución estable (`online`, PID `11903`, ~86 MB RAM, 0 restarts).
+      4. **Persistencia y Auto-Arranque con Magisk Service.d:**
+         - Creado script `/data/adb/service.d/start_hunter.sh` con permisos de ejecución 755 que, tras completar el booteo de Android, despierta la CPU, lanza el demonio SSH (puerto 8022) y resucita automáticamente los procesos de PM2 sin intervención humana.
 
 -59. **Auditoría Ética de Seguridad (Pentest Frontend y DevSecOps) y Remediación Integral de Vulnerabilidades**:
     - **Diagnóstico y Causa Raíz:**
