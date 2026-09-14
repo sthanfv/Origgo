@@ -286,3 +286,40 @@
   transition: opacity 0.3s ease;
 }
 
+/* ═══════════════════════════════════════════════════
+   BOTÓN DE FICHA TÉCNICA / DOSSIER PDF
+   ═══════════════════════════════════════════════════ */
+.btn-dossier-direct {
+  height: 44px;
+  padding: 0 0.95rem;
+  border-radius: 0.95rem;
+  background: rgba(217, 119, 6, 0.12);
+  border: 1px solid #D97706;
+  color: #D97706 !important;
+  font-family: var(--font-display, sans-serif);
+  font-size: 0.775rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+.btn-dossier-direct:hover {
+  background: #D97706;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+[data-theme="light"] .btn-dossier-direct {
+  background: #FFFBEB;
+  border-color: #D97706;
+  color: #B45309 !important;
+}
+[data-theme="light"] .btn-dossier-direct:hover {
+  background: #D97706;
+  color: #FFFFFF !important;
+}
+
