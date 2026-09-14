@@ -490,3 +490,8 @@ window.abrirModalLegal = abrirModalLegal;
 window.cerrarModalLegal = cerrarModalLegal;
 window.inicializarModalLegal = inicializarModalLegal;
 window.renderizarContenidoLegal = renderizarContenidoLegal;
+
+function animarContador(e,t,n=1200){if(!e)return;let a=t!==undefined?t:parseInt(e.getAttribute("data-target")||"0",10),s=0,r=performance.now(),i=document.documentElement.lang||"es",o=n=>new Intl.NumberFormat(i==="es"?"es-CO":"en-US").format(n);function d(c){let l=Math.min((c-r)/n,1),m=Math.floor(s+(a-s)*(1-Math.pow(1-l,4)));e.textContent=o(m);l<1?window.requestAnimationFrame(d):(e.textContent=o(a))}window.requestAnimationFrame(d)}
+function poblarEstadisticasHero(d){if(!d||!d.leads||!d.config)return;let t=document.getElementById("statLeadsTotal"),c=document.getElementById("statCiudades"),s=document.getElementById("statSectores"),f=document.getElementById("catalogFreshnessText"),h=document.getElementById("heroLiveStats");if(t)animarContador(t,d.leads.length);if(c)animarContador(c,new Set(d.leads.map(l=>l.ciudad)).size);if(s)animarContador(s,d.config.total_sectores_monitoreados);if(f&&d.config.actualizado_en)f.textContent=d.config.actualizado_en;if(h)h.style.animation="fadeInUp 0.8s ease forwards";}
+window.animarContador = animarContador;
+window.poblarEstadisticasHero = poblarEstadisticasHero;

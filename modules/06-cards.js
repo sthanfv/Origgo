@@ -225,6 +225,7 @@ function renderizarInterfaz(dataset) {
   const dict = typeof DICCIONARIO_I18N !== 'undefined' ? (DICCIONARIO_I18N[isEn ? 'en' : 'es'] || {}) : {};
 
   if (typeof sincronizarDropdownCiudades === 'function') sincronizarDropdownCiudades(leads);
+  if (typeof poblarEstadisticasHero === 'function') poblarEstadisticasHero(dataset);
 
   const elTitle = document.getElementById("heroTitle"), elSubtitle = document.getElementById("heroSubtitle");
   const elBadgeSectores = document.getElementById("badgeSectores"), elBadgeSectoresHero = document.getElementById("badgeSectoresHero");

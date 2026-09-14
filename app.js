@@ -2273,6 +2273,7 @@ function renderizarInterfaz(dataset) {
   const dict = typeof DICCIONARIO_I18N !== 'undefined' ? (DICCIONARIO_I18N[isEn ? 'en' : 'es'] || {}) : {};
 
   if (typeof sincronizarDropdownCiudades === 'function') sincronizarDropdownCiudades(leads);
+  if (typeof poblarEstadisticasHero === 'function') poblarEstadisticasHero(dataset);
 
   const elTitle = document.getElementById("heroTitle"), elSubtitle = document.getElementById("heroSubtitle");
   const elBadgeSectores = document.getElementById("badgeSectores"), elBadgeSectoresHero = document.getElementById("badgeSectoresHero");
@@ -3923,6 +3924,11 @@ window.cerrarModalLegal = cerrarModalLegal;
 window.inicializarModalLegal = inicializarModalLegal;
 window.renderizarContenidoLegal = renderizarContenidoLegal;
 
+function animarContador(e,t,n=1200){if(!e)return;let a=t!==undefined?t:parseInt(e.getAttribute("data-target")||"0",10),s=0,r=performance.now(),i=document.documentElement.lang||"es",o=n=>new Intl.NumberFormat(i==="es"?"es-CO":"en-US").format(n);function d(c){let l=Math.min((c-r)/n,1),m=Math.floor(s+(a-s)*(1-Math.pow(1-l,4)));e.textContent=o(m);l<1?window.requestAnimationFrame(d):(e.textContent=o(a))}window.requestAnimationFrame(d)}
+function poblarEstadisticasHero(d){if(!d||!d.leads||!d.config)return;let t=document.getElementById("statLeadsTotal"),c=document.getElementById("statCiudades"),s=document.getElementById("statSectores"),f=document.getElementById("catalogFreshnessText"),h=document.getElementById("heroLiveStats");if(t)animarContador(t,d.leads.length);if(c)animarContador(c,new Set(d.leads.map(l=>l.ciudad)).size);if(s)animarContador(s,d.config.total_sectores_monitoreados);if(f&&d.config.actualizado_en)f.textContent=d.config.actualizado_en;if(h)h.style.animation="fadeInUp 0.8s ease forwards";}
+window.animarContador = animarContador;
+window.poblarEstadisticasHero = poblarEstadisticasHero;
+
 
 /**
  * 🎯 MÓDULO DE LISTENERS Y EVENTOS (modules/10-listeners.js)
@@ -5015,7 +5021,8 @@ const DICCIONARIO_I18N = {
     footer_disclaimer_title: 'Aviso de Confianza:', footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.',
     toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
     toast_radar_active: '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
-    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.'
+    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.',
+    stat_leads_total: 'Propietarios Directos', stat_ciudades: 'Ciudades Activas', stat_sectores: 'Sectores Monitoreados', catalog_freshness: 'Actualizado hace un momento'
   },
   en: {
     vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
@@ -5079,8 +5086,7 @@ const DICCIONARIO_I18N = {
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
     footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
     toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
-    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.',
-    toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.'
+    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.', toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.', stat_leads_total: 'Direct Owners', stat_ciudades: 'Active Cities', stat_sectores: 'Sectors Monitored', catalog_freshness: 'Updated moments ago'
   }
 };
 

@@ -71,7 +71,8 @@ const DICCIONARIO_I18N = {
     footer_disclaimer_title: 'Aviso de Confianza:', footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.',
     toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
     toast_radar_active: '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
-    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.'
+    toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.',
+    stat_leads_total: 'Propietarios Directos', stat_ciudades: 'Ciudades Activas', stat_sectores: 'Sectores Monitoreados', catalog_freshness: 'Actualizado hace un momento'
   },
   en: {
     vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
@@ -135,8 +136,7 @@ const DICCIONARIO_I18N = {
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
     footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
     toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
-    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.',
-    toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.'
+    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.', toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.', stat_leads_total: 'Direct Owners', stat_ciudades: 'Active Cities', stat_sectores: 'Sectors Monitored', catalog_freshness: 'Updated moments ago'
   }
 };
 
