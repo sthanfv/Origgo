@@ -1,8 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 21:00 (GMT-5)
+Última actualización: 2026-09-13 21:50 (GMT-5)
 
 ---
+
+-61. **Cumplimiento Estricto de Capa Hobby de Vercel (Cron Diario), Delegación de Conciliación Wompi al Servidor Samsung J7, Instalación de ACC (Advanced Charging Controller 60/50), Erradicación de Sleep of Death y Restauración de Telemetría Telegram**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Violación de cuotas de Cron Jobs en Vercel Hobby:* `vercel.json` configuraba `schedule: "*/15 * * * *"` (cada 15 minutos) para la conciliación automática de pagos Wompi. El plan Hobby gratuito de Vercel rechaza o congela despliegues que corran más de una vez al día.
+      2. *Ausencia de módulo de control de carga (ACC):* La batería del Samsung J7 permanecía al 100% de manera ininterrumpida mientras estaba conectado al cargador, acelerando la descomposición química del Li-ion y arriesgando hinchamiento físico del acumulador.
+      3. *Fallo de pantalla "Sleep of Death" en Custom ROM:* El timeout de pantalla de 15s combinado con brillo máximo (255) hacía que el controlador de pantalla del Exynos 7870 entrara en suspensión profunda del kernel sin responder a botones de encendido.
+      4. *Falta del archivo `.env` en el teléfono:* Durante la migración limpia del código al teléfono, el archivo `.env` no se había transferido debido a estar en `.gitignore`. Como consecuencia, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CANAL_ID` y las credenciales externas estaban indefinidas, impidiendo que el bot despachara las alertas captadas y encolándolas en disco.
+    - **Solución Implementada:**
+      1. **Ajuste de Cron en Vercel (`vercel.json`):**
+         - Configurado `schedule: "0 4 * * *"` (ejecución diaria a las 4:00 AM UTC como respaldo fail-safe), cumpliendo al 100% con los límites de la capa gratuita Hobby de Vercel.
+      2. **Módulo de Guardia de Red y Conciliador Móvil (`ofertas-hunter-pro/network_guard.js`):**
+         - Verificación periódica de salida a internet mediante socket TCP liviano cada 45s.
+         - Suspensión pasiva del orquestador si no hay internet para evitar agotar reintentos y abrir circuit breakers innecesariamente.
+         - Auto-remediación con root Magisk (`svc wifi disable && sleep 3 && svc wifi enable`) si la desconexión persiste más de 3 minutos.
+         - Tarea periódica de conciliación cada 15 minutos que invoca `origgo.online/api/payments/reconcile-cron` con token Bearer, asumiendo la labor en caliente desde el Samsung J7.
+      3. **Instalación y Configuración de ACC (Advanced Charging Controller v2023.10.16):**
+         - Instalado módulo Magisk de VR-25 y configurado con `pause_capacity=60`, `resume_capacity=50`, `max_temp=40` y `charging_current=800mA`.
+         - Estado confirmado: la batería desciende al rango 50%-60% para eliminar la tensión de sobrecarga y prevenir hinchamiento.
+         - Enlazado binario global `acc` en Termux.
+      4. **Erradicación del Sleep of Death de la Pantalla:**
+         - Fijado `screen_brightness = 1` (brillo mínimo para cero generación de calor y cero consumo) y `screen_off_timeout = 2147483647` con `stay_on_while_plugged_in = 3` para mantener el panel vivo sin entrar en el estado irreversible de suspensión del display HAL.
+      5. **Restauración de `.env` y Telemetría Telegram:**
+         - Transferido `.env` con permisos `600` (propietario `u0_a120`).
+         - Validado envío de telemetría a chat privado y canal público.
+         - Actualizado `watchdog_hardware.js` para ser compatible con ACC (solo alertar si la batería cae por debajo del 45%).
 
 -60. **Transformación y Aprovisionamiento del Samsung Galaxy J7 Prime (LineageOS 17.1 / Android 10 arm64-v8a) en Servidor Dedicado 24/7**:
     - **Diagnóstico y Causa Raíz:**
