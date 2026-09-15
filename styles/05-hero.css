@@ -357,4 +357,113 @@ main {
   color: #2E3B35;
 }
 
+/* Cápsula de Frescura de Catálogo (Gemela de catalog-count-pill) */
+.catalog-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  background: hsla(166, 40%, 14%, 0.45);
+  border: 1px solid hsla(158, 64%, 52%, 0.25);
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.08);
+}
+
+[data-theme="light"] .catalog-freshness {
+  background: hsla(160, 60%, 94%, 0.9);
+  border-color: hsla(160, 50%, 75%, 0.9);
+  color: #047857;
+}
+
+.freshness-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: freshnessPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes freshnessPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 12px var(--accent-emerald); }
+}
+
+/* Mini-Dashboard de Prueba Social en el Hero */
+.hero-live-stats {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1.5rem auto 0;
+  padding: 0.75rem 1.6rem;
+  background: hsla(170, 50%, 8%, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsla(158, 64%, 52%, 0.22);
+  border-radius: 9999px;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 hsla(129, 48%, 87%, 0.12);
+  opacity: 0;
+  max-width: fit-content;
+}
+
+[data-theme="light"] .hero-live-stats {
+  background: hsla(0, 0%, 100%, 0.9);
+  border-color: hsla(166, 40%, 23%, 0.18);
+  box-shadow: 0 12px 28px -8px rgba(2, 44, 34, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.hero-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.hero-stat-number {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--accent-emerald);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+[data-theme="light"] .hero-stat-number {
+  color: #047857;
+}
+
+.hero-stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .hero-stat-label {
+  color: #526058;
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 26px;
+  background: hsla(129, 48%, 87%, 0.18);
+}
+
+[data-theme="light"] .hero-stat-divider {
+  background: hsla(166, 40%, 23%, 0.14);
+}
+
 /* ═══════════════════════════════════════════════════

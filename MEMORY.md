@@ -1,6 +1,38 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-14 20:12 (GMT-5)
+Última actualización: 2026-09-14 20:41 (GMT-5)
+
+---
+
+-67. **Refinamiento Táctil Móvil: Ripple Multicanal en los 5 Iconos Inferiores, Armonización de Píldoras de Catálogo y Mini-Dashboard de Prueba Social en Hero**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Efecto onda (Ripple) ausente o visualizado como contenedor cuadrado en Android:*
+         - En `modules/09-ui-effects.js`, el botón del menú lateral (`#btnNavMenuBottom`) ejecutaba `e.stopPropagation()`, evitando que el evento `click` alcanzara el listener de `document.body` donde se inyectaba el span del ripple.
+         - En navegadores Android basados en Chromium/Brave, los botones sin `-webkit-tap-highlight-color: transparent;` provocaban que el motor gráfico nativo pintara un recuadro gris de tap sobre el elemento.
+         - En `styles/11-mobile.css`, `.mobile-nav-btn.btn-ripple` contaba con `overflow: visible !important;`, lo que impedía que la onda se confinara en el radio redondeado del botón.
+      2. *Fecha de actualización cruda desalineada ("14 de septiembre de 2026 a las 07:55 p. m."):*
+         - Al inyectar la cadena de 43 caracteres directamente en `.catalog-freshnessText`, el texto flotaba sin recuadro ni estilos porque las reglas de `.catalog-freshness` se habían agregado en `style.css` en lugar de un submódulo de `styles/`, borrándose tras cada compilación de `build.js`.
+         - La fecha larga quebraba en dos renglones en pantallas de 360px a 412px, desentonando con la píldora de 60 oportunidades directas.
+      3. *Mini-dashboard de prueba social en Hero sin estilos:*
+         - `.hero-live-stats` carecía de reglas en `styles/05-hero.css`, renderizándose como texto plano apilado.
+      4. *Falta de feedback visual instantáneo (0ms) en botón de alertas Web Push:*
+         - Al hacer clic en activar alertas, el proceso asíncrono tardaba 2-3 segundos sin mostrar un estado de carga inmediato al usuario.
+    - **Solución Implementada:**
+      1. **Unificación Táctil del Ripple en los 5 Botones Móviles (`modules/09-ui-effects.js` y `styles/11-mobile.css`):**
+         - Implementada función `inyectarOndaRipple(btn, e, esPesado)` y vinculada mediante `pointerdown` ({ passive: true }) a todos los `.mobile-nav-btn`, respondiendo a los 0 milisegundos del toque físico.
+         - Inyectada la onda explícitamente en el listener de `#btnNavMenuBottom`.
+         - Añadido `-webkit-tap-highlight-color: transparent;`, `border-radius: 12px;`, `outline: none;` y `overflow: hidden !important;` en `.mobile-nav-btn`.
+         - Ondas estilizadas con gradiente radial esmeralda (`rgba(16, 185, 129, 0.45)`) y dorado para el botón VIP (`rgba(245, 158, 11, 0.55)`).
+      2. **Píldora Gemela de Frescura y Formateo Inteligente (`modules/09-ui-effects.js`, `styles/05-hero.css`, `styles/11-mobile.css`):**
+         - `poblarEstadisticasHero(d)` extrae la hora compacta mediante expresión regular (`Hoy 07:55 p. m.` o `Today 07:55 p. m.`) y preserva la fecha completa en el atributo `title` de la cápsula.
+         - Declaradas las reglas de `.catalog-freshness` y `.freshness-dot` en `styles/05-hero.css` con fondo glassmorphic, borde esmeralda translúcido y pulso radiante.
+         - `.catalog-meta-controls` adaptado en flex-row móvil para que ambas píldoras queden hermanadas y alineadas.
+      3. **Estilos de Alta Gama para el Mini-Dashboard del Hero (`styles/05-hero.css` y `styles/11-mobile.css`):**
+         - `.hero-live-stats` encapsulado en cápsula flotante glassmorphic con divisores sutiles, números esmeralda destacados y tipografía de prestigio.
+      4. **Feedback Visual Inmediato en Alertas Web Push (`modules/12-push.js`):**
+         - Añadida clase `.is-subscribing` y transición a icono spinner `fa-circle-notch fa-spin` a los 0ms de toque, con restauración garantizada en bloque `finally`.
+      5. **Certificación DevSecOps:**
+         - 8/8 Fases de `scripts/validate.js` aprobadas al 100% (0 errores). Todos los módulos JS y CSS verificados $\le 500$ líneas (09-ui-effects: 497, 11-mobile: 481, 05-hero: 469, 12-push: 269).
 
 ---
 

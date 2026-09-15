@@ -41,6 +41,15 @@ async function activarNotificacionesPush() {
     return;
   }
 
+  const btnBell = document.getElementById('btnPushSubscribe');
+  const iconBell = btnBell ? btnBell.querySelector('i') : null;
+  const originalIconClass = iconBell ? iconBell.className : 'fa-solid fa-bell';
+
+  if (btnBell) {
+    btnBell.classList.add('is-subscribing');
+    if (iconBell) iconBell.className = 'fa-solid fa-circle-notch fa-spin';
+  }
+
   try {
     // 1. Solicitar permiso al usuario si aún no está otorgado
     const permiso = await Notification.requestPermission();
@@ -93,7 +102,6 @@ async function activarNotificacionesPush() {
     }
 
     // 5. Feedback visual exitoso
-    const btnBell = document.getElementById('btnPushSubscribe');
     if (btnBell) {
       btnBell.classList.add('active-push');
       btnBell.title = esIngles ? 'Direct Listing Radar Active' : 'Alertas de Oportunidades Activas';
@@ -115,11 +123,16 @@ async function activarNotificacionesPush() {
         'success'
       );
     }
-
-    // 6. Confirmación de activación silenciosa (las notificaciones llegarán exclusivamente por eventos reales del backend)
   } catch (err) {
     if (typeof mostrarNotificacionToast === 'function') {
       mostrarNotificacionToast(err.message || (esIngles ? 'Error activating radar alerts.' : 'Error al activar alertas.'), 'error');
+    }
+  } finally {
+    if (btnBell) {
+      btnBell.classList.remove('is-subscribing');
+      if (iconBell) {
+        iconBell.className = btnBell.classList.contains('active-push') ? 'fa-solid fa-bell' : originalIconClass;
+      }
     }
   }
 }

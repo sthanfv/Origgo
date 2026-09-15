@@ -1636,6 +1636,115 @@ main {
   color: #2E3B35;
 }
 
+/* Cápsula de Frescura de Catálogo (Gemela de catalog-count-pill) */
+.catalog-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  background: hsla(166, 40%, 14%, 0.45);
+  border: 1px solid hsla(158, 64%, 52%, 0.25);
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.08);
+}
+
+[data-theme="light"] .catalog-freshness {
+  background: hsla(160, 60%, 94%, 0.9);
+  border-color: hsla(160, 50%, 75%, 0.9);
+  color: #047857;
+}
+
+.freshness-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: freshnessPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes freshnessPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 12px var(--accent-emerald); }
+}
+
+/* Mini-Dashboard de Prueba Social en el Hero */
+.hero-live-stats {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1.5rem auto 0;
+  padding: 0.75rem 1.6rem;
+  background: hsla(170, 50%, 8%, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsla(158, 64%, 52%, 0.22);
+  border-radius: 9999px;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 hsla(129, 48%, 87%, 0.12);
+  opacity: 0;
+  max-width: fit-content;
+}
+
+[data-theme="light"] .hero-live-stats {
+  background: hsla(0, 0%, 100%, 0.9);
+  border-color: hsla(166, 40%, 23%, 0.18);
+  box-shadow: 0 12px 28px -8px rgba(2, 44, 34, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.hero-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.hero-stat-number {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--accent-emerald);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+[data-theme="light"] .hero-stat-number {
+  color: #047857;
+}
+
+.hero-stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .hero-stat-label {
+  color: #526058;
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 26px;
+  background: hsla(129, 48%, 87%, 0.18);
+}
+
+[data-theme="light"] .hero-stat-divider {
+  background: hsla(166, 40%, 23%, 0.14);
+}
+
 /* ═══════════════════════════════════════════════════
    BENTO GRID COMPACTO DE ALTA DENSIDAD
    ═══════════════════════════════════════════════════ */
@@ -3801,51 +3910,17 @@ main {
 
 /* Teléfonos Inteligentes Estándar y Grandes (<= 768px) */
 @media (max-width: 768px) {
-  .site-header {
-    margin: 0.75rem auto 0;
-    padding: 0 1rem;
-  }
-
-  .site-header-inner {
-    padding: 0.5rem 0 0.75rem;
-    gap: 0.5rem;
-  }
-
-  /* Ocultar píldora del header para eliminar el apiñamiento horizontal */
-  .header-status-pill {
-    display: none !important;
-  }
-
-  /* Activar píldora de sectores en el Hero con espacio y protagonismo */
-  .hero-status-tag {
-    display: flex;
-    margin-bottom: 0.65rem;
-  }
-
-  /* Compactar textos de marca para que nunca quiebren en 3 renglones */
-  .brand-badge {
-    gap: 0.55rem;
-  }
-
-  .brand-title {
-    font-size: 1.45rem;
-  }
-
-  .brand-title .brand-logo-container,
-  .brand-initial-o-wrap {
-    width: 36px;
-    height: 36px;
-  }
+  .site-header { margin: 0.75rem auto 0; padding: 0 1rem; }
+  .site-header-inner { padding: 0.5rem 0 0.75rem; gap: 0.5rem; }
+  .header-status-pill { display: none !important; }
+  .hero-status-tag { display: flex; margin-bottom: 0.65rem; }
+  .brand-badge { gap: 0.55rem; }
+  .brand-title { font-size: 1.45rem; }
+  .brand-title .brand-logo-container, .brand-initial-o-wrap { width: 36px; height: 36px; }
 
   @media (max-width: 480px) {
-    .brand-title {
-      font-size: 1.22rem;
-    }
-    .brand-title .brand-logo-container,
-    .brand-initial-o-wrap {
-      width: 30px;
-      height: 30px;
-    }
+    .brand-title { font-size: 1.22rem; }
+    .brand-title .brand-logo-container, .brand-initial-o-wrap { width: 30px; height: 30px; }
   }
 
   .brand-tag .tag-desktop {
@@ -3916,6 +3991,21 @@ main {
     padding: 0.75rem 1.25rem;
   }
 
+  .hero-live-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    max-width: 360px;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    margin: 1.15rem auto 0;
+    border-radius: 1.25rem;
+  }
+  .hero-stat-number { font-size: 1.15rem; }
+  .hero-stat-label { font-size: 0.58rem; letter-spacing: 0.02em; }
+
   /* Barra de Comando Móvil */
 
   .command-bar-wrapper {
@@ -3977,6 +4067,20 @@ main {
     font-size: 1.35rem;
   }
 
+  .catalog-meta-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  .catalog-count-pill,
+  .catalog-freshness {
+    padding: 0.32rem 0.72rem;
+    font-size: 0.7rem;
+  }
+
   .showcase-container {
     padding: 0 1rem;
   }
@@ -3987,29 +4091,11 @@ main {
   }
 
   /* Tarjetas Bento en Pantalla Pequeña */
-  .bento-card {
-    border-radius: 2rem;
-  }
-
-  .card-media-wrapper {
-    height: 240px;
-  }
-
-  .card-footer {
-    padding: 0.85rem 1.15rem 1.15rem;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-  }
-
-  .card-price-block {
-    width: 100%;
-  }
-
-  .btn-unlock {
-    width: 100%;
-    justify-content: center;
-    padding: 0.75rem 1.25rem;
-  }
+  .bento-card { border-radius: 2rem; }
+  .card-media-wrapper { height: 240px; }
+  .card-footer { padding: 0.85rem 1.15rem 1.15rem; flex-wrap: wrap; gap: 0.65rem; }
+  .card-price-block { width: 100%; }
+  .btn-unlock { width: 100%; justify-content: center; padding: 0.75rem 1.25rem; }
 }
 
 /* Teléfonos Compactos / Pantallas Angostas (<= 480px) */
@@ -4139,6 +4225,12 @@ main {
   }
 
   .mobile-nav-btn {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    -webkit-user-select: none;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
     background: transparent;
     border: none;
     color: var(--text-muted);
@@ -4152,7 +4244,7 @@ main {
     font-weight: 700;
     cursor: pointer;
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: color 0.2s ease, transform 0.15s ease;
   }
 
@@ -4257,25 +4349,27 @@ main {
   overflow: hidden;
   isolation: isolate;
 }
-/* Excepción para botones sin fondo (transparentes) para que la onda circule libremente */
 .mobile-nav-btn.btn-ripple, .btn-theme-toggle.btn-ripple {
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 .ripple-span {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, rgba(16, 185, 129, 0.15) 70%, transparent 100%);
   transform: scale(0);
-  animation: ripple-anim 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  pointer-events: none; /* Que el click traspase la onda */
+  animation: ripple-anim 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
   z-index: 0;
 }
+#btnNavVip .ripple-span {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.55) 0%, rgba(245, 158, 11, 0.2) 70%, transparent 100%);
+}
 [data-theme="light"] .ripple-span {
-  background: rgba(0, 0, 0, 0.15);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.1) 70%, transparent 100%);
 }
 @keyframes ripple-anim {
   to {
-    transform: scale(4);
+    transform: scale(3.5);
     opacity: 0;
   }
 }

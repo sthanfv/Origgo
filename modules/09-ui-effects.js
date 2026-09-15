@@ -80,37 +80,35 @@ function inicializarEfectosPremium() {
   const hapticLight = () => { if (navigator.vibrate) navigator.vibrate(30); };
   const hapticHeavy = () => { if (navigator.vibrate) navigator.vibrate([30, 40, 30]); };
 
-  // 2. Efecto Onda (Ripple) y Sondeo de Clicks
+  // 2. Efecto Onda (Ripple) y Háptica Unificada
+  const inyectarOndaRipple = (btn, e, esPesado = false) => {
+    if (!btn) return;
+    if (esPesado) hapticHeavy(); else hapticLight();
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 1.6;
+    const clientX = (e && typeof e.clientX === 'number' && e.clientX > 0) ? e.clientX : (rect.left + rect.width / 2);
+    const clientY = (e && typeof e.clientY === 'number' && e.clientY > 0) ? e.clientY : (rect.top + rect.height / 2);
+    const x = clientX - rect.left - size / 2;
+    const y = clientY - rect.top - size / 2;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple-span';
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    btn.classList.add('btn-ripple');
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 450);
+  };
+
   document.body.addEventListener('click', (e) => {
-    // Detectar si el toque fue en un botón interactivo
     const btn = e.target.closest('.btn-unlock-lead, .btn-wompi-pay, .slideup-cta-btn, .mobile-nav-btn, .btn-hero-cta, .btn-menu-pill');
-    
-    if (btn) {
-      // Diferenciar vibración según la importancia del botón
-      if (btn.classList.contains('btn-wompi-pay')) {
-        hapticHeavy();
-      } else {
-        hapticLight();
-      }
+    if (btn) inyectarOndaRipple(btn, e, btn.classList.contains('btn-wompi-pay'));
+  });
 
-      // Crear inyección de onda dinámica
-      const rect = btn.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const x = e.clientX - rect.left - size / 2;
-      const y = e.clientY - rect.top - size / 2;
-
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple-span';
-      ripple.style.width = ripple.style.height = `${size}px`;
-      ripple.style.left = `${x}px`;
-      ripple.style.top = `${y}px`;
-
-      btn.classList.add('btn-ripple');
-      btn.appendChild(ripple);
-
-      // Limpiar el DOM tras terminar la animación
-      setTimeout(() => ripple.remove(), 500);
-    }
+  document.querySelectorAll('.mobile-nav-btn').forEach(navBtn => {
+    navBtn.addEventListener('pointerdown', (e) => {
+      inyectarOndaRipple(navBtn, e, navBtn.id === 'btnNavVip');
+    }, { passive: true });
   });
 
   // 3. Comando Flotante Magnético (Sticky Glass)
@@ -187,6 +185,7 @@ function inicializarEfectosPremium() {
     btnNavMenuBottom.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      inyectarOndaRipple(btnNavMenuBottom, e);
       if (sideMenu && sideMenu.classList.contains('active')) {
         cerrarSideMenu();
       } else {
@@ -492,6 +491,6 @@ window.inicializarModalLegal = inicializarModalLegal;
 window.renderizarContenidoLegal = renderizarContenidoLegal;
 
 function animarContador(e,t,n=1200){if(!e)return;let a=t!==undefined?t:parseInt(e.getAttribute("data-target")||"0",10),s=0,r=performance.now(),i=document.documentElement.lang||"es",o=n=>new Intl.NumberFormat(i==="es"?"es-CO":"en-US").format(n);function d(c){let l=Math.min((c-r)/n,1),m=Math.floor(s+(a-s)*(1-Math.pow(1-l,4)));e.textContent=o(m);l<1?window.requestAnimationFrame(d):(e.textContent=o(a))}window.requestAnimationFrame(d)}
-function poblarEstadisticasHero(d){if(!d||!d.leads||!d.config)return;let t=document.getElementById("statLeadsTotal"),c=document.getElementById("statCiudades"),s=document.getElementById("statSectores"),f=document.getElementById("catalogFreshnessText"),h=document.getElementById("heroLiveStats");if(t)animarContador(t,d.leads.length);if(c)animarContador(c,new Set(d.leads.map(l=>l.ciudad)).size);if(s)animarContador(s,d.config.total_sectores_monitoreados);if(f&&d.config.actualizado_en)f.textContent=d.config.actualizado_en;if(h)h.style.animation="fadeInUp 0.8s ease forwards";}
+function poblarEstadisticasHero(d){if(!d||!d.leads||!d.config)return;let t=document.getElementById("statLeadsTotal"),c=document.getElementById("statCiudades"),s=document.getElementById("statSectores"),f=document.getElementById("catalogFreshnessText"),h=document.getElementById("heroLiveStats");if(t)animarContador(t,d.leads.length);if(c)animarContador(c,new Set(d.leads.map(l=>l.ciudad)).size);if(s)animarContador(s,d.config.total_sectores_monitoreados);if(f&&d.config.actualizado_en){const m=d.config.actualizado_en.match(/(\d{1,2}:\d{2}\s*(?:[ap]\.?\s*m\.?)?)/i);const esEn=document.documentElement.lang==="en";f.textContent=(esEn?"Today ":"Hoy ")+(m?m[1].replace(/\s+/g," ").trim():d.config.actualizado_en);const p=f.closest(".catalog-freshness");if(p)p.setAttribute("title",(esEn?"Last sync: ":"Última sincronización: ")+d.config.actualizado_en);}if(h)h.style.animation="fadeInUp 0.8s ease forwards";}
 window.animarContador = animarContador;
 window.poblarEstadisticasHero = poblarEstadisticasHero;
