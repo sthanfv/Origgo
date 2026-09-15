@@ -1,6 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-14 19:33 (GMT-5)
+Última actualización: 2026-09-14 20:12 (GMT-5)
+
+---
+
+-66. **Optimización Integral de Previsualización Social en Telegram/Redes (og-image Panorámica 1200x630 y apple-touch-icon con Fondo Sólido de Marca), Auditoría de SEO / Google Search Console y Centrado Responsivo Móvil**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Previsualización rota en Telegram con recuadro blanco y logotipo deslavado:* Al compartir el enlace `origgo.online` en Telegram, la plataforma utilizaba `push-icon-512.png` que contaba con fondo transparente. Los crawlers de previsualización de Telegram aplanan la transparencia forzando un fondo blanco puro (`#FFFFFF`). Como el logotipo de Origgo es esmeralda neón con resplandor, sobre fondo blanco contrastaba deficientemente, asemejando un gráfico flotante "sin fondo" dentro de un recuadro blanco tosco.
+      2. *Inexistencia de un banner canónico OpenGraph panorámico (1200x630):* Las metaetiquetas carecían de `og:image:width`, `og:image:height`, `og:image:type`, `og:image:secure_url` y una imagen diseñada ex profeso para tarjetas enriquecidas horizontales de alta resolución.
+      3. *Favicon oficial y estándares Google Search Console:* Google Search exige favicons con relación 1:1 múltiplos de 48px (48x48, 192x192) y vinculación en `manifest.json`. `scripts/build.js` omitía la copia directa de `favicon-48x48.png` y `og-image.png` al paquete público `dist/`.
+      4. *Riesgo de desbordamiento horizontal en menús desplegables tácticos en teléfonos Android estrechos (360px):* Los menús `.cmd-dropdown-menu` utilizaban `left: 0; min-width: 235px;` lo que en resoluciones compactas (Samsung J7, 360px de ancho) podía generar desplazamiento horizontal involuntario.
+    - **Solución Implementada:**
+      1. **Generación de `og-image.png` Oficial (1200x630) y `apple-touch-icon.png` (180x180):**
+         - Diseñado e implantado banner panorámico OpenGraph con fondo oscuro de marca (`#041B12`), gradiente radial esmeralda, logotipo vectorial de Origgo en alta definición (540x190) y leyenda institucional nítida.
+         - Regenerado `apple-touch-icon.png` (180x180) con fondo de marca `#062217`, borde esmeralda `#10B981` e isotipo de alto contraste sin transparencias vulnerables al aplanamiento blanco.
+      2. **Actualización de Metaetiquetas y Schema.org en `index.html`:**
+         - Open Graph enriquecido con `og:image:secure_url`, `og:image:type="image/png"`, `og:image:width="1200"`, `og:image:height="630"`, `og:site_name` y Twitter Card `summary_large_image`.
+         - Schema.org (`RealEstateAgent`) actualizado vinculando `"logo": "https://origgo.online/apple-touch-icon.png"` e `"image": "https://origgo.online/og-image.png"`.
+      3. **Sincronización PWA y Google Search Console (`manifest.json` y `sitemap.xml`):**
+         - Declarados explícitamente en `manifest.json` los iconos `192x192`, `512x512`, `180x180` (any) y SVG (maskable).
+         - Actualizada fecha `lastmod` en `sitemap.xml` a `2026-09-14`.
+         - Automatizada la copia de `favicon-48x48.png` y `og-image.png` a `dist/` en `scripts/build.js`.
+      4. **Centrado Defensivo Móvil en Android (`styles/04-command-bar.css`):**
+         - Añadida regla `@media (max-width: 600px)` para `.cmd-dropdown-menu` con `left: 50%`, `transform: translateX(-50%)` y `max-width: calc(100vw - 2rem)`, garantizando cero desbordamiento horizontal en terminales móviles de 360px a 412px.
+      5. **Certificación DevSecOps:**
+         - Suite de 8 fases (`node scripts/validate.js`) superada al 100% (0 fallos).
+         - Todos los 14 módulos JS y 18 módulos CSS cumplen estrictamente el límite de 500 líneas.
+         - Procesos en el Samsung J7 verificados estables (Scraper: 89.4MB, Bot WoL: 63.6MB, Host RAM: 49.4%).
 
 ---
 

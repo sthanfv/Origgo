@@ -204,7 +204,9 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
   'favicon.svg',
   'favicon.ico',
   'favicon-32x32.png',
+  'favicon-48x48.png',
   'apple-touch-icon.png',
+  'og-image.png',
   'push-icon-192.png',
   'push-icon-512.png',
   'google390e0a55723f2003.html'

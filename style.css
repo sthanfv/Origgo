@@ -981,6 +981,21 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@media (max-width: 600px) {
+  .cmd-dropdown-menu {
+    left: 50%;
+    min-width: min(240px, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+  }
+  .cmd-dropdown-menu.show {
+    animation: dropdownFadeInMobile 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes dropdownFadeInMobile {
+    from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
+    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+}
+
 .cmd-dropdown-item {
   display: flex;
   align-items: center;

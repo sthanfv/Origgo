@@ -74,6 +74,8 @@ hunter-portal-showcase/
 ├── style.min.css               # Hoja de estilos compilada y balanceada (120 KB)
 ├── app.js                      # Controlador orquestador del frontend
 ├── app.min.js                  # Script compilado y minificado (179 KB)
+├── og-image.png                # Banner oficial OpenGraph (1200x630) con fondo de marca
+├── apple-touch-icon.png        # Icono táctil de alta definición (180x180) con fondo sólido
 ├── config.js                   # Configuración y llaves públicas de cliente
 ├── dist/                       # Paquete público generado por build e ignorado por Git
 ├── package.json                # Dependencias, scripts de build y tests
