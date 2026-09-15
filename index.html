@@ -206,6 +206,29 @@
           </div>
         </div>
 
+        <!-- Selector de Tipo de Operación (Venta / Arriendo) -->
+        <div class="cmd-filter-pill-dropdown-wrapper">
+          <button type="button" class="cmd-filter-pill" id="cmdFilterOperation" aria-expanded="false" title="Tipo de operación">
+            <i class="fa-solid fa-tag"></i>
+            <span id="cmdFilterOperationLabel" data-i18n="filter_op_all">Todas las operaciones</span>
+            <i class="fa-solid fa-chevron-down cmd-dropdown-arrow"></i>
+          </button>
+          <div class="cmd-dropdown-menu" id="cmdOperationDropdown">
+            <div class="cmd-dropdown-item active" data-operation="">
+              <i class="fa-solid fa-layer-group"></i>
+              <span data-i18n="filter_op_all">Todas las operaciones</span>
+            </div>
+            <div class="cmd-dropdown-item" data-operation="venta">
+              <i class="fa-solid fa-house-chimney"></i>
+              <span data-i18n="filter_op_sale">En Venta</span>
+            </div>
+            <div class="cmd-dropdown-item" data-operation="arriendo">
+              <i class="fa-solid fa-key"></i>
+              <span data-i18n="filter_op_rent">En Arriendo</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Filtro Rápido de Oportunidades del Día (Últimas 24h) -->
         <button type="button" class="cmd-filter-pill" id="cmdFilterToday" title="Ver solo oportunidades captadas en las últimas 24 horas" aria-pressed="false" data-i18n-title="filter_today_title">
           <i class="fa-solid fa-bolt"></i>

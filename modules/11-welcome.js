@@ -239,16 +239,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Despliegue automático y suave en cada nueva sesión si no se ha cerrado en ella
+  // Despliegue automático y suave solo en la primera visita del usuario (nunca en cada recarga)
   try {
-    const vistoEnSesion = sessionStorage.getItem('origgo_onboarding_seen');
-    if (!vistoEnSesion) {
+    const vistoPreviamente = localStorage.getItem('origgo_onboarding_seen');
+    if (!vistoPreviamente) {
       setTimeout(() => {
-        const recheck = sessionStorage.getItem('origgo_onboarding_seen');
+        const recheck = localStorage.getItem('origgo_onboarding_seen');
         if (!recheck) {
           abrirModalOnboarding();
         }
-      }, 1000);
+      }, 1500);
     }
   } catch (e) {}
 });

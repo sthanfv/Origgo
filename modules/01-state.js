@@ -55,6 +55,7 @@ let cacheContactosDesbloqueados = {};
 let restauracionEnProgreso = false;
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
+let filtroOperacionActivo = ""; // "" = todas, "venta", "arriendo"
 let filtroTratoDirectoActivo = false;
 let filtroHoyActivo = false;
 let textoBusquedaActivo = "";

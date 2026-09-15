@@ -367,13 +367,18 @@
   box-shadow: 0 32px 80px -16px rgba(2, 44, 34, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 .onboarding-modal-aura {
-  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
-  width: 320px; height: 200px;
-  background: radial-gradient(circle, rgba(10, 159, 104, 0.25) 0%, rgba(10, 159, 104, 0.08) 55%, transparent 75%);
+  position: absolute; top: -110px; left: 50%; transform: translateX(-50%);
+  width: 360px; height: 220px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, rgba(5, 150, 105, 0.12) 50%, transparent 75%);
   filter: blur(40px); pointer-events: none; z-index: 1;
+  animation: onboardingAuraBreath 6s ease-in-out infinite;
 }
 [data-theme="light"] .onboarding-modal-aura {
-  background: radial-gradient(circle, rgba(4, 120, 87, 0.18) 0%, rgba(4, 120, 87, 0.06) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(4, 120, 87, 0.22) 0%, rgba(4, 120, 87, 0.08) 50%, transparent 75%);
+}
+@keyframes onboardingAuraBreath {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.75; }
+  50% { transform: translateX(-50%) scale(1.22); opacity: 1; filter: blur(34px); }
 }
 .onboarding-brand-badge {
   position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 0.5rem;
@@ -399,16 +404,32 @@
 .onboarding-pillar-card {
   display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.85rem 1rem;
   background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle);
-  border-radius: 1rem; transition: border-color 0.2s ease, background-color 0.2s ease;
+  border-radius: 1rem; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.onboarding-pillar-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  background: rgba(16, 185, 129, 0.04);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.45);
 }
 [data-theme="light"] .onboarding-pillar-card {
   background: rgba(0, 0, 0, 0.02); border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .onboarding-pillar-card:hover {
+  background: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 8px 24px -6px rgba(2, 44, 34, 0.12);
 }
 .pillar-icon-box {
   width: 36px; height: 36px; border-radius: 50%;
   background: rgba(10, 159, 104, 0.12); border: 1px solid rgba(10, 159, 104, 0.25);
   display: flex; align-items: center; justify-content: center; color: var(--accent-emerald);
   font-size: 0.85rem; flex-shrink: 0; margin-top: 2px;
+  transition: transform 0.25s ease, background-color 0.25s ease;
+}
+.onboarding-pillar-card:hover .pillar-icon-box {
+  transform: scale(1.1) rotate(4deg);
+  background: rgba(16, 185, 129, 0.22);
+  color: #34D399;
 }
 .pillar-text-block { flex: 1; }
 .pillar-title {

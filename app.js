@@ -525,6 +525,7 @@ let cacheContactosDesbloqueados = {};
 let restauracionEnProgreso = false;
 // Variables de estado reactivo del Omnibox y filtros
 let filtroCiudadActivo = "";
+let filtroOperacionActivo = ""; // "" = todas, "venta", "arriendo"
 let filtroTratoDirectoActivo = false;
 let filtroHoyActivo = false;
 let textoBusquedaActivo = "";
@@ -1464,112 +1465,44 @@ function normalizarTextoBusqueda(str) {
  */
 const DICCIONARIO_TERMINOS = {
   // Tipología Inmobiliaria
-  "apto": ["apartamento", "departamento", "apto"],
-  "aptos": ["apartamento", "departamento", "apto"],
-  "apartamento": ["apartamento", "apto"],
-  "apartamentos": ["apartamento", "apto"],
-  "ph": ["penthouse", "duplex", "ph"],
-  "penthouse": ["penthouse", "ph", "duplex"],
-  "duplex": ["duplex", "penthouse"],
-  "casa": ["casa", "quinta", "campestre", "chalet"],
-  "casas": ["casa", "quinta", "campestre"],
-  "lote": ["lote", "terreno", "campestre"],
-  "campestre": ["campestre", "quinta", "casa", "lote"],
-  "quinta": ["quinta", "campestre", "casa"],
+  "apto": ["apartamento", "departamento", "apto"], "aptos": ["apartamento", "departamento", "apto"],
+  "apartamento": ["apartamento", "apto"], "apartamentos": ["apartamento", "apto"],
+  "ph": ["penthouse", "duplex", "ph"], "penthouse": ["penthouse", "ph", "duplex"], "duplex": ["duplex", "penthouse"],
+  "casa": ["casa", "quinta", "campestre", "chalet"], "casas": ["casa", "quinta", "campestre"],
+  "lote": ["lote", "terreno", "campestre"], "campestre": ["campestre", "quinta", "casa", "lote"], "quinta": ["quinta", "campestre", "casa"],
   // Distribución y Ambientes
-  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "alcobas": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "habitacion": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "habitaciones": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "hab": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
-  "cuarto": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
-  "bano": ["bano", "banos", "ducha"],
-  "banos": ["bano", "banos", "ducha"],
-  "garaje": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq", "cochera"],
-  "garajes": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parqueadero": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parqueaderos": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "parq": ["garaje", "garajes", "parqueadero", "parqueaderos"],
+  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"], "alcobas": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "habitacion": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"], "habitaciones": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
+  "hab": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"], "cuarto": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas"],
+  "bano": ["bano", "banos", "ducha"], "banos": ["bano", "banos", "ducha"],
+  "garaje": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq", "cochera"], "garajes": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
+  "parqueadero": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"], "parqueaderos": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"], "parq": ["garaje", "garajes", "parqueadero", "parqueaderos"],
   // Trato Directo y Oportunidad
-  "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"],
-  "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"],
-  "propietario": ["propietario", "particular", "directo", "dueno"],
-  "particular": ["propietario", "particular", "directo", "dueno"],
-  "directo": ["directo", "dueno", "propietario", "particular"],
-  "rebaja": ["rebaja", "descuento", "ganga", "barato", "negociable", "oportunidad"],
-  "descuento": ["rebaja", "descuento", "ganga", "arbitraje"],
-  "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"],
-  "viaje": ["viaje", "motivo", "urgente"],
-  "urgente": ["urgente", "viaje", "motivo", "urgeme", "oportunidad"],
-  "arbitraje": ["arbitraje", "descuento", "mediana", "ganga"],
+  "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"], "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"],
+  "propietario": ["propietario", "particular", "directo", "dueno"], "particular": ["propietario", "particular", "directo", "dueno"], "directo": ["directo", "dueno", "propietario", "particular"],
+  "rebaja": ["rebaja", "descuento", "ganga", "barato", "negociable", "oportunidad"], "descuento": ["rebaja", "descuento", "ganga", "arbitraje"], "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"],
+  "viaje": ["viaje", "motivo", "urgente"], "urgente": ["urgente", "viaje", "motivo", "urgeme", "oportunidad"], "arbitraje": ["arbitraje", "descuento", "mediana", "ganga"],
   // Vehículos
-  "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"],
-  "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"],
-  "vehiculo": ["vehiculo", "carro", "camioneta", "auto"],
-  "camioneta": ["camioneta", "suv", "pickup", "pick-up", "4x4"],
-  "suv": ["suv", "camioneta", "4x4"],
-  "pickup": ["pickup", "pick-up", "camioneta", "4x4", "utilitaria"],
-  "sedan": ["sedan", "deportivo", "carro", "auto"],
-  "4x4": ["4x4", "camioneta", "suv", "pickup"],
+  "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"], "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"], "vehiculo": ["vehiculo", "carro", "camioneta", "auto"],
+  "camioneta": ["camioneta", "suv", "pickup", "pick-up", "4x4"], "suv": ["suv", "camioneta", "4x4"], "pickup": ["pickup", "pick-up", "camioneta", "4x4", "utilitaria"],
+  "sedan": ["sedan", "deportivo", "carro", "auto"], "4x4": ["4x4", "camioneta", "suv", "pickup"],
   // Bilingüe EN -> ES (Infraestructura de Búsqueda Internacional)
-  "apartment": ["apartamento", "apto"],
-  "apartments": ["apartamento", "apto"],
-  "flat": ["apartamento", "apto"],
-  "condo": ["apartamento", "apto"],
-  "house": ["casa", "quinta", "campestre", "chalet"],
-  "houses": ["casa", "quinta", "campestre"],
-  "home": ["casa", "apartamento"],
-  "land": ["lote", "terreno", "campestre"],
-  "lot": ["lote", "terreno"],
-  "plot": ["lote", "terreno"],
-  "office": ["oficina"],
-  "offices": ["oficina"],
-  "building": ["edificio"],
-  "estate": ["finca", "campestre"],
-  "warehouse": ["bodega"],
-  "commercial": ["local", "comercial"],
-  "retail": ["local", "comercial"],
-  "store": ["local"],
-  "bedroom": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "bedrooms": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"],
-  "bed": ["habitacion", "hab", "alcoba"],
-  "beds": ["habitaciones", "hab", "alcobas"],
-  "bath": ["bano", "banos", "ducha"],
-  "baths": ["bano", "banos", "ducha"],
-  "bathroom": ["bano", "banos", "ducha"],
-  "bathrooms": ["bano", "banos", "ducha"],
-  "parking": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"],
-  "garage": ["garaje", "garajes", "parqueadero", "parqueaderos"],
-  "owner": ["propietario", "particular", "directo", "dueno"],
-  "owners": ["propietario", "particular", "directo", "dueno"],
-  "direct": ["directo", "dueno", "propietario", "particular"],
-  "discount": ["rebaja", "descuento", "ganga", "arbitraje"],
-  "bargain": ["ganga", "rebaja", "oportunidad"],
-  "deal": ["oportunidad", "directo", "trato"],
-  "urgent": ["urgente", "viaje", "motivo"],
-  "studio": ["apartaestudio", "estudio", "apartamento", "apto"],
-  "pool": ["piscina"],
-  "gym": ["gimnasio", "gym"],
-  "balcony": ["balcon", "terraza"],
-  "terrace": ["terraza", "balcon"],
-  "furnished": ["amoblado", "amoblada"],
-  "view": ["vista", "panoramica"],
-  "security": ["vigilancia", "porteria", "seguridad"],
-  "elevator": ["ascensor"],
-  "storage": ["deposito", "bodega"],
-  "rent": ["arriendo", "alquiler", "renta"],
-  "sale": ["venta"],
-  "luxury": ["lujo", "exclusivo", "penthouse"],
-  "investment": ["inversion", "arbitraje", "rentabilidad"],
-  "remodeled": ["remodelado", "estrenar", "nuevo"],
+  "apartment": ["apartamento", "apto"], "apartments": ["apartamento", "apto"], "flat": ["apartamento", "apto"], "condo": ["apartamento", "apto"],
+  "house": ["casa", "quinta", "campestre", "chalet"], "houses": ["casa", "quinta", "campestre"], "home": ["casa", "apartamento"],
+  "land": ["lote", "terreno", "campestre"], "lot": ["lote", "terreno"], "plot": ["lote", "terreno"],
+  "office": ["oficina"], "offices": ["oficina"], "building": ["edificio"], "estate": ["finca", "campestre"], "warehouse": ["bodega"], "commercial": ["local", "comercial"], "retail": ["local", "comercial"], "store": ["local"],
+  "bedroom": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"], "bedrooms": ["habitacion", "habitaciones", "hab", "alcoba", "alcobas", "cuarto"], "bed": ["habitacion", "hab", "alcoba"], "beds": ["habitaciones", "hab", "alcobas"],
+  "bath": ["bano", "banos", "ducha"], "baths": ["bano", "banos", "ducha"], "bathroom": ["bano", "banos", "ducha"], "bathrooms": ["bano", "banos", "ducha"],
+  "parking": ["garaje", "garajes", "parqueadero", "parqueaderos", "parq"], "garage": ["garaje", "garajes", "parqueadero", "parqueaderos"],
+  "owner": ["propietario", "particular", "directo", "dueno"], "owners": ["propietario", "particular", "directo", "dueno"], "direct": ["directo", "dueno", "propietario", "particular"],
+  "discount": ["rebaja", "descuento", "ganga", "arbitraje"], "bargain": ["ganga", "rebaja", "oportunidad"], "deal": ["oportunidad", "directo", "trato"], "urgent": ["urgente", "viaje", "motivo"],
+  "studio": ["apartaestudio", "estudio", "apartamento", "apto"], "pool": ["piscina"], "gym": ["gimnasio", "gym"], "balcony": ["balcon", "terraza"], "terrace": ["terraza", "balcon"],
+  "furnished": ["amoblado", "amoblada"], "view": ["vista", "panoramica"], "security": ["vigilancia", "porteria", "seguridad"], "elevator": ["ascensor"], "storage": ["deposito", "bodega"],
+  "rent": ["arriendo", "alquiler", "renta"], "sale": ["venta"], "luxury": ["lujo", "exclusivo", "penthouse"], "investment": ["inversion", "arbitraje", "rentabilidad"], "remodeled": ["remodelado", "estrenar", "nuevo"],
   // Ciudades / Sectores
-  "bogota": ["bogota", "rosales", "chico", "cundinamarca"],
-  "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
-  "cali": ["cali", "pance", "valle del lili", "valle"],
-  "cartagena": ["cartagena", "bocagrande", "bolivar"],
-  "pereira": ["pereira", "cerritos", "risaralda", "eje cafetero"],
-  "bucaramanga": ["bucaramanga", "floridablanca", "ruitoque", "santander"],
-  "floridablanca": ["floridablanca", "bucaramanga", "ruitoque"]
+  "bogota": ["bogota", "rosales", "chico", "cundinamarca"], "medellin": ["medellin", "poblado", "laureles", "san lucas", "antioquia"],
+  "cali": ["cali", "pance", "valle del lili", "valle"], "cartagena": ["cartagena", "bocagrande", "bolivar"], "pereira": ["pereira", "cerritos", "risaralda", "eje cafetero"],
+  "bucaramanga": ["bucaramanga", "floridablanca", "ruitoque", "santander"], "floridablanca": ["floridablanca", "bucaramanga", "ruitoque"]
 };
 
 /**
@@ -1668,6 +1601,19 @@ function restablecerTodosLosFiltros() {
 
   const pillType = document.getElementById("cmdFilterType");
   if (pillType) pillType.classList.remove("active-filter");
+
+  filtroOperacionActivo = "";
+  const labelOp = document.getElementById("cmdFilterOperationLabel");
+  if (labelOp) labelOp.textContent = isEnReset ? "All Operations" : "Todas las operaciones";
+  const pillOp = document.getElementById("cmdFilterOperation");
+  if (pillOp) pillOp.classList.remove("active-filter", "open");
+  const dropdownOp = document.getElementById("cmdOperationDropdown");
+  if (dropdownOp) {
+    dropdownOp.classList.remove("show");
+    dropdownOp.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+      item.classList.toggle("active", (item.getAttribute("data-operation") || "") === "");
+    });
+  }
 
   aplicarFiltrosOmnibox();
 }
@@ -1797,6 +1743,14 @@ function filtrarYOrdenarLeads(leads) {
       if (!esDeHoy) return false;
     }
 
+    // D. Filtro por Tipo de Operación (Venta / Arriendo)
+    if (filtroOperacionActivo) {
+      const tit = normalizarTextoBusqueda(item.titulo || "");
+      const op = normalizarTextoBusqueda(item.tipo_operacion || "");
+      if (filtroOperacionActivo === "venta" && !tit.includes("venta") && !op.includes("venta")) return false;
+      if (filtroOperacionActivo === "arriendo" && !tit.includes("arriendo") && !tit.includes("alquiler") && !op.includes("arriendo")) return false;
+    }
+
     return true;
   });
 
@@ -1867,6 +1821,44 @@ function inicializarBarraOrdenamiento() {
         pillSort.classList.remove("open");
         pillSort.setAttribute("aria-expanded", "false");
       }
+    }
+  });
+  inicializarBarraOperacion();
+}
+
+/**
+ * Inicializa el selector de tipo de operación (Todas / Venta / Arriendo).
+ */
+function inicializarBarraOperacion() {
+  const pillOp = document.getElementById("cmdFilterOperation");
+  const dropOp = document.getElementById("cmdOperationDropdown");
+  const lblOp = document.getElementById("cmdFilterOperationLabel");
+  if (!pillOp || !dropOp) return;
+  pillOp.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = dropOp.classList.toggle("show");
+    pillOp.classList.toggle("open", isOpen);
+    pillOp.setAttribute("aria-expanded", String(isOpen));
+  });
+  dropOp.addEventListener("click", (e) => {
+    const it = e.target.closest(".cmd-dropdown-item");
+    if (!it) return;
+    e.stopPropagation();
+    filtroOperacionActivo = it.getAttribute("data-operation") || "";
+    dropOp.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+    it.classList.add("active");
+    if (lblOp) lblOp.textContent = it.querySelector("span")?.textContent || "Todas las operaciones";
+    pillOp.classList.toggle("active-filter", filtroOperacionActivo !== "");
+    dropOp.classList.remove("show");
+    pillOp.classList.remove("open");
+    pillOp.setAttribute("aria-expanded", "false");
+    aplicarFiltrosOmnibox();
+  });
+  window.addEventListener("click", (e) => {
+    if (dropOp.classList.contains("show") && !pillOp.contains(e.target) && !dropOp.contains(e.target)) {
+      dropOp.classList.remove("show");
+      pillOp.classList.remove("open");
+      pillOp.setAttribute("aria-expanded", "false");
     }
   });
 }
@@ -4741,16 +4733,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Despliegue automático y suave en cada nueva sesión si no se ha cerrado en ella
+  // Despliegue automático y suave solo en la primera visita del usuario (nunca en cada recarga)
   try {
-    const vistoEnSesion = sessionStorage.getItem('origgo_onboarding_seen');
-    if (!vistoEnSesion) {
+    const vistoPreviamente = localStorage.getItem('origgo_onboarding_seen');
+    if (!vistoPreviamente) {
       setTimeout(() => {
-        const recheck = sessionStorage.getItem('origgo_onboarding_seen');
+        const recheck = localStorage.getItem('origgo_onboarding_seen');
         if (!recheck) {
           abrirModalOnboarding();
         }
-      }, 1000);
+      }, 1500);
     }
   } catch (e) {}
 });
@@ -5034,7 +5026,7 @@ const DICCIONARIO_I18N = {
   es: {
     vip_btn_default: 'Créditos / Planes', vip_btn_title: 'Ver Créditos y Planes', lang_btn_label: 'Cambiar idioma', search_placeholder: 'Buscar por barrio, ciudad o palabra clave...', search_clear: 'Limpiar búsqueda',
     filter_all_cities: 'Todas las Ciudades', filter_colombia_all: 'Colombia (Todas)', filter_today: 'Captados Hoy', filter_today_title: 'Oportunidades captadas en las últimas 24 horas',
-    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor', sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad', sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente',
+    sort_placeholder: 'Ordenar por', sort_recent: 'Más Recientes', sort_price_asc: 'Precio: Menor a Mayor', sort_price_desc: 'Precio: Mayor a Menor', sort_discount: 'Mayor Oportunidad', sort_m2_asc: 'Menor $/m²', sort_rebajas: 'Rebaja Reciente', filter_op_all: 'Todas las operaciones', filter_op_sale: 'En Venta', filter_op_rent: 'En Arriendo',
     hero_title: 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños',
     hero_subtitle: 'Sin intermediarios ni comisiones de inmobiliaria. Oportunidades y rebajas de urgencia detectadas hoy en Colombia antes de que lleguen a las agencias.',
     hero_badge_suffix: 'Sectores Monitoreados en Tiempo Real', hero_cta: 'Ver Inmuebles Directos Disponibles', hero_about_pill_text: '¿Qué es Origgo?',
@@ -5100,7 +5092,7 @@ const DICCIONARIO_I18N = {
   en: {
     vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
     filter_all_cities: 'All Cities', filter_colombia_all: 'Colombia (All)', filter_today: 'Captured Today', filter_today_title: 'Deals captured in the last 24 hours',
-    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High', sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount', sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop',
+    sort_placeholder: 'Sort by', sort_recent: 'Most Recent', sort_price_asc: 'Price: Low to High', sort_price_desc: 'Price: High to Low', sort_discount: 'Highest Arbitrage / Discount', sort_m2_asc: 'Lowest $/sqm', sort_rebajas: 'Recent Price Drop', filter_op_all: 'All Operations', filter_op_sale: 'For Sale', filter_op_rent: 'For Rent',
     hero_title: 'Properties for sale <span class="editorial-italic">directly</span> from owners',
     hero_subtitle: 'Zero middleman and zero agency commissions. Fresh off-market opportunities and urgent price drops detected today in Colombia.',
     hero_badge_suffix: 'Districts Monitored in Real Time', hero_cta: 'View Available Direct Properties', hero_about_pill_text: 'What is Origgo?',
@@ -5307,9 +5299,11 @@ function aplicarTraduccionesAlDOM() {
     });
   }
 
-  // 4. Selector de Ciudad (Label)
+  // 4. Selector de Ciudad y Operación (Labels)
   const locLabel = document.getElementById('cmdFilterLocationLabel');
   if (locLabel && (typeof filtroCiudadActivo === 'undefined' || !filtroCiudadActivo)) locLabel.textContent = dict.filter_all_cities;
+  const opLabel = document.getElementById('cmdFilterOperationLabel');
+  if (opLabel) { const opMap = { '': dict.filter_op_all, 'venta': dict.filter_op_sale, 'arriendo': dict.filter_op_rent }; opLabel.textContent = opMap[typeof filtroOperacionActivo !== 'undefined' ? filtroOperacionActivo : ''] || dict.filter_op_all; }
 
   // 5. Botones de tarjetas bento
   document.querySelectorAll('.btn-specs-pill').forEach(btn => { btn.innerHTML = `${dict.card_view_details} <i class="fa-solid fa-chevron-up"></i>`; });
@@ -5513,9 +5507,5 @@ if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicializarSelectorIdiomas);
   else inicializarSelectorIdiomas();
 }
-if (typeof window !== 'undefined') {
-  Object.assign(window, { obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer, TEXTOS_LEGALES_ORIGGO_EN });
-}
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { DICCIONARIO_I18N, obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer };
-}
+if (typeof window !== 'undefined') { Object.assign(window, { obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer, TEXTOS_LEGALES_ORIGGO_EN }); }
+if (typeof module !== 'undefined' && module.exports) { module.exports = { DICCIONARIO_I18N, obtenerIdiomaActual, cambiarIdioma, t, calcularReferenciaUSD, aplicarTraduccionesAlDOM, traducirSlideupDrawer }; }

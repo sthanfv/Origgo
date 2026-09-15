@@ -1,6 +1,31 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-14 19:10 (GMT-5)
+Última actualización: 2026-09-14 19:33 (GMT-5)
+
+---
+
+-65. **Incorporación de Filtro Táctico por Operación (Venta / Arriendo), Persistencia Definitiva de Onboarding en LocalStorage, Animación de Respiración en Aura y Micro-Interacciones en Bienvenida**:
+    - **Diagnóstico y Solicitudes del Usuario:**
+      1. *Aparición recurrente y molesta del modal de bienvenida en cada recarga:* El módulo `11-welcome.js` verificaba `sessionStorage`, lo que provocaba que al cerrar o recargar la pestaña volviera a saltar automáticamente. Se requería que solo apareciera la primera vez y no fastidiara al usuario.
+      2. *Falta de dinamismo visual en el panel de bienvenida:* El modal se percibía estático y plano. Se solicitaba dotarlo de vida visual ambiental y mayor interactividad.
+      3. *Mezcla de inmuebles en arriendo y en venta en el catálogo:* Como el ordenamiento por defecto es cronológico ("Más Recientes") y los últimos barridos incluyeron arriendos, los apartamentos en arriendo aparecían al inicio desplazando a los inmuebles en venta. Se requería un filtro para separar ventas de arriendos.
+      4. *Dudas sobre la tasa de conversión USD:* Clarificación técnica sobre el origen de los valores en dólares (ej. 320M COP = 78.049 USD).
+    - **Solución Implementada:**
+      1. **Persistencia Definitiva en LocalStorage (`modules/11-welcome.js`):**
+         - Sustituida la comprobación de `sessionStorage` por `localStorage.getItem('origgo_onboarding_seen')`.
+         - Una vez cerrado o aceptado, el modal queda sellado permanentemente en el navegador del usuario y no vuelve a desplegarse en recargas.
+         - Se mantiene accesible a demanda mediante el botón "¿Qué es Origgo?".
+      2. **Vida Visual en el Modal de Bienvenida (`styles/15-welcome-modal.css`):**
+         - Añadida animación de respiración luminosa continua (`onboardingAuraBreath`) con gradiente radial esmeralda.
+         - Micro-interacciones hover en las tarjetas de pilares (`.onboarding-pillar-card:hover`) con elevación tridimensional, borde esmeralda y rotación/resplandor del icono.
+      3. **Filtro Táctico de Operación (`index.html`, `modules/01-state.js`, `modules/04-filters.js`, `modules/13-i18n.js`):**
+         - Añadido selector desplegable de operación en la barra de comandos con opciones: "Todas las operaciones", "En Venta" y "En Arriendo".
+         - Estado global `filtroOperacionActivo` integrado en `01-state.js`.
+         - Lógica de discriminación inteligente por palabras clave (`venta`, `arriendo`, `alquiler`, `tipo_operacion`) en `04-filters.js`.
+         - Integración bilingüe completa (ES / EN) en diccionarios y sincronización de etiquetas en `13-i18n.js`.
+      4. **Validación DevSecOps y Modularidad:**
+         - Suite de 8 fases DevSecOps superada al 100% (0 errores).
+         - Todos los submódulos JavaScript y CSS verificados bajo el límite estricto de 500 líneas (Estándar Desmulta).
 
 ---
 
