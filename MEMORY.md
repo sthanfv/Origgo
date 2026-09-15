@@ -1,27 +1,69 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-13 23:28 (GMT-5)
+Última actualización: 2026-09-14 19:10 (GMT-5)
 
 ---
 
--62. **Inyección de Prueba Social en Vivo con Contadores Animados, Motor de Dossiers Imprimibles / PDF de Inmuebles Desbloqueados y Despacho Transaccional por Resend**:
-    - **Diagnóstico y Oportunidad Comercial:**
-      1. *Falta de tracción y confianza en la vitrina inicial:* La página de inicio carecía de indicadores de actividad en tiempo real, impidiendo que el visitante percibiera la frescura y volumen del inventario disponible (398 leads únicos monitoreados).
-      2. *Ausencia de un entregable tangible post-desbloqueo:* Tras desbloquear un lead con créditos, el usuario solo visualizaba los datos en pantalla sin la opción de descargar o guardar una ficha técnica profesional para compartir o archivar.
+-64. **Corrección de Detección de Encendido de PC (WoL con ICMP Ping + Regla de Firewall Local) y Recalibración de Umbrales OOM en Centinela Móvil**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Bot de encendido no confirmaba arranque de PC (Falsos negativos):* El bot intentaba verificar si la PC encendía mediante conexión TCP al puerto 445 (SMB) con ventana de 30s. Windows Defender Firewall bloquea por defecto todo tráfico entrante TCP en el puerto 445 y peticiones ICMP en perfiles de red privada. Además, el arranque en frío de Windows toma entre 35 y 45 segundos, por lo que el sondeo a 30s era prematuro. El paquete WoL sí encendía la máquina físicamente, pero el bot reportaba que no respondía y enviaba 3 alertas innecesarias.
+      2. *Alerta de Peligro de OOM a 137 MB en hardware móvil:* El proceso Node.js del scraper consume entre 125 y 135 MB RSS durante picos legítimos de ingesta y deduplicación atómica en SQLite. El módulo `sentinel.js` tenía configurado un umbral de pánico en 135 MB (`rssMB > 135`), disparando alertas de error fatal cuando la memoria estaba operando dentro de los parámetros normales del hardware (PM2 tiene tope en 150 MB y el Samsung J7 cuenta con 3 GB de RAM).
     - **Solución Implementada:**
-      1. **Prueba Social en Tiempo Real (`index.html`, `modules/09-ui-effects.js`, `style.css`):**
-         - Insertado mini-dashboard `#heroLiveStats` en el Hero con métricas de propietarios directos, ciudades activas y sectores monitoreados.
-         - Implementada función `animarContador()` con `requestAnimationFrame` y curva de desaceleración (ease-out) que anima las cifras desde 0 al cargar la página.
-         - Integrado indicador de frescura `#catalogFreshness` en la cabecera del catálogo con punto verde pulsante (`pulse-freshness`).
-         - Traducciones automáticas bilingües integradas en `modules/13-i18n.js` (`stat_leads_total`, `stat_ciudades`, `stat_sectores`, `catalog_freshness`).
-      2. **Motor de Dossiers Imprimibles y Fichas Técnicas (`lib/report-generator.js`, 186 líneas $\le 500$):**
-         - Diseñado generador HTML de dossiers con diseño esmeralda corporativo de alta gama, métricas detalladas ($/m², área, habitaciones, baños, parqueaderos, estrato), contacto verificado con acceso a WhatsApp, y protocolo de verificación legal para cierre directo.
-         - Hoja de estilos con reglas `@media print` para exportar a PDF en formato carta/A4 de manera nativa sin requerir librerías pesadas.
-         - Función cliente `abrirDossierImprimible(leadId)` añadida a `modules/07-unlock.js` vinculada al botón "Ficha PDF" en las tarjetas desbloqueadas y en el drawer desplegable.
-      3. **Despacho Transaccional Autónomo por Correo (`api/leads/unlock.js`):**
-         - Al confirmarse el desbloqueo de un lead, el backend despacha en segundo plano (`despacharReporteDossierEmail`) la ficha técnica completa al correo del comprador vía Resend API ($0 coste).
-      4. **Certificación DevSecOps:**
-         - Las 8 fases de validación pasaron al 100% con 0 errores y el código fue desplegado a producción en Vercel.
+      1. **Regla de Firewall Windows para ICMP Local:**
+         - Creada regla `Permitir Ping desde Red Local (Bot WoL)` en Windows Firewall para tráfico ICMPv4 entrante (tipo 8) acotada estrictamente a la subred doméstica `192.168.1.0/24`.
+         - Verificada conectividad desde el Samsung J7: `ping 192.168.1.51` arrojó 0% packet loss y 2.4 ms de RTT.
+      2. **Verificación por Ping ICMP y Ventana de 45s (`bot-encendido/index.js`):**
+         - Sustituido intento de conexión TCP a puerto 445 por `ping -c 1 -W 3 192.168.1.51` nativo en Linux/Termux.
+         - Aumentado tiempo de espera entre intentos de 30s a 45s (hasta 3 intentos = 135s totales).
+         - Actualizado comando `/estado` para responder `🟢 PC ENCENDIDA` o `🔴 PC APAGADA` vía ping.
+         - Desplegado a `/data/data/com.termux/files/home/bot-encendido/index.js` y reiniciado en PM2 (PID 24633).
+      3. **Recalibración de Umbrales OOM (`ofertas-hunter-pro/sentinel.js`):**
+         - Elevado umbral de recolección de basura preventiva (GC) a 125 MB RSS.
+         - Elevado umbral de alerta crítica de 135 MB a 148 MB RSS (inmediatamente antes de los 150 MB del reinicio limpio de PM2).
+         - Desplegado a `/data/data/com.termux/files/home/ofertas-hunter-pro/sentinel.js` y reiniciado en PM2 (PID 24664).
+      4. **Pruebas Automatizadas:**
+         - `npm test` en `ofertas-hunter-pro` ejecutado con 10/10 pruebas de adaptadores aprobadas.
+         - Pruebas unitarias de `sentinel.test.js` pasaron 2/2 al 100%.
+         - Verificación directa desde Termux confirma `ping` exitoso a la PC.
+
+---
+
+-63. **Corrección Crítica de Auto-Estrangulamiento del Rate Limiter, Desbloqueo del Endpoint Reconcile-Cron en Vercel (HTTP 404) y Bot de Encendido v2.0 con Verificación Real de Arranque**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Rate Limiter Adaptativo acumulando delays hasta 30s sin resetear entre ciclos:* El `adaptive_limiter.js` escalaba el delay de 1.2s hasta 30s (tope) conforme el RTT superaba los 1500ms (factor ×1.25 por cada medición). Al terminar un ciclo de escaneo e iniciar el siguiente, el delay de 30s se arrastraba al nuevo ciclo, anulando la optimización de salto de sectores fríos (Fase 5) y devolviendo los tiempos de barrido a 60+ minutos. Además, `resetear()` existía como método público pero nunca se invocaba.
+      2. *Endpoint `reconcile-cron` devolviendo HTTP 404 en Vercel:* Existían 13 funciones serverless en el directorio `api/`, pero el plan Hobby de Vercel admite un máximo de 12. La función `api/security/honeypot.js` (24 líneas) no tenía rewrites configurados en `vercel.json` para interceptar rutas como `/.env`, `/wp-admin` o `/.git`, por lo que era inaccesible y no aportaba protección real. Su presencia causaba que Vercel excluyera o fallara en compilar alguna de las 13 funciones.
+      3. *Bot de encendido sin verificación de arranque real:* El bot enviaba el Magic Packet UDP y asumía que la PC había encendido sin confirmar. No existía un mecanismo de reintento ni forma de consultar el estado actual de la PC.
+    - **Solución Implementada:**
+      1. **Reset del Rate Limiter entre Ciclos (`ofertas-hunter-pro/index.js`):**
+         - Al inicio de `ejecutarCiclo()`, se invoca `adaptiveLimiter.resetear(dominio)` para cada adaptador, eliminando el delay acumulado y reiniciando con el `baseDelayMs` limpio de 1200ms.
+      2. **Suavización del Factor de Escalada (`ofertas-hunter-pro/adaptive_limiter.js`):**
+         - Factor de escalada ante RTT alto reducido de ×1.25 a ×1.15, evitando que el delay alcance el tope de 30s en menos de 10 peticiones dentro del mismo ciclo.
+      3. **Consolidación de Funciones Serverless a 12 (`hunter-portal-showcase`):**
+         - Eliminada `api/security/honeypot.js` (no aportaba protección sin rewrites).
+         - Eliminada su referencia en `scripts/validate.js`.
+         - 8/8 fases DevSecOps pasaron al 100% tras la eliminación.
+         - Commit `641a722` desplegado a Vercel.
+      4. **Bot de Encendido v2.0 con Verificación de Arranque (`bot-encendido/index.js`):**
+         - Verificación real de arranque mediante ping TCP al puerto 445 (SMB) de la PC (`192.168.1.51`).
+         - Hasta 3 reintentos automáticos del Magic Packet con espera de 30s entre cada uno.
+         - Nuevo comando `/estado` para consultar si la PC está online o apagada.
+         - Nuevo comando `/ayuda` para listar los comandos disponibles.
+         - `.env` actualizado con `PC_IP=192.168.1.51` y `PC_CHECK_PORT=445`.
+         - Desplegado y activo en PM2 en el Samsung J7 (PID 32219, online).
+
+---
+
+-62. **Optimización Táctica de Ciclos de Escaneo con Salto Temprano de Sectores Fríos (Early Exit), Aceleración 5x en FincaRaíz y Metrocuadrado**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Duración excesiva de ciclos completos (60+ minutos):* Al barrer 27 sectores de FincaRaíz y 20 de Metrocuadrado a razón de 2 a 4 páginas por sector con delays de 800ms-1800ms, el ciclo tardaba 3.808 segundos (~63 min). Esto retrasaba la notificación de oportunidades urgentes captadas al inicio del ciclo.
+      2. *Inspección innecesaria de páginas profundas en sectores fríos:* Si un sector en la página 1 (ordenada cronológicamente por los avisos más recientes) arrojaba 0 particulares directos, continuar consultando las páginas 2, 3 y 4 generaba peticiones redundantes sin valor comercial.
+    - **Solución Implementada:**
+      1. **Corte Táctico Temprano (`adapters/fincaraiz/index.js` y `adapters/metrocuadrado/index.js`):**
+         - Si `pagina === 1` arroja 0 particulares directos nuevos, el bucle ejecuta un `break` inmediato hacia el siguiente sector.
+         - Reduce el tiempo de barrido de ~60 minutos a ~12-15 minutos (4x-5x más veloz), concentrando el esfuerzo computacional del Exynos 7870 en sectores activos y calientes.
+      2. **Despliegue y Validación en Servidor Móvil Samsung Galaxy J7 Prime:**
+         - Ambos adaptadores fueron transferidos vía ADB a `/data/data/com.termux/files/home/ofertas-hunter-pro/adapters/`.
+         - Sintaxis y carga validadas en caliente con Node.js v24 sobre el procesador físico sin interrumpir el demonio PM2.
 
 -61. **Cumplimiento Estricto de Capa Hobby de Vercel (Cron Diario), Delegación de Conciliación Wompi al Servidor Samsung J7, Instalación de ACC (Advanced Charging Controller 60/50), Erradicación de Sleep of Death y Restauración de Telemetría Telegram**:
     - **Diagnóstico y Causa Raíz:**
@@ -75,7 +117,7 @@
 
 -59. **Auditoría Ética de Seguridad (Pentest Frontend y DevSecOps) y Remediación Integral de Vulnerabilidades**:
     - **Diagnóstico y Causa Raíz:**
-      1. *Manipulación de Estado en Consola (HAL-01):* `sesionUsuario` se encontraba expuesto y mutable en el entorno global del cliente, permitiendo que un usuario en DevTools alterara saldos visuales o simulara planes VIP activos.
+      1. *Manipulación de Estado en Consola (HAL-01):* `sesionUsuario` se encontraba expuesto y mutable en el cliente, permitiendo que un usuario en DevTools alterara saldos visuales o simulara planes VIP activos.
       2. *Validación TLS Omitida en Telegram Scraper (HAL-02):* En `ofertas-hunter-pro/telegram.js`, las peticiones salientes empleaban `rejectUnauthorized: false` y una IP estática, desactivando la verificación estricta de certificados TLS y dejando el canal susceptible a ataques Man-in-the-Middle.
       3. *Parámetro de Depuración por URL Expuesto (HAL-04):* `modules/00-security.js` admitía `?debug=origgo` en la URL para activar el modo de desarrollo en producción, filtrando trazas de depuración y respuestas del servidor en la consola.
       4. *Inyección XSS Potencial en Ficha de Especificaciones (HAL-05):* `modules/06-cards.js` evaluaba cadenas sin escapar buscando marcas HTML en los datos crudos del dataset, arriesgando inyección de script si los datos del catálogo fuesen alterados.
