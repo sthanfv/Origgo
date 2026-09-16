@@ -163,9 +163,13 @@ function configurarListeners() {
   if (pillLocation && dropdownLocation) {
     pillLocation.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isOpen = dropdownLocation.classList.toggle("show");
-      pillLocation.classList.toggle("open", isOpen);
-      pillLocation.setAttribute("aria-expanded", String(isOpen));
+      if (typeof alternarDropdownFiltro === "function") {
+        alternarDropdownFiltro(pillLocation, dropdownLocation);
+      } else {
+        const isOpen = dropdownLocation.classList.toggle("show");
+        pillLocation.classList.toggle("open", isOpen);
+        pillLocation.setAttribute("aria-expanded", String(isOpen));
+      }
     });
 
     dropdownLocation.addEventListener("click", (e) => {
@@ -188,24 +192,17 @@ function configurarListeners() {
       if (sideMenuBadge) sideMenuBadge.textContent = cityValue || "Todas";
 
       pillLocation.classList.toggle("active-filter", cityValue !== "");
-      dropdownLocation.classList.remove("show");
-      pillLocation.classList.remove("open");
-      pillLocation.setAttribute("aria-expanded", "false");
-
-      aplicarFiltrosOmnibox();
-    });
-  }
-
-  // Cerrar Dropdown al hacer click fuera
-  window.addEventListener("click", (e) => {
-    if (dropdownLocation && dropdownLocation.classList.contains("show")) {
-      if (!pillLocation.contains(e.target) && !dropdownLocation.contains(e.target)) {
+      if (typeof cerrarTodosLosDropdownsFiltro === "function") {
+        cerrarTodosLosDropdownsFiltro();
+      } else {
         dropdownLocation.classList.remove("show");
         pillLocation.classList.remove("open");
         pillLocation.setAttribute("aria-expanded", "false");
       }
-    }
-  });
+
+      aplicarFiltrosOmnibox();
+    });
+  }
 
   // Selector de Ciudad en el Menú Lateral Móvil (Off-Canvas)
   const sideMenuCitySelect = document.getElementById("sideMenuCitySelect");

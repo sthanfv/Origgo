@@ -12,7 +12,7 @@ const db = require('../lib/db');
 
 describe('🛡️ Política de Uso Justo (Fair Usage Policy - 35 desbloqueos/día)', () => {
   it('Debe permitir hasta 35 desbloqueos diarios y bloquear el 36 con error CUOTA_DIARIA_EXCEDIDA', async () => {
-    const celularPrueba = '573009998877';
+    const celularPrueba = '573009' + Math.floor(100000 + Math.random() * 900000);
 
     // Activar Plan Nacional VIP
     await db.addCredits(celularPrueba, 0, '1234', { plan: 'national' });

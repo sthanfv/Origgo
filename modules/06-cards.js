@@ -61,12 +61,14 @@ function formatearPrecioDisplay(precioStr) {
 }
 
 /**
- * Genera el marcado de tarjetas esqueleto con efecto Shimmer.
+ * Genera el marcado de tarjetas esqueleto con efecto Shimmer Bento acelerado por GPU.
+ * @param {number} [cantidad=6]
  * @returns {string}
  */
-function generarHtmlSkeletons() {
-  return Array(3).fill(0).map((_, i) => `
-    <article class="bento-card skeleton-card skeleton-delay-${i}">
+function generarHtmlSkeletons(cantidad = 6) {
+  const n = Math.max(1, Math.min(12, Number(cantidad) || 6));
+  return Array(n).fill(0).map((_, i) => `
+    <article class="bento-card skeleton-card skeleton-delay-${i % 6}" aria-busy="true" aria-label="Cargando oportunidad...">
       <div class="skeleton-media skeleton-shimmer"></div>
       <div class="card-body skeleton-body">
         <div class="skeleton-line skeleton-shimmer skeleton-line-sm"></div>
@@ -75,6 +77,19 @@ function generarHtmlSkeletons() {
         <div class="skeleton-footer"><div class="skeleton-line skeleton-shimmer skeleton-line-price"></div><div class="skeleton-btn skeleton-shimmer skeleton-btn-ph"></div></div>
       </div>
     </article>`).join('');
+}
+
+/**
+ * Inyecta temporalmente los skeletons Shimmer en el contenedor Bento Grid.
+ * @param {number} [cantidad=6]
+ */
+function mostrarSkeletonsCargaBento(cantidad = 6) {
+  const c = document.getElementById("bentoGridContainer");
+  if (c) c.innerHTML = generarHtmlSkeletons(cantidad);
+}
+if (typeof window !== 'undefined') {
+  window.generarHtmlSkeletons = generarHtmlSkeletons;
+  window.mostrarSkeletonsCargaBento = mostrarSkeletonsCargaBento;
 }
 
 /**
@@ -181,15 +196,10 @@ function traducirSlideupDetalles(detalles, isEn) {
     const kLow = k.toLowerCase();
     let kTrad = k, vTrad = String(v || 'N/A');
     if (isEn) {
-      if (kLow.includes('estrato')) kTrad = 'Stratum';
-      else if (kLow.includes('área') || kLow.includes('superficie')) kTrad = 'Built Area';
-      else if (kLow.includes('hab') || kLow.includes('alcoba')) kTrad = 'Bedrooms';
-      else if (kLow.includes('baño')) kTrad = 'Bathrooms';
-      else if (kLow.includes('parqueadero') || kLow.includes('garaje')) kTrad = 'Parking';
-      else if (kLow.includes('contacto')) kTrad = 'Contact';
-      else if (kLow.includes('ubicación')) kTrad = 'Location';
-      else if (kLow.includes('tipo')) kTrad = 'Property Type';
-      else if (kLow.includes('operación')) kTrad = 'Deal Type';
+      const mapaClaves = { estrato: 'Stratum', 'área': 'Built Area', superficie: 'Built Area', hab: 'Bedrooms', alcoba: 'Bedrooms', 'baño': 'Bathrooms', parqueadero: 'Parking', garaje: 'Parking', contacto: 'Contact', 'ubicación': 'Location', tipo: 'Property Type', 'operación': 'Deal Type' };
+      for (const [sub, trad] of Object.entries(mapaClaves)) {
+        if (kLow.includes(sub)) { kTrad = trad; break; }
+      }
 
       vTrad = vTrad
         .replace(/(\d+)\s*Residencial/gi, '$1 Residential')
@@ -270,15 +280,7 @@ function renderizarInterfaz(dataset) {
     const ciudadTexto = filtroCiudadActivo ? (isEn ? ` in ${filtroCiudadActivo}` : ` en ${filtroCiudadActivo}`) : '';
     const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
     const busquedaTexto = querySegura ? (isEn ? ` for "${querySegura}"` : ` para "${querySegura}"`) : '';
-    container.innerHTML = `
-      <div class="empty-catalog-state" id="emptyCatalogState">
-        <div class="empty-state-icon-box"><i class="fa-solid fa-filter-circle-xmark"></i></div>
-        <div class="empty-state-content">
-          <h3 class="empty-state-title">${isEn ? 'No opportunities found in this area' : 'Sin oportunidades en esta zona'}</h3>
-          <p class="empty-state-desc">${isEn ? `No direct owner listings found${busquedaTexto}${ciudadTexto}. You can explore other cities or reset filters.` : `No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.`}</p>
-        </div>
-        <button type="button" class="btn-empty-reset" id="btnResetFilters"><i class="fa-solid fa-rotate-left"></i> ${isEn ? 'Reset all filters' : 'Restablecer todos los filtros'}</button>
-      </div>`;
+    container.innerHTML = `<div class="empty-catalog-state" id="emptyCatalogState"><div class="empty-state-icon-box"><i class="fa-solid fa-filter-circle-xmark"></i></div><div class="empty-state-content"><h3 class="empty-state-title">${isEn ? 'No opportunities found in this area' : 'Sin oportunidades en esta zona'}</h3><p class="empty-state-desc">${isEn ? `No direct owner listings found${busquedaTexto}${ciudadTexto}. You can explore other cities or reset filters.` : `No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.`}</p></div><button type="button" class="btn-empty-reset" id="btnResetFilters"><i class="fa-solid fa-rotate-left"></i> ${isEn ? 'Reset all filters' : 'Restablecer todos los filtros'}</button></div>`;
     const btnReset = document.getElementById("btnResetFilters");
     if (btnReset) btnReset.addEventListener("click", restablecerTodosLosFiltros);
     return;
@@ -484,5 +486,5 @@ function renderizarInterfaz(dataset) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { traducirBadgeUrgencia, traducirTituloCatalogo, traducirDatoDistribucion, formatearTiempoRelativo };
+  module.exports = { traducirBadgeUrgencia, traducirTituloCatalogo, traducirDatoDistribucion, formatearTiempoRelativo, generarHtmlSkeletons, mostrarSkeletonsCargaBento };
 }

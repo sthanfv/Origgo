@@ -122,14 +122,28 @@ function registrarLogDesarrollo(nivel, ...args) {
  * @returns {Promise<void>}
  */
 function ejecutarConTransicionSuave(mutacionDOM) {
-  if (
-    typeof document !== "undefined" &&
-    "startViewTransition" in document &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
-    return document.startViewTransition(() => mutacionDOM()).finished;
+  if (typeof mutacionDOM !== 'function') return Promise.resolve();
+  const sinTransicion = typeof document === 'undefined' || !('startViewTransition' in document) ||
+    (typeof window !== 'undefined' && window.self !== window.top) || (document.hidden) ||
+    (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (sinTransicion) {
+    try { mutacionDOM(); } catch (e) { console.warn('[DOM] Error mutación:', e); }
+    return Promise.resolve();
   }
-  return Promise.resolve(mutacionDOM());
+  try {
+    const t = document.startViewTransition(() => {
+      try { return mutacionDOM(); } catch (err) { console.warn('[ViewTransition] Error:', err); }
+    });
+    if (t) {
+      if (t.ready && typeof t.ready.catch === 'function') t.ready.catch(() => {});
+      if (t.updateCallbackDone && typeof t.updateCallbackDone.catch === 'function') t.updateCallbackDone.catch(() => {});
+      if (t.finished && typeof t.finished.catch === 'function') return t.finished.catch(() => null);
+    }
+    return Promise.resolve();
+  } catch (_) {
+    try { mutacionDOM(); } catch (e) {}
+    return Promise.resolve();
+  }
 }
 
 /**
@@ -231,6 +245,17 @@ function inicializarPerroGuardian() {
   window.addEventListener('unhandledrejection', (e) => {
     const razon = e.reason;
     const msg = razon instanceof Error ? razon.message : String(razon || 'Promesa rechazada sin capturar');
+
+    // Descartar abortos benignos de View Transitions o cancelaciones normales de red
+    if (
+      msg.includes('Transition was aborted') ||
+      msg.includes('DOM update timed out') ||
+      (razon && (razon.name === 'AbortError' || razon.code === 20))
+    ) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      return;
+    }
+
     const st = razon instanceof Error ? (razon.stack || '') : '';
     reportarFalloCliente({
       tipo: 'UNHANDLED_REJECTION',

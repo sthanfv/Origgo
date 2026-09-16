@@ -67,7 +67,9 @@ module.exports = async function handler(req, res) {
       }
 
       const metadata = {
-        ciudad: typeof body.ciudad === 'string' ? body.ciudad.substring(0, 50) : 'Colombia',
+        ciudad: typeof body.ciudad === 'string' && body.ciudad.trim() ? body.ciudad.trim().substring(0, 60) : 'Colombia',
+        operacion: typeof body.operacion === 'string' && body.operacion.trim() ? body.operacion.trim().toLowerCase().substring(0, 20) : 'todas',
+        soloRebajas: Boolean(body.soloRebajas),
         lang: (body.lang === 'en' || body.lang === 'es') ? body.lang : 'es',
         userAgent: req.headers['user-agent'] || ''
       };
@@ -77,6 +79,9 @@ module.exports = async function handler(req, res) {
       if (exito) {
         return res.status(200).json({
           ok: true,
+          ciudad: metadata.ciudad,
+          operacion: metadata.operacion,
+          soloRebajas: metadata.soloRebajas,
           message: 'Dispositivo suscrito exitosamente a las alertas de Origgo.'
         });
       }

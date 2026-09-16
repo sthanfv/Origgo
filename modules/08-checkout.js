@@ -302,6 +302,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
  */
 async function ejecutarPagoWompi() {
   if (pagoWompiEnProgreso) return;
+  if (typeof asegurarConexionParaAccion === 'function' && !asegurarConexionParaAccion('pago_wompi')) return;
 
   const radio = document.querySelector('input[name="checkoutProduct"]:checked');
   const productType = radio ? radio.value : 'pack_10_leads';

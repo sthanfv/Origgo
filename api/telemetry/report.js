@@ -28,6 +28,91 @@ function desinfectarCadena(texto) {
     .replace(/(pin|clave|password|pass|secreto)[\s:=]+(\d{4,8})/gi, '$1:[PIN_OFUSCADO]');
 }
 
+// Memoria anti-spam para evitar saturar el canal de alertas (1 alerta por tipo cada 30 segundos)
+const alertaReciente = new Map();
+
+/**
+ * Envía una alerta a Telegram o Webhook con reintentos exponenciales y fail-safe.
+ * Principio Zero-Crash: si la red falla, hay timeout o no hay token, NUNCA detiene la ejecución.
+ * @param {Object} reporte
+ */
+async function despacharAlertaExternaConReintentos(reporte) {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const webhookUrl = process.env.ALERT_WEBHOOK_URL;
+
+  if (!webhookUrl && (!botToken || !chatId)) {
+    return; // Sin canales externos configurados
+  }
+
+  // Anti-spam por tipo de error (ventana de 30 segundos)
+  const ahora = Date.now();
+  const ultimaVez = alertaReciente.get(reporte.tipo) || 0;
+  if (ahora - ultimaVez < 30000) {
+    return;
+  }
+  alertaReciente.set(reporte.tipo, ahora);
+
+  // Formato conciso optimizado para lectura en celular
+  const textoTelegram =
+    `🚨 *ALERTA PERRO GUARDIÁN*\n` +
+    `📌 *Tipo:* \`${reporte.tipo}\`\n` +
+    `📍 *Origen:* ${reporte.origen}\n` +
+    `💬 *Mensaje:* ${reporte.mensaje}\n` +
+    `🌐 *URL:* ${reporte.url || 'N/A'}\n` +
+    `⏰ *Hora:* ${reporte.timestampServidor}`;
+
+  // Reintentos asíncronos con backoff exponencial
+  let delay = 300;
+  for (let intento = 1; intento <= 2; intento++) {
+    try {
+      if (botToken && chatId) {
+        const urlTelegram = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 3500);
+
+        const resTelegram = await fetch(urlTelegram, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: textoTelegram,
+            parse_mode: 'Markdown'
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (resTelegram.ok) return;
+      }
+
+      if (webhookUrl) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 3500);
+
+        const resWebhook = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `🚨 **[PERRO GUARDIÁN]** \`${reporte.tipo}\`: ${reporte.mensaje}`
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (resWebhook.ok) return;
+      }
+    } catch (err) {
+      if (intento === 2) {
+        console.warn('[telemetry:alert] Reintentos agotados para alerta externa:', err.message);
+        return;
+      }
+      await new Promise((r) => setTimeout(r, delay));
+      delay *= 2;
+    }
+  }
+}
+
 module.exports = async function handler(req, res) {
   aplicarCorsSeguro(req, res);
 
@@ -74,6 +159,11 @@ module.exports = async function handler(req, res) {
 
     // Registro estructurado para telemetría en Vercel Logs / Logflare a $0 coste
     console.warn('🐕 [PERRO_GUARDIAN_WEB]', JSON.stringify(reporteSanitizado));
+
+    // Despacho no bloqueante con reintentos a Telegram o Webhook si está configurado
+    despacharAlertaExternaConReintentos(reporteSanitizado).catch((err) => {
+      console.warn('[telemetry:alert] Error no crítico en despacho:', err.message);
+    });
 
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({ ok: true, recibido: true });

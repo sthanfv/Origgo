@@ -122,29 +122,32 @@
   z-index: 60;
 }
 
-/* Menú Desplegable Flotante Glassmorphic */
+/* Menú Desplegable Flotante Opaco Anti-Ghosting (Cero Transparencias en Android/Desktop) */
+.cmd-filter-pill-dropdown-wrapper.open {
+  z-index: 100000 !important;
+}
+
 .cmd-dropdown-menu {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   left: 0;
-  min-width: 235px;
-  background: hsla(170, 59%, 10%, 0.98);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid hsla(129, 48%, 87%, 0.22);
+  min-width: 240px;
+  background: #061A14 !important;
+  border: 1px solid rgba(52, 211, 153, 0.45);
   border-radius: var(--radius-md);
   padding: 0.55rem;
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px hsla(166, 40%, 23%, 0.4);
-  z-index: 1000;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(52, 211, 153, 0.25);
+  z-index: 99999 !important;
+  isolation: isolate;
   display: none;
   flex-direction: column;
   gap: 0.25rem;
 }
 
 [data-theme="light"] .cmd-dropdown-menu {
-  background: #FFFFFF;
-  border-color: hsla(166, 40%, 23%, 0.22);
-  box-shadow: 0 24px 50px -10px rgba(2, 44, 34, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+  background: #FFFFFF !important;
+  border-color: rgba(2, 44, 34, 0.22);
+  box-shadow: 0 20px 45px rgba(2, 44, 34, 0.2), 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .cmd-dropdown-menu.show {
@@ -157,18 +160,18 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .cmd-dropdown-menu {
-    left: 50%;
-    min-width: min(240px, calc(100vw - 2rem));
-    max-width: calc(100vw - 2rem);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    min-width: min(250px, calc(100vw - 2.5rem));
+    max-width: calc(100vw - 2.5rem);
   }
-  .cmd-dropdown-menu.show {
-    animation: dropdownFadeInMobile 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes dropdownFadeInMobile {
-    from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
-    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  #cmdLocationDropdown {
+    left: 0;
+    right: auto;
   }
 }
 

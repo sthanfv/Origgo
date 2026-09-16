@@ -123,12 +123,16 @@
     align-items: stretch;
     padding: 0.65rem 0.75rem;
     gap: 0.55rem;
+    position: relative;
+    z-index: 80;
   }
 
   .cmd-filters-group {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
+    z-index: 85;
   }
 
   .cmd-search-box {

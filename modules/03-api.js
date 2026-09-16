@@ -166,8 +166,11 @@ async function cargarDatos(rutaJson) {
     }
   }
 
+  if (json && Array.isArray(json.leads) && typeof deduplicarLeads === 'function') {
+    json.leads = deduplicarLeads(json.leads);
+  }
   datosActuales = json;
-  limiteVisible = 6;
+  limiteVisible = 15;
   renderizarInterfaz(json);
   aplicarFiltrosOmnibox();
 }

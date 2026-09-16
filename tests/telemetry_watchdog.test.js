@@ -97,4 +97,25 @@ describe('🐕 Perro Guardián: Telemetría y Sanitización Serverless', () => {
       console.warn = originalWarn;
     }
   });
+
+  it('Debe tolerar caídas o fallas de red en alertas externas a Telegram sin interrumpir la respuesta HTTP (Zero-Crash)', async () => {
+    process.env.TELEGRAM_BOT_TOKEN = 'test_token_invalido';
+    process.env.TELEGRAM_CHAT_ID = '123456789';
+
+    const { req, res, getStatus, getData } = createMockReqRes({
+      method: 'POST',
+      body: {
+        tipo: 'TEST_FALLA_RED',
+        mensaje: 'Error de prueba para verificar fail-safe',
+        origen: 'test_runner'
+      }
+    });
+
+    await telemetryHandler(req, res);
+    assert.strictEqual(getStatus(), 200);
+    assert.strictEqual(getData().ok, true);
+
+    delete process.env.TELEGRAM_BOT_TOKEN;
+    delete process.env.TELEGRAM_CHAT_ID;
+  });
 });

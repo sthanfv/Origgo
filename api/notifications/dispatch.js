@@ -10,7 +10,8 @@ require('../../lib/env');
 const webpush = require('web-push');
 const crypto = require('crypto');
 const { aplicarCorsSeguro } = require('../../lib/cors');
-const { obtenerSuscripcionesActivas } = require('../../lib/push-subscriptions');
+const { obtenerSuscripcionesFiltradas } = require('../../lib/push-subscriptions');
+const { despacharLoteResiliente } = require('../../lib/push-dispatcher');
 
 // Configuración de VAPID
 const publicKey = process.env.VAPID_PUBLIC_KEY;
@@ -50,8 +51,10 @@ module.exports = async function handler(req, res) {
   try {
     const body = req.body || {};
     const urlDestino = body.url || (body.leadId ? `./?lead=${body.leadId}` : './');
+    const leadId = body.leadId ? String(body.leadId) : null;
     const titleEs = body.title || '🔥 Nueva Oportunidad Directa — Origgo';
     const bodyEs = body.message || body.body || 'Nuevo inmueble comercializado directamente por su dueño sin comisiones.';
+    const operacion = body.operacion || body.operation || 'todas';
 
     // Generación contextual inteligente en inglés si no se provee explícitamente
     const esRebaja = Boolean(body.title?.includes('Rebaja') || body.esRebaja);
@@ -61,13 +64,47 @@ module.exports = async function handler(req, res) {
       ? 'Verified direct property with price reduction. Zero commission.' 
       : 'New verified property listed directly by its owner with zero commission.');
 
+    // 🎨 Formato Rich Push enriquecido para máxima tasa de conversión
+    const tagNotificacion = leadId ? `origgo-lead-${leadId}` : 'origgo-alert-general';
+    const vibracionRadar = [200, 100, 200, 100, 250];
+
+    const accionesEs = [
+      { action: 'explore', title: '🔍 Ver Oportunidad' }
+    ];
+    const accionesEn = [
+      { action: 'explore', title: '🔍 View Deal' }
+    ];
+
+    if (body.whatsappUrl || body.telefono) {
+      accionesEs.push({ action: 'whatsapp', title: '💬 Trato Directo' });
+      accionesEn.push({ action: 'whatsapp', title: '💬 Direct Chat' });
+    }
+
+    if (body.externalUrl) {
+      accionesEs.push({ action: 'external', title: '🌐 Enlace Original' });
+      accionesEn.push({ action: 'external', title: '🌐 Original Link' });
+    }
+
     const payloadEs = JSON.stringify({
       title: titleEs,
       body: bodyEs,
       icon: body.icon || './apple-touch-icon.png',
       badge: body.badge || './favicon-32x32.png',
       image: body.image || undefined,
-      data: { url: urlDestino, leadId: body.leadId || null, ciudad: body.ciudad || 'Colombia', lang: 'es' }
+      vibrate: vibracionRadar,
+      tag: tagNotificacion,
+      renotify: true,
+      requireInteraction: Boolean(body.requireInteraction || esRebaja),
+      actions: accionesEs,
+      data: {
+        url: urlDestino,
+        leadId,
+        ciudad: body.ciudad || 'Colombia',
+        operacion,
+        whatsappUrl: body.whatsappUrl || null,
+        externalUrl: body.externalUrl || null,
+        lang: 'es'
+      }
     });
 
     const payloadEn = JSON.stringify({
@@ -76,43 +113,59 @@ module.exports = async function handler(req, res) {
       icon: body.icon || './apple-touch-icon.png',
       badge: body.badge || './favicon-32x32.png',
       image: body.image || undefined,
-      data: { url: urlDestino, leadId: body.leadId || null, ciudad: body.ciudad || 'Colombia', lang: 'en' }
-    });
-
-    const suscripcionesTodas = await obtenerSuscripcionesActivas();
-    // Segmentación por ciudad si se especifica en el despacho
-    const suscripciones = body.ciudad && body.ciudad !== 'Colombia'
-      ? suscripcionesTodas.filter(s => !s.ciudad || s.ciudad === 'Colombia' || s.ciudad.toLowerCase() === body.ciudad.toLowerCase())
-      : suscripcionesTodas;
-
-    if (suscripciones.length === 0) {
-      return res.status(200).json({ ok: true, message: 'No hay dispositivos suscritos para este criterio.', enviados: 0 });
-    }
-
-    let enviados = 0;
-    let fallidos = 0;
-
-    const promesasEnvio = suscripciones.map(async (sub) => {
-      try {
-        const pushSubscription = {
-          endpoint: sub.endpoint,
-          keys: sub.keys
-        };
-        const payloadFinal = sub.lang === 'en' ? payloadEn : payloadEs;
-        await webpush.sendNotification(pushSubscription, payloadFinal, { TTL: 3600 });
-        enviados++;
-      } catch (err) {
-        fallidos++;
+      vibrate: vibracionRadar,
+      tag: tagNotificacion,
+      renotify: true,
+      requireInteraction: Boolean(body.requireInteraction || esRebaja),
+      actions: accionesEn,
+      data: {
+        url: urlDestino,
+        leadId,
+        ciudad: body.ciudad || 'Colombia',
+        operacion,
+        whatsappUrl: body.whatsappUrl || null,
+        externalUrl: body.externalUrl || null,
+        lang: 'en'
       }
     });
 
-    await Promise.all(promesasEnvio);
+    // 🎯 Segmentación multicriterio inteligente (Ciudad, Operación y Rebajas)
+    const ciudadFiltro = body.ciudad || body.city || 'Colombia';
+    const criteriosFiltro = {
+      ciudad: ciudadFiltro,
+      operacion,
+      esRebaja,
+      title: body.title
+    };
+
+    const suscripciones = await obtenerSuscripcionesFiltradas(criteriosFiltro);
+
+    if (suscripciones.length === 0) {
+      return res.status(200).json({
+        ok: true,
+        message: 'No hay dispositivos suscritos para estos criterios.',
+        ciudadFiltrada: ciudadFiltro,
+        operacionFiltrada: operacion,
+        enviados: 0
+      });
+    }
+
+    // 🚀 Despacho concurrente con reintentos exponenciales y auto-limpieza de 410/404
+    const resultadoDespacho = await despacharLoteResiliente(webpush, suscripciones, payloadEs, payloadEn, {
+      concurrencia: body.concurrencia || 25,
+      maxReintentos: body.maxReintentos || 3,
+      TTL: body.ttl || 3600
+    });
 
     return res.status(200).json({
       ok: true,
       totalDestinatarios: suscripciones.length,
-      enviados,
-      fallidos
+      ciudadFiltrada: ciudadFiltro,
+      operacionFiltrada: operacion,
+      enviados: resultadoDespacho.enviados,
+      reintentados: resultadoDespacho.reintentados,
+      fallidos: resultadoDespacho.fallidos,
+      eliminadosPorExpiracion: resultadoDespacho.eliminados
     });
   } catch (error) {
     return res.status(500).json({ ok: false, error: 'DISPATCH_ERROR', message: error.message });

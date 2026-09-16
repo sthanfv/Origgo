@@ -47,40 +47,60 @@
 /* Tarjetas Esqueleto Shimmer visibles de inmediato durante la carga */
 .bento-card.skeleton-card {
   opacity: 1 !important;
-  transform: none !important;
+  transform: translateZ(0) !important;
   pointer-events: none;
   user-select: none;
   border-color: var(--border-subtle);
 }
 
-.enter-delay-soft,
-.skeleton-delay-1 { --enter-delay: 0.08s; }
-.skeleton-delay-2 { --enter-delay: 0.16s; }
+.skeleton-delay-0 { --enter-delay: 0.00s; animation-delay: 0.0s; }
+.skeleton-delay-1 { --enter-delay: 0.06s; animation-delay: 0.12s; }
+.skeleton-delay-2 { --enter-delay: 0.12s; animation-delay: 0.24s; }
+.skeleton-delay-3 { --enter-delay: 0.18s; animation-delay: 0.36s; }
+.skeleton-delay-4 { --enter-delay: 0.24s; animation-delay: 0.48s; }
+.skeleton-delay-5 { --enter-delay: 0.30s; animation-delay: 0.60s; }
 
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
     var(--bg-card-inner) 0%,
-    hsla(158, 64%, 48%, 0.12) 50%,
+    hsla(158, 64%, 48%, 0.14) 45%,
+    hsla(166, 52%, 36%, 0.22) 50%,
+    hsla(158, 64%, 48%, 0.14) 55%,
     var(--bg-card-inner) 100%
   );
-  background-size: 200% 100%;
-  animation: skeletonShimmer 1.6s infinite ease-in-out;
+  background-size: 250% 100%;
+  animation: skeletonShimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: background-position;
+  transform: translateZ(0);
 }
 
 [data-theme="light"] .skeleton-shimmer {
   background: linear-gradient(
     90deg,
     hsl(140, 25%, 92%) 0%,
-    hsla(170, 59%, 18%, 0.12) 50%,
+    hsla(170, 59%, 18%, 0.10) 45%,
+    hsla(166, 52%, 36%, 0.18) 50%,
+    hsla(170, 59%, 18%, 0.10) 55%,
     hsl(140, 25%, 92%) 100%
   );
-  background-size: 200% 100%;
+  background-size: 250% 100%;
 }
 
 @keyframes skeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 250% 0; }
+  100% { background-position: -250% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: skeletonPulseStatic 2s ease-in-out infinite !important;
+    background: var(--bg-card-inner) !important;
+  }
+  @keyframes skeletonPulseStatic {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+  }
 }
 
 .skeleton-media {

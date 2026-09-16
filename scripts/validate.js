@@ -50,6 +50,7 @@ async function ejecutarValidacionCompleta() {
     'api/auth/challenge.js',
     'api/auth/recover.js',
     'api/leads/unlock.js',
+    'api/leads/list.js',
     'api/user/balance.js',
     'api/media/proxy.js',
     'api/notifications/subscribe.js',
@@ -314,6 +315,20 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de desafío anti-fuerza bruta invisible (PoW / Turnstile) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de anti-fuerza bruta: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'leads_pagination.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de paginación y batching del catálogo pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de paginación de catálogo: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'offline_autocomplete.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas de resiliencia offline, autocompletado inteligente y skeletons pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de resiliencia offline y autocompletado: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

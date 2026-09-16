@@ -1,9 +1,14 @@
 /**
- * ⚡ SERVICE WORKER PWA — ORIGGO
- * Caché ultra-liviano para instalación nativa y aceleración en Android/iOS
+ * ⚡ SERVICE WORKER PWA — ORIGGO (sw.js)
+ * Estrategia de Caché Resiliente Offline-First, Partición de Imágenes LRU,
+ * Stale-While-Revalidate y Alertas Web Push Interactivas.
+ * Estándar Ecosistema Desmulta DevSecOps.
  */
 
-const NOMBRE_CACHE = 'origgo-v9-20260913';
+const NOMBRE_CACHE_CORE = 'origgo-core-v11-20260915';
+const NOMBRE_CACHE_IMGS = 'origgo-images-v11';
+const LIMITE_MAXIMO_IMAGENES_CACHE = 60;
+
 const RECURSOS_CRITICOS = [
   './',
   './index.html',
@@ -18,64 +23,191 @@ const RECURSOS_CRITICOS = [
   './apple-touch-icon.png',
   './assets/img/push-icon-192.png',
   './assets/img/push-icon-512.png',
-  './assets/img/origgo-icon.svg'
+  './assets/img/origgo-icon.svg',
+  './404.html'
 ];
+
+/**
+ * Placeholder SVG vectorial incrustado en data-URI para contingencia total offline.
+ * Garantiza que ante desconexión o fallo de CDN, la interfaz jamás muestre imágenes rotas.
+ */
+const FALLBACK_INMUEBLE_SVG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">' +
+  '<defs>' +
+    '<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">' +
+      '<stop offset="0%" stop-color="#0b131e"/>' +
+      '<stop offset="50%" stop-color="#111b2b"/>' +
+      '<stop offset="100%" stop-color="#060a11"/>' +
+    '</linearGradient>' +
+    '<radialGradient id="glow" cx="50%" cy="45%" r="55%">' +
+      '<stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>' +
+      '<stop offset="100%" stop-color="#10b981" stop-opacity="0"/>' +
+    '</radialGradient>' +
+  '</defs>' +
+  '<rect width="800" height="500" fill="url(#bg)"/>' +
+  '<rect width="800" height="500" fill="url(#glow)"/>' +
+  '<g transform="translate(400, 215)" text-anchor="middle">' +
+    '<circle cx="0" cy="-10" r="50" fill="#10b981" fill-opacity="0.08" stroke="#10b981" stroke-width="2" stroke-dasharray="5 3"/>' +
+    '<path d="M-26 10 L0 -16 L26 10 L17 10 L17 28 L-17 28 L-17 10 Z" fill="none" stroke="#10b981" stroke-width="3" stroke-linejoin="round"/>' +
+    '<rect x="-6" y="14" width="12" height="14" fill="#10b981" fill-opacity="0.3" rx="1"/>' +
+    '<text y="78" fill="#e2e8f0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5">ORIGGO DIRECT</text>' +
+    '<text y="100" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500" letter-spacing="1">MODO OFFLINE DISPONIBLE</text>' +
+  '</g>' +
+  '</svg>'
+);
+
+/**
+ * Control de cuota de almacenamiento: Purga LRU en partición de imágenes.
+ * @param {string} nombreCache
+ * @param {number} maxItems
+ */
+async function purgarExcesoCache(nombreCache, maxItems = LIMITE_MAXIMO_IMAGENES_CACHE) {
+  try {
+    const cache = await caches.open(nombreCache);
+    const keys = await cache.keys();
+    if (keys.length > maxItems) {
+      const cantidadAEliminar = keys.length - maxItems;
+      for (let i = 0; i < cantidadAEliminar; i++) {
+        await cache.delete(keys[i]);
+      }
+    }
+  } catch (_) {}
+}
 
 self.addEventListener('install', (evento) => {
   evento.waitUntil(
-    caches.open(NOMBRE_CACHE).then((cache) => {
-      return cache.addAll(RECURSOS_CRITICOS);
+    caches.open(NOMBRE_CACHE_CORE).then((cache) => {
+      return cache.addAll(RECURSOS_CRITICOS).catch((err) => {
+        console.warn('[SW] Aviso de pre-cache parcial:', err);
+      });
     }).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (evento) => {
+  const cachesPermitidas = [NOMBRE_CACHE_CORE, NOMBRE_CACHE_IMGS];
   evento.waitUntil(
     caches.keys().then((claves) => {
       return Promise.all(
-        claves.filter((k) => k !== NOMBRE_CACHE).map((k) => caches.delete(k))
+        claves
+          .filter((k) => !cachesPermitidas.includes(k))
+          .map((k) => caches.delete(k))
       );
     }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (evento) => {
-  // Solo interceptar peticiones GET
   if (evento.request.method !== 'GET') return;
 
   const url = new URL(evento.request.url);
 
-  // Las peticiones a APIs serverless y CDNs externos deben ir directo a la red
-  if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
+  // APIs serverless mutables o endpoints de pago: directo a red sin cachear jamás secretos
+  if (url.pathname.startsWith('/api/payments/') ||
+      url.pathname.startsWith('/api/auth/') ||
+      url.pathname.startsWith('/api/user/')) {
+    return;
+  }
 
-  // 🌐 Navegación HTML y activos funcionales (CSS, JS, JSON): Network-First para frescura absoluta
-  const esRecursoFuncional = evento.request.mode === 'navigate' ||
-    url.pathname === '/' ||
-    url.pathname.endsWith('.html') ||
-    url.pathname.endsWith('.css') ||
-    url.pathname.endsWith('.js') ||
-    url.pathname.endsWith('.json');
+  // 1. GESTIÓN ESPECIALIZADA DE IMÁGENES (Locales y de CDN como Unsplash)
+  const esImagen = evento.request.destination === 'image' ||
+    url.pathname.match(/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i) ||
+    url.hostname.includes('unsplash.com');
 
-  if (esRecursoFuncional) {
+  if (esImagen) {
     evento.respondWith(
-      fetch(evento.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const copia = networkResponse.clone();
-          caches.open(NOMBRE_CACHE).then((cache) => cache.put(evento.request, copia));
+      caches.open(NOMBRE_CACHE_IMGS).then(async (imgCache) => {
+        const respuestaCache = await imgCache.match(evento.request);
+        if (respuestaCache) {
+          // Revalidación en segundo plano no bloqueante si hay red
+          fetch(evento.request).then((redResp) => {
+            if (redResp && (redResp.status === 200 || redResp.type === 'opaque')) {
+              imgCache.put(evento.request, redResp.clone());
+              purgarExcesoCache(NOMBRE_CACHE_IMGS, LIMITE_MAXIMO_IMAGENES_CACHE);
+            }
+          }).catch(() => {});
+          return respuestaCache;
         }
-        return networkResponse;
-      }).catch(() => caches.match(evento.request))
+
+        try {
+          const redResp = await fetch(evento.request);
+          if (redResp && (redResp.status === 200 || redResp.type === 'opaque')) {
+            imgCache.put(evento.request, redResp.clone());
+            purgarExcesoCache(NOMBRE_CACHE_IMGS, LIMITE_MAXIMO_IMAGENES_CACHE);
+          }
+          return redResp;
+        } catch (_) {
+          // Fallback ultra-seguro offline en imagen
+          return new Response(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500"><rect width="800" height="500" fill="#0b131e"/><text x="50%" y="50%" fill="#10b981" font-family="sans-serif" font-size="14" text-anchor="middle" font-weight="700">ORIGGO • IMAGEN OFFLINE</text></svg>`,
+            { headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' } }
+          );
+        }
+      })
     );
     return;
   }
 
-  // 📦 Recursos estáticos secundarios (imágenes, iconos): Cache-First con actualización en fondo
+  // 2. ENDPOINT DE CONSULTA DE LEADS: Stale-While-Revalidate con Fallback a JSON local
+  if (url.pathname === '/api/leads/list' || url.pathname.endsWith('/data/inmobiliario.json')) {
+    evento.respondWith(
+      caches.open(NOMBRE_CACHE_CORE).then(async (coreCache) => {
+        const enCache = await coreCache.match(evento.request);
+        const promesaRed = fetch(evento.request).then((redResp) => {
+          if (redResp && redResp.status === 200) {
+            coreCache.put(evento.request, redResp.clone());
+          }
+          return redResp;
+        }).catch(async () => {
+          if (enCache) return enCache;
+          // Si falló api/leads/list, intentar servir el dataset local empaquetado
+          const localJson = await coreCache.match('./data/inmobiliario.json');
+          if (localJson) return localJson;
+          return new Response(JSON.stringify({ ok: true, leads: [], total: 0, offline: true }), {
+            headers: { 'Content-Type': 'application/json' }
+          });
+        });
+
+        return enCache || promesaRed;
+      })
+    );
+    return;
+  }
+
+  // 3. NAVEGACIÓN HTML Y ACTIVOS FUNCIONALES (CSS, JS)
+  const esNavegacionOActivo = evento.request.mode === 'navigate' ||
+    url.pathname === '/' ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.js');
+
+  if (esNavegacionOActivo && url.origin === self.location.origin) {
+    evento.respondWith(
+      fetch(evento.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const copia = networkResponse.clone();
+          caches.open(NOMBRE_CACHE_CORE).then((cache) => cache.put(evento.request, copia));
+        }
+        return networkResponse;
+      }).catch(async () => {
+        const enCache = await caches.match(evento.request);
+        if (enCache) return enCache;
+        if (evento.request.mode === 'navigate') {
+          return (await caches.match('./index.html')) || (await caches.match('./404.html'));
+        }
+        return new Response('/* Offline fallback */', { headers: { 'Content-Type': 'text/javascript' } });
+      })
+    );
+    return;
+  }
+
+  // 4. RESTO DE RECURSOS ESTÁTICOS
   evento.respondWith(
     caches.match(evento.request).then((cachedResponse) => {
       if (cachedResponse) {
         fetch(evento.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            caches.open(NOMBRE_CACHE).then((cache) => cache.put(evento.request, networkResponse));
+            caches.open(NOMBRE_CACHE_CORE).then((cache) => cache.put(evento.request, networkResponse));
           }
         }).catch(() => {});
         return cachedResponse;
@@ -86,7 +218,7 @@ self.addEventListener('fetch', (evento) => {
 });
 
 // ═════════════════════════════════════════════════════════════════════════
-// 🔔 EVENTOS DE WEB PUSH NOTIFICATIONS
+// 🔔 EVENTOS DE WEB PUSH NOTIFICATIONS (RICH PUSH & QUICK ACTIONS)
 // ═════════════════════════════════════════════════════════════════════════
 
 self.addEventListener('push', (evento) => {
@@ -95,6 +227,8 @@ self.addEventListener('push', (evento) => {
     body: 'Se acaba de detectar un nuevo inmueble sin comisiones.',
     icon: './apple-touch-icon.png',
     badge: './favicon-32x32.png',
+    vibrate: [200, 100, 200, 100, 250],
+    renotify: true,
     data: { url: './' }
   };
 
@@ -110,10 +244,13 @@ self.addEventListener('push', (evento) => {
     body: datos.body,
     icon: datos.icon || './apple-touch-icon.png',
     badge: datos.badge || './favicon-32x32.png',
-    vibrate: [100, 50, 100],
+    vibrate: datos.vibrate || [200, 100, 200, 100, 250],
+    tag: datos.tag || (datos.data?.leadId ? `origgo-lead-${datos.data.leadId}` : 'origgo-alert'),
+    renotify: datos.renotify !== false,
+    requireInteraction: Boolean(datos.requireInteraction),
     data: datos.data || { url: './' },
-    actions: [
-      { action: 'open', title: 'Ver Oportunidad' }
+    actions: datos.actions || [
+      { action: 'explore', title: '🔍 Ver Oportunidad' }
     ]
   };
 
@@ -128,12 +265,35 @@ self.addEventListener('push', (evento) => {
 
 self.addEventListener('notificationclick', (evento) => {
   evento.notification.close();
-  const urlDestino = evento.notification.data?.url || './';
+  const accion = evento.action;
+  const data = evento.notification.data || {};
+
+  if (accion === 'whatsapp' && data.whatsappUrl) {
+    evento.waitUntil(self.clients.openWindow(data.whatsappUrl));
+    return;
+  }
+
+  if (accion === 'external' && data.externalUrl) {
+    evento.waitUntil(self.clients.openWindow(data.externalUrl));
+    return;
+  }
+
+  const urlDestino = data.url || './';
 
   evento.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientes) => {
       for (const cliente of clientes) {
         if (cliente.url && 'focus' in cliente) {
+          if (cliente.postMessage) {
+            cliente.postMessage({
+              tipo: 'ORIGGO_PUSH_CLICK',
+              leadId: data.leadId || null,
+              url: urlDestino
+            });
+          }
+          if (typeof cliente.navigate === 'function' && urlDestino !== './') {
+            cliente.navigate(urlDestino);
+          }
           return cliente.focus();
         }
       }

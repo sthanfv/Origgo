@@ -9,7 +9,7 @@ let datosActuales = null;
 let leadSeleccionado = null;
 let wompiScriptCargado = false;
 const carruselIndices = {};
-let limiteVisible = 9; // Display 9 cards per page for a better grid
+let limiteVisible = 15; // Lote de 15 oportunidades por página optimizado para móviles y desktop
 let paginaActual = 1;
 
 // ✅ HAL-01 — PROTECCIÓN ANTI-MANIPULACIÓN DE SESIÓN DESDE CONSOLA

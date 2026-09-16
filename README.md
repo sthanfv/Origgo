@@ -55,7 +55,8 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Sistema bilingüe y conversión USD** | [`modules/13-i18n.js`](modules/13-i18n.js) | View Transitions API, diccionario ES/EN y USD |
 | **Alertas Web Push y Clave VAPID** | [`api/notifications/subscribe.js`](api/notifications/subscribe.js) | GET clave pública VAPID y POST suscripciones W3C |
 | **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
-| **Persistencia y deduplicación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido Firestore/local y hash SHA-256 |
+| **Despachador resiliente y auto-limpieza** | [`lib/push-dispatcher.js`](lib/push-dispatcher.js) | Envío por lotes, backoff exponencial y purga 410/404 |
+| **Persistencia y segmentación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido, multicriterio (ciudad/op/rebajas) y hash |
 | **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
 | **Perro Guardián y reporte en cliente** | [`modules/00-security.js`](modules/00-security.js) | `inicializarPerroGuardian()`, `sendBeacon` |
 | **Cola de reintentos y contrato de catálogo** | [`modules/03-api.js`](modules/03-api.js) | `fetchConReintentos()`, `validarContratoCatalogo()` |
@@ -124,6 +125,8 @@ hunter-portal-showcase/
 │   ├── db.js                   # Ledger de usuarios, créditos y reintentos exponenciales
 │   ├── env.js                  # Variables obligatorias y rechazo de secretos de prueba
 │   ├── leads.js                # Índice server-side de leads oficiales
+│   ├── push-dispatcher.js      # Despachador resiliente con backoff y auto-limpieza 410/404
+│   ├── push-subscriptions.js   # Persistencia y segmentación multicriterio de suscripciones
 │   ├── rate-limiter.js         # Middleware de limitación de tasa en memoria
 │   └── validation.js           # Esquemas de validación estricta con Zod
 ├── api/                        # Funciones Serverless en Vercel

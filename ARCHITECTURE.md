@@ -108,24 +108,33 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 ### 4.1 Módulos JavaScript (`modules/`):
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
-| `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 116 |
-| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage` y recuperación por token. | 390 |
-| `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 288 |
-| `03-api.js` | Cliente HTTP centralizado, generación de `x-trace-id` y carga segura de datasets. | 45 |
-| `04-filters.js` | Normalización de texto fonético, omnibox y filtrado de ciudades. | 256 |
-| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 152 |
-| `06-cards.js` | Renderizado Bento Grid, skeletons, botón seguro de anuncio y precios. | 493 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 292 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 479 |
-| `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 248 |
-| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 499 |
-| `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 205 |
-| `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 127 |
+| `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 494 |
+| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage` y recuperación por token. | 487 |
+| `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 299 |
+| `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 177 |
+| `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 480 |
+| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 154 |
+| `06-cards.js` | Renderizado Bento Grid con deduplicación canónica, skeletons y precios. | 489 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 477 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 489 |
+| `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 497 |
+| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 492 |
+| `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 263 |
+| `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 403 |
+| `13-i18n.js`   | Motor bilingüe ES/EN reactivo, diccionario de UI y persistencia de idioma. | 499 |
 
 ### 4.2 Módulos CSS (`styles/`):
-Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css` (103.2 KB, -27% de peso).
+Divididos en 18 submódulos semánticos (`01-tokens.css` a `18-i18n.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css`.
+- **Aislamiento de Stacking Context y Opacidad:** `styles/04-command-bar.css` y `styles/11-mobile.css` aplican `isolation: isolate`, fondos 100% opacos (`var(--bg-card)` y `#111622`) y `z-index: 100` en los menús desplegables para erradicar cualquier solapamiento o efecto fantasma entre barras de filtros.
 
-### 4.3 Tarjetas, carruseles y enlaces seguros
+### 4.3 Deduplicación Canónica de Oportunidades
+- **Motor Triple-Key:** `deduplicarLeads` aplica un filtrado idempotente en tres dimensiones:
+  1. `vistosIds`: Identificador único de lead (`lead-inm-XXX`).
+  2. `vistosEnlaces`: URL única de publicación externa o marketplace.
+  3. `vistosFirmas`: Hash semántico compuesto por `título + precio + ciudad + área`.
+- **Garantía Combinatoria:** Ninguna mezcla de filtros (Ciudad x Operación x Ordenamiento x Búsqueda) puede generar duplicados visuales en la interfaz. Probado exhaustivamente en 90 permutaciones en `tests/filters_sorting.test.js`.
+
+### 4.4 Tarjetas, carruseles y enlaces seguros
 - Los carruseles aceptan navegación por flechas, puntos y deslizamiento táctil con umbral horizontal para evitar colisiones con el scroll vertical.
 - El botón `Ver Anuncio` solo se renderiza desde `sanitizarContactoCliente(contacto)`, por lo que los enlaces deben usar `https` y hosts permitidos antes de llegar al DOM.
 - Los estados desbloqueados muestran WhatsApp, llamada y anuncio original sin persistir el contacto en `localStorage`.
@@ -134,6 +143,22 @@ Divididos en 16 submódulos semánticos (`01-tokens.css` a `16-utilities.css`), 
 - Las plantillas del frontend no generan atributos `style="..."`; los detalles visuales viven en clases CSS y en `styles/16-utilities.css` para utilidades finales.
 - Los diagnósticos de cliente pasan por `registrarLogDesarrollo`, activo en `localhost`, `file:` o `?debug=origgo`, y silencioso en producción.
 - `dist/` se conserva como paquete público deliberado del build, ignorado por Git, porque `vercel.json` lo usa como salida de despliegue y evita publicar `api/`, `lib/` o `modules/`.
+
+### 4.5 Resiliencia Offline y Caché PWA Inteligente (`modules/14-offline.js` & `sw.js`)
+- **Partición Aislada de Imágenes con Control LRU (`origgo-images-v11`):** Aísla las imágenes locales y de CDN (Unsplash) con un tope estricto de 60 entradas para evitar sobrecarga en la cuota de disco de dispositivos móviles. Ante fallo de red o desconexión, sirve de inmediato el vector SVG corporativo `FALLBACK_INMUEBLE_SVG`.
+- **Estrategia Stale-While-Revalidate en Catálogo:** El dataset (`data/inmobiliario.json`) y la consulta serverless (`api/leads/list`) entregan contenido de caché inmediato con revalidación en segundo plano.
+- **Protección Antifallo y Monitoreo:** Las acciones financieras dependientes de red (pasarela Wompi) son interceptadas preventivamente si el dispositivo está sin conexión (`asegurarConexionParaAccion`). Cualquier transición a offline se notifica al Perro Guardián (`reportarFalloCliente`).
+- **Banner Flotante de Conectividad:** Renderiza un indicador flotante no invasivo con animación acelerada por hardware que informa al usuario si navega en modo sin conexión o si la conexión fue recuperada.
+
+### 4.6 Búsqueda Inteligente y Autocompletado Seguro (`modules/15-autocomplete.js` & `styles/19-offline-autocomplete.css`)
+- **Sugerencias Tácticas Multicapa:** Despliega en tiempo real barrios estratégicos (Rosales, Chicó, Virrey, Poblado, Pance, etc.), tipologías (Penthouse, Amoblado, Campestre) y oportunidades activas del catálogo en memoria.
+- **Seguridad OWASP A03 (Sanitización XSS):** El resaltado tipográfico (`resaltarCoincidenciaSegura`) limpia y escapa todo carácter especial y etiquetas HTML potencialmente peligrosas.
+- **Accesibilidad W3C Combobox ARIA:** Integra soporte completo para teclado (`ArrowDown`, `ArrowUp`, `Enter`, `Escape`), lectores de pantalla (`role="combobox"`, `role="listbox"`, `role="option"`, `aria-activedescendant`) y soporte táctil sin latencia en dispositivos móviles.
+
+### 4.7 Skeletons Shimmer Bento Grid de Alta Fidelidad (`styles/06-bento-grid.css` & `modules/06-cards.js`)
+- **Aceleración por Hardware:** Los skeletons y animaciones de onda utilizan `transform: translateZ(0)` y `will-change: background-position` garantizando 60 FPS estables sin recalentamiento de CPU.
+- **Respeto a Accesibilidad:** Conforme a WCAG, se implementa `@media (prefers-reduced-motion: reduce)` para reemplazar el desplazamiento visual continuo por un pulso suave de opacidad.
+- **Cero Cumulative Layout Shift (CLS = 0):** Las dimensiones de los skeletons coinciden de forma exacta con la tarjeta Bento definitiva.
 
 ---
 

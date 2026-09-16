@@ -946,29 +946,32 @@ body {
   z-index: 60;
 }
 
-/* Menú Desplegable Flotante Glassmorphic */
+/* Menú Desplegable Flotante Opaco Anti-Ghosting (Cero Transparencias en Android/Desktop) */
+.cmd-filter-pill-dropdown-wrapper.open {
+  z-index: 100000 !important;
+}
+
 .cmd-dropdown-menu {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   left: 0;
-  min-width: 235px;
-  background: hsla(170, 59%, 10%, 0.98);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid hsla(129, 48%, 87%, 0.22);
+  min-width: 240px;
+  background: #061A14 !important;
+  border: 1px solid rgba(52, 211, 153, 0.45);
   border-radius: var(--radius-md);
   padding: 0.55rem;
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px hsla(166, 40%, 23%, 0.4);
-  z-index: 1000;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(52, 211, 153, 0.25);
+  z-index: 99999 !important;
+  isolation: isolate;
   display: none;
   flex-direction: column;
   gap: 0.25rem;
 }
 
 [data-theme="light"] .cmd-dropdown-menu {
-  background: #FFFFFF;
-  border-color: hsla(166, 40%, 23%, 0.22);
-  box-shadow: 0 24px 50px -10px rgba(2, 44, 34, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+  background: #FFFFFF !important;
+  border-color: rgba(2, 44, 34, 0.22);
+  box-shadow: 0 20px 45px rgba(2, 44, 34, 0.2), 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .cmd-dropdown-menu.show {
@@ -981,18 +984,18 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .cmd-dropdown-menu {
-    left: 50%;
-    min-width: min(240px, calc(100vw - 2rem));
-    max-width: calc(100vw - 2rem);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    min-width: min(250px, calc(100vw - 2.5rem));
+    max-width: calc(100vw - 2.5rem);
   }
-  .cmd-dropdown-menu.show {
-    animation: dropdownFadeInMobile 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes dropdownFadeInMobile {
-    from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
-    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  #cmdLocationDropdown {
+    left: 0;
+    right: auto;
   }
 }
 
@@ -1795,40 +1798,60 @@ main {
 /* Tarjetas Esqueleto Shimmer visibles de inmediato durante la carga */
 .bento-card.skeleton-card {
   opacity: 1 !important;
-  transform: none !important;
+  transform: translateZ(0) !important;
   pointer-events: none;
   user-select: none;
   border-color: var(--border-subtle);
 }
 
-.enter-delay-soft,
-.skeleton-delay-1 { --enter-delay: 0.08s; }
-.skeleton-delay-2 { --enter-delay: 0.16s; }
+.skeleton-delay-0 { --enter-delay: 0.00s; animation-delay: 0.0s; }
+.skeleton-delay-1 { --enter-delay: 0.06s; animation-delay: 0.12s; }
+.skeleton-delay-2 { --enter-delay: 0.12s; animation-delay: 0.24s; }
+.skeleton-delay-3 { --enter-delay: 0.18s; animation-delay: 0.36s; }
+.skeleton-delay-4 { --enter-delay: 0.24s; animation-delay: 0.48s; }
+.skeleton-delay-5 { --enter-delay: 0.30s; animation-delay: 0.60s; }
 
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
     var(--bg-card-inner) 0%,
-    hsla(158, 64%, 48%, 0.12) 50%,
+    hsla(158, 64%, 48%, 0.14) 45%,
+    hsla(166, 52%, 36%, 0.22) 50%,
+    hsla(158, 64%, 48%, 0.14) 55%,
     var(--bg-card-inner) 100%
   );
-  background-size: 200% 100%;
-  animation: skeletonShimmer 1.6s infinite ease-in-out;
+  background-size: 250% 100%;
+  animation: skeletonShimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: background-position;
+  transform: translateZ(0);
 }
 
 [data-theme="light"] .skeleton-shimmer {
   background: linear-gradient(
     90deg,
     hsl(140, 25%, 92%) 0%,
-    hsla(170, 59%, 18%, 0.12) 50%,
+    hsla(170, 59%, 18%, 0.10) 45%,
+    hsla(166, 52%, 36%, 0.18) 50%,
+    hsla(170, 59%, 18%, 0.10) 55%,
     hsl(140, 25%, 92%) 100%
   );
-  background-size: 200% 100%;
+  background-size: 250% 100%;
 }
 
 @keyframes skeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 250% 0; }
+  100% { background-position: -250% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: skeletonPulseStatic 2s ease-in-out infinite !important;
+    background: var(--bg-card-inner) !important;
+  }
+  @keyframes skeletonPulseStatic {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+  }
 }
 
 .skeleton-media {
@@ -4019,12 +4042,16 @@ main {
     align-items: stretch;
     padding: 0.65rem 0.75rem;
     gap: 0.55rem;
+    position: relative;
+    z-index: 80;
   }
 
   .cmd-filters-group {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
+    z-index: 85;
   }
 
   .cmd-search-box {
@@ -6464,6 +6491,174 @@ main {
   margin-right: 0.25rem;
 }
 
+/* Selector de Ciudad Segmentada */
+.push-prompt-city-selector {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.push-city-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.push-city-label i {
+  color: var(--accent-emerald, #0a9f68);
+  font-size: 0.85rem;
+}
+
+.push-city-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.push-city-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 2.25rem 0.65rem 0.85rem;
+  background: var(--bg-surface-secondary, rgba(0, 0, 0, 0.35));
+  border: 1px solid rgba(10, 159, 104, 0.35);
+  border-radius: var(--radius-md, 10px);
+  color: var(--text-primary, #ffffff);
+  font-size: 0.88rem;
+  font-weight: 600;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.push-city-select:focus {
+  border-color: var(--accent-emerald, #0a9f68);
+  box-shadow: 0 0 0 3px rgba(10, 159, 104, 0.25);
+}
+
+.push-city-select option {
+  background: #1a222d;
+  color: #ffffff;
+  padding: 0.5rem;
+}
+
+.push-city-select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--accent-emerald, #0a9f68);
+  pointer-events: none;
+}
+
+[data-theme="light"] .push-city-select {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: rgba(10, 159, 104, 0.45);
+}
+
+[data-theme="light"] .push-city-select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* Selector multicriterio de operación y descuento */
+.push-prompt-filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .push-prompt-filters-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+}
+
+.push-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.push-discount-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(10, 159, 104, 0.08);
+  border: 1px dashed rgba(10, 159, 104, 0.3);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md, 10px);
+  margin-bottom: 1.15rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.push-discount-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-emerald, #0a9f68);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.push-discount-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #cbd5e1);
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+[data-theme="light"] .push-discount-label {
+  color: #334155;
+}
+
+/* Banner de ayuda contextual para iPhone / iOS Safari */
+.push-ios-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--radius-md, 10px);
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary, #e2e8f0);
+  line-height: 1.4;
+}
+
+.push-ios-hint-icon {
+  color: #38bdf8;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.push-ios-hint strong {
+  color: #38bdf8;
+}
+
+[data-theme="light"] .push-ios-hint {
+  background: rgba(14, 165, 233, 0.08);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: #0f172a;
+}
+
 /* Acciones del modal */
 .push-prompt-actions {
   display: flex;
@@ -6762,5 +6957,273 @@ main {
   .lang-btn {
     font-size: 0.62rem;
     padding: 0.18rem 0.35rem;
+  }
+}
+
+/**
+ * 🎨 ESTILOS DE RESILIENCIA OFFLINE Y AUTOCOMPLETADO INTELIGENTE (styles/19-offline-autocomplete.css)
+ * Banner contextual de conectividad, dropdown táctico omnibox con resaltado seguro
+ * y paleta adaptativa (Modo Oscuro / Modo Claro).
+ * Estándar Ecosistema Desmulta DevSecOps (< 500 líneas).
+ */
+
+/* ═════════════════════════════════════════════════════════════════════════
+   1. BANNER FLOTANTE DE CONECTIVIDAD OFFLINE / ONLINE
+   ═════════════════════════════════════════════════════════════════════════ */
+.offline-status-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(24px) scale(0.96);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.7),
+              0 0 0 1px hsla(0, 0%, 100%, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.offline-status-bar.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* Estado sin conexión (Modo Offline) */
+.offline-status-bar.status-offline {
+  background: hsla(216, 33%, 10%, 0.95);
+  color: #fef08a;
+  border: 1px solid hsla(45, 93%, 47%, 0.35);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.8),
+              0 0 20px -4px hsla(45, 93%, 47%, 0.25);
+}
+
+.offline-status-bar.status-offline .offline-status-icon {
+  color: #f59e0b;
+  animation: pulseWifiOffline 2s ease-in-out infinite;
+}
+
+[data-theme="light"] .offline-status-bar.status-offline {
+  background: hsla(48, 100%, 96%, 0.98);
+  color: #854d0e;
+  border: 1px solid #fde047;
+  box-shadow: 0 12px 28px -6px rgba(133, 77, 14, 0.2);
+}
+
+/* Estado reconectado (Modo Online) */
+.offline-status-bar.status-online {
+  background: hsla(216, 33%, 10%, 0.95);
+  color: #6ee7b7;
+  border: 1px solid hsla(158, 64%, 48%, 0.35);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.8),
+              0 0 20px -4px hsla(158, 64%, 48%, 0.25);
+}
+
+.offline-status-bar.status-online .offline-status-icon {
+  color: var(--accent-emerald, #10b981);
+}
+
+[data-theme="light"] .offline-status-bar.status-online {
+  background: hsla(140, 60%, 96%, 0.98);
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+  box-shadow: 0 12px 28px -6px rgba(6, 95, 70, 0.2);
+}
+
+.offline-status-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  white-space: nowrap;
+}
+
+@keyframes pulseWifiOffline {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.92); }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   2. DROPDOWN DE AUTOCOMPLETADO INTELIGENTE (SMART OMNIBOX)
+   ═════════════════════════════════════════════════════════════════════════ */
+.cmd-search-box {
+  position: relative;
+}
+
+.cmd-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: hsla(216, 33%, 9%, 0.98);
+  border: 1px solid hsla(166, 52%, 36%, 0.25);
+  border-radius: var(--radius-lg, 1rem);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.9),
+              0 0 0 1px hsla(158, 64%, 48%, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1050;
+  overflow: hidden;
+  max-height: 340px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.4rem;
+  animation: autocompleteAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .cmd-autocomplete-dropdown {
+  background: hsla(140, 20%, 98%, 0.99);
+  border-color: hsla(166, 40%, 23%, 0.18);
+  box-shadow: 0 18px 40px -8px rgba(10, 30, 20, 0.15),
+              0 0 0 1px hsla(166, 40%, 23%, 0.08);
+}
+
+@keyframes autocompleteAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cmd-autocomplete-header {
+  padding: 0.45rem 0.75rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary, #64748b);
+  border-bottom: 1px solid hsla(215, 20%, 65%, 0.08);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-theme="light"] .cmd-autocomplete-header {
+  color: #64748b;
+  border-bottom-color: hsla(166, 40%, 23%, 0.08);
+}
+
+.cmd-autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm, 0.5rem);
+  color: var(--text-primary, #e2e8f0);
+  font-size: 0.88rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+[data-theme="light"] .cmd-autocomplete-item {
+  color: #1e293b;
+}
+
+.cmd-autocomplete-item:hover,
+.cmd-autocomplete-item.active {
+  background: hsla(166, 52%, 36%, 0.18);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+[data-theme="light"] .cmd-autocomplete-item:hover,
+[data-theme="light"] .cmd-autocomplete-item.active {
+  background: hsla(166, 40%, 23%, 0.1);
+  color: #064e3b;
+}
+
+.cmd-autocomplete-item-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--accent-emerald, #10b981);
+  flex-shrink: 0;
+}
+
+.cmd-autocomplete-item-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autocomplete-highlight {
+  color: var(--accent-emerald, #10b981);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: hsla(158, 64%, 48%, 0.4);
+}
+
+[data-theme="light"] .autocomplete-highlight {
+  color: #047857;
+  text-decoration-color: hsla(166, 52%, 36%, 0.4);
+}
+
+.cmd-autocomplete-item-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: hsla(215, 28%, 17%, 0.6);
+  color: var(--text-tertiary, #94a3b8);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .cmd-autocomplete-item-badge {
+  background: hsla(166, 40%, 23%, 0.08);
+  color: #475569;
+}
+
+/* Scrollbar personalizado para el menú de autocompletado */
+.cmd-autocomplete-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.cmd-autocomplete-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cmd-autocomplete-dropdown::-webkit-scrollbar-thumb {
+  background: hsla(166, 52%, 36%, 0.35);
+  border-radius: 9999px;
+}
+
+.cmd-autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+  background: hsla(158, 64%, 48%, 0.6);
+}
+
+@media (max-width: 640px) {
+  .offline-status-bar {
+    bottom: 1rem;
+    width: calc(100% - 2rem);
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0.55rem 1rem;
+  }
+
+  .cmd-autocomplete-dropdown {
+    max-height: 260px;
   }
 }
