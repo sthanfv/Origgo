@@ -114,6 +114,7 @@ async function ejecutarPruebas() {
       prefix: 'recover_pin_ip',
       maxRequests: 3,
       windowMs: 24 * 60 * 60 * 1000,
+      enforceInTest: true,
       message: 'Límite de recuperaciones alcanzado (máximo 3 por día).'
     });
     assert.strictEqual(permitido, true, `Petición ${i} debió ser permitida`);
@@ -125,6 +126,7 @@ async function ejecutarPruebas() {
     prefix: 'recover_pin_ip',
     maxRequests: 3,
     windowMs: 24 * 60 * 60 * 1000,
+    enforceInTest: true,
     message: 'Límite de recuperaciones alcanzado (máximo 3 por día).'
   });
   assert.strictEqual(bloqueado, false, 'La cuarta petición debió ser bloqueada');
@@ -137,30 +139,42 @@ async function ejecutarPruebas() {
   const permitidoOtraIp = checkRateLimit(reqOtraIp, resOtraIp, {
     prefix: 'recover_pin_ip',
     maxRequests: 3,
-    windowMs: 24 * 60 * 60 * 1000
+    windowMs: 24 * 60 * 60 * 1000,
+    enforceInTest: true
   });
   assert.strictEqual(permitidoOtraIp, true, 'Otra IP no debe verse bloqueada');
   console.log('  ✅ Aislamiento por IP verificado.');
 
   // Cabeceras x-forwarded-for falsificadas no deben dividir el límite en servidor local
-  resetRateLimiter();
-  const { req: reqSpoof1, res: resSpoof1 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '201.1.1.1' });
-  const primeroSpoof = checkRateLimit(reqSpoof1, resSpoof1, {
-    prefix: 'spoof_guard',
-    maxRequests: 1,
-    windowMs: 60 * 1000
-  });
-  assert.strictEqual(primeroSpoof, true, 'La primera petición desde IP real local debe pasar');
+  const oldVercelEnv = process.env.VERCEL;
+  const oldTrustProxy = process.env.TRUST_PROXY;
+  delete process.env.VERCEL;
+  delete process.env.TRUST_PROXY;
+  try {
+    resetRateLimiter();
+    const { req: reqSpoof1, res: resSpoof1 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '201.1.1.1' });
+    const primeroSpoof = checkRateLimit(reqSpoof1, resSpoof1, {
+      prefix: 'spoof_guard',
+      maxRequests: 1,
+      windowMs: 60 * 1000,
+      enforceInTest: true
+    });
+    assert.strictEqual(primeroSpoof, true, 'La primera petición desde IP real local debe pasar');
 
-  const { req: reqSpoof2, res: resSpoof2 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '202.2.2.2' });
-  const segundoSpoof = checkRateLimit(reqSpoof2, resSpoof2, {
-    prefix: 'spoof_guard',
-    maxRequests: 1,
-    windowMs: 60 * 1000
-  });
-  assert.strictEqual(segundoSpoof, false, 'Cambiar x-forwarded-for no debe evadir el límite local');
-  assert.strictEqual(resSpoof2.getStatusCode(), 429, 'El spoof debe terminar en HTTP 429');
-  console.log('  ✅ Spoofing de x-forwarded-for bloqueado en entorno local.');
+    const { req: reqSpoof2, res: resSpoof2 } = mockReqRes('10.0.0.10', {}, { forwardedFor: '202.2.2.2' });
+    const segundoSpoof = checkRateLimit(reqSpoof2, resSpoof2, {
+      prefix: 'spoof_guard',
+      maxRequests: 1,
+      windowMs: 60 * 1000,
+      enforceInTest: true
+    });
+    assert.strictEqual(segundoSpoof, false, 'Cambiar x-forwarded-for no debe evadir el límite local');
+    assert.strictEqual(resSpoof2.getStatusCode(), 429, 'El spoof debe terminar en HTTP 429');
+    console.log('  ✅ Spoofing de x-forwarded-for bloqueado en entorno local.');
+  } finally {
+    if (oldVercelEnv !== undefined) process.env.VERCEL = oldVercelEnv;
+    if (oldTrustProxy !== undefined) process.env.TRUST_PROXY = oldTrustProxy;
+  }
 
   console.log('🏆 [TEST SUITE] ¡Todas las pruebas unitarias pasaron al 100%!');
 }

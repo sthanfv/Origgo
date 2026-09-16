@@ -1,6 +1,26 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-15 06:10 (GMT-5)
+Última actualización: 2026-09-15 19:58 (GMT-5)
+
+---
+
+-74. **Corrección de Resiliencia en Pipelines CI/Vercel (Aislamiento de Secretos de Prueba y Variables Proxy)**:
+    - **Diagnóstico y Causa Raíz de Fallos en Despliegue Vercel:**
+      1. *Ausencia de archivo .env en entornos de Build/CI de Vercel:* Dado que `.env` está en `.gitignore` por directiva de seguridad OWASP, cuando Vercel o pipelines de integración continua ejecutan `npm test` o `node scripts/validate.js`, la variable `NODE_ENV` está definida como `production` y faltan variables como `JWT_SECRET` o `VAPID_PUBLIC_KEY`. Esto causaba que `api/auth/session` arrojara `CONFIGURACION_INSEGURA: falta JWT_SECRET` y que `tests/web_push.test.js` devolviera HTTP 503 (`VAPID_NOT_CONFIGURED`).
+      2. *Detección errónea de proxy en pruebas de rate limit local:* Al correr en el entorno de Vercel (`VERCEL=1`), `lib/rate-limiter.js` confiaba en `x-forwarded-for`, lo que provocaba un fallo en la prueba de simulación de spoofing local en `scripts/test_validation_ratelimit.js`.
+      3. *Falta de bandera `enforceInTest: true`:* En `scripts/test_validation_ratelimit.js`, al evaluar el rate limiting bajo `NODE_ENV=test`, el validador permitía las peticiones por defecto, requiriendo el parámetro explícito de ejecución de prueba.
+    - **Solución Implementada:**
+      1. **Inicialización de Entorno de Test en Validador (`scripts/validate.js`):**
+         - Configuración forzada de `process.env.NODE_ENV = 'test'` y carga resiliente de defaults (`require('../lib/env')`) al inicio del script.
+         - Suministro incondicional de `JWT_SECRET` de prueba en la Fase 6 (Auditoría Antifraude).
+      2. **Aislamiento de Flags de Proxy en Suite de Validación (`scripts/test_validation_ratelimit.js`):**
+         - Aislamiento temporal con bloque `try/finally` de `process.env.VERCEL` y `process.env.TRUST_PROXY` durante el test de detección de spoofing de IP local.
+         - Incorporación de `enforceInTest: true` en todas las aserciones de `checkRateLimit`.
+      3. **Configuración de Test en `tests/web_push.test.js`:**
+         - Definición de `process.env.NODE_ENV = 'test'` previo a la carga de `lib/env` para garantizar que las llaves VAPID de pruebas locales estén disponibles en CI.
+    - **Resultado:**
+      - 100% de las 8 fases DevSecOps aprobadas (0 errores) tanto en entorno local como en ejecución estéril aislada (`env -i CI=1 VERCEL=1 NODE_ENV=production npm test`).
+      - Compilación y linting validados con éxito.
 
 ---
 

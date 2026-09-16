@@ -8,6 +8,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+process.env.NODE_ENV = 'test';
+require('../lib/env');
+
 const ROOT_DIR = path.resolve(__dirname, '..');
 let errores = 0;
 
@@ -336,7 +339,7 @@ async function ejecutarValidacionCompleta() {
   // ═════════════════════════════════════════════════════════════════════════
   console.log('\n🛡️ [VALIDACIÓN 6/8] Auditoría Antifraude en Reclamo de Referencias (claim_reference)...');
   try {
-    if (!process.env.JWT_SECRET && process.env.NODE_ENV !== 'production') {
+    if (!process.env.JWT_SECRET) {
       process.env.JWT_SECRET = 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
     }
     const sessionHandler = require('../api/auth/session');

@@ -11,6 +11,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
+process.env.NODE_ENV = 'test';
 require('../lib/env');
 
 const subscribeHandler = require('../api/notifications/subscribe');
