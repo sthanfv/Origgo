@@ -20,11 +20,17 @@ const DOMINIOS_PERMITIDOS = [
   'fincaraiz.com.co',
   'metrocuadrado.com',
   'ciencuadras.com',
+  'properati.com.co',
+  'mercadolibre.com',
+  'mercadolibre.com.co',
+  'mlstatic.com',
+  'infocasas.com.uy',
   'unsplash.com',
   'images.unsplash.com',
   'cloudinary.com',
   'amazonaws.com',
-  'cloudfront.net'
+  'cloudfront.net',
+  'r2.dev'
 ];
 
 /**

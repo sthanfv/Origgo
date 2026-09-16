@@ -1,6 +1,22 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-16 03:28 (GMT-5)
+Última actualización: 2026-09-16 03:38 (GMT-5)
+
+---
+
+-76. **Ampliación de Dominios CDN en Proxy de Medios Edge (`api/media/proxy.js`), Auditoría de Ajustes de Imagen en Scraper y Matriz de Variables de Vercel**:
+    - **Diagnóstico y Contexto:**
+      1. *Ajuste de imágenes en el Scraper (`ofertas-hunter-pro`):* Para evitar imágenes rotas o placeholders vacíos, el scraper debe extraer la URL real de los atributos de carga diferida (`data-src`, `data-original`, `data-lazy-src` o de la clave `gallery`/`photos` en `__NEXT_DATA__`), normalizar el protocolo a `https://`, y estructurar en el JSON tanto `imagen` (string con la foto principal) como `imagenes` (array de URLs de alta resolución).
+      2. *Lista blanca en Edge Proxy contra bloqueo 403:* Portales como MercadoLibre Inmuebles (`mlstatic.com`), Properati o Cloudflare R2 (`r2.dev`) requieren estar explícitamente autorizados en `DOMINIOS_PERMITIDOS` de `api/media/proxy.js` para ser retransmitidos sin riesgo de SSRF.
+      3. *Variables de Entorno en Vercel:* Consolidación de la matriz completa requerida para el backend serverless (Cifrado AES-256 de leads, Wompi, Firebase Firestore, Upstash Redis, Web Push VAPID, Resend y Gemini).
+    - **Solución Implementada:**
+      1. **Ampliación de CDN Permitidos (`api/media/proxy.js`, 207 líneas $\le 500$):**
+         - Añadidos `properati.com.co`, `mercadolibre.com`, `mercadolibre.com.co`, `mlstatic.com`, `infocasas.com.uy` y `r2.dev`.
+      2. **Validación DevSecOps:**
+         - 8/8 fases superadas al 100% (0 errores).
+    - **Archivos Afectados:**
+      - `api/media/proxy.js`
+      - `MEMORY.md`
 
 ---
 
