@@ -20,6 +20,28 @@
 
 ---
 
+-76. **Sincronización End-to-End: Optimización de Resolución Fotográfica a HD en Scraper, Integración Firebase Firestore y Certificación Vercel Hobby (<12 Funciones)**:
+    - **Diagnóstico y Necesidad de Integración:**
+      1. *Calidad visual de imágenes del catálogo:* Fotografías captadas por los adaptadores FincaRaíz y Metrocuadrado presentaban sufijos de baja resolución (`_150x150`, `thumbnail`, `/resize/`), degradando la visualización en el frontend de Origgo.
+      2. *Seguridad de protocolo en URLs:* Ciertas URLs empleaban esquemas inseguros o relativos (`//`, `http://`), requiriendo normalización estricta a `https://`.
+      3. *Persistencia inmutable de sesiones y tokens en Vercel:* Se verificó que con las credenciales de Firebase en variables de entorno, la persistencia en Firestore previene la pérdida de créditos al reciclarse los contenedores serverless efímeros de Vercel.
+      4. *Límite de Serverless Functions en Vercel Hobby:* Confirmado el cumplimiento estricto del límite con 10 funciones físicas consolidadas bajo `api/`.
+    - **Solución Implementada:**
+      1. **Sustitución Regex a HD en Adaptadores y Publisher (`adapters/fincaraiz/parser.js`, `adapters/metrocuadrado/parser.js`, `publisher_web.js`):**
+         - Transformación determinista de miniaturas a alta definición (`_800x600`, `large`).
+         - Normalización obligatoria a `https://` en fotos principales y en el arreglo `imagenes`.
+         - Inyección de campos canónicos `barrio` y `tipo_operacion`.
+      2. **Despliegue Móvil en Samsung Galaxy J7 Prime (`3300aebadc113449`):**
+         - Archivos transferidos por ADB, sintaxis verificada al 100% y proceso PM2 `scraper` reiniciado (PID 21245, `online`).
+      3. **Validación DevSecOps del Portal Web:**
+         - 8/8 Fases de `scripts/validate.js` aprobadas al 100% (0 errores).
+         - Todos los 16 módulos JS y 19 módulos CSS cumplen estrictamente el estándar de modularidad (< 500 líneas).
+    - **Archivos Afectados:**
+      - `adapters/fincaraiz/parser.js`, `adapters/metrocuadrado/parser.js`, `publisher_web.js` (en `ofertas-hunter-pro`)
+      - `MEMORY.md` (en ambos repositorios)
+
+---
+
 -75. **Corrección Crítica de Deduplicación en Catálogo (Colapso a 1 Oportunidad por Enlace Ofuscado) y Clarificación de Rol de Firebase**:
     - **Diagnóstico y Causa Raíz:**
       1. *Colapso del catálogo a un solo producto:* La función `deduplicarLeads` en `modules/04-filters.js` utilizaba `item.enlace || item.url || item.enlace_bloqueado` como clave para el conjunto de enlaces vistos (`vistosEnlaces`). En el catálogo público de Origgo, todos los leads protegidos tienen `enlace_bloqueado: "https://metrocuadrado.com.co/inmueble-••••••"`. Como resultado, tras procesar el primer lead, los 59 restantes eran erróneamente clasificados como "duplicados de enlace" y descartados, mostrando "1 oportunidad directa".
