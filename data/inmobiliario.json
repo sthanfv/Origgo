@@ -6,9 +6,111 @@
     "columna_variable_2": "Distribución",
     "precio_membresia_cop": 89000,
     "total_sectores_monitoreados": 26,
-    "actualizado_en": "16 de septiembre de 2026 a las 10:46 a. m."
+    "actualizado_en": "16 de septiembre de 2026 a las 11:39 a. m."
   },
   "leads": [
+    {
+      "id": "lead-inm-753",
+      "titulo": "Apartamento en Venta — Barranquilla",
+      "titulo_en": "Apartment for Sale — Barranquilla",
+      "ubicacion": "Barranquilla • Estrato 4",
+      "ciudad": "Barranquilla",
+      "barrio": "CR  MIRADOR DE LA COLINA",
+      "tipo_operacion": "venta",
+      "tipo_inmueble": "Apartamento",
+      "tipo_inmueble_en": "Apartment",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "75 m²",
+      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
+      "precio_m2": "$ 2.520.000 / m²",
+      "precio": "$ 189.000.000",
+      "precio_raw": 189000000,
+      "precio_usd": "≈ $46,098 USD",
+      "rebaja": "",
+      "urgencia": "📊 -43% vs Mediana",
+      "urgencia_en": "📊 -43% vs Median",
+      "urgencia_tipo": "arbitraje",
+      "descuento_arbitraje": 43,
+      "mediana_sector_m2": "$ 4.404.762 / m²",
+      "dias_en_mercado": 1,
+      "senales_urgencia": [],
+      "timestamp_ms": 1789576750262,
+      "fecha_relativa": "⚡ Justo ahora",
+      "portal": "Metrocuadrado",
+      "telefono_bloqueado": "312 ••• ••••",
+      "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
+      "contacto_cifrado": "v1:2cf4c7cee6c6ce4180bf5aff:f29d33da2f6d602a3b4b17f6ebf44449:94316473371fe8e5e3bfb6968f4963f9a4b631c966224d58c43e2b066abc297918cbe7389d98a2b71b007d4856a8e2cdb8dd55d8721538d7632f78b43200f7fa646d0265c85d2ab5b0511ba80828764862b9911b8e05f1ff3de8811bc0a9825d5bc3acea98bf5c843d926e5c7a56a7298202e1e7ede6d63e4a353f2c6bb37b9e5d482314f75019e0c3f686b8b18656fb66d66f9592e811729e2f9091485111ee62101a653b3e8b2133a04d2278eacee7f9bbde8782bac724e4f06004c879590dc3faeb6f7f0eab7ce35dddd7b47bfc4c9a9864e34a7b5c5f779e5a8f7c94ff03fe4531d688c7b517066b52c6a988bea318f25f2a948c2065934c0cb15c6dd61bb00d9d2b518ce018dc2b1fd0af747c67a1463c0b90b019ecbc9739e35938b11bb1a2e9e5604261651f021769154e82b1e3f3343212b58e39d25d6ae2e7bd3048ba2f07377207aed334731715a941fa8c521d6f03d39f0a5190222873bc8be8d5a6f201101a5cd410a724055658a4408a7e8e786cb5d7e3cd9770ebc0f7f8a1227d312c23fc4d359a8633e9e3d13e683f",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "75 m²",
+        "Habitaciones": "3 alcobas",
+        "Baños": "2 completos",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      },
+      "detalles_en": {
+        "Stratum": "4 Residential",
+        "Built Area": "75 sqm",
+        "Bedrooms": "3 Bedrooms",
+        "Bathrooms": "2 Full Baths",
+        "Parking": "1 Space",
+        "Contact": "Verified Owner"
+      }
+    },
+    {
+      "id": "lead-inm-752",
+      "titulo": "Apartamento en Venta — Bogota",
+      "titulo_en": "Apartment for Sale — Bogota",
+      "ubicacion": "Bogota • Estrato 4",
+      "ciudad": "Bogota",
+      "barrio": "CJR  PRATUM",
+      "tipo_operacion": "venta",
+      "tipo_inmueble": "Apartamento",
+      "tipo_inmueble_en": "Apartment",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagenes": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+      ],
+      "dato_1": "51 m²",
+      "dato_2": "1 Hab • 1 Baños • 1 Garajes",
+      "precio_m2": "$ 8.823.529 / m²",
+      "precio": "$ 450.000.000",
+      "precio_raw": 450000000,
+      "precio_usd": "≈ $109,756 USD",
+      "rebaja": "",
+      "urgencia": "⚡ Trato Directo",
+      "urgencia_en": "⚡ Direct Deal",
+      "urgencia_tipo": "urgente",
+      "descuento_arbitraje": 0,
+      "mediana_sector_m2": "$ 4.933.333 / m²",
+      "dias_en_mercado": 1,
+      "senales_urgencia": [],
+      "timestamp_ms": 1789576750141,
+      "fecha_relativa": "⚡ Justo ahora",
+      "portal": "Metrocuadrado",
+      "telefono_bloqueado": "310 ••• ••••",
+      "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
+      "contacto_cifrado": "v1:58113cd396329e5b28c1b492:1d6865bb76470595c37b14874b871510:39b7dcb876785785f33f2cb49d1f02066ee7060c9de6f76821bb12b6bbbeec50647c36639b6cec8512a524ce4d34dad605993244e14402a3be86a0abea54bc8eaa470db71515940cf67399f22b243b9e07f94ef00dd04a8ac3256ee81f4f000294223ddb70336c4f5fb8353a291f66f0da80d0e7d42bccc3bf7de775d95a10f40418a384e7f508fc506039b08b655c1eeae6cceeab6e12494383e41dfc85680384fb2ac3ac049265fb645e45131b7ec19f060a98f4c6924e20532bdd2792459d4f8b85d5f95bfd092b649d7a6ee205a5d8bcb60860b9edb814c6749a6955a80f852a3e7e4ce0d9da5ab6b22a5fa8a6ced095ee15e66622de7dc053798e94b7392fca1c1935a45d1bd84222ab91431bac2ddd319779ef8d4e2607d5eedb1c9e4ce4f9d92988a9e5d8f288b6d7aaed924fce95cca8461cb3f9b258dd6b6de4c640357c0cae3dd41902d16127bef83dd91a470d20d4f638a4c91360c8b87d22eb7246",
+      "detalles": {
+        "Estrato": "4 Residencial",
+        "Área": "51 m²",
+        "Habitaciones": "1 alcoba",
+        "Baños": "1 completo",
+        "Parqueaderos": "1 espacio",
+        "Contacto": "Propietario Verificado"
+      },
+      "detalles_en": {
+        "Stratum": "4 Residential",
+        "Built Area": "51 sqm",
+        "Bedrooms": "1 Bedroom",
+        "Bathrooms": "1 Full Bath",
+        "Parking": "1 Space",
+        "Contact": "Verified Owner"
+      }
+    },
     {
       "id": "lead-inm-748",
       "titulo": "Apartamento en Venta — Pereira",
@@ -19,9 +121,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "55 m²",
       "dato_2": "1 Hab • 2 Baños • 1 Garajes",
@@ -38,11 +140,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789570789122,
-      "fecha_relativa": "Hace 46 min",
+      "fecha_relativa": "Hace 1 hora",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "317 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:6858a30a0770ab813724a345:ff1c4d35a26c695347593dbba552e7e8:b6ffc7b0e5a45cdf2b76604899c6d40328e56adde0e6defac88ee1861f6c5eacb2c2a24a5b6866e78c2a891bb3065fedafb6ebe5f9851b30d55c20a05b737f16b046b2919a16e3eafee4f90890e2b640386711592290c2346085b3f447058ad9567ddddf26598ed9c90acacbb2b37754ff4eccab828bbcab8d7ba2aefade8d13b51da9443bb4538f8db31132f701c830c835be49a85def310a5a93932354e9fe9f6346ea284eb31cab0851a8efb164bc9201b400fb8bb134530a1ad3c10cb1e55ca0c8274452f08b7d8d7d065c8933483db1ed16b5399160036888bd3c6942b93d75dc6eea04f24a9766bfb811419e1c9695a09cd9e0e64d26c6e6979e8d0473fb3ad15f49fd9e032fd6a216493169db21e87525d97e14ce60a4d7643f30730a06b10e735c10252c27752d8ce06f948b5757153e6fc79b9c05dda1b793a1996f0440f980ce61dbc6f7919bc404e3d94072cea9349bd4cfb5",
+      "contacto_cifrado": "v1:b7df9f2355d9b902fb50e0c2:1745bc28f7e4ccada336797a2c09fc00:a18c21de097252206b29e67256a50dc26115183cabdea6d5bd6fb6496767c768eca7175a59c2aa542122e9fefc817d616dcc2c6bed695c60cb0b5372aae5b0cbf3472a5ecf7d30bd07a7fa6da770d62ebbd7b71934fb4b303d300abd5e927510827790f7348ad05d1d0a0126ef78ab984cb4c08658c367b507423630a89f6f7704eaafd905d473ab75741d94007c8b2873d80a19e97bea82884fe42c846c3153e3875f184a44d8534197a93c7efe0f8bde6149e7967630e65186f457152de36c9450f1c13d184b876bf52ac3c9269d69fa58470e57b1940a3842076be8c87302b03c803dc7dfb874be7cf8b0ff600bf0b21fb909cf522603cac887e986e85e17180ab0ed276edd5d4d0b213ca734a42506b5b6286b114af655d5583810ff5a34de75ca68aced8db3748b40d92a916146a78c5e52df5d04ed6b1ecf856d5d98f712e0bd0f87493846edd9102b20002116ed61ac28aa3c995a",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "55 m²",
@@ -70,9 +172,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Casa",
       "tipo_inmueble_en": "House",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "240 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -89,11 +191,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789570789086,
-      "fecha_relativa": "Hace 46 min",
+      "fecha_relativa": "Hace 1 hora",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:73b4b3704f4dc10cad3a53ac:bf2f123f24e68b048cb1c9ea411fb66f:fcabdb1af0cbb91ae46df8b5b960a03f924840d4219ffb55fa46804ced6424691cebc71efd39cba5920d41f10e6287c950131982144cedaf44425e9d9fcdad505ef2e9c5e3c978df5908da7707db0d3d3d3507a7956319128c0dc2eaf725f085d3792f941d9d31f1b2aa69048ad7ee4bc2c557cafb7c91c4315772bcfd80b21b0f2e752eab1243a694dc83b807d8d6b7499f7a65cba3e20f95b79dd5b29a83fdc1444b43820c9add0b8b19aaa6943f1c6c6b6a0c356f393759580a9dd2afaea87229504ae437dc0b9fa9bb5fe36f5c7910d15f439d74e93d48bbcaa2cc5df544c27fc09efa9e7de3985703a2666eaa0b23a511729a7b88701b584c306fa0af95abe0e3ee4f854cbdbc714807fc1afc8d08b577a36f84df7d25ab7bced56bb2acede281e6555b6647",
+      "contacto_cifrado": "v1:3f755532ab590e2e4dd21488:d71ed13c32c10ef96ff188343a0b556b:12ea48a93952f4d7e17867661c9addfe2821334914f1324baa2f8b7b4e465fec841dadcd51bd88af7240e75472e5658bc6cb2abb7dbd7c35d6d1eb99950f241d35e6bac9f5e05fbd4e756deb1df384387c1d87382482de137e564a12df73977ed80153540edc98acc5055b8467afbc996ab60c1d1b66a93d8cf1707fa3aea0156edec85f0d4a249f3f1a1bd36a6e91feaf9523dfaa8d86fcbbcd7768794f9387ebd5102247590ae43d55d843facb9359ce2f8aebe3fc48ed167a04e8d7337fe3ef48680bc0c93c0367fc78f77bc348b97d3b4e635034d51fb280e2a71160257a2d60d23d258d313d943913ce2efa1a8af03fae3536aa0a5ef98d25dd840516d62ffdca6fdf50f15a301dd45921bbd489c5138ea141fa3bf33ceac73181cacf50e6e154316fc07199",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "240 m²",
@@ -121,9 +223,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "119 m²",
       "dato_2": "3 Hab • 3 Baños • 3 Garajes",
@@ -140,11 +242,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789538912016,
-      "fecha_relativa": "Hace 9 horas",
+      "fecha_relativa": "Hace 10 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "311 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:ac27878f21dfd4d15059bd9d:e4c110d8d9aa3547e94533895dd92960:ee540a0b6d83c194abbdd96719317bdd24af3398c6fc478b7684bdb785e45d933b3c6ed6b9345a2272efa2f855510ac4ebfeaa9ca842f639af0939e76c56e9348e88275e506bf81e156ba8bc4b7aacee277112774742b2aa6690da25f887c506b0057371882dd1d90b63e8ac2eab323a82c831ec7721d0809de876247a607fe25353ca7afa00775ad5934aaac4100d6ec0e209a2e94ff7a268b5af6e9c18c416cfd69cbcb63bec4f703e1d17253c56337fb51d3a3f0d8bca3ccb62acabbf1aef6724a2b08d9b589ee66576f2d19e8be3aaf26b9eba2e12c26dd6b421220816b282436e7422653853cc1291138c8e662e18c5b7bc291899bdf1a5a3aa28940eace43fcc95ce87ff5f0eaa610f9dd530545078c178eb48c1594e509188a9a0a404d8777446f65c4e3eafd23e2b6c6373e411876f29175b3aefbb5f804eccb34585a82be335d41113cf075cb000b40deab31cc6d31e42c0b4c2c596a775744748cf6aa145c2796ed217213ed58c747e63dfda48c70fbf8de775869cad3959dc1d424ab70854e1210a712e688ff6e8d02a84",
+      "contacto_cifrado": "v1:a3503cd27b8734b6477abd5e:650a1197138e83f38e4ddb8767e02ae7:bd35c2b06a7d146519eeaadec988900317ba9208ad19413d236a75f364471334c766b45ff1877455895abc2d5f34deb2cf7bac1b6eae6e2060a9955866baa88729bb0526bf02ab168cf5e4a760a7d7edb7bdd62edd054a569e042c271746b52b7f149c6167738590f8b373bee5143e60308ba7acc223fe0c744c7815e4f4437e4b2fbb2a888cf3f791a88d9635c897f560df6e20631644cc4e18259988bfc9fe38d9eb4586ded3caa10c056e9bc75e85a1269800b0b03a249ed39d0f5b08c6613c0351979338cd596e06c0f1c88d6092eb994b6d4eb79bcc8e33136638f0b11dd87e132268d231cfcfe3f849e2331ebc98cfc6f72a0f7f33e4b162ceb660d074472c09521e3c3888a2269679a4106dbdf476c174321d27b2ad6c77c9fec415ecd82f65e780e9ccbe4f159cee78a7f563bacfd7fc473805f26229068d2ff17106dd916d4435361e8a41a42de0391980c11966bbb261140aaae0f233b5315691aff2477be117bdb0b96c196ec60c24448d351dba54e45e14374416f11f406f47d7e74ccdf7cf5f8a6e77cce69cf388adca",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "119 m²",
@@ -172,9 +274,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "92 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -191,11 +293,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789538912008,
-      "fecha_relativa": "Hace 9 horas",
+      "fecha_relativa": "Hace 10 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "311 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:b6e1e6e4fc0993c0f58fdca4:3b171fd988b2881fec9154d85e9cffda:e77ef4c025ca1337bfe629f2ee49df492ac4d870e438c913e6c8a3c9dc4debd227ed4db1cda3f654ce8feb7481150bdb131ce124aa63613fefe98374e7fea7b12cbcf4827c7ebe41c406c3bc474c2dd87e575e2f0b3a9e6dafa0f4f7932f5d108d67eeb5d730efaa43cf96355956502ea0358823e1323d3057fc9148d5f8420feaba013e7f88399d7d8ff36b4b079d368468753412a930772a19fcc5b3408765044642b801062692af59febc388be6be8e60ef7d37df34a80caed152eeab5f2f55a8954e1cd0c1a4c1a7d829df5546c100db53d845fb8992ac30ad2732ce52d65e2b5c896629b7094f03a80ded0f1d6000290f6e5ec04ca8ebda861ca685b7b394f83ceeee67e0ea8d77abe0404a9fb3d06f676d0d82d0299df9f4521d45201dd4884f01f6c99caf83a82f5c92189f0467205d0ae69f10fbf565bf418281a532cbfbe374fed2bdc61c61d91687e426a68cdf5dd4f607f2c3f67b6217fab95a4b2544",
+      "contacto_cifrado": "v1:c40e83cd9561a983ee96fb5c:2c8b99ffb656c85ae8fd0303ad28c87f:49e222d07570054cfcaabfc25aaa9f4ad04a5ea3e99201b28c5e2588709344934170c9889cb79c09a46a9cf1c561fa5d390ebad857cde87f8b3daf9966244e179596206b400313d1dc5e0ccd7d9821ae859d631e252f4558c66a495d887b89f7efb2fd0a94c32b71d5a4bc6e8e61c482f3887e58044c7d81d116886ffb351ed6fd290e6c0bd4293b308034e413ec9506de0c49acf174e270a4c1960efb9d50219f5657da9071c35c90743b0807b71360743d07fba7258d356f1be2fdf24aed43ed2f0957c1d716142342520149ca35a9e45e7f53a2d0dbb9f3949851e69961bad565fcce822904c010303d4bb1f8c2cbd6b7140fdf62b6f2f3cb93163989b4e79ae86aa475b08d58b61bac2d0bef5b36b847c533f36688057efdf04af22ed6840cd7ff242a1379dfaaa915d39d6bdaac430c92373c6da79b9ad889079351771217c9738b5e65a11ce1ac87e485be39befcd17a0f691e125d43a61ecf66d988556e0d",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "92 m²",
@@ -223,9 +325,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "170 m²",
       "dato_2": "5 Hab • 3 Baños • 1 Garajes",
@@ -246,7 +348,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:1ed9ce15c1581401b695db34:39ab2cd2fbdde2a0579670b8c56a9149:9629d8119679f834a8782aecb280afd6bca8e054b48c8e3565aef25c024218e6a09ea5704bfc24465d56ab964cbbc011c3b51e1568a2bbfd39ffee03f5d96bdaae7502dbf0a44dbcf83fee33a04e188acf9304b44cdedd77e14b1aa05bf45a6b8b3c01bc773282d8a02d2f3ec8e395a3e0d6b637224db62f82a0f9c1050fd6fec4618eb16fb9dae88b53ec30da8b89e80476c1b44d0f0c36b8bb7d42defc77a2f4ddfa6ad8ca93e0403cb3593a4cd79998afa9864c4664c71cfe5de159fc07955d6f6bf4f0ade0b19fb363d533ba16bc5a60144ea6a235c6cfbbc4853079122bb72bde0abf3815c514ee3a07aa1db0c492a0b7c085c459b4a063e9b04dd88f03d7299b4c9804bd57f7c62f16e44c90fc1466eb0de998980bead3be075ca96441d941cf5d8547409c27d21e4ee1f6d0f3d2ec1d697c5af9e57e00f402838c5c0682f43360bdae6e46b405ba4bbc568f927c9530dbd70e7ecb7f315765c910ab9c5d1f0af69aea7a0c96b8844a275aa31f6e3fbc2609128c",
+      "contacto_cifrado": "v1:993cfc7dea499caea5707e50:6859af7040def155122c4831956d1b3a:50fc2f1029cdb2be20b9d852f69d50474ee97ce93f4212addbd0938429911a22c3491b027fbe30410e923c6e24b2067b19f25a0054fcdf912f8e9d4f7898b1fe1aef4330e11799beec0bb34ef2a4ce02b45490cd9864553ebb6dc0a9f1c3c976b04ecfc278867628efde81f773ab398d81fdab54821b1aaec36375b7a4494f9408daf8bca912dd3f8210722235ee5c5d279729c0df8d7c39f99d960b17c52fdfb29b74de0410acb6ae31774640008e9278a5dcebb0a35a723904826e6e271356608f677fe0be66fe33cda596cca7e61d851dfaf54f119bfa2ade763faf47c0bb80ef38899f8c9c241bdfc3a61cd095e4b2612526c5991eb2ea27f347894c6706e691dee125026ab811aa4528a6c246a21d854802bb93cb264a4b030f5a5dc7f986cee43ef5a19a798ef472981d2123b0d4bfe403a2083edb90f7bbcba9c875b82d31a45d49212a0935118090f4dadcb7f50956d04f2c7bb424fd5a5a3d9694755ccc08bbceb9705a4fad38e40812e3631e77c09ded641d",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "170 m²",
@@ -274,9 +376,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "75 m²",
       "dato_2": "2 Hab • 2 Baños • 2 Garajes",
@@ -297,7 +399,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "312 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:6a60f131f04eeba918ef0028:e0afcbf93f4ff5d1eb9056a945cf3cb8:8512c432c07dc67a43f8334d4f8ff065351ee2874bd16b222ab17def60fc09ecb4dbe829e7ff44615e7d23f5bf5307829095125d1e0c2aa1cfc8b893439182744884eedc810747458fd8071fbb07559ef73def7a14099c971078d3892d374ab0efbd8ce6e7915f5fd3dfa3a7080a27b99900ff26f3dbb7cd4a6d2224c82bf9538c0030f8f34c6b0e6a4e8c66397921aa3cc371746d945f91a6f74177bba6da31a2bec453643ed7624b913445c5cf3938b3bc0d304a0e5ce0a289c0d1cc49b5540c3989af27aff43d8feb4b4fd9e5e2164479d8ebeeb29677d58e4c84138cf2972647d18b23474c50a49d1e4f8a25f53754e72c7ae588c8d53c5ea738c2b7cea177cf1457720cf590648765c964526022e926a8a5cdc44ba87b6b5e4e0b3a17f200213a463cd22dece380d2c3891869304b71ee5e92e0c3c009417c65913196662c28dd260c696c4fdc656bc8bf12f8df8e7f2c3df3f495e3bf9cf3ea0bb162724529d10440823f2831056e4117a4d669784ecb6464b1bafdc3fcb340abd01e58ca13c1dbdd56",
+      "contacto_cifrado": "v1:119ee85381cf151567a5f0f4:ffebc03ca85976ed90c134cbc6982003:d145bf55bc20bd69d417981a0b304e5096957bdb6aea243ccaa3355fc70192402c6fd42c8edd18221644eb02074c27ebe97892ccba628332ab0836ca5b3b4ec6f9b5f713855511353df0c41eaf104b934a59c608709b443a25325bef7a11fa5679982e71b3cebd90be0788e6864ec5d53258dcff5afe2b8768b5ab8d6779e15dc3f81b0998d0b021ca2a04a424d11d4a5f09cc756115b966a9a82b2ec6f62c2287b5baf3739942122f7f8abeec6a70b63778618db8bab86ed0edf0b025fc3388ac8d02c8067c04763129b717baa016eede2d3c7c093f9c1d0a206cbb155ddaa3c677ad4bbf157ed3adf063776b410b72255695f28ea7c6f042358fe6126dbf9955648ba359aedf0fcda244139832f052238a446a0109fc8ffa21eaa3b258c1618e94f7cc9f4ba47f082cb377ed34d25ab089908ee0ec4d078c8357a3c24320f28e34860407414023f64e285a7878e28744b6f821cf973b2d12c10131c6a5feab4af204c249ecdfb7ae6fa748fe8a236a5a62a87eb7130196ecdf23edf94b872d8a6d2676b73b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "75 m²",
@@ -325,9 +427,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "52 m²",
       "dato_2": "3 Hab • 1 Baños • 1 Garajes",
@@ -344,11 +446,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789526131122,
-      "fecha_relativa": "Hace 13 horas",
+      "fecha_relativa": "Hace 14 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:40b4ee16eb755ba88e2884f3:c8d2786c5abbe0407bcc8fcafa37e8d0:a20caaedb55b4613917b6b3f45d759919097a7904d196350f49b27152bbc72a6030f6bc9baec8a0a0deeeed3ff00077e1d685c546bd7c2a2e7a26abbcb2bb9ddfbc249e035ac4d5ed6c9b42cef0a9a55470c04d72d29e1b26b4b46c0a7514836a9978057fb75e322e8b2f1fd8dda5a57b4738cf4062cadab95a937cb8b61e54b2347b6d1b295d4622d502773cc2d4809dc55e6d3d8e4a347251898acb932874be53a5df001ccda2b83100909554259f88c72b04e6b0cdaafb576657f56b347c444f6643e0c42355a77bb01e928ee574502cc1fcf22a33e10ff3a3a9a9966868a1d18c723d2cd5d46322ad104f650e7a893a13beef029b38a7db1c8df916e3a7a5eebc6eacb887007d663404432b621c9c161918b0baab62264f1d4679e2b7d99482c979a0845c117d257bb8351b6d538874b258510ec51110d19efe8877cb9ccd946e78d5bbacc547236858010cf",
+      "contacto_cifrado": "v1:f7a6256fff9b3188c3486774:4c99f29fa1ce19db653a34d098675526:457d3358413f0f24261beefb9edd62d8f4adb8a5e6c55cec6a4cbc88ead9270176bb6fe8541855bffcef7b709cd73a4de5cc3fe546ea28779205560dc5b7408d5504053c43ebad3ebc6dc4e80e2b505beb6a3f2214d1170d5fa0040195ba96f4ab41e71a35922114c9097b98a2c642f3021a5f04b3bd70d0118d773d18899fd9c5604a483bfef0f8f4418e933c3d44350162f26c852a3407498e96bc05a71411cd9d931bc5a58f55fa87296d9783e515cee9b06c0829071ef8f3e03eb27c2e854f97b87a986805af2000b4bdc31e2c4ee395abef8dc7abdad423a52d668b1cea253b2e23db18dc866488b8d8b7e9a8835025723d8d11faf4a4f6c2e3023d78c2af6f68d32cd154730f9f561dc8e4e24bedb47d6ff7b2fb97d303fdf32eff70da60f8b78ae5c1d10a96b592e464fb0c3a7d5c870270a2f24f556525c1670e906bd60794dd103427627ab1390fe783",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "52 m²",
@@ -376,9 +478,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "144 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -395,11 +497,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789526131026,
-      "fecha_relativa": "Hace 13 horas",
+      "fecha_relativa": "Hace 14 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:8ec775adb7a3c45120d28fc1:7694d087c2f9e4f83c73a556f3aa86cb:80e80b5a0d08cb0e03b207ea3b39366d6b33fcfc9f3ecdbed073b5d6f998116170c5a083a5adf3a95b2dc0ac7386c1d6b5759a4be71b425d0d9396b146b1e1fc8f10f6656afbdf6a506d6da29083e6264181849b08c6cd5c17c8598c60cc21b0946e9ade60a9ff9b71d34962a7a17fda1fe00c692db4b56ff859368135c031c0f6c3eef2dcb8f46a26c2feb575ed53b72d5c61386211c64737f875c23618faccb9637e63d26fb53c427649bc3ad67edefdfb9fd3bd2bb0270b42c7d4065ea579c0cefa54d66f912428b88a9cd64127466dffc493a54c601a996da79b84c155a8ac665e94418c4831d661667fcebeb5cfbe3f68b750ece8d11e71cdd8720501d4f926d3c27b40403cb5550ad74368306066bb207bb1853518ec306e05dfa6b3cd4630a9baf78c2e945f74650a68c365c37d17fbe185f07f7bb3a4e0246f5719b3437779899635fe980a30c388d5920ae24e5eabea3e14c3c83973a88fca9b7f0a8293",
+      "contacto_cifrado": "v1:e999eba411f73704e18ef078:49b167b36fcdf54cd655d91c8a8777de:57b0d76cd08836015f005477a184eb3750fcbad48c3b84991f0f112cab18e2823da60035087087df4f30aa931a545fc4854410a66afb1b03503578659dd0cc4c67e0d316ea5d11d2ad2ac2127f4e664142573d3ee9fbd8b875a9bb8bd55ed7a0c6518aa4668c622b4182b08b586f22fa7cf2d01386dd72792119642009f1bf881382d77fd9ce72b30a549d457347698f7f5a2c146316c2155721de1706850c472c26f19f5e8acb903b71f63560bfda87d0d704fc9c254602a193f0654acee1630254a5fc17fc4d8a21d31c97e21bfc56bcd71cb4a2fdd7625258b00f6435a30523962cc6763309fc540bae764d728356ab22fde9f0d84d8d3c042424331cce5d0d8b37dfb4982edb3118427d0221b9e1a6fa770e26060a1ba1a4566960c3665035499a44738d995fad7608ed80fe5005f4fe37e1d4b9737b79e4506a6b31e9e9ecfae393120e1d0104706fcd7f9a24eb0f495bdef06bb8382c419e05cfb8e78ea7aa",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "144 m²",
@@ -427,9 +529,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "23 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -446,11 +548,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789526131019,
-      "fecha_relativa": "Hace 13 horas",
+      "fecha_relativa": "Hace 14 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "321 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:eb83ac13448a36033d806e7e:163d61cf10f39f949ab8a62a672bdbb8:261bc29db09cc93d03bf9643baebb0594ec91cf6cd6bffccc75fee1984749157951f77819f626a68a126980afef3f0430d3b6f2c73863280f1cd0161ffb45c53d555bda0793776da8fd0db7a2199a7178f178291620a6542b6807d39afc30f0b0e69ccb98ff9354c6dd4c4904ab0e00d744a47a323eb87e6ac02bd491f1d09d90731db8e5cb5f7753665217fb0c34482207cb4b47aaaa3150cc195cea5ddcbfc264db2b177e1fb265872f583e8521af7bd03830d5094e69ffd4c2f1f33c0a742fe462321541b38ec514b8824b98acd83499d96924babe8d54853804098580aa843607cbec8d1c87046b5c41ed752e66a74be8dfe0575db3d2345c82c5a59caf0577866ce7373b563432ea55de3709a0b9b1eb9e6381b0675658731670fbb9008e175972c24624651b621570da56fcb2991300415ef42bffa20fdc38da1910b66fd3fb9b6ed3120cf70bd95330feb484f97afca7de4f94437a369b4c94fe327f8a2e1cd91a9f4edb3455c7d11ce41981223d434ba42518cba859558fb4c8f27b0",
+      "contacto_cifrado": "v1:6ebe81e70fa3e67d31c4e619:792a79b860689b956fea753910927496:7be149ed472e86f9ae4fa729aa727055ad2094d6b34f1726f958d72567179d6a88428ad500d45a2de064e34e65665404eb560ea3d1eed5f04cbfedd5cef9df9bb7325f0ce7a7cbcbf6f0f188a3b35b5b712112ac8358773c51aacfce7aee252ecdcad583dd71df222e70306da03ae1e84513a66dcea6246e21f500961d1db25efe17b054f0369ae52c76e187307d534f037943af4e1e8bbb59d2af72ec81429eb92f67afdf3a9899789c9c5655536673c079fb7923f2858e43c09585aec2115bd99e000b8b600bff7c1cc4a836f67368cbd79d41f2282f47a87b2b01b4e1a53d184d4334e0823866570c8e861cd86d48e7071a4a80772fc768a55967e4c75b36e968b50fdcbb2d845cc487d431d9458384929fb76ffedf38f18e27e7125992fa466d3f2b0fb32d1586ccbf0329c1578b049a85b97a475d38ccc82d1bedc3ad4bea67fddb1cc70bd8ca270b774acf0c8555db2738363e0a6ba5888e93e5bb78dff36b64cc3ba3926cfd9b8a41001bd1fbb010b6089dd8a5a3c1b93f633cc1e40b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "23 m²",
@@ -478,9 +580,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "77.13 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -497,11 +599,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789523246768,
-      "fecha_relativa": "Hace 13 horas",
+      "fecha_relativa": "Hace 14 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:724038d7d17a9baab137124e:19d5e684b295755346cf6cb070fc75b2:78313e46b6437b45f3dcee2f408692e6b7858b406fe7b07358e288451faa517a16b9b65f85789b8cf36ebd1078e85da087a94bb921a89d7b792edc40e16ad8b5cdb033ba5d36e8dad1ea24bb5f0acbd4b2ac4fa72fa6312b8fd6af97b5cc23a9681202057df835613508e39bb4b09bf97f23d58268eaa693141a4ccd94543ad2d19d802889cdf63fb24d6cdc50d04adab71ccb29194dfef8800389d9f98439dc52865cff3c1b34c23b1f833cda2e717426a8dfae3466671f7c5862f8f3899cc9758ebdabd3bacde05d3facb2d5cb7d6b004e45328f30b1822ce32a489b39438ac1af52dc38e76e745c2efcc220b184e5d74597ce00e22d0684691d18e49536d9f3741031ccfb030b97218cb98445b923cb221531335b0ad171fd534fc984a65ed04f0edfb3a9e32533c11a24cf7860756635f74a2ff27c452bcb71fd1cbf20047ae97b06b4e3d78676199ca4bf2d8f3cf380",
+      "contacto_cifrado": "v1:431f9a82c5bed95460866723:6b5dbd93b0c59ef4f4277660872fcc49:4b3f8c4a0b218d0d71cd9979d80b53b22a1df566b0385e0741132cd2f6283878a3982cffc4962a8a30004f09817d78e65798845ed5e149adf4a8f6f30b58f5ad795805a51485a4816207742355786e042b8116cf79d9eeeb316df68bfd9b685be82966055f4f8a370c611036c7f15406e641e7d8d782ccae348353a89c144ee85a28a6692b738f4aefdbcb10fb98e7951467c8b4d137cb661304cc75a2547ecc0cd387bf930b828ae9d665c8bbb4e7ae0fc65c3e59250e3411d090cb551dcf093a23c018188fe39f7bd3c228d8521d6dca7b8722982c448ae0149a059d62d3d9c0776789dfc1c133ec1a248c47e8e3d18a18adcb6662d230708388f7051928e218c9b2625dd91ce7171306c33d0e91931ed6bc6031743e0bef20bdd68a3efdb40bdc88ab522916202c1a40bb7ee3c6ef7f89f36699b1865e8122fb1c69cd1aec5fa28dd195cc3b956bcb3ea84dfd29f325ba",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "77.13 m²",
@@ -529,9 +631,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Casa",
       "tipo_inmueble_en": "House",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "134.72 m²",
       "dato_2": "4 Hab • 3 Baños • 2 Garajes",
@@ -548,11 +650,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518058013,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "321 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:e57d54e83ebc3f8c980b28c2:099746ba008eb9aa3b4affb39421cb05:70e5e7c6fd44c912b459343b71c90b48b005180a80b943dfd37ac4ee0ba7137e37e6ec62825cd4d29af6ba2c571ca85d48d08cdba3e21e18e75cb6eb0b1d093bef5449f0a2cb5a550d1466be39b853fdcd235c813b384a7785cad3a6a194827c2690c76b3085d9221a0b7dfd2d3b4afff8a2c1a74dfba0227756a7b8469ee49c62e49b4b6951f4223e3ce8078f34d84d8b8c27cdbba80314cae1cef1638b86add8c350d1afd9e794aba6b10c5ef204bde8ff850c374c067ec8a29244f2fe889ad3e56231ed82a6ebaf3d54d8cf04d0a4ad11e69e980b6f4df0bb15da0043f5cd56c062917f515e2e64f900b9ba2a20cd603fc9d1781aebdb6016cf7e856b530638f8dfe97e01f4ad5a760f82d570163ea7f08230832dba73090834b0155499c34d9d44cc8a74d0e271fc6c28b41762df701e6ec1843c028a1cc56c1d90a9865782fb17076916f07feecfc734277347bf0bf8d1d13ede5e2cf84d20ceaaa549dd8ee58a83b9209d265383a1f218676f99ae024f",
+      "contacto_cifrado": "v1:0732bf9d96f4bcbcce813065:23d08d44a461ee95bb76d04e0ac48454:96de2c7abaa5fcf96ebc06eaa4feff4ab8e42e21566af4b4f81de130cf2585acd3109500d9401f71b509b1511d300be6fd6db842e23ebe9061b0c572474b077b42d8b817818ec2e0186ecf5fd7d3855ca4d1ab6abfc8b8d9ec4400c5d5b260084b938657f5b4e3156e06d61d9315c62f4aa95b0b469b0bc742b8538cd511f56fa9dd062e3af928d6cf4b8c12d3bd55dd988a82dca39149d5404392e4911189e5c9d0be9942dd95c7f29873136962d133311246954390db143057cb77ceb1ce9ec586758aa65ab32fb7c5701b2649dc0a692dfb11364e373c6dffb6a03d541d3a5d57523da6500eb9bd2d29b730f656212633cc7741100e8aae329650945b2c0436d4a68988ea27614f1361cdeef4aa12e90de1f9ffa6277209dc78db1505ffcff58b4f57cc2942a17150bb7920b4c347b2c69e0248d94f012ad6986d2de9abefc75153bfc15d8166cc11d2ff3bb64fecf55e9212c60d2074d53f4ee2de77f9d0ae00a244692ba12eb6193a0aa4d07ed2078bd9",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "134.72 m²",
@@ -580,9 +682,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "79 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -599,11 +701,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518058007,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "314 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:7896cb5eddbb7b6c1517a8dc:3b5b17df602fd10bf84127ad7b925625:4b455e6f38c3c879cc13f9df8d0f4bc678e86081377be35f918115e2f92581fb8958a0ce139cdb5a679bcb74383c37fb6ece2bd5de6b6705a6ccbdc968370e58cd31142bc3a1764acf97acf87054a8187c40ba2a987f8d7e427a7529340ad1b465859f9eaad0246d5dc99bfbaae0114d5b000b3c279f4162cacba9a9809918b58826400c37cce7593db416aa09fbe148b19504b9f635e33a53f33819b423031801236b5cd529f067b002959f21714d45b272b72392e2ec911aee0713ea76173823b22be71d5037044d63412a6c13a43609aadc2a2255a07abbb2b3b0df7ed9e114d911277a387a00bdc9fdbf8623d5a0e669802c7a9fc9b094d39dd35e1b2ada4c90c58b71a30a3d9e1d8474862a00c441e216ac7e8103f26ab6c04b196a7d2b27e451c527a413c9b9de4462983db376a44e4cd74f1da9249f10eb3e6ec29924b7d5288577655071ad4bdd9daf613ef11df8b356d3892012fcc5b651e29451ac990f47839be5f84c96cccf4848d36b33bba0cabb5e448e1f99cd4814232ae40a",
+      "contacto_cifrado": "v1:e0fa8644ba8597ce1408ed67:d0a53684ba858a0a0da15ed338afb637:4d823bdca01b5bcc43706b077b194628771d1c5ecec4e25ea2510e8361984c90391a24caa33c9d2cfe1ed2ec578f7620b1a40b54d6141d44727c449e0997d591918a78444b73bed1bcec9b847a6b5119dc33809710f95cf3255b1e9505c704f4cdee18a7e9c94bbd1032f38f3572e2093ccd4881f48d1ed9b4cf4f9c061d59650632e2b2bf7858d73c603ebb86f391aab4c0dd660289076d1ff1dd32662393af8f907b853bd4ad9a520db2e5c38e8f171c01264b4eb33bec535a792efd157e326f1be34103c334dd77367027f9c6fededfb8584e609ddbe104c4f2c7cccf19513224201a656ffdd49808e8533a06ea8207f7d73116c33e31edaed8c58a8472fb64aba39de8200cbce6c6cdb3f75fc4921a3f52c51eb5508fe48b237cf7a454b3465c49f59d4d78a94013f9c28687838a6eeed498f48f906c3de5fa70d036ce4da0fedde12b4ff9452ef979fc97d1b564598cf19570cc42cb3fb8b0513ceaca8583ce7ef22a459d19954377f52cb24d66bd62d06adb3e45d79920fe4af214e740",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "79 m²",
@@ -631,9 +733,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "188 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -650,11 +752,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518057960,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "321 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:b54d5e6f3fc01bb87460e46e:765bb1c188858e379548024cbaa0e535:e2deb250fbaeadbafbd03efec9ee5c7c9444ecac8a53924e4be9ebd8c4913fa900e8dcdd1dfb9239cc3d2f5cd13c9dfadc3b0ce323f4c176ec4fd7ad41d3a04372516ff6b4bb45736b9171cc41b032b7c358b89c5fe73635d2c9cc7bdf34f81e18a0422cd8520f6e9ccfe89ab97b7a5b2e7c6d15c0fb7fe37e728f9062c5eb1d229fb941eeb64731ba4adeba0243ba266ea99889c3a9c16b3faecbd67ce43210e35622fdba67fef8ae2a489e3f1c42993c094d70f84b27c8ee2b821a2e2fc51f3f143ec07e1bec55e56a62dca3cfddb77124b6ee8ad7a9112d7a6f0b261da7cf24c820d98f676945d1ac2fd9d22909372198a1a82e2808d439a2760a15ff4cf684182064a6facd9e49484e7c58423be500afedc35b62e478c464064d4ea0a6b8b974ca259b159c5894e865184d21659230a1e92623b3dd87d39dcde3131c4e41c7c06446cbc0d8e3f149fb28db42ff5ef6e4726c1246dcb449690eb1dfc58c8e27",
+      "contacto_cifrado": "v1:b7280ff46f630ed5c737bc17:dcb2488ff49b00eee403149c418d5cf7:989ca7e3091ecf4c9f03e28ca1f942bc2d2676be08aeab9aff37f8ca5185c9b2bf0317651d9c074748f033e1e99392f244c54862a8b61f3b8e4df43210a98e9a8f1e9f149435af3c053be821696197997c5140a63268251ac0718255e8c82653ed41763fa55db1b9deef0dea8216cbc2e335e7280b5ce6f8a5664d393e2dd4fe9b74bb7b475a580da4abb624413b4ffcffd9c9ac8b41d750e048eece1af78019a0e0dcd04d5e8210177da4b55047848db0c0a1d3fe721b6624e722b654ddd2cb480a2f9d9929a59320daa6a68ac1983548b7d78cbe31be1a500daab32aa8cb2cb27846a531e24686e0d19b30796c3ea94a1edc53873587df01c158ab51bdd1f86670ba30281e5a36c5261d02039cd428072bdc570995d57b2a79fc85d7f137f8453098191baafcf3a15e6b3e654f47d11ecf94adbdf3e85103fdab7f33db805571f64a16657bb25a0f75b3e58f0d273327244138b694a70175e51008f5ed72d681",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "188 m²",
@@ -682,9 +784,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "48 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -701,11 +803,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518057943,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:e732921273e501beea37c235:3a651e909059c702518983628ab9f44d:c8a4632d8f1b9fdfb31d7011a7f44e70abed15698cc8bb798047dfc64731fe8e51f35155aba43fabdb5b18b559a8418cd29a0ab3693a7038fe74bbb0bcfcdac3fbb0275923f2f15dbed28e0bed397d3076cf39a8147db4c63e3c60015a3f1238a46bbe69e943511aaf6390a2fbc64920a1194d8e4cfb045f8f4fd168c5bfe93f8f23867b1d6d3fb906c0ff1a046a1fe248b35784abbf0e65ac0aab78cc4766c062d8605012bd334ae38144cfd687461e080d9a1a2b25c23b0879cf5d69791af3a5482f86c7e335b465ddd4b992b1e95872c186f05133becaf3a3a0435b5cd5b9bd58ef24b69ca7cf5c143c1a509514dc1f1e6009e8ac127834d5e5a16be178e41cdbbff04c8b437ebf5e7360d863c509abb0c59b1ad93a6d7906505c2df905b12d769601f1517456d5dd9dacf3accbb05105a939ad6a5192c7960a3731668d5571661d1f71aecb25692627911a7a20f50a88bd6a681b6727fcb6b2632badaab263e9acb014ca2797bb83384f01e7369c5ebb6cd9",
+      "contacto_cifrado": "v1:91f4440469f5cb73968bc5a6:1f06b10a8d5ff555203718c468fb665a:77b659670a43576c964ba3fe4be827869ec1bf863f1697cdc614a2cd954408e5de65183c9275abd816f105e4b52681b08f6f2ad3d40fe0e58ae5af23e23eb5912a4054e7689e9398b7fc80bbecfad3bca0c9cb1527461274150990e215fdb0f931f8e01ec2265103c4d49f6c23841edc87c577625fc1e70a566425f4089c000ace3c5a58ab20450f001b229de0f11a0922ebcd7c0606a24ace4670c5b49dc6abf32a98064be7a8815092fb932afc99a571966ce4ed12479acebb43ea70f7257293113d1763f18fb74f4f3ee22c51cd27e8d52b000ae7a94319e223ff069e1eda638d54f5ba96d82f782dd7aeb9294b03fa4a0f6abc5f343bc04cd58dc0456841390c34217fb2571b709593976cc06d2aa59532651929788fe6cd110861bdb57e77a79d2e09c91db07be303572d6acb24c6892372966fa055fa35f745ca3fb8bcaa22542614328149b3869db471ab27f6dea70277ce5e401598dd82dd0173dd4ac9786679d020031067084be93e46bb9d4c35fb71",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "48 m²",
@@ -733,9 +835,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "31 m²",
       "dato_2": "2 Hab • 1 Baños • 1 Garajes",
@@ -754,11 +856,11 @@
         "Rebaja de Precio Activa"
       ],
       "timestamp_ms": 1789518057910,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "319 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:4f436868c1809d3414495af3:c38af786fedfd50c41f6a655afd15e4b:a981602eff6d85b055a4b312b722df0be33c14eb4c5438b3177a4212299f44069c68cac505de95f1905b883d0f4ef82a6b1227dd9abca5c9606913a9a1cd4f57ddd8a2fe01e913b2ef9e9419dca782e0a0d6532b14a21ca742d131e44f2fb55b9552b2f6586fcda11ceb2e8ec1b143e13fe347d1bb8aff36a67f80666b5b8d4581ac91617e7f6580c86772cc4119c396101cb7d52249249435e882af2b38e3a22071e116669f79cc8372725bfb52bf593e27f5238f6e8b7db54b4971792edc274c700a3da2af565eacc4758610925e7db861c82d67e9b943cc540c60569a366abec7416fb1e1019dd89607429763a0480dc4ac00a8dad65948a70743ffb85ea94a27d9fbbb5d80b9d442d437c791cd7014bc1e298e8371f01562ce00b2a97bf3ad2bfa7a83d3f6d7e77c8e1470811fb7f4fd8c7367df378fc1edf43f4538b8e9966c7ab22378dc9ca9927ea4c65e826b686df3d066f47dc55a4084e462d4be4b8f60e8e6deee4b7bf8bacdf03c4c",
+      "contacto_cifrado": "v1:3e438bc2bb1ae811597562a3:ed5818248686b2b0dbc6dc9fedc8718b:415cfae3cca6d0f85ba6ba0790bcd5180130ca9a00161280685a07d01f17f0636899ec1008583ad856e76f4dd4b7cea50d96fd7e4cc0e456675c9508b4fc00dc6bd2fb9c9480ce1d04a00ecec7eacf222564ca8baa94670a7d668853048c4b612c14fe5fe9dbcf5e92584688003aa9fa8c67eb703b68a8d14bac25d205c18b5ebd412de8533a5b3541e01928fd13ead5161e2200b492b350b554d2bda13f128b68a00e64b400b2235dd52dc659856754759c38481b5b455fa5aeb4e63096596afe2f14e4e59ea0ec2cff26cb1ddd577d98384ab27843b07bac9493b27d4da6a2adde8ec16616ba62596d30203bf8a19b4aee91ef588fe9623709ca2d98f521ffb72f90fc8999d0364509f67c357e9823bf60d524f746d1680f5f69577c21dd6a06b4bb1aa17b8b4d322cacd35d50dcf84e16bf14dd6ec92395c15b667ef7c2247e0a42bc66080c06e86d6033eba645ceae191898cf02908de49c1d3fe54d47f0a86b42195ce792e5f54f98434677",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "31 m²",
@@ -786,9 +888,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Casa",
       "tipo_inmueble_en": "House",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "209 m²",
       "dato_2": "5 Hab • 3 Baños • 3 Garajes",
@@ -805,11 +907,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518057887,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:710dff245d0d04299788a414:de1be771d12371399318bec0fdefb59e:3b60178c3442a0df59c6db976cecc9abb30982cc71e592732eb49a8578fba6cc7a03a8f9f5dafbc058ca20aecc4953b2deb22f5514b23429ae384b4ba64c0bcfd2ee702e60216e6c02d038a257ef5f589363c40bd86da0e225ed75809ffcb42e3d0f10110f7bd802a0a22ffc3ba81fea393230812740f943c9058682bbea104dc0e0cd7a9e3e5d96fe3d2e88784b09d20be269fb62520ee38957746d291d19d91b6b06e0dae9baa55115f54d13a30d880a936ee28aa301dda39cc75c395f06bb46917d2fe908b220a359abce5a35111d8a1d330a5c77f0db38e313107b4f07179739a247dcc3555ff5a8c77282d24703b20f9c5629f1c51f931a60816cb94281789daed87da8e9551e457cf57d501d46601f84667817edf2e648084a261a4fa5df3efdbd41a51eb399c6a6eb092f402641fda6c79d38c6a14fcfaa58b8d7da1ad2cfc6",
+      "contacto_cifrado": "v1:686d0deb0b823121ed58f684:c947f54acc50e3493d5f67caa1e8c4f4:b60fabb1d97600bfd06a6a59384183d6b30a066c30a9852297d183c0bdbd7cc18dd9c9032241da4e7663cfc1252b29b30d41f66fd5cd3a93c7419e719ff3c6edc38c670491d34f65cadcb98c8cf89e84323b6b3e01414dcee95523e90f7c2daf13e34ceed4235dca797924748fbbb13862c11e45ba633026e9fb4e2c3b2dca79c6f1d2a53588f76e6c67401d000a29825f86ad04ee395d96e4e32d3d7db129ca42c22d4abd1ceea467b4beb0ad4bb8edf9dd1ada84f483ae1c4122f34eae32263d3be8486004f3dffa3e5684c2538bf713fceabcfbaf1bcb4c13a97420740a9093c42753e274d805e70ea43f2140f98659a99587d8d495783f32e8c05664a01281628269f426f6c3eec3d158d40d8b77cc34673397e077a69058ba2892b204fe0f2baab40bc66737dea16ee41889d04cbeed4f6422650e9cdeb8951b7ebf89fbcaef0a",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "209 m²",
@@ -837,9 +939,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "93.5 m²",
       "dato_2": "3 Hab • 3 Baños • 1 Garajes",
@@ -856,11 +958,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518057864,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:1c59e8e499893bd6cfc86042:458e02ee904e1589814922e8816cf932:9af2bca60cf1397a705a0b6739b9633329171713adf420613f759c91fbbeaa85fda2c51c4c5bd4b999bf07b459496fe944a327113e608dac7254a25f415230771999b1d8d68e6764440277dbfb1bb25c1909cd72971d104ea5f84d9ff38e588e9234eb39c39799307f31eb87ed99f5c0aabc10153bd4e10baa122578cb09195905e47d4fdf0cf42c404813a64c3b897a5df026b690203244da26bc77dddb57b75a52f25a769578ae2b06869e0f51cc49cafc5f048b1f5c07ae6e64cd332eef14b04074dc4fe016ea4696173ae98484dad68b0ffef569ec3028751ce30d70d54eb72567b0fe7cca92395a8e9762df4b8c787b4fd85f009e59fad563890e6b357175411a6c8933da8b098094e2fcb26e90db9066a75d6e7da736d566a3b472c7f4acfa1579ceed16bed78e5c162081b0015ef5636bceadf5b6c8147f33fdad096b3e3edea565d802",
+      "contacto_cifrado": "v1:a2126c85c9cc555cff59b2ec:7871724c078d02f91c743c2cbebf47ac:ed2a6f905effc2fc0abf0b089dbff6480f073e7a7dcfd95d4458a7fe4a2236d14fdaf00c5cc37bd8d624d4c9302e87fed5e861687b62698b99e344849152b707e7e75a18440a12522ab4fa8b97a55e49825c9e607d5d5b809a20445dc7f53beb812c659aa661d580ddef5b4b1029c65f3f0bcd06baebb87cb7e4c4734e7b1bd035dd13b9d068c843f866725cd66c1d2f0b690b2ce423b930552934445bd0ca33e17cdb4f92dcb78d584eef93fe91b55c2f46502568bb551c16ff678ccb5d3eb394b936c0584166929ed002fbdcb3ec4b68fce80b627415d00477f721fb0deb1d016e227f2282908ea5949978cac1c7e35d480801e620c6ffbb780685ce94b93a75e30f35ef766728772fb17869a260b3adc24d59f6bc52d32a7d6bca0dc4f143f2bc44209846093060bbd8f005fb800b04dc43bf65d7ec6ef5924b331d60159a1324f0760caa95",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "93.5 m²",
@@ -888,9 +990,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "92 m²",
       "dato_2": "2 Hab • 3 Baños • 2 Garajes",
@@ -907,11 +1009,11 @@
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789518057845,
-      "fecha_relativa": "Hace 15 horas",
+      "fecha_relativa": "Hace 16 horas",
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:90ad96022b5f17666fe21bf9:03f570be75cb87205424ab08f278549f:bcca93f48fb4495150ef10cee73db6966a1a9a9d119927b08a9d43ccb244d50177b3663ceb8972c2f35bc9bfe8f418bd824357125fff4fdf90b5211405621d8e4d8a48aaaa8069222ba454382b6a59b6e560ccab3a7582dc627dc14424a8f61c5bf08c08ac6d09467f114f674e61c867189935854c83f692ccb1735253fbc1757b858ece985b22c56a4a3cf3215e5d5ec2d3c6e00ac78900e2c44f104293754f9d81a68408490f2b6c4e7df716ea7d31ad5a3d05c182384c7f0fcfda6bb4c518518ff4ca13b8534955c5d0e34c22c65dacf2ba541304006b8aa330fbdc5da8805431ff22fc59feb1c8f0b2141e15e0cd4826326878ff57d89d49d9aabe55d2ae7d801873ff27aeccd9cf2c9e49243844b7dcfee6e775d396806e182c1e60cc661598ba144b3eb5162be93b6d9002e45805a48554474e91eeae11f6fe14f7f3206c324fb44fd55688c8645d0435a830a2f380e3d3ad937b0fd0755ede8800a5624a2102e2a97e8994fba84fdc26034e8f08f0cfc5623477",
+      "contacto_cifrado": "v1:430da18dcafa97efc0903305:5a6bd2bfe552f64d5136b8227dc593b8:bfc3ea5b0692685b7a0d95ae43110f908520e382f8b5f68403e96fbea72656a6d6f5d1514e95765a08e442081810a118285b618b82d8c4243a695420d99e058685f9e5689c03258a2c439dc25f02d615ed641d0f99d633642d8efe17bcda130db55cc8c1a3b0a4b2c4d8b3617e13755fdeaf42a2585c416add8e6e446cb3b1dfaf7bf33111ecac27aa8c6e13bebca47a01e1d32da89e2a31c331cd9dd17249b914991255b03769890ed7217d3592a794e22bd139a0e1f397deedd420c6a819889b4f29ab86a5282f90bbf826e8add341d6918a620a789644e43a409092a86057959c86c2120b0856cd256f1975b439f36520758b8da21e0b55a0c341b91c7ce3818cfeff8afaf46c2da4b7fd232fd52033be01ca4b8bb8ea1ec442e21e527a47a61e92e78c6a96cfa74536ed8aefd780f54d429cd938f5a09d0818e90e2de5d652a784b6edf00f730a9ffaaaae278b3bcd796f38f68b9197c8c933481253bd464a51fd4a97b088e35cba0b15463605ec1ebdd702c122a0",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "92 m²",
@@ -939,9 +1041,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "64 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -962,7 +1064,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:8d599d04589a8e7be3b33600:2622aadb32076bf765e1745df22b763b:4b4cda0603f3143fbc7a4985add7ae42fbe03b93faabd64a52b32298e8367439d0cdd2e3361cf31f3f2c56a4b7d1df69a5d108213de212a2788dd09070bb0ff05f25a22d57d172f392f8f7aa46d027a69a3e5f2085adf1f05e627c668d84b5550f8be9057787f08a093edca7e680e7adb1ebccec660c32119f131f3d3eeba553070d2078652bc33340e6b28c7c2a27febd0ac0e482d6f358c63ddbf9fd3894efe4fcf498f211b11be8a354b92c561ece6d4bf2b0e7bc1842135088f4bfeeac8b6ff652e9a0e42d0c421bd36a0d8fc3d3bb5c8e4dee13342c0ec40aab6301e460c605a4302e375e5137338c546fdedbf6b316a4f24361c68082826089f2b6f7efcf988b265ebe46e3a7e65aa166f72d84240c46b77af360411e295a1abb240f94875b7e084f9812a7aa1fe474e6a54955a8621597bb582e30e8ac0a74469962f21e231f357fb52947a0790b6019e3f49c9007907611209071bc0f2093c87d0769",
+      "contacto_cifrado": "v1:c96f76f26ccfce3179accb2f:4a3608ea0d2d7af23ef5166bf8972695:ddbcf43cb2a833c28f639ebb170160dc0102db7006110f401c30ac626e76896bb99ed9daa8b2f09f1dc97cd406bc24dcd2a7a82c235db6950fdffebf2ce39c47860f8b36bfcdeac505c17b9635c81b6508a68239c9e8e968e1104d2291ddef7e226e812664789facbd11c0c98197f7a278ab53a4d6315930038f6ede6a5b5a44f50080af26e876c0b546c50b10b73a6d5cda129b8611c72ae7528cdee294f07fdc7f82e7e98687c3007c98027d5c9af2d352347a833850b39d98abea229c1441e59dd0db26d843a13f5a3a5b0b0a312acbf2ed6d7a2668273b84cee33862aa355fa09a31f7bbf005b16402cf9ba58a7958f66a72566d47034e1c6b5262936e00493b89a917058ee22cbce0131a7e6418f026381f2b5d0f8e6c8c0f0493931d10617cbbaef1ebd5b60e8047d074fe193b1874bcf2813728d9cac92b88ca57efc2c343c3e442a7a7d019530138bf958b6fa7d000fe538f6a4d61030885fd7c1463",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "64 m²",
@@ -990,9 +1092,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "30 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -1013,7 +1115,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "311 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:d083b86c4236cd59694cea69:d86184ab5d8ff4e31b4ffba7a9d61143:fee6186cc5bbe3564763e7e72736a27f1d215c1d9ccc7f070b7534a09f60e491d6883c500069f9ce1e6590c8959843c1534393ff3bf83f2b0527e9942924345c50346701246b6d9dad3ff2c50354fef8a794349ffffe1317703d5f1e97c1c95819d60eb80992ecfe2a1c9c28dc4ebbf1331236e89e3f458f095a6bf01dc913a9b21efb94606357d6b2a9a3afe6e610fcfceb90bbe4f30a0368c82cd1633dee36c6d518b9319e4d24c6d68254038cc8adbea06fd27e6bdef7976ce13c17101052345e631e56c1196bdc01789eac3230ddc55dadb0923a861f0cc03c38bf479b12a7a8d5ef539eef4e8420dbbd02f9b656dd8e503e225e3a1c232b7987a0bb075caead27f208618e178da4d1f8ab9fcf6396487b278f065060da1d1dda23b0f53b8660e8b48782fd53ceac0c1a591ec420cf65557e8ace339ba1a6d6a89932c55bbaa78ca358ddec3e197cc1dc1bf3ad4df044",
+      "contacto_cifrado": "v1:410341e1f0fd94263d68edb8:a9f78a2667a73081ce2ca713786baea2:6fd0ab146ec8b426a9d6a5500a2f77cd74893caaead5748a42ad05d3a6cfe870d95d7495e66600d73d076e15c77bf5885c04591b627431469ea6609ab78b13c02c2246cca7a4309b361a0c0dcf6eccdeb6111696f3cf1054e312446679ae91ba2ea4c5e9a6de225e0c55087c0b84abcbed1844d078762d11124b76bfdfcd933661b0dd39f9ac240cb707a1ab420f192244e8bf4c66f0f8edf1434b0763e21559f9b88d51a23f6b9bb58e26986499053f9fc7a01a2eec5b4316f42cd5bae5ddcf856aa8f853e9e3726d481de396592585ee1fa2fe328c545752dbce2139caa343fb1ef4307e167bfb75ef9ea0ef268266a3670984f6acce2825aa6fdd1a8e4e1569705821a749f8d30daf1c96b7a31bb1d2aa6b79c385d7cfbc95e90db66157a1e9d3e4b8c025c0d7cfe724f73e8273de90f9c99430971c2b58bdf090c2dd16bfec8eb13f24a9aaabb6d8fbbd69ecb552e58d",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "30 m²",
@@ -1041,9 +1143,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "67 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -1064,7 +1166,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:e775af9ecdcc85f17e7b3932:a1c29a3eb1a58ae06af3afdeef621c30:6532252b46ebb96fc3ce47ef05c8679ee6ea3f280529147c8d1875a14bbaf48605c40cbb8ede35c2bd0d664313347b664dbd6a5d56c5a3594b270fa6154d5bbf835a9347652f0a00f6a7c25f52cf0b19f0e1c8fb5231a8d551aa2e1d8d2b55e7bc53f45f0ef68188cbb9d3d1eee89130b8427010bd648881f4506bb46b7273255069d54f512acbbac60c87bd8f3e6d6a5116acf1f3805c6d25750b96937fd941726672b4808e79a8ed8ed3c827af4604c8a62b868fbde08dae6babd5abfdcdb32f73ea42020709f30d25bcd34d7dc569bd241da5586a3f671a9ee86f0198ca8822c4767b452d686a84a861f8236a0aaa6d7285405688cd86e9747aeca4cf7604e533bdcb28f8762b4994cf471f38e547a2bd5a9089ecb41d08da09c366a30b9bea6e07171f605fc6324e2c261eb580f5d9ff9ea743a0bc40e53628cf832365e5be6c3b74b7e39da4152a863fcd55bc148b08f41f3e583a0c204320188587452cb288f598",
+      "contacto_cifrado": "v1:6dda2dfe75c3b5689204bd70:d377b945370a30e01c09acdc16edc4f3:b6a696cafcaebf634ed6d7adf744dfef9405ac0a8c185cb0b15f03bb7a70a0143e7ddac4ecf22e3c566e48e9852b9d28c1dbd80a6b46de312df87f34bc4f7e923b0b084100ce479e2b0dfbcf48c019dc9b9ffd3ed1aa68bf7ffacb6b1a5c1a4f7465eb08e35f198f481bfcdc5dc292352952f3a73e48487228fac8e6a5d079163f436bad883a4d669c3e9f9e9a0ac86960341e62c7fb2dd2b77543975e826332ad27caad93be063e82514909880c8b4968c2f0967c7e2b5ad7147efa195ceeacc6262248099d9c6124d9895166d37ef06549153264b8ce0b5e113cabb619aab2f449d43aded1915b2474c7fcffa60be71ac1cb1e59ae6f3a9d8791a6ccdc6fcfcd4549d7cdb69f9176442efa2eccb826130fa3dd6af935e35da8c795de3d65941d4db8b0fd10a8fc8e9e2672e53b39749a1df8d297bb8a65d21c625d555439b1dbf0c4fb6212ff05e2fc016e4cd152e5dc8299bd856e48819afae50542b2295a10a94810",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "67 m²",
@@ -1092,9 +1194,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "60 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -1115,7 +1217,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "316 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:9f0fed2c18b912bed101e505:09490fdc2eb9fde039f87fe7b6bca11f:22ea432caf8fbe30f159664637f5788473fbeb9c938783921e5c7d0d0d5387123657cbac6f70bf799e400c7f3d94ac537d76c4018451347e944d98c81eb6734a9b2401a0b5935921b268317aa2a2a544e065b99c38a55b984f1ee47d9e3122712caf410da8c2b10c80752aa542cd9fc7de88f0fe198b6f188f6b57656dc440a92f1ee4f8e1b9c44cc23e0f67cd4a227db939b638f4bd061beab2b61e290eef30ad717c1dc09efd1cdd1f1effc6fa03c3706ffa5aadd52cf34cf297ec2f476be68f8ae0c3c1e7ce431f56afa119005ab4e252cb6083403c45c5de6a3a1c0f70f10dea97ab9ef16a1c51fbfe69f973d255c26ccb8558b1f1360a521e9e9461a1f1e5488ffb8d2a6bb000f895ecbc9ff7f17bedb4110d88652bea5db861546be424b29faf8ee79b1d1e95983067279b800931a6165dd429bd43fa09fa4e7e4c6ae307d45f00287785c64520f61ebb8b5dfb6db657",
+      "contacto_cifrado": "v1:3a3b2cdba7f58541e24ea627:f2184c7ead7b6d8fd08796a3f18da91b:1a8c4c51e2b13a932d93385f88292d2e39d2b5599424148734815e666c4b0c4ba8eba7612bdb467788f0658f62bdbd54f4943d9fb1527785339d3e4a722e72cb01116fd88497e9e9ae4512b0f70d0d6aabd06cfb04609fe27b6e95a75487f0db64dc64638f11bdcaca0ef95c2edd1db87018b6c45fb0c603dffef7706e71cfb019f58fc765fe56c060b7c232fab4bf9008354300b4336d966eb4ee65b40e6504610f4979efdd4d0258cae4b61f77fa2cd8ef4ffd692a1277edf6cd06d6309b812d2d26a1b06cc8a9004e3f53eb50c3788ef7e73c68f6b4058e7a27344e9dc71358b4a0686278379b58f1c08d858b9b672646d91ded3e1a3ebb25639f854f9678e602d7fe6aa8e57c43359e8da63cb4a4e9402f9fd05f98f6f318bca2a8cebfd13f885d87d9ab5d52a61cefc40f2ee2d11d42445f1bdbd210180be4df91efe2a8ffd72fb7602d1278f74267a1612ebd1f74f413",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "60 m²",
@@ -1143,9 +1245,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "41 m²",
       "dato_2": "2 Hab • 1 Baños • 1 Garajes",
@@ -1166,7 +1268,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "311 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:9cfb3e57f1b60e70e327866c:0ab6135a47bcc302a7c93bb9d752c527:cc51e86917f94b1da203feb91189df37023ec85f2d145146f679dfbfaab7033efa898f745b2d80e5cfb7aff0bf6924136d2cd8e1db268e7334ff156dd7290a2f99f53073541ce0029b440c3b9a8047bfa32f88c09337fda2bbc6ed1c85de930c37f683c72e88f8303f2ba44b73d025f3e4f42c09124fdb82003cc6c1c2c1fa9db996d57ff82c37df4751c6b7a9f3c977c3be25bb285ca4487e08c90fd5b2f1c359cba7a717de3f7a6619d0ee379ef278693ba26529039905f11d5bbc7ee13ffdc71471f76c7486d9be4bdc76b3d0b4e9f7641a3bc27abe9309e7700830d2cac895df71e8a47ec974828061492cefb5ea47726d046907ba07e7655bfe43604b80b7f975edfce6faea60d9cbbb5c6c05f383a3f73d8c29eb9b10553cc337bb961a859680de338b359f35f8edc0d28b1ddaee02453cf64f6e8aaef6368e37c56effe58111e483d85285f97b95e99025d751b713644f3a552767c8b7ee071ccf9d83fd70dd8ba57481f41e79eb94693c4f92d219bb846a480c3b324f95fc7bf429c0f110089b06d5347403f54c64c7090f2008",
+      "contacto_cifrado": "v1:d1b74b925018396e608bda68:237a029f8ade62ac52fe81cb3342a68e:d8fda3aed81f5339965b2584ead9d3e74d74838755f658a0b066696ff31dd64342e693c44ea6a60a10cf0eb1a0e7b58440498e84d46954cb1e0455b61398c87aa685e75bbaf474be9726b6f255fe120e9a9896f7d8dac856e278495865ada2987a3ad1fad492287395c22ac599b66604b76bbf0bd490e15d0f7160f63776e4c84bfe75eaf3afff005b10e1f421964636cbebabb3bbf6b95fefccaeb959e9e3c7a60de58040b8b480c741fd1ef12845b283d6f543a9fd32726408b81dcd0de49b76299e0718921470f4e20ecf5a30496a3b28d30e0bd604d420b5dbcd716b2f4bf638f6f82fc51faf794c1e74cf6208c5e26e6057f76206230dbc4903f110faeaca0a0c338e19382a94ed01b9dee7b0231ba564bd2326b3065761268ef7c737148c05abc15878a8873dc3a0b9c07631f5ea6c558404f3f1bf08fa024c081667587415f4868454dfe5cf8d3fab7d6bd31def1f06355950daa8a611350ab8e553ccdec646827e0c478ca7c8896238f6eeb9d4bf425da6cf31d09e8181cdb671362495b218effa44968e1dd5b4d59eee46d5c9",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "41 m²",
@@ -1194,9 +1296,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "100 m²",
       "dato_2": "3 Hab • 2 Baños • 2 Garajes",
@@ -1217,7 +1319,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "304 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:59aae772977a690b9b0ad1f2:813a2fcd7c2201e3062cc6cab8efe329:e911f943250de155071ff5c092f95fc36d6c0aed2d692f57bf8279d6292e18ad9997743d73abd3e7fed47cc09d4dc8a8cafee2584a7a72e7b0131d67815f1f74f6dc4707da8a01135de683d1796e5c1ae49f93fa24e3fd3309ea4952291744d1769387ae629618151158034fbd8fdb33bf0cd01a7f710b7cc0b432dc362399584225d197dcfec4ab966e009366d0726e0cbe811c4b1993c516798bcf1597b6c7f009432a77f2abbc8338c08a353099d98f015f37d6fb28088a55c1d7264990ede1adc22cc5dc9758eba81d7959bc2ff765c909aeb0d03b42b66079eca00584fdf661433820d3a32d02f50e88867953d87c2b2c08247975be453a578e9a20e1f3c8fac594e03ff58dc95c70933cf6d52b710c3a432362ece48db272d8638dcf85aba77360a856489309c1f4da77a17b1efe1fcd5c64e8f49400afdc0d5f38af83ca4ff39f07209828997de72c0f4da8c3cb53342be54eff7ea95ef94ebdfad141e333c5",
+      "contacto_cifrado": "v1:0cccb9e62836704dcda7a60c:6e265a81ab6fb2edce0166c3ceb1ea9d:db746d871cee2cabee655f4e4765c4bc7b26f8b64cf927c82f29790e06d2e12ff9f1cbd28ffc0b05c3006809bedb425ff3e03df920919bf2385e2d0c50c71dd9438e465f67434c8fe314a9ec62a8b6ac770fdf58e365671d5542dc1e7f65e2839685cb65ce987831a496567ad0a11106a42de58cf47e796a301937710a98b4a34048ec39cdc17f88b0f77f49bd3feb2ab033d15128965fae39d0db42f232f15d26a3eafeb2c63f2fddfdadfe7307599757537f189df62e4004b7b1e93370e0d980f4d3581c1a96c488bf89c39563c47557e53397973da6fe45ac10d07c0da1e008b1a7bfcec1381be4d451b764adab4c3fa6a3060e2b4cca03b88511bb992d442dd631b5d2ea3de595d776f77a622083de8580e09161960c4b3f849b5f9298b3ffacd868e0a16d6545d8ae471f27ba626e71b36ad533c11ceb29f24c97e23988f9ab167064b14ee085af0e1393bb05827682ae8a2eada2d64d9e0738a5fd0df70955a3",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "100 m²",
@@ -1245,9 +1347,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "92 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -1268,7 +1370,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:22526c93b6e6c4cde929b7dd:c68164a1c69989e6186d9f97aedd107f:a0159ff5f9411485f5006a990eb6bece4716c20b76c4eac913f9094de929f0abe7471102f77b9a50e9ef4028d18372e86ab4a9449396da81d4ad6aaa8c83fdce834b2113f3659878d45ba29df66205cf71b0cef684543142e54dc3947cd12fd522bb1d071231517b776363b30b35699a2e9f2876b214487bab53002c3e8f5dbb5b3b3db685ae20bad1f51187b101e3cc43742bfd3d0459e50e73fea9cb821c6e8892c9571669df5877540de8af696b4f358816e7663b7901d1fbe7a577e86e111fbf74a723db225ad19e5484754231f87990069d1903102b55cfaba2c9107b964b4a8010830e1c4e2d716f9bd86214ddfb74ac9c1aad29b9fc8f25126b596b5f394ac1882d69d73c6e7ac94811f56f7c097b899812eaa8d8683b277afab988b4ae07d382a98b521c93f5667d3b22f9484ee96c27ac515efe2b605309facf71c5666070bedaad52a03034e8e11d13622ad8",
+      "contacto_cifrado": "v1:4070b4a69cd800dc67e74fb1:569535f43b7281babad98cdec2ed29db:b931d05d2599c65e66a0583a867a0150011f7d1f0cd6eb43a06b01ca676ec604a8962a949087775f89583a5248c995464b45528b8e1d50b1c5ef356cf591793a33573e0519cd3aa59b11af6c1406d394dea5182204d836552d30cc485767d14c8056f10b764f8e2ebe78d3c68291ea2cc08f63ec4c5aac3e948674c58ba244073a8f2432b22f756ea7b848d58bc93918c469119ac15982b6bd2089896c362352deffd2d4214def28c089a7ab7f189ecf0e9e881d67bd72d0b521828e989b41e7e299e9d9c0ac52828ad3f069ae0637cb5a201a02ae33fa1dc08ea097343e1787fb45b0d37d84ef30c4b644e3144e24849b338600d3a628ce924a00ac03119e443e8253c187ce7cee63ef06a0468123587674730f8ea69c52fad7d31688c254bc24f94cee9ac8a43bba5d3a0c28496c646449f9f704393439bf4b552902ae631693016faea28cbdba12d3645c8c02d6614a",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "92 m²",
@@ -1296,9 +1398,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Lote",
       "tipo_inmueble_en": "Lot / Land",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "84500 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -1319,7 +1421,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "324 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:66a08daf0042bbd96090aa45:36604952ee6da3fb652d7c2559751d45:5acc4cb51e446a5321e4b2148d3d86fa58468178460eaca3effd935b1179d8d448451f5205f9b87a41ea445aa71e22eea35076bb6cbc4d38ef40cdb96403ad3f4e2e9861a2c416d04b66264ede2491acffe2d4bce30585e02cbd68115854ffe9fb6e6ab9b790039bc8599cb209139a3ca910f146a2744a06667c6345c9f1d4d2cdda2426287b22a34d38138e2ae519bfc5432f18ba07ed1c573da21cef06c272a4daf19f96cf2e646dbdc2dc1e2235fa34b27287b8dd8b53a071077ee16efa491e0cfc68102fd37412d2787fe7ddb66f140d65b4d3ca572323fe15d7edecedc405e42b972bfc266cfef4ff10c41ed150b1aebfac84e97e9fca1d77ee8a511b66bd2b8aa2dc28a4a50f4291168b3e94d1ce320fb23f07f6c869c390899c8350a8e8d8d0cfb9d4",
+      "contacto_cifrado": "v1:d26d3adb0156a0665bda5c01:7c7dcdcbc51bc624b81558cd606ee9a0:1fdad87f12976021c4a0bc9d2eb654775217674585cbe1b0f4d91cac4b9d67e790983ff275b3ce3103ba561b098fc079c22131229ea1f33452642e3546db563b9dafc1aa68d9f0702d73dc738e5c9b2e4d3c941b4a7f6b175933d4cbb388293a2851215fa4ec004540367b654953d4430abe1f50a5d856bea56972f139dc96c9ae0bd2c2fbdd2e82e0e3826d522b55e096c601d7ea404613b4a6ee779c7355c34c198e1e0e68dc58092baa0b09a8a9ff6d2c51eeddf651d6fa391ddc5e861a14dc41c1722e733055b40544fd1a5e5b13c7b3de6723a4615d136f2b3443068092946bd94119ab99ca35b29def20bc5644386e2d27782ecea3e3adbc56c5b3ea329b586097c6b1988e14ce12279800f8d40aabb2d4d0e5f2a3112d855131efe41931b01a7b6b73",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "84500 m²",
@@ -1347,9 +1449,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "63 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -1370,7 +1472,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:7d06bbf167e1cf4b22cb08c7:2ab5a7c84743dc29130b29940e9de89e:cc92afbee002f719349cb16161f0dfffcbded7e73647a9b53ad38f5b65f76d48e73eb43e7ec28cc93ab21faabb06f0aa9d50f5e886ef8c614be247c95238b08e53b3ca7e054cd51ad23682c4cd06325ab16e25e84983a80cbd0dfbe4597cb7ace31bd6a5bc28a0fa92343ae1e9b052559ea21a45201d66a9465c248f8dc3874becf09286a5a671e67f66e4dbd90284c8eadd6151e8f1d1277281ccc463c61476f9b540943b6ba29f13989d0ec9ffab9e85a0a73b74e19409a74c5d1e8f6ec029ce09ae180fba4d645e46f868cc8d827618aaef961f0877b1bd2d944907b7e022e0bc1638c45552e879d0f92bc4b5ec048dee8a0a86fef2f865f7a74fca5fc2912310fc37362103ae7087895a4d726b5788832298b85766213189c5b55efb01e884d0b7665ac51feea7cbcdb6f160d5ea328c07a20164dae1df64a0d3e8d2f18ad49c06e3c71fe95d01bfb75b65f788022488c0558e37f46041cbf7ea899ff701cb82693f0187279ebc4ea3073e5a552ea73b94b04dd7de86bd1b7b4a2c97d2902295e09256c30dbdb8dcc5dd5e450fa749523806a3",
+      "contacto_cifrado": "v1:04f35d74e8f2e79ba07ba782:542040f3b8597f36605a94f78d2b3a84:050af285c6ff602d6d05e2f6ac2d3a1e1a8013cb12717c611ed5956b59193cac57f5e592d072b48fda19fc674321a9a25b33b6e20668439c8e9ab7bec6f794930efae3fc6ed2d6525cb381d874c5076a5a53d52ddf519777b9cbbab96a90c1ae07094d07d1c1a64a04d9f596d26de8783d4ba58086a860d8d9b4c317fb556ab8a7e235f69d6d8509266adeac8016d5ad128e351aaa5016e6f79af02b6721853d60e6b77c04dcef6f9b5bd0a6893849e4df74ec74bef0522f303fc88a13a816be0cdd7b1a54e6dcb949e96936b984ffdf1beb32c8157ed6911af9868e648957290bd372b5de7f281f22cfb862f4b21d52a4602ecd82c8f27fab2fbb6f41f0018dcef801e1a686fe098117e031c4de97cd5178b6b9c138bef6b14d3a1d276f352ac70fb50d6a0feae427b32eb5025f7294057e2b00e143f0cf16918bb013ef89335cd907c9c027ac1519591a4622e7173dfab4617f9eb3201fbf61a54f121ae1bd1bada3cf1e0d8a3b82ca76de198d887cd36b0d5d25bd69b3b5e705a1932e8dca8144f008da6789632eca290221c0e1f0f0a604cef1",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "63 m²",
@@ -1398,9 +1500,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "90 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -1421,7 +1523,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:40546e0fbdc91c345bb03a32:c95f0046a9f686ef26d85a2f4535b54c:709d5174709db61226067447f7f87c7663f280cea5baace2b361a3663e43b81615172247395bcbce6ae51c55d4af7e603d9b8d51ccb3ffbd26147339d3f5b57325f1c379d9216fb3ee7ff703d38ad473de8e069c3203e69c56713cac8d2fbfdc003b4b4118c7af3dd5813773a14745711144a914879b23098d4b79fed0ad31fa8a08fd05267d16baffb5bdeee575959ab9618938f43bfe5f33ca82b4955c118753cb62e911fe765ad7ad4144bd9eabb7e15073e3197a2d38b10becc7c7f898d728331c83f6fe99900f37aa816d915c61b8b8b5a7d867051db9624f747745ebef87d5843e3c501de52d8d6501b680b19131177957ec8dbb927b188ac0e763c958adbec3d41f163aef451b5f1b4711bf5c54dbae081eb1d1581039e1106c5013f6e9af72e838ee957791e35a7256e0650791a4fabfe9c45833e15ec75f84768b98b0c8a89a3bd1f5f26fc643826cc2430b9dbefa356f1975636da6a42b962f",
+      "contacto_cifrado": "v1:78b0045ca54c94df6c052fcf:42bd0e95eb576c3b5ad9389b41a1f9ed:9b8902aacc1c4d403c29baee0677d663de100c739006b6890e6bba4183b706e82c9f5091a2a65eacaefd54f1dd0769cbeca12e260f40ab015568e40c611fd97b8d5ca906c65ac5f1d346e2dc4cea88c8881b264f381c43c5b07f9a7af630378cb1060a19b15ceed05a4d7150a7483aeb03cc81677464393685026fdc576d4632ca5f0f6b537f63972c0113f47508f79d2b3907213b8dfd0f01f21f3e5bb2a06278c3203cd41cdba536c4252b6bccebfb197283f648c9b1f5b9c0c3c95b31b321f942de10e66e8f28f7ab95b1324eee91c0596ee76175f89368f29806325a39211dd8482cfbae7deb95c472c902ccc14bef7179521340566d41fb3fdb963f13a99b1756542e63b032295e7ab9818875640d1bff7e0ec861b41236d14b01683300bd53232b4f8d692e8da98e01beb625016997320e44591bd283b21855973ec44ca4f5b880608129c3e0ba80420750a9e73c7e0566af8c1313b0462c55369f",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "90 m²",
@@ -1449,9 +1551,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "128 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -1472,7 +1574,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:5d8b84e0c7784548e9981e09:33f2e5b5196ecd45716986677983105a:efab104440c8d703eecd73d89ed86d51bcb558e983e1abc2a86e8171d12266da4b119f963fbe5c70f63319e9001249f9a98b1eca05c9390dcdcbbbee42e8abe3d2cc621f430958c7705eeb70e553bf375501f3d93db4cb1b1c10d10ccbcc99895dcbcd343f8a99a717c583a8ac0cb37b0d9e163862ba9bd084f32fccd2cae5b857afe14c128a7afedc40805fe6dc7e8a983bd03869205100bcc46018150e5d27b65144997ae48956a374a3b52f43f3a836a9ce4287b43bb30b435e4b36d9fe9b0633371c4ba61fba54ae4e3a0b048295e23f8d19950a3d32489191e8e470b6deb8dfb8c86ab455b7e10bbc01a917032486931416edf82e0f27982b3eef0749ca7efb592151b8dc47c1d645aba90e68eeab3ff0ac68a666266ec133a43d358918d48e01a4cd08b7c74d402618e70fa8e5e1e16e7f77c9f4a1a1d714bd43b3865d1f3cad97b5ec7c8b50061a9d8508eafcd856932b596dd2f90154c8a2b0569455e9a88342ac16a247326c231023a4e696ab9cc947594641b949e9a83550802fa46c662278110f0330bd28b1060018c2ccb3c6cc0010",
+      "contacto_cifrado": "v1:77007b18bbdba5d9de3ffd9b:8c5aa13b4aa3f22ed2e42e32909bf0e7:dc6414b5540a03905954ca54e01acf06051d960f274d6f0df051ef75344c919fdd4c31336c558a7b5c6dda66e7d93ab464c6037e6eaf38c611cf0896dfd1472cf67ec4038e445e418ca1a65e85d6581f0ed0468194c44a9ee887c15868a152a5566788b23ad8f1096c723822ac56f2c893469780f5149a9d34dfb84012b5cb7e9580e88cf7798062f12d068f2c00647d40f800ce62d149add655e50ecb11039c2ed8f7d98e7314fae972ee6d470d577442f09e4b9acc94526cacf6ad84019fa7603ea363c875e65d9fe0717877c7830f498c23aa87159f9da0be9619ebb2fcc39eaadf852a22330e8338d93b479bf19d32654bd389fdb7bb0c167d229f3fcc0408ad4a01526828f37db5b3643020b77cbd9bc5bb6bed6dff672a18552acd51e75b41a178fc980342a6c70cf9b17dbd575e0abc3ade9bc7c5278c917864db710224cdf2eef46dade8edfc257b90e2ddeea119393218e2c8039ee7d683673aaeb999da445934ba922974f4bafb417f21d2e43d7e70a1d390ae29455cf8cc942e611b8a73753e995206fbd35b83b446584a2afbde0630",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "128 m²",
@@ -1500,9 +1602,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "220 m²",
       "dato_2": "3 Hab • 4 Baños • 2 Garajes",
@@ -1523,7 +1625,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "316 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:522f6eec67d4c25e72bda70f:1cc41cac446592c84999187351daf511:17966a43ed1fa2c0ae07c95984e71fb64853a899954812e662192da0432979dc98e479d6dc38785d58ce7c115591abe6dc7ffb501bdb34c733e50b1f9ff181ca9cba639d66d34690197ad87fe234b33ad6f9248cdf7f9ef3d77b16c11e427608e2e0015424b3b7e5894be6ae580d451d118f46ea121cefe93b301542e39cecf29a0a90d1d1f27c9c8a3e0a9b458f8c734ada67034f1cca2b8f736231fac011bcd2be93a399adc511afaf577c29d619aaba84d628031a0796234eba0f7bc3b762e4472eaa01f28d44fe971966c201ae3c4bbef82766045294dd043e61cf87bb9315cbab5eb14dabec5ee7021fd593d02bb5343f3269d6456b390b330a7a0cb6c4637e7c8aff59491ccb0856e2fb764ebff49358f2a88ea1e7f7524711ee76bb5a4ceeb8f7e87e36fe777d54e9b6558e56e704c076d96cf8ae9802b284038c",
+      "contacto_cifrado": "v1:902ee00551561018512474ef:41fe3a8d0a0fb151d96eb187fee39371:3034bdac90de3579b0e605b43d19675cbc922511642061ba58dac0cb21a6dfa5ef61042f93910bb04f0a55526d2d72cf72a268f4a82d7294cd6a5dbc2e70a8b9aca12cb0277af7b5a5e55827bca020c3e05a804a7a0270c3c7fd77442662b7fef56950edcd5dff80744eb7c7c00df10877f0750eb0799a9d6cc4516e47d60b3b7f42194a6837c70fdaeaec61880d1b3a359b13921dbcc2fd29af15f20f95e6bc55dd65672bdcc268d29d5588379655034ee967fc58ce40d8fafdda6ed3127935accd678ad32ceb8544b417270e38dec909a1f551034278bba5c5522a12b7b559b14bc2f80e71d0b46a158bc01f0dbbaeac797bf806b83fe73a0006c8f6f6d274e39bcdf80b38edfee64d1427a4e07475e6d2857cdff1e705d81449c13986c488da5174da039e6323b3dce56d54621670f5bfca21001672fdda125a72639b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "220 m²",
@@ -1551,9 +1653,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "65 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -1574,7 +1676,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:c1117fd7e0d1c73ec0733ea8:54a8d6197192597b925c24184609d4ce:70e5438c0623f6e632a7b815ca7e90f3d4710126d1778ea07bffff4fb3d903ba797a2e3b8db026613e266e5c401b1b298c91d0c6a1f2cbb9f114dfb0d289ab9f4adacdadd9275a0f814c314e5c53c589e4f42a0b129bcfac6c2ba3f090bfe5b77566715466503789cedaf0ecbe204f3231a1d277f421cc146258c5c4b71110df8f9049bc94103025b2a961ec55e6e45b23f4beb22bbfb82f60fc82db323d1ed2b0b31404ce40bcad1b3098b1ca89660e18212f82eccb2cfbf4a98c114f8973ecb1077908d77b4f1c4cc8b7ab0a96a8014109144a478ad11da789df495c0754821f9598afd49297734ce49b9796c6f6b7d666dbf24a75f0950c2c6367dddd300afeaa3ad7dc0b74e58a94aaf7176cacdca88ba1b3e04ff3a98467d2612aa7f5774e149001283d8365d0226d1d79faa91a98dbad352f9a796ef9a2fcddbe3bb83859ba4303f52a9165745da5f177a76db5e4e35d0aef618c1f6feeebf4ebd33ca7098b14d7945fd2c8a67433541e6d58519a64ff855e68e8d8b91de931955c289d9757d68218d0567c870534bc8637b3757665dbb93ca0b9230312cc169240c8647c",
+      "contacto_cifrado": "v1:d8bdb51523d3d383f9d821dc:2b7f4de93b990358d1736ac5acce7a5c:ed961c73c204b8df855a195494678025e8eb8694fb1b486947347991ab7e371c28838e5b49fe189b61d1e081add00204847442b0f41266f8ee896ccb1d6fad274632d8a0d48b9943cd5f50b9d090b5dff7bef6a6bfeda4efc7cf1c8a0383c20f708395ce8d7ff457099095234355e38b3b1ff6fbadace0827b9507ac998595c018cf82b15303eeba3b0b995267cf6f6fb952bec5d3802d80ac1584b5e78bf2f5f252f2e54d50f482722e20df0234d287c7da252fe1faf35c475a84c6358c3b0b5adde6089bccb8de19d1e0720a31be09456ace21cca4ea6af6021bf919d73b2f6d422d0a00525b9e8fabffc1a1f3c3892facf00f12c7b97360ef4c1e4e1e8dddd189b621c488ed343193162da5edd426d24f1b51292f339caacd41ea03ed838c28261b9ee228e0520ffdbb1012411a6d75c2e8c48983e5aeeb898b7aeac109ddfd17047c30ffd2f38c2f61a492a01b8c8ed6acdfc208d468c84f7a8a809e375e5e07b4ab472578866f76b51db5972def34536fb6b832a071a1c60a54034b5eb042d8b30bb367b162e848956d26c6a97f36aaa4996b09b7b4cb5ac7d8f98e628123",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "65 m²",
@@ -1602,9 +1704,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "60 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -1625,7 +1727,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "305 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:ee9ef32ac3eefdf91c36924f:9e27dd893ede1167e8d0a08a802d6150:d48715981f00aa0691aa1cefdf5fc3eaecbd021b863ec74b1b281b5c7e0423180c46c8d33bbab516eb2e981897e575739c7b1ca5a8a3405ff3beef7ad003f8f8716625394227151a7c5bf6d62519da7e07f385ced54a4bd71f84dcf2db0240c3a9fd536994eaf853d719c17d333f079ab266897cab76cdaeefbe2f03c90f7e57c73012855dd00551c62f78d48d72efb6ef889e18ae0ae18a98f4b63961ae48dfbb0863ad101e39c619bc7033e2c85f3fcbbc51244ac3c8f0d5adce9b5b5b0593d18b6585d309623fdcb83adc8ea443801742403755664043db51f2f53ec246495bcbea03b78918c09e1915b95b084aca2a890ce66a00bf84a57fcb4120207f9244519dd7f6f62c1a9057547d64e2dd133f0876cb3f34cefcf273a12bfb680691aef0e349afae7de94e8f2fe729d1e0af4dabae5b0f0ebe59d8b883634140026258bdf7585b7182bd21fdcc131238963eef8c6dd9c6a5fa1b525ba513006d7e905f6ba278b1b222820d3fc63e72354ee6ec8c4cbc7df2b55c91a0bae021dcdea61c4b7a9e292e891438e7bb8a386faddde5d7c8f4816050651951d5790b913c771a66e21382234f",
+      "contacto_cifrado": "v1:066a9efba9af0982c41a29e7:f16c81e12554a5bfb88d7c524ab10011:30cdcf2f5de22efbfc78f67136b90111495961dd85f78ceee2935fb42bf253d98b5961a544e87315a66c86e9ef176c2adfc35267b9987713aa82139a4e2e7697204ee5e733b139be9fd575bd1429dded2c092c68f2ba574e568a64a9f960f39c85cf548a44f8763203c1cce30f83a18409e505968ce1dad3bc7a2343ce78dc82904b19bee43d5ccd367b7e05ad41cf686e2f337d1b502ba3192e736dd77c20a7d696ee237de97351bc6d4af3a48636a68768427fbe80bdf9eda67389420296fe2f1aeff0e175b8e67a357f09fa5027e10993af05804f58138951d317459b18abd9c14483605d6e36d87d00eec66fc2cc23e5ffe2c6181dd13ac3feceecd5c3598976aad683daf2fbf22f8a5a9fd4fef83eb908a6412bbb9af336a5bc36493fd3ce2e03f610d6cbb1566e542a0066ec64763dfaad7e2f5ff928bde8b8630ad73b4c1fbbcf57751617f8014d210de8e67d917a5254d8d2dd0aafbebf9680c2219bddfd3c1a95bd22b9c1189b795edc02f5a36c18b22957d61ca710a121038d38160f7114c2cadfd115aae276a5dfcf323c192c03468bfda30124ebb44942e60c1de1dae1f523f8b3",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "60 m²",
@@ -1653,9 +1755,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "103 m²",
       "dato_2": "1 Hab • 2 Baños • 1 Garajes",
@@ -1676,7 +1778,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:7960156290de34424ae6c3e4:9760ca147f43ba2a7555554282ad6cbe:f9c1609d114b8ce493b326fbdfcb02f98901d891c75ea9bdb0403e3a6083003fd0238553e2a38f99952739f17060b588718122c0cb783858818ffa825de91e6bcc476b0ceacefb9da883ed6cd893884d8ee76dfd4cc1b471710b34f871e476be9a5929553014b83deb4135703210ec7d3b0479ab24ce61ac02bb245f62ec00a9cd165677e1be794e824cfffd993afe3180cdceab8b798d1e36e4f90364e680af0237a64e2c52a389a473d892f576ff48e561e956b1a4fdb48d0c83abff6858f5862a62dd153533d3640eab3c95b4b5bada62571158a2f3f1a80eb935c6dfa1f032d23af3376be1b78569e410adc05610d48c96426dc0b7a9cfe080e611547495f7dfb7a27aec1913db18a165c59cf7fa5b7e289320c5a3faffdb6978b9520e43920b032064c1a1a1c80840ad4a6b66e06c613679bc3a33f8e042685e06aa312e00e9d1f1b585b9d7c9ee84c29db13d716e87979a578e8fd9fe62cc3d3ebf67",
+      "contacto_cifrado": "v1:734119aace3bfc5c2c0cb974:8d1646858f83e1a4ac857fafa7f9f31e:26b2173a7dcf6f4402438d57ee0c38cbf4e6c93eb6994ea9a4e5b250ecbc99259a65929ccbcde7502669d9cfc6e7447c8f95b4d3083fe4a89841e33061b8c95bea27b179603e4709a1f628c5069462e7fb2b48170d5b8b9553c0d0550a6ad1ceb59265283ee394bb0e79825e9e632e92d29be8fb186491036afa88e3c7457e9d022a374b8be3fe51bd45ec8c1a9b8cc94846eb8fa3af6886fbb9f2c665d7942738bc4516b53e49112fa5289ad17b3f21cb6a3bc72ac545bb883375dcef113725a0af8c457039262ed82c436857d305e5faccebb8481547b8db0d9554df3ae56f51d6477520343e12459f45a97ddead194d8cba009199ee59a66e961e625997e4df5aceb2187a72e7f31517fd65069ed3670c226eb4152b917af66ee711f5d2cd2eeac83c55a6aa3a8697b7f143842e95d563d8a8dd76440188d40b06386bd622ca30e67ceaade018cc5b8f563bc1560e20916d37fe6b5dd390e6331aec59e9",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "103 m²",
@@ -1704,9 +1806,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "87 m²",
       "dato_2": "2 Hab • 3 Baños • 2 Garajes",
@@ -1719,7 +1821,7 @@
       "urgencia_en": "⚡ Direct Deal",
       "urgencia_tipo": "urgente",
       "descuento_arbitraje": 0,
-      "mediana_sector_m2": "$ 4.501.232 / m²",
+      "mediana_sector_m2": "$ 4.404.762 / m²",
       "dias_en_mercado": 1,
       "senales_urgencia": [],
       "timestamp_ms": 1789444499299,
@@ -1727,7 +1829,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:4ab1dbba702336556bcea6e0:4cbd55a7a0022cde8341dfe54642ccc7:21feec206707e7cc183d420bacf257a0cdfca7b16f26e1b09249823a7624d2516e38268b719e8d37fba189e33a200f3ad4e2738b465f222f4486cc1005a95100e9e21692414bebef0427e7b0435248fa0db41ffb47e7c48592e731fc8ac4baf1a9eb2277c5c5a8844ec25657278e442a37f5f77b7b079b365f81789b6c258095f47a3b7f8e46c9eb6c738c26f44562c32332d16b5732233ef194890c98e00848224aa56656a1df2e06cee2a663a39718bc5e3d35175b27996f037204db75da7215a193c401e029c276a8883220cfc965bdd86c42e2272bdae70fb63597cea285a9c3a4cb6ae2e47487279933b8581165a4c9f8477de781faf4f8f08934d5258ad52fd5035a2047cb3b9389cdc95f75ba147f057281852897b485b9e86f73aaea3a68381cb7d00b5a265f6a85bd8024624dd3160968bd609dc51fe00a585ba8fe7f7e1114c1d051a21fb32c84d5f8e2587a5351911ac822f751b02b26bf3b0b984b9732ce2b842fb74d449633e508074ffb00de5c",
+      "contacto_cifrado": "v1:b5783120b5dd9f2cc0b80ed8:6ac9c1d82587d6906a5e69092cbf2524:9185a9a7d045ec593995170e2bf2d685998aa4869c80afbd213022ba40577819e5c3cb2f83201e8669971aa1dac923a6fae5b98609edd3431f8c297d697b3989ca3aa7e737539ffb1dc29e81db145560464f90048dbad14d45715e7ab17d517f0046b3542fde1b463903a0b4c824977402dbcf324be1e5ff7b82c9d74020505fa80897ba1c7f0b776e57bef565f1e2326983bb13744ef57f10dd2edcb1bbc5ad6592183bed3d1e43d7f45f0bd76fe3ed4c5fd1a3f0c0b497b994843796a9412ba8e0c9418cc95739b5e712d3becb9069f87b913a88e6fff0048b064483fcf803e9275d8ceb854f2b2dc1cce79d57baf5d3cd8f71459fb663a4a223efb5934cdafcbf10463eb359564d7c4d5a3e67d7b9c570f48809baa0f274e9c1c2ece98380a57dc34d41939661eb7524838f050000b03bc15a4bc70dfc4c2134fa70a992a901411575baec065b7a392ff36b8656d6934c0608bc782185ce48822ee700119542173063ace9dd910e6ab101e78520b61a74cdba",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "87 m²",
@@ -1755,9 +1857,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "30 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -1778,7 +1880,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "350 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:0341ea62870dd477c4adc20e:cde44f6608d7b541d2447c1e43db7837:92450f971c5d5430944f06f6649277ab32888896ed556bc7a4d603243626002265176e099893898f78a5824edd885da83b9cc1a68a81babc241b29db1b48c9edc3ccf89c03985f82984722d0989ad255d8caa688e1fb1a48f68d5f951101090cb81c3290d9d528411bee9f3f635021d9b0da2de7f428a3110d980bb98ea2adf2f97fd76661b091d845e75cdeec66ec54d9f1818153e05efee276ce4a795948157d734aba87a11ae1a4c63b1f1578ded8117b0f4a8b54df5d593f30beac6f4feb3d8e55ea833a6fce6655b688c064dee65ca517bf25a43bdcb1792f2e7802ed7d6513f7e1d83491191bb923ee7d18b3fb77c16524bebe822110e0c187bf70d184876a9c6a1029ea59c815ba4e6aa2f7c16b00ad4f955cf5acd548d92a1298da1b32af977bfbfabf8f509b44c36e834cfc04049331b4af2401195ce511896404f0d393d5f8c725a0afdc12b03fe43c8172db998902158984b895ffc323742c2311bd18356de4837e5a31b4c66bd70d9d2fb1",
+      "contacto_cifrado": "v1:b2a0319c0211a0e37ad09711:19580896852f80dc0c3e5ecaec742a2d:4c623e8fbae0086e8e9f90d31764272c1bfff9b67d4147fa196307e18a01f52f61d9d3175b1428b74aa2e1b14d84a044aeefa9b2a9fc854c13e062e89e2d67e21865709839869849c78d3a7fb4109f9520b2aebbdac1ecb52fccf6266113628c223a1f0f11f3d0d0d22a1198838d20b9411574df834c525f3ccd297c0e7bbce161057709066c21252df692fdf4d29026476bc9142214f41cd57ab3ff2464c803474674ec0f653dbdad47c11df676c64ff8d819357a5dd6c9e8346c6a4e733fd59f0701e4cc45bcaccaa768976f3e00d9b5db3573c55243507e6579f073a9ef4bc584527bd711784b44591af23f9ca19f103f99a3127d062a23314a4c24756c1310833e30a0d5cb2b345fc7cbcc8def71369e132b63382d6dcc425e8c38789451abd4f7d475ca68b95f82444c44f00f14efae22e348277b73403033d9cba30c01ddd41294d0150b2f6a7ce60dab014372907a56e0b24122d9fd65bc4175c1ffa71297bc221e0b77918a98597ac80e0ce3d5",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "30 m²",
@@ -1806,9 +1908,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "100 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -1829,7 +1931,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:219dc482eacfa6f5957c1857:31d6c3a2b4227e3c671be3dc718d697e:113ffb444601e215c77d7c2ee4ef7cb8425a02471ecd047752f9fd7a04eb1303f536b8f613da424ac8271af2ed2d1029463072bf11ac503cb1ab9eb11f5ca5014fe41df8fe9fc18ca7a42899318650f479337977236aebd5aaca8b987e1eb34c32e991104882e59a40d44ec091f98215765aa247278a168e2887d3c7bba4997033107c29e259d71f08876dbab1d56dcefdf47fee0d08ab2a70f76b3188448f6f80f2946c9745e0575b9d3fcaae94e16d14fb4ce1fbdd006dfc688bdc13a3ad37688dbda2c6dcfc12defa06552703350a85cf963172d71f9ac2306a74008510559feee4441bd684bdb9137d7395802654552a397d2c46a7956916533bc0a943f9534365fa1b35d10179c76475cef5e2e73b623e4e6a949717f04b2f9d43a2a8e7fc02ff5e5730c048b4a55336036c8c80c20bd50fb56fd4d6ad2a816178e232844a41869e4b2f91c146f256627b3b70fd2517c94ee8bfd2ca341f18f0f08c15ab3316b666",
+      "contacto_cifrado": "v1:e4c4022da6b54d61c44acfb4:7a1ccb5ba6a72a19c5412a105522e39e:d08096357464e80fefb3eac2043a1f332163161d148e1752d63ee59bd7e417147c9588a3b944d478fc440ef574eec43bf7e71ca8d78872a3d6616dd30a46d0bd98ce31155818459f5053205c8653b32fb961a90c80f4d26c3547a88147860ee1346b24b5e45fad6074b3d3a47c79e6a6a0d1fcb215c98bd9dc4aef98b95011224559258f5765041d394160ae602438163c073643ae22d20246364a4cac5f0267c9d3f3540e854f20738ce49f457ab4e6837afc46ccf5f9199b73db12b6cfe055f94645c84bd43670e736d48ef3ba25cd200feeecd24f25a8bddadebd2debe77f51958ac0af1483be89e7e5ac6d8791b4a8599d802647d3b60bbad1599ce49e4265a2460fd809806a900fe0420f6c5a5d9bf37babac190c285492dc7b7d28bce5c5781ef3290fa3111812ab2ec67bead0b43a4eb1d6a13a9f3d436f1c5a56bf46b937b41be51072c2b10a67d2a201837e4e9caf41ac4a9526a4a78eebd4b990a156ae0912",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "100 m²",
@@ -1857,9 +1959,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "81 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -1880,7 +1982,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:84d851bb9185282716cb8f16:3a6cb4c0b34a5b223dffe322b1a30a75:2afd9c36973f3b9cfa96a241519559e9f172ba3c77e932858244665cff623b676ed879f22e594275e8aaace71d03e9e1b2db8bab976986baa205c71952cc91f5e823b259e2f81f0a0845bf35a7b3e5a6a44a67ac9d802793e3d7bcabd7ef44bd83fde77b03bf60a67cfa4d2d6f70a0fa8bd8068fbdf8e6ce7620ba01c02d0dee351b17c4ebbd9966fc768225478981cec3eb1d2cc8d83c1ff2eda7f83878e17baaefad60d305bb0765e842199aae74e430a6697f452466707278434c4781feea721deaa9ed26205c17fdfdb27667249f6d39c2736e3f97726fd0d7c1f92d690aa76b9a34bfe0d881f1bc6ae464fe0c25b21bd7bdd08eb2360f3aca4edbfaf444d0429ddb47f85b813fb7abf572c7636f0b49d607a18e05a331cd835431ecdfc9b2982f1dbbe951f74a22f56900f87d832d5e88c26738c5307b86637a7d34fbdbe2677b9c3419f561d045dacdc6cd0328a5cbf66e07d472fda56e56bcaae215affd01",
+      "contacto_cifrado": "v1:2c0b4d72614fec5255b7bd17:df296bc4ac2e09ff584e16fdcd0009e2:b89b4df6a6b92aca9d1d373ffbb289ae69390c13d4be2207f4fe8d00669c3f95b3cd8b7b9852fe7192b0355621d454483dacbdd0521ff3041d9b4bea28f260ed97d064e2e1cd90ddc08f3e262dcb6bd18abe39517e3de8f078b39b4ccacc4c74051246006e12c9bb9c69a6fd0e8af9d06670750ded652c6b77637e06e5791ec26c361f0ac8a429899c064c92bbee3e9aa79466264bf62606c507ebac080de670df8fd289d6011449caa72430d46596e334fa8261abbf422fdefdbfcd198d7146fff84f15d7cb39dc857c862d25b3ff99d378d7b1906cf8148216df3347ea4074ca362a067074672f6c0edaf75cd7fa4abd61e5119eaf83da5770c6ef89106f5dfe51d5e43d63b2a4d3975a76d587451644426ea9c5c1c306352a05289076a69eb2c5678f912757cb4d9f0ab95caedf7a100ac91c26f8dcc1a45ff8f3f099e0b4cc6f93caf1c60000addd413bf54c0d2d348414c6ff971e7aae767dc613ae09c9920c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "81 m²",
@@ -1908,9 +2010,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "85 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -1931,7 +2033,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "317 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:ab4609a83619ee4123ebc689:4f1a31bdca948d9566f3148db12c5741:50d728a7faa06b760ebf24c9d6b4c3b3ed949212c671a13062bd9ebf1fabab9c4c6dfa2556ce246ab3af3302c12635c2dcf9340686ec4e5236d26d6e615742fb982c825cb0697c6d6bac965b0932b73bf1a7b71d05441cadaa570476495bb404a1ad8c59f7b4d01ba0e3d342a7a6922145538a46786e1ee6b15a664dd3ef0b700f0618afa2f0ff278b11bc1607dc0b1a9893a1eabd7ea6ab4f79cff894b39baa3f9e56983edeb38eb3f6ae9108424629ac8d918a74babb4a5cdf5120b7a3bd532b52c038edf6dbc2d73243277fe8d1e5b196709e4a142bd61b41055ec81cf1d531cc9ad532294097fef9b4c7bd50052c010553e2c54e47df3f0d1f8440f34967f4555a20e3f39420b393f0d21351d0386230dd03173d2a67be39e9ede058bf99995ceb5fcfdb746d48bd4d7728075c382e36df8c30ef5ab58df7742a8cfad1e42f3cc3a702de5cac4db981cf79d69feaa3986ab3103e5c862eeb9ef23061703f9733",
+      "contacto_cifrado": "v1:7c3f4c9c5edac06d614653e7:bd7a1ac038445a8681a454000b69ab58:26e3c844dbd29e68ca97e32845888e86f258597ee4e278e41f7c3f9a45879fcdf66c16ce51e98371dd52924eb25da64b1a03c196b19c1dfb40cfed45f4cbeca4787644dc44fee42abaf5bba0fd7ad395ffd77f74e5d543baadbcd528ac3308ec91dda3605d2c85f3fc8f2f438b4ff74573fbe2c3fbe0efb11108e8b81f877281479ec57e5428257d3cd2d2d3a12aa3fa4349aab55d62c37c0ac15e43a5d1c2b0b78b35b417cfd2083bcc7cb3ec46e5fa64fb07ff7349b68d8ec13f259e870d2209635051f2c78804a6241e4a94138feb7f412c0eb7170014da04c6ed3f89c89da6501f242f2a343242e141adc5f9080c903c96930c957811fa347343b8131f3c434e8849ed7bbe1151ff2b42bf50e901372eed4a2c2cc75e8fc666975ca58ce5489487ae2ba04d4d5b2051bdff26fd1bdcb0fc3de88903c763fd37c8b7994f088c0838f249c056c3bf0d739b7c5788aa6949f57a2b417be7b70da0b65905f7178de0",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "85 m²",
@@ -1959,9 +2061,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "116 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -1982,7 +2084,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "314 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:0663f6b1f67fa55507074ea0:4c92d0bf4e0e9a73c24a4d4b70374739:0fa2372f9794e26aa7cca8d4e555403244b7493a3eade6afe26d971f44b749f9cf7101c1c3d7adef32fe5e0d719577a4afc5c0bddf63b7b8fb1c369a761cf8f38a243b8c6c1887afe602f8f3207a82e0804104057b51a13a1cb02e08384867b739060134498d9c237fc13b781d8092b7d7e598b04cf8b8f5a3668906ee826bdc123d217d07af28658bd15eb9971ea4a4ef1756fb4e14476078f7ff36de50c72f17d0072e61d2df2d8bf7fe05777b3e09cee7bef1aedd8f71953faea2d6a43e35d391fe68efdd34b228ec4d03ee79eb57406e8489fcb8edd3e5654698c5aeceb4e95075b9237cd94a125860d019ccc119e3441fb3703d7256cc12407a263eda69de0949fafd9827a647bdb0b8a0cfe96124f9d2d68b0c6157691cd17daa7b923c43c91d516f8e923fff0f8439b924fc82b3f01ba6600fa7ab1494aa8ec42dff4f69709d8e2230cba052208058957cb58bc81314e021b5e55080d2d53b521d63e8882c",
+      "contacto_cifrado": "v1:88c1917d48691ad6954178f4:34345e323a1d963e8d89cbf40d71c17e:8924a388303cb862c43ff722fab63e71035aaeca686049d3aac706c6797bd766e4b51642ea3f9855b29a283fbad337ed4a2580a4ea42e1f3ebb6d169aaa53d4d950a109571112f2e5ea07936fefb25ac5c5fa0c87ef96d4230223c2f5f251ed2115369df3873e8d6277b3ab52c6ffc534a7680fbd07750f14178926c417837af9870904af47c9b3950ca5883517a5d4fe8cbbc2ac176416976dd317fb451121bc63bebcdf868a52dbf1f8ab7e3acb77eb02982017ef5e7c0a48b6abdd205d2c39695b8e04954d51c2ef4443d0ddfdf1c45e9dceef33892d51e0449d81790f02c210298937a8e8a43795659d07bb174ad2e5bce400f3111e5eae6bfb8785260d16290d7bfe004b0559b232e809cadd132cf4f140900e3ab7529e20dd6bb94015e72d8b5f56d442c2bacb7f6bfe2da8cea14670127f5a6d1e63f3adcd5a55e9fee8f878c2fa49063543cc73d79f40601eefeb39b54ef92d905e9d6d5680c835128a255",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "116 m²",
@@ -2010,9 +2112,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "70 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2033,7 +2135,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "312 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:f11c6a94918f3dc7d4c20df5:200d5852608ea7de997913608cfe4434:3c9f3f0c92b9db51f84c053b734774cfdb2f683b305b2e2f0f0865ab299e471301bd8a718ddd8b9b167e1914f0f7329c60c51822696eac3e346f6271014b6fa514c6799d2a3709519f252861e1a12936a8578786afd1927d00fe44096a053fa512dd44123901b51d56e24150338d16bef177aeee4be9c0a0c38f46a02860e6916d0e3436544f0f47a64a1c4f6fe5c99e1ad0dad87210ed784b05f611beea5148abe030ffbbd09dc7ad9dc9bb880d8d6fe25a596c9bf40c197d7033ab0274acd6c1ec6fc74d02abde9b54020606f738b8b58a9aa64b0b083e1ea0ce995986c5f286a69702e57f1632b2f7579506b62ac116add5f8ab6388c66c5185f4234d658b404ffb67ae34afdd75ef81b2e734f76da99f376f53dd8158b5676ff65b316f92acff0377dc8295096bc9debf64df699cb4736c89a9d7b6c07ed402a707db33b9af4412f555691aaf57b2c31535353fd731f4833f640d2235d267711e8ee0a46e0baf3a5fdf10f21702f932d13b46440e2bbe3dfe66500fd24e110983403c11c147a6dc406f75386ba616b62c3c0cd8a2bfe67fbfe2891cd8de7880ebc8600ae7dc068b018e786d991be4",
+      "contacto_cifrado": "v1:e91fe1d896e43c1ba0b3f3d9:c1e88b3e95ec6e09b601b2c9ee06954a:890dbad649b8d87924664c21db6a08e10d2e5d105cc3c6a6066a5bedd4f54f24341bb1bdde2c24d9675161d13743ad538f07999cc02559a62291dfc3c2398153872bc809f3e56056dee606768a308c1fc4266ad9e3cbd8f1f40d0f48036adbc36ac1f7c921502f0a9ffda719fa1d4e154452541866c3e80b463f0bc1e60466a44c4f1003e027d6ef7039a60e426124803b3bae99e897ba40203eee1a113a2c644b33175517c47deeac3c2c04528429876cbcb6e4c5cded766082614dae3fc899fd8e8d8f244659e83f20ada48eec8f9adf93a28ad10bac2fba1a1ea9b354beb45b87cb262fc933868bc63d95c961edad332222fe51094413606c5477231c0487e1ef526b8f3818999d3765b01e6bfb2fd953a792f6672ac25faf19d02229e66b77fe5059ae3ac1f4510a445a907360b9a0cc668203e89d1b2d77f3790e32fd9ab02fbe7728ecfedadbf8f1b204c74fd5cc72d6631afe27d0ab064a42efba663c37a001711d7e17a45ceb307c0161cadf3bf34533b3755c372c29e69063b1c684309c9a65994a7d952ab3b56cd6a183dd2054987212b400baefa98deb64fb65668d98b2d20d21c07fb2da",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "70 m²",
@@ -2061,9 +2163,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "68.5 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2084,7 +2186,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "314 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:61181e6bd739f33811fa26e1:b12bd1164cd4515c3bb56fd0a57540e7:bf498935e7437b013f1dc2154226a75f4c00a284ce4c135c4fc409a0efa2196391a25207f84b0099e71ed29e01632d70a13de7619ed9655561c870b33f448feab816aa6604091960bff7951715a27540769ab2edb07a7e1bb04da0995f3887870d99ffc4166e9c5a9a9b0a6e982726759f467756541cf745b9295cc43a4ba4dd449a9ae37d713f6d425e0fff392ea741fe20a0dd1dd9f0c5ae3227d061dea8eaec2a61800b31a41878a5c4f8b9882a91f159a8913d5b281e7fb58efddf48a0b4c2016c085c869d5d7c26337dd0295c309be06f501ab9bde5dfca801121364028f08aa527cc84d64296402f7accf75755f68ec90e2486ccdc524fce6b0d23e32847e7a466601a5fb64ea2ae147de2873a691e60456b0825309548d4fcbfef6eae2b6a25c3fa0a3a2ccdbff608747f06f5f21aaef394d7650afcb39f5479d11d39c47b2c9103ede6ada8cfdcb6ad93e3c11d8d2e92d9660ceabead1ccd6f264b8689e73c139994a98feef64986ced7c9b4454173319e857d324ee1",
+      "contacto_cifrado": "v1:bc292f93f12ee2b3714457c6:a1a55f2f952685b363beaa3481cfa6b6:49a4ef30cd76695e377d272707fe37ec05308332a46d3ed8c3b4b24a7988fa5fb9240958b82c0309f84e7bda83a8a534bcb64dba23c7e168ac6db215d8a2178af6b9c8ba5b1af949aa48ca0b52bc34211143d2ea5e7c3967db7feeefd4dd97b68509419fcfadb3553d1e3e9581f7bbb6a7b04a43e774f93dd75c8779acd891f2efbf3c5ec8f82af8008e60471925f87409aeced74bd3579c7364d62547eaec9bcfbb1e35d33c5dab753e782878b0a5133bb7da7ca6514bd36b35fa141fa3f2a06f542698e6558e39048d7fc1c9fa777cbfc16435205625510ce6ccf369a19c0fe474e6d8c3678d67844b00023806d0c570bdb5bb4dda6ea698d33d99b16411c936d819c0b0a2c4c3840274a3178f4b433b69825abe1eabdfeaf681eff238bf57eb5f6d17f0cf151eafc27f8b51f1b9d443c49afef10123d5198c235fb7277372716d6ad3074d105badfbd64bd4b42e59ecb93492df28374e3a7184040fa57ea7ee870886980e9166cdc72b8c177c715b5b89c1c6843001ffd196",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "68.5 m²",
@@ -2112,9 +2214,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "40.67 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -2135,7 +2237,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:75cca230f0c21c2112f7abd3:e5651c7427954a107352d65ac2ed1360:5d705692ff47cbfa2987a26c33129d6478aa1369596648bd0cbb0e863c5129c8cf35f9e0f3d57458ec90168e79d10717146a38f88971b2c598cc9b3c8db83cb9c7e9c1027a3e35fdca5261a71c33336a9a29c1a240cd9229b902a9305f401d1bad949df4d15c1e3738db2ce2c656d6449436337cfc9c4fc9417de2180d1b3abf15b2751d230124e32025a801102aca85cdbf00ee37651b7a70c2a27f34c57b0de32348a73b77f6b639ad199a2a7d3a13114dc306b57f87ff200b78b0606fe7de96a93ee3441fd9709663c439f2b14ec8f9ce68e60ac2a6ceb0aa5754cfd17dc50f354e1ac0f2f89e569ea486fd21880fd9213dc24ca6eaeb981b6549b93299b095c93bb33fc2680a4696fbc49585b51e5e5d26f223601357a69e236e4fe816d2aae3a5920fb19be2742fbf9fceb0ec77812b1f9184e5cb76fe10b265741bc73138c70ceb7f5f9ffde1b40830bf13ee17f883eceecc739a847d21a05987f02daa385a64210af496c9f5614c325ad50f90cde7b035",
+      "contacto_cifrado": "v1:e7d0db7949ebc1d1b07087e9:9fcb7dd5a3af424c4dd3605ccf2ff859:56f3cebb55f96a3891ec3c1d9a6dd54b91b26b3e80a7295b48d44485e081009e0776968c30dd494e37d9c55fadf9c59f176657b73a2879a6c422cef114c4d7cf23ba41f4b82cc0140521089280e46b80048eae898d7c4a28810cb6ece6d2b2aa9ea6d394eb3459b50e08b06c70c11f60ebad9ce0a5cfed57007b0ff13a061d03d870a72a994429b7ec9dfd695d5e6f3cc84eb402630a75a7637d1992e661fd6a87dbf8f9371865eaa8f617383ae11c136b07188de4fcea8108ba2c94478dc3343af4d5c0a02bab57ae3f2d7bf902b090ea7437f5ea11c78cceca0fcf212ec4013adf9ce98fa922da9b9f818045cad4f8a537ee3b05405cbb180e3a980b67ef1cdc4c166e0fa18fda2628b900d170836c599245299567bcccc3e4b1d628dfd88fe29268384ef10b9fdd2140a93b856b575e5e1dda7464ceca880af0c841f07dbc9cad9bd69206b2c483c9c7e32184a58a7875b9af17966ba04c564e4d59820e4354fceac86d4a3b5f3073d2a22921adaddd807b72",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "40.67 m²",
@@ -2163,9 +2265,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "45.18 m²",
       "dato_2": "1 Hab • 2 Baños • 1 Garajes",
@@ -2186,7 +2288,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:c20d62f38a01e02327a13882:939b0e17a601a8bdb18d1475baaa4399:8f2b221f5326a004fdc524cbc0a1158515e42096fe76f00dbb9871b8631820f888e6418356d854d797351d5ddf1419cd742bcd4a7b56a38276d7f006a462795a0924ef91eff598d8ba687b84a5f6c1a8023e3a9ba0c64414aefe5a2a38e3990fef0bbabf93832f23093a756e323412fe6d7a0de69c680aa050f729e4e04168c2ff568e92054f9b91351bef9f656295697ce161129229dcf3a1279ee5a99e32b9cd1930cad3e2d12974a449d6ab6831fad6cf233814fd8133fab43521da0e2f3a9e885aadae0f03f964385d07187317d0e2469cbb4ebb56ccfcce38dd7809d99123752fa5f21c90c5be9a4a0cbb733a33c0ed8e2fc2b604e180e412ca9926dcac92efb7076bd4c42b6bdaf8e96cb1da07a69d697c37420f7447ba1673ba4fdc5c9a30ce0ac0ef51411c03230ee7e09e85165470069276c66d51b13612810a2e55608b70b3fc8641e72c10f2e9effc0443006a876ab17836d907cd4bbe6f98a71bc475aa3475c16408cc88533568483c0c70aff097",
+      "contacto_cifrado": "v1:f7aaa720f29b222110c852eb:fc88b6a3de3cd9102cabfe390ffbe072:69b6dd51c9c69a4607ccf3271d3030cda9be4dced1eb246e09c7f81273a950260084a7bef022f6d856ced09a17db1201905ee977a97016d7500c32414259af2dd98efe8f8ee30ff266e078f7ce8a6c50d236ef16846fa297d15e69abe73492da0bd9ed10fcf2ffe3c517423c28c3515f1a8649318aab9fb5d7d9b806c1b7cabc4360d68e86cd811bf8728ac8322e7b4e014abe60c393a9a05c1b84406bfd07ee904f879142b74b956d3f35cd59dfed609ae7014e3b99a1aca4263b533d3f3e88b96e685c4b2c7ed20caa6214c1329e68a63dbeb43dcf441b5abf4da48f3a75c01e70a2b0531b8a12358f303685e3b2126d3af8e12aad803b34ef46aa65eef0febd85afc3e21b04a02b0a6414caed40c732a19a8e03c28d560f2f20ad960f1df67d67a3d9ca8d1ee6cf42ff668aa36794604505af74319ea37316b6598a742fa8df4a7fcb2bd318d7d36ffdd3a30a91bb5fed40950d7dbe9ce2c639b32288b46f90ef6d45d100462262b329ec7739f32d3edf2870",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "45.18 m²",
@@ -2214,9 +2316,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "107 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2237,7 +2339,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:62627e33108fa763acd31c7a:b45729c814ea80948d2259cae4648a32:9515e234686424028e06627a74ea0586e520bc94c0d3e9e6e9e54d1fdd3ce4cee8a189249e3d4863f5ff47935837c4b57fc463cd371500c8109972a7a5a6ad2a34e90bfde602261879dff887ef08526235c8aae2237ea006fd62a0e39d8b6f5e2a888d496a4cb374a1b46d74242a3cae9d3014d9a5a774dcb063c214e91ea5b283bb1386ab99f7b645f6ec2f7b61cc5e73a48fe354cffa75bcc24f8afb2d3702847fe061843cdd4de9571c3e53e00f8c3eb709a94fb2b958c9f38fccacfef247d6d3fb707982ed65f92f1c62e06731789a9bb801ffd056725c6a293e4475df070e55c7c29df56f1e83cad045f8b5b6cd6adb23b90f199d1b211d41fb518ade019902f5bb82e42251389f475af8c5b301ada528fa0d9c1c4f5d9e5edd5de9dd7526a0fca0dd76aca914972a3356706bc2f0c1982344ac76fe727d75161dc4e76136b32555da136f025a22398f1ab3cfb7ea640ea1ce4ba182d50881d2e2b0ee33f26c70e37f35e003",
+      "contacto_cifrado": "v1:6cfa7e5a7f525a61607c3124:21f142e4de776c7337b24f67ad364951:a8ec314ecb32303b5f684f651cd6cdff6124dd6b0ce7139cd7fe4dd34f2d20cd5badfbf405684b44b7a55934cb5e2d5cf23a7a83e4ffb8172d36ba99605e6244f81cc5892b90d4c4dfdd04a61a7969e798ec0ce06a516f94379b2c1b08058e15d518ad635bfd04b7540a8d25a292032e4f55675aedca7a2b29cb25bdf7a723c13b43a73e02f4d34766684925e4148be938bcdc54343ce58723179a8da364bef7d6350fc02744055ca1ba83e99b69707a3327bf6e8f3d06454773467c0997d292677728add68603eecc81ecfc79c04fd24b5cbe5e50701ad2067853b9bbe55ee7b89b6f23f36cdb8223ff398a5bf68d558063c31e5006fb1a4ee658b105fe6220e564706ceb73811a4161f91ac2523442bd1c7f3184561a32258c75d692cd4b90bfde2d64319c44bb3dec6b8f680bb4787c8cfd162a0753cbc617c146e7fce023f6603b7b418fda6966dc598e758afba066b0ae7341eaeddf8d1b13018821c6010b523a1576a8d450",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "107 m²",
@@ -2265,9 +2367,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "55 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2288,7 +2390,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:be710fc8c666364b000f1998:4f0b2af6a0f7e089c77f61f83411943d:9edc2497be0c17455eb02f7c03a7aaf0931b4c790c1590f10311f636fc0ad5f6d9cd7913025a7412accd72233a31f035079b59e327628f875813bca37124ab00c80ff5185056668845bcfa6809d8f48c6fb49850ae6d2e246bdd238e48cb72fdd5b7e7bdb532d44e3aa24fa5ccaafc5394348221aa6a419d7db6706137af6f1e34b924586888dcc2857dc7659cd8f9bbe114633c16f985ae68fe8e1008571ca58abcd938b5eec2d08f45e52624d85c5d167264a71cd184fd4539161047afac054fa843d74f6af5f9b48825dbe4693deb5bd0aaa0ce73e8995315f23a86531ae139d0f572f508380b92438139941e117651107c5a5b4e72463d43eb9c68bb3f3f542a06fe6b3bdfb1616a6c6016bf798b095253ce22f9a5ebbae120bb482517b9efd9ae1a78ea424eafde4bc94dd6e9bf944d7107cc0c40ba986e2e3d89f32a028df4f1a17f551b60f61d40048ffa54075a83f3b49012a3f911997b920484ca1f1f121ea2bbef7b00098bb613",
+      "contacto_cifrado": "v1:1f941fff0fdf20663de8c2ca:bac1e3ea751b315220200c5e56bb5115:a63a25ae785770c5e449406b9cd6d2514225288cd125dc1bc1b8ce2a5c6c411576e7b0ce8bb3e39896b64b5a489fe017de2859870ec431cca64e402ecd12b553d04b964c9cf2c9720b8e695968f5c93c93f75c3e16dacbb679c782c0181a6aac7f8dce175de98d2453362971f255e7e82f9b75417d9da877cb5e135f94edd82b3cde36949dcc2da955682ce85e248a85daeb9f55dfda1334157c9dd2e6f9a4881be5dda7ab10f8525772f90aeffb3a9e1e9a2a66e88d40a0a21339fc663d5caaafb5ed5a921e286e44f297e7ff135a7bef9bdc2bce57d49b329f8df99db5c675a0aa6d30944e90ae49d6ebb82b7f03937add9ae874edd19c0dc992e9f306aa453062890553855e7b12c75d85184cadfa1bc91339c86a03404f1b2a1b7ed6a23241d42167a364d808ac3ae1740cc565ea611177970bf86a3a3847ea6a3febbb3c4ab32897f957d8e3e37e6a284b0c925c03454d9050af120f5c962f47d39ea7ad3042611ffc1ad54f9b6da313",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "55 m²",
@@ -2316,9 +2418,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "46 m²",
       "dato_2": "1 Hab • 1 Baños • 1 Garajes",
@@ -2339,7 +2441,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "316 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:5ce93a54dc2222d213944880:ef5ac9cb30a958e432173c3d33ca1a47:aa9c91ce8911f43fe9fb5637114b3b1c6ffbf462964f18aa67439c739502cb0375bb976178cd56ea33b4a85c5d60eb70378844b5d8e7b6aa9805f19e4cb577a1ad359e686f7c2392a7ce262700fe5f08b568c7e66d1105e6e2eda3289d7264355e8f1be85fb74f1577d05d51c2ac025501238ae283396487f9f782eea493197a7106fcd671ba0d09033d4528b73a0a58ffafb054970b0717fe9753983968f08497465ba5eccdc9920d256ed80cde1829e8c49ae87717e8b748746c80c1534d0a42cd22f843b8342edc7b444159325e2445963a928f816d2b297f152f4f721da9932979cf820b83e6445cd943407c366617570a85b014b98f6f14bad4c0231ca650e4b6f74c1792e01e2241d9eac2550d16466aa526c81a13aac69ed185b1e3dc47ba62aa2b16fa1b099b9c3968be9aef02c0be234db89ab6f84ab2aa4596097c224034cdb18c1da7bd431b408d0829ffdbe5eab82836f57b4f245884a1f9348db5d43ea9a335e5e294763c4143d8442d34",
+      "contacto_cifrado": "v1:0a1872156578fa6d37329bc5:3d10d20c104a7e0d913fac85782d29e4:c5a4e2e570ad108df73cc0fc65ea975ece0b955e774928ac8173bb41371f0514682a6151db91497bce7df4230ec8a0c46734670327eb815321efa6e87f4f3af0b2250f9cb8fdf56bdb51d02caaf0152cf874f4a2edadc3f74a33b2ff831d15e8e508d88c2df941124df15bfc2c64de973398a808547ffb67aeb06951b7ec88cc19e9f9d9ac133bfd961d2a834442a8d946a0bb51c5ffe31e90c4d7cea89ff61e9c587f1bc55ee0c501af21ce5766e63dc1754866ed1b527004e6f2ff77f048808f0b8650a77b6ca490463bd7da1e67bddd34c7f5fd39f5f8d9c85f67219bb509db600f13e0ebad84b47e9c253f6d97e2063c9b8a39029113450d52f4a532afc5e9c14a0513e1e4a31293fab518b6bc7899f114e7a0070eab5f2b9a063bad2e2dff0e4640a02e3283c294fafee906a1c85361e21814ff2f1ce40accf1f9b28e1b5fc3b0fe1e263e1952dbcc94cf975df1ee3e08bf5977579976594a3293c11c80c8715e9694eff703a93c9b8d3389042cdb",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "46 m²",
@@ -2367,9 +2469,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "63.05 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2390,7 +2492,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:bccb978172718a444c95c759:6f98795dc85cbeac073a0c62041b379c:00842fcb214a512ef279c5396a11a55c0266eeee7b147157c09931def30869efa383dd06d6049a0c2d7d5bb79639e60321e74d7ac43d32e3fe375b4cbcfba4a8ff37a3ee060b02288c81138e848a38d83b1cefbb665d7841c1bb8498570b233b22f47c129df4a02985ede1470089ba8269d90827438ef3060817cb537d1392d84ef0828e66acd76863787daca1cae3b1ef273408b93241014288515dc2e78af46a2aa7f0fea0ca27a41f43989106126c60aeb63cce2da57764a6bd5a67a62017a5849fdc0a829a6cbcb326bdb784dd8e7a1f8d0b1f372f1b5cb265109385e913107912a28abdb0be4884cb0f87fc9f98655c9d7cac309b44b1daee8ac0fd8978faab33f8c642700b9f27e08325879f22105a39a01475eb38c492ad8c624dd32a7e9fc36527bd498846440fc1b6c684717ce82273be77c12f2df46aea495ce6b4a9d3f8125610ded4cbe9a0c5152218d044df6ad381a9da928819761499804cee6dac7dd49db1e0208a7284aaee5ab8ff5320",
+      "contacto_cifrado": "v1:0fe0f78f7373d3dca652d64e:b9b397e14abdcaf379bede5432e78910:db325da40b41dba74053b69c80c3fdbbb3207e31860e6ee95a37183e0a2513d68e8cc8d1d3ebed0cda6d0581d0e10d3c72bef34df639fd956185cedcdf25d6a8f4ab8b4337ed310b5c65dcdb1b926bfebb8caf1745b1085b5ee21609aae00a8dedfc927199f592fcb707f98083dbfbc6e46252e34a5bb534e707f5301ad77b7d0db1d4565bca34a5841e2bf220106861d2fb2b446618532faca0be51b6346ff9fcf82ca7b2ae8ec2d05e2533129ac30aa672df025b57474305b6badafe4fb40861dc055e822e960329ca2134381b1eed38fe95aefc734545f0e512f71372a02c28b494bb121b24b5fd18c07dd4cf15b941c8ce666950a72824afe00636e710dfe5eca6574588ea45d1b1f9451fc20db4fac070fd58ed32c2230bf7f7b9f4439d02981cd6999c182e70ae1df322f588d502044dbff3d5f925fb376563da3b00cd10be25793a96555eaa49a8191285543e986af21b75d83acefc93b39cd21979bc7eea9d7706b616c47090e02f6f6d22fa6f21",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "63.05 m²",
@@ -2418,9 +2520,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "111 m²",
       "dato_2": "3 Hab • 2 Baños • 2 Garajes",
@@ -2441,7 +2543,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "317 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:cdfc7aa340441dd6acf6ba2a:8057009a1aabafd64bd86987ec46f14a:cdd0207ee55ab89aab5ab5418629293113044ffc93d785b64002c0069cf71c151974912e752bcd9f54ede3f1dd23b90e2c765fb95cd16885e69caf805be01c1a3408bc40b951cc69b96bb8a5def7bb381139b72259362e4f2b31c27efb5dc417f73d6c79729ba3a0e098bab2a8a0b1c4ada3718c93b9ff202f7f61c5fdd9b93454322e6547857fb11acd89d30bbc53d69fe97b8b1b1252e1b55f8bcf26e3983c7a3b4ca2ef1692d8b71c09558e664fd477d7da05dba75da908e0733267b6a7024d643a94093ff54cd2faf165e6501d1a5b613bd6e490e442cfe04d71a02290ef3aec3fb15656f67746f2e57429f310997576def392af279e020cd98e62d938cfd2340cc98e2f7098c5038c4c23807ec508ffd7b8d3aa7b69026c86fa36452b52b485590e632009d9aaf1f49ef4eb37e2acafa9b47326cf2de4dfb5fc02e53675d53e82836eea109c0830c93f0e394e3c6a8bc27c0ec47b3a",
+      "contacto_cifrado": "v1:2953b93af307115b920ba21d:102daa2f222ce1cc219a415b812573ce:4609e8e2e435d5e62578ec3f6cd1a739277cc1854886ff15f9d74f866d9e74f1b18719dc4973ba3867f46bf4b58e964f004a1fc6ada7a1c0d2039d27b58b5bc7421388b15acffde7759226033c9b91657d1e49b8a468c6b9022b2531aee08e250901502c37b8b82e0a3b4affbdf4458bf3c37833b96a0893d99a13561545ef4b06d0f3c9f4d98bd35adb98352487c9b641ee8e1cc724aa1d299c22871d74a87eade644141e686e4aff9cf3ed4b62ae72b558dd45a3c01513aea79d8392fd2abb6daa126aa714c3d37f6f2ee398b4afaee0ae6c7b10b5406a01c784a19d259e4b77ccf8eb5edfbcce9bc1556d5f8ec505a38b4ba7af27b95df1d58a211c4f021bc083ba3f9d215a7bc97efcb78b768b4f9405253d114c8880d5ab4b2d16f377eeffc55c2815da5e02dfeca77e2fdfc504978b47cff40ea52bfbe86ed359122a682616c1bd48edcbec342030fbf92656e19470e38980d21442",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "111 m²",
@@ -2469,9 +2571,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "205 m²",
       "dato_2": "3 Hab • 3 Baños • 2 Garajes",
@@ -2492,7 +2594,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:bf229f4c97b0e91f2690a9cb:05772722abb9d5dcd521d68636031117:08357fdff8ce6280ee9f712bd92eafff783fb8e08d2854997914581823b6fa74b7d1f59c504266ec9665437dfd0712e18783e4084ce3cc82b48fa42fd264cb70bbfe129b39abce3bf43052021bbf6b3dc080aa51143d37063c2bea98ebab2ef8f38fbfe0080bce6e848f3a26acefa4986c9869f7e7efafd9e56d3a0149ea4dc05a360b1d24852b295e46cdd7778e0b679bf9dd7248497176756b723d15eced3e175d22b44f1e40230db675d7d5ae0f07c974ac228ae2d9a7a3a6b526b42219fcaff26d3a397cea7039dc96f97c5619329293d70ef318c06d876a2dcc1afaf3bdeaa16e70f22519382760612be65639bbcbc76dda72d9915edd1b8f8cfd5808211a4aa96506db803309c13396d957d133cb494f475dc70d6df2d580b8c3c1a2a02a1d60e13002ea36be26c94b013ca1aaf1fde6e989a30618d93ff32f95ec4af6c410199f7cf84bc1c36b662bcd078efa08b8f2784c1b34",
+      "contacto_cifrado": "v1:598d4b306542b029c4710e19:e5bce96a7dda318af22639bcb8943e6e:d6b936c868cfe3ea707e7d3551ec40cdb32936f516a14a87fe4dd92f19e5973a9b33b8f80986b7bc019218ce3f99d5f6080a597629cd5c2c13376ebbfc311fc3aba553051fc94ffe8534a41e1674b81c46c67b59f451b29b9cb0ca18262336bfb97a41ef77e378a435481f0140857b4b7b219bc8e35972f15748efad665515db152c14a88e3cf36dba53c1329d6a8abb3b018006fbeeaa735f83682fa681e6e672fe31ae38a2ec18b95aaedbbc366b1d55b1119c6caaaf5cadc8edfbbaefeb7c6c8e95e7ad79aa0eb850b752b371ffb2e0e556b6c0907d934cad9545562c18bd6a192dfbad55c878911272205b6c96033cca8afa051f8c10f4005ee0f4564b42c3f40964a45d98e2aed4ac1a14198f82f4f770fdfc6eaaf260446a67b42373f3c2a8ea639e5d979aa9cb08325ec191e92f5ec09bfc2036f0f2ccc331560a9fbfe31fa4897a870fedad25abdeb7ee0a0a8d8e3dd8cdca42",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "205 m²",
@@ -2520,9 +2622,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "65 m²",
       "dato_2": "2 Hab • 1 Baños • 1 Garajes",
@@ -2543,7 +2645,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:d34cb8951f5260b501b53787:edd37ef1312a8e0ffe997f665f651ce8:61f00cf7ee70265ff3371fc017ca3d597dd3f3a2fbb7739f5ee18af4cff2dc787bb5026cfb4e8591996dea211c9712b7d8115b2f80db06fa4cec49879af0f38dbad3e001d0d9ebb7f889b435ba263fc421ee6676793772f9a0d9924820708eabd207caae0940ce061e419a9d893a83dc0f2d318295683da38efee024e45b8c4457906327b33ea3b2f75fbd021fda50105441af495c4e9dc09c22c05b906f5d5db7e60a88cf913eb71b97243fb6297b21ba9822f9ba1738bc5a061c2245f355f4288cb927a4cedffcc021c0388de023bfc892b923731647ffa56c027a6ccb257532340ce07440ad8235f04e69d3233eafaf2dbe237977773570acdd36c1edb569e31a2b9187842c2aa0e47b2071a2ed2ece1b8d6d1e34867ddfd9e1f03036f4217462be394a2c3071d0444c0f348c365ecd0cfd0fcf7572f9b2e85caff5b462a9f70c881c81b11e91d4ec8191db0dd7c4a89d621a2345f5070dfec69374e4ccff84dd025187df98a142d0c63174a66783b762ec",
+      "contacto_cifrado": "v1:f07271f98bf03b0d7107efba:7aa486a2ac5e989d6ac70f183d664d9e:a11aebb0e54425f57bf4664a1fdb73901024c45b2a89a0535405f6ae4d343f28050a6ea0a698c3e3528998bfb47f71c8eff59e96f58b805693a6e92dec3ab72f0282e79b5ff8f6136f644d9429af13fa20fe8de284d53d5a81781b6a4880497610ae41989b9847b1d8bc4ecfa5d721ccd80f67454150f7e1ea0b7ea5c5d14106118701a5188d69709e22b850367e53e5c7f43bf6167d974d4311635fafcebb981dbae98ab481a8c1a22f150afe1239858241454833a8f1b3cf2238786c861b0c5627875c3f2e57aa6b44ab5f3e49fe7ee843ea9bf6d267e5fbc42f7bb70ff3b1af5726920a230cabaf81476807dd980756647593b8881f3c24e8479c593c8d4f34c190b189e291586e18dc2499770b9db6a4a621f37b1e59286c0d4a935ab8d866716f0f14399b66625056860e63c9c813aeebcf466f3be7d54b23119afbf1c3c21c424f4e1ae94be30037296126259816e508f629933acdc5de89865e8a9a94b932178c16e554b03a50d772a04795de36aa04",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "65 m²",
@@ -2571,9 +2673,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "60 m²",
       "dato_2": "1 Hab • 2 Baños • 1 Garajes",
@@ -2594,7 +2696,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:7ed1abf86462d6a4b067370c:c8b58444cb786717e18c152de62ed29b:f965158daf6da74e4df5bbb9dc466f3229fde2267a8feadfe36bb1d646820c87b114a0b0ff6be6335c2378b1344b637f72a0675ede3a88f7352bd29a30c2c871450312c6314ab31c1e4f3b9f06aa7c97e449995a3bc64df76368e678e403edac72e52b1e4f47da2fe602fc8eaf552618e51b9d3343056dd4c8d185ece397335a1defd7741f8ffbd0e1a0b61187db7cc11357ecd75e3555c8e66089a88fad9321bfeca95dde5d0e869fd6d07364f822168915e2193f686c779d76346e2b978cbeaae1a783631a087b5c460ef6aa519d4e3024a858620d920d4e4a5d0eec62bbfe04cd6a9161e9e4537fdd9ae38944506faf643e979111b756f0f8174ea8b3ca745e338c331606c2ef48a5219399f9ca7482631783357dfda72380b36fe4e6c0777bb54a0b5c0908e337744d99999db51e8f2023db96dc0cddc3be24563a6ac3d184447496d346023687b8e2c2ba63ea8632b22b8eed67fb00123b888533ce6ab33439577b66",
+      "contacto_cifrado": "v1:9ee76055220349ab71f02d30:0a33e9e23141a1424a2d71d428694614:3605d3abe6e38539efe322d916e411cff7554c9d1d6f9cd58bc693e860205714d26873d38a5342fc6b6e1b6d177137eb163316ed29847d75af38d4113854c014f46e9c481ca37ba483841894cc97d70974eedd696f2d361a2676321e96609318ca69a1fa9ce736ba7156c1bc1642997f1e26ffb5a274cc0c0d3f286be56dd31c44b21da53afb7271e57611c1e8bda67823ba4d0419ad0c2db79047ca9b4e70fd6286e395d47fe622a303adddbb9dd5215397224bb703d7891dadb509ef5cde72b3f9ca50ef60ccdf1bbde5ecf982e03676c0c97085b7082bc7317ab8f5eee7eda72dbc468e75d6547d4a717a1e2d1824771e4616bf1f45f2edf5dc212a65628fdd905fc23aceba982b32aa891a579d29687b32e01b1690809b0b3b4c9234797d8301e8fd0c685ba88fc59173e74778991e5640a1e75694ae8e20a98b2ff6f5eb4511623a9fac5bf5dd86e987da035e883da13a7eeb567fe77aa1080cd15d5833bedbeb9cad",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "60 m²",
@@ -2622,9 +2724,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "72.9 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -2645,7 +2747,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:367e5cc8d26a23941bd2b5b7:7fdbd32c32ede432788dfba659df794d:47b0487bf465e3b93903c4f15d06ec319569dd3134499395df92ae45aa991923016e65c3807f3318b96f74a0cace4d5645624199b10494578da1e9709d628e3c2be6986ce5266cb5dd7118e7ae78462ec6803abd033a88de076cf409733fa51b695bf9de361e4d1fa6760c06c486ee5435b7effe2cc0c8c20aaed9833e58160aa09203897c7b7ed4bcde5a4bd5242a48011d21281df498c32bd6ac942326ccdee782d60fc2f91d5139ddb4639163d8835fb8fb409a0fd53e073b216b0ce0b3f8fd4ea90cd9b79429af5043613ba176a0ec338664d39d7aeda5b5102c993eeb9673a72404a677fb3f62dc3263ce392d050f7a532c00f53aec762b6faab16250a8a06d9149d462eb44298a2ceb5b5c15b85e2c3b951803dbc7dfe7ac8bf4be4253be157a211e5ba3552532ef13d75458bfac9a00810dedcb4cbeda96a4673d1d07eca4e7b2ea93b0dbde13f654780b40010684cf1ea6ef86bf01c0626d",
+      "contacto_cifrado": "v1:3c8ce9999bd8cd130ed54227:8bf326e8cc099bf272e9cef97f48bdde:230f64544ef2d8ad782c252764801686a263e801fceead18785b7ccc839a3c8521469438d054e61fc68f6e8c01c84bfba43352dbbd3b0fe0ee33e7511df453622e26379fe8a237df507440a3bdad8ced8ad33b79673d49e17a0c015cbaaebc8a47f5f7ae2a1b56a86c12f9059ae40f4c90e3f7ab53939181d5429b1e39c6532479c485e7a216390ee385eeb661e6e170d7a8f133b71eec4501a34c785b02cd273c193cc8d3902ee3b412da49131d6e1de78d9c1cba5938c5af2c3b33fe56955451eb446e0c48bbafce17e884a62b9c9cc1f5714dd27753e38bb65f2999caaaa3c5ab28ef7eda837fd5b152daa52b690b8be0dff6b12c619649ba23360e68b119a4fb335fa5ddb3bdfe1315b20d3466ff726f35426c041a0102720d5bc9da91f3f342d46765c940a56e37bc5f0427c73f16e5658151081cb4b781b2f6111c33fb7968e1cac84e0e9d1a17d58b4644ecffe92aff294d510817831ae7ad",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "72.9 m²",
@@ -2673,9 +2775,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "40 m²",
       "dato_2": "1 Hab • 1 Baños • 2 Garajes",
@@ -2696,7 +2798,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:adccd0c5d7d8cda548793563:acdbe5d8cbb7f3283ea12458fec3c4e4:9c7883c1f881438e18da9b7998636ee7581e17cd4b41f946f9381943cabd13ed389390807d2627b96a682799ca3fd070b2a5d12d92c88afe2aa291814d54ee1c7093bc4b9e25a3e394dd4308fd050a1f37c5aaa3015be7af50a968dc3becf07cacc8d94902c0425c75e10088f32c3101415110e9909fed923c55d0faed3eea938055e2f48074bea0a7f6c524e561639a6d3ed33c70ff28d608016548c7ed900a42492c8431b237d7c8207a5a6e8b01cb520b481d13136d1ef7ac71b9ad637581ede7ea114a4d86027e639cf056c709fa51f08f588d73112c47f5d323262474736b15ab17311463f2879e6d37c653aadbaf01d9bd5b040ed490b61173f58bc301e3d233f43ef6cbfdaae1113b4ed5573b8fc43412c7987e58d4e2e2d776c00999ebe5ef1df59f31b727869024cf85afe06a81989a44d45355058f95ab9414b429b6f3502c679b6b5a2bdd6cbc793f9b748d691c",
+      "contacto_cifrado": "v1:9a577703cac7367ccb5ed786:b9f1e7235bc167aa2af461b375fae1d9:ddf11cd9699976d81696c892bc3297662137e5bffb5522d72cec3d546fad8f61b85a8da09d90c365df5ff7da13d47f81b774e4c9434316e39cc95a02a783973fd87be8ef5fbc9a5f408126302fe03d4b1b96603c4de2dc5feb323c8218cf0f59e48bc2672073d0cb723a501c0a7d5abf29416958786e2ef481def0a1e26d0a011f235afe8142b19e9030e58879917e45bda61ec6fbd626b4134ce70a34929051330c104257d58323ff2b949af7889fc3ace1de2fe7176dce2d03a292a237a57dff91d812281d7e9d361a8b8560502fdae57f3e7ec066d7ca06964521962707a0a2ea01f961256ae5eacc6f39f4ee9a8d0b6ed63b07ed5e54c614359ff5037f19c6ec8d060a30a85dd2b79ee794c7011566d09fd8014dd020d23c2b972afe2c8d49f1f7498df961371742493d5b76dc36eeaab78a5391f1166ca5ae4a59fb396d7c692a16d07dfa71eba7d31d2f254474571ce8",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "40 m²",
@@ -2724,9 +2826,9 @@
       "tipo_operacion": "venta",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "56.63 m²",
       "dato_2": "5 Hab • 3 Baños • 1 Garajes",
@@ -2747,7 +2849,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "305 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:182cfb23088cfd7ad1e14ded:71489b4b590e79df41221d017537cc17:feac3857143ca7f0c69ed81867cd77e05413a124fbf6c3d7dc9e9cde235889d616a9ad24a0145a663b96cb3d17bfe4f68cf6b51949c39ed36090a517059c8dfcc0850e674c73fc6d1722988ac42ca2ef1a8a3b9b64f1212fdd24058f65138d92ad656898700aa23939e2f055d1c57101f9b72451dee4bab73c3fa656abeafda772ffe5c8e8d033f5430438e64421aa3792457da270e1d6849391d101d01baddf8977f769ef0b5d4f529ed6fa410f513e80921931f192aa3ccf4cc2238d3b67122427b547a5a0542f5c7d97e626898f78944c860bd21049517450c15cb373825dba34139fa812b78c58956e8b02c1aad1db0efe61a379cb1dffb6d0a2086d0723b27616fe0b42e0b97d7ba92904046c08ce6ce804b0e723662cc5c10268cc6b39546f4b27d74021cbd518e5c84cc7b67a1c09f0d8db865bbf4acdcf30f919b07d266ac1b21a4e29b26c608a115417",
+      "contacto_cifrado": "v1:35df5c14195c227777e64ef2:6888c6381192d79e64eb7e61baa5c4ef:d56a222dd957e385cb9c0cf3bdd681c03ddf5db2e5ff0eddcaf8e51b7b1cfcd5085931d15c0febf58f423db0544ebe21abf8e636d8673b7a0ac159aa293b9f14e22124796fcf5292e958974bf8c8b2272ebd3cfa67b64f098ae726708b979d4e909bcd018ef714d93bf2da8af5c3ce60da8ce7eeaa7fd3d5ca96e2802c6af614c83d5e98ef975216a6a346f08d112b2c7735af4a3d575b4f071558b8a7bc1e9ba34aba5080ffaf930eaf7087e5d525e79be3c56739f22cb611b4f4c20364e72d9d3587ba71ddd99c690e32f6bdf84630b98fe414a1a1d10b22df07eec82f2c4cb7a8e8b8df498f644630f05c59ab56634bbdadd0ead3a3eeb09426855fc16062ce385151bb7c744750d648cca219ed8e98441aa222d490bfea599e1509ad94f165825940bfbe36f8387ed9a6dd5002ee9455ad4b27aa1760d0a574a45fc555c8648a1bd03b67bed03ad19df4bc89",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "56.63 m²",
@@ -2775,9 +2877,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "63.17 m²",
       "dato_2": "2 Hab • 2 Baños • 1 Garajes",
@@ -2798,7 +2900,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:e7927863881465810c5229fd:bca4f7d8a3f797d14e4ce1b5c78632f1:4dffc34c5012666998d7c2c393f1238cbfd92d144c24060a60e922ec31b4d12caa792687ab75680990b8b4e6498be997383a56fc392af475fd6a7d813df822e3fbfc7a817e96df76d68e15cb3eab676e3bc7460b6e648d6380e7146f10eef6e7ac493291e833835a7c4d1d06d188b3cd13ec1cacb34928a8cca6bf8fa367f11dc79853d2d869e658bb8364388288b34e0623225bcff1da20783d8e773c1847bc2a4885dfcd2e8bcf4e7fad530e518fe6e1134bfcffba8327c6f441ebbdb265bd32092f8afe41adc6cfb0ecc85a325a5608c4bb31f9511d5193fab0ed4f477607d53450fd652918ce635d52df35f157677baab0d9c0e2c11d2d310264f5748e08ed702c0a9925d2dc9ea99d1b5265a244083b6915bc462eac3eb25a3dde7a3dd3ee53749508df841b35f07cf7ee62abd4c088450ff898b74ff63489d20178f9c7e02b1b677b04c6f1608bd5872b98cb222e3820669772494e",
+      "contacto_cifrado": "v1:799d0d6c6894ca4641f7199c:0d2798f517a8671fa38434d09cb8988b:e0f1732fa1ab4db96ee75a3032fae1c468e9593f3d19ec2c4ce434ee821f07a87c2a72fd47949bffaa986fdd2b073edbd72827ec1de02dd15d52ac733907df111f11acf697ee1e22a61692ed0c36f1905f7622f0f13946eac4d2077f2f1552e1f8e435d86ea5942f63684b604dc87c54389fff706d7f985418da3bcebd94f9f8e08c6de71f6b4aea128769033b6b35a6c97caaf7a4e9b5e80be5e0055b37430add8f10a303b51039fa98538f05c62a3439d9497d441f92b2c0f85afa0958ca3a93d43ab39bb1e509853d1220c13bac3e9cbd5abd33d808e6824070b53e7d63e013021586339e937dba9edad17935f7c4389ca9d0ae948e6aadf0198b0d26527dbf4bcaed4acd61c2778f61d6ca22dd9c9330388752347ade5353318bc788b5ba06e390ce117ffeeba5c5bbbd6b7e1c758b5751afe122377ce721491ae6213adfc4bb3bac40ef3ce7c5adb0572f93cbef1f93d096dc6c5b2c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "63.17 m²",
@@ -2826,9 +2928,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "114 m²",
       "dato_2": "3 Hab • 2 Baños • 1 Garajes",
@@ -2849,7 +2951,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "321 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:6e89dbc2812a666025bec8ac:2e78e4f2f453d9aea3172f5387fb0557:2f03bcf28169664eb51a9227d5bab7dc5e07c7c9077383c1e56ff7a0d29725e8134ffeb39b9446b085ffd59f58bd3be84d128e8f4fe8d9c8ededbc79adaef3066bb69e5bf1ee78ede86bc2a1831736193f906198a90ffc88f2ff36e43f6c83e1aa8abd87f35c399c983d6805b42dde645d425f1c3baffbc003a341221ee8683f2b6489449a9cb96d32feccbf7fe65028ba2080171dc364721cf140145b03cfbd3b1c6284eac5bb37b95de7301f3fcc75f4a25607c671d5f7502bd1611c099f2e5862bef797084a93ca45fb1b0162969f01e841244fd6c8318c832cc4a9f2c2f4c66f673fa4002ba0e3a7c54608168b4bca1b661daa1fd3ba25aa9a4c8bea9007fe2fb8fc42b864d0e578f37b3b9ed8873b43fb44eb9089c157b89adb51564c4dc7adc811e93db1d8615dfb2884d827d5c65971eb5274ab61fd2fe108f9d6da480c71aef2f9b6cc472d10c4fd29a95775bda289525877601b2a0a19aba16f68df252e4b63f36f98096844deb49e842434f76f642dc28e590bbd1c6de6040e876ce8f357c8f9204073129c1fc5cf0c867e7395b5a8bd",
+      "contacto_cifrado": "v1:983c57dbe7f6696634fde8db:6b1ec9e5df3cd14f076502b40a8a42f8:1f0b7cd3cdaee4e841e65135d683344acd7097f401d299687f9ff1a844ebccc78da7da82f0b3d72cbfa2b6430cb822613323dcd23ccaf7ac6a7daf7c98e09ef0d07c0d58834235cbec9134a3a66acbd01d2f19456560dfb0fbdb4951ae3c225c64602dd8e0b16e55aab459c19037de8f8539ce48f5ceff5603b15644b3458e62bc2be0e397d86663be3bbf2f378dd3d471b5025f5db0b69d75f591374616d49ebe33be8df14b8aefae28017efc75261a6d7e81c0d029f1ec0ec12037c27ca5e6855c91ae3c6d0e27adb861c97918a3c3ff29b521810981e426dcb857c36ebbac30afaa7f29e3cf5cdde13887e27614509a3d92385737787437e2f57f3d012f4623e1af64bab09a7f0b0da8b5a4b97385932dbf0ffc4f11eb2298aca183a48ebe5eea756a7041ce5bc5a03813e479c3505436a1cac2e825b57f46e23428392bad65cd3f887d0ba043184888786ac4c0f74f860408359bbcbeda47b1d7dbebeb6915686f3f58fd5d393fdaa159b99d603ee10dde11f373327a2e0c744d641d03743098ad92db8b629fb968aec017b59c93d8d959ad7e",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "114 m²",
@@ -2877,9 +2979,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "53 m²",
       "dato_2": "1 Hab • 2 Baños • 1 Garajes",
@@ -2900,7 +3002,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "318 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:089b155b00d0f3155555fe44:5dedc1f7ab46c3a13481d30755511f83:8bad66b352de66ed045afe4709a4b277a5a8512c0ca56cafe2e9c11de22d0ea9fbf5420fa2b57a0c82aaff129f8b1b395e3b6e75cd23bc068a10d40544a102490e765877f3518f0518a3c7ecbd1ca3f323bd0e1c7c98230b7953e33a648b6c78970924bed8a02ff6e8ee75caf6761dc5f0f1c5ee65f04a7112a173016b2861edc7bc898e64513d6edfdd1dc2e181a9de96636b54306cdf7a917069fec59ceff97a5d8b0322f67d10b5abcc8c15d912d71a18fecc128d98fa44ea95a1025527613d19865eb04aeaedebccd144c6aa07cacd442b5805d47594a0e12c054b37b573542bdf60d8cb5eb51d71fb3192edaf178ee6e60abe6719c5eea3ce6660c491a85f96b3d809c09b6a6b9164efdeacf333c6e43d1e6786eec96f33f2835bcf8251d14bd67783d823752c7122175b54dca91e2b3b1306335b334c8fe6adad5fbf82121f1e2a09e4303cdaaade26af5c952764e2e2c09fe519e5bcbd544b307adc7c311b558b5398ab7e333dd99c9154d4539707fa",
+      "contacto_cifrado": "v1:f9852db68c8b583c1d0f6abb:cf98a1ce9178e7ded992b71cba7da3b8:40058be36b149daf9c23ba1776c67da272f5ec4ec7d4e28371dec1d10fdb2a57b2fa1735ab4eda6a981d0851d4dc878ce8cd01345bf68bbf5fe0b5db46baf6c0df7116b542a138cc8e85b807de8512a439b8a73785b253edb326d74d2aafa03206661d7d04063c3478e07de21466ab6ca33e399a976489c10665a085a96e0128bdefc145c31ebcffc2544c78c5e411e89d59efc6f4bab034e9bf894b74da2610d5e8937a0eb0eac78afc4fdf4bba154808ffaf39ace9786789c3c504e8a9260427f8b877d228048977f34e4baa49db1efd3f2004cce8ca7b00fe2d5d65deebd1e57348e4ffd72a36495ad86ed3a017638e32418d26ff96a3cb4c47d12ae7a2ec1649e35250251348ddbb219295650b785a295e938708dda22accb1e670929f755c3a9d86a0e7187e25db53dd6acc8c8dfd05fb2e4c9038bfcea832f11617adc98be2c0a6661f04eb24f97b88d287cae1725fe9fd5414c2966e75a9c3911f04d52684eb38e3881ec45d6d5ad635c62ee0949d53",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "53 m²",
@@ -2928,9 +3030,9 @@
       "tipo_operacion": "arriendo",
       "tipo_inmueble": "Apartamento",
       "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
       "imagenes": [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
       ],
       "dato_1": "70 m²",
       "dato_2": "2 Hab • 1 Baños • 1 Garajes",
@@ -2951,7 +3053,7 @@
       "portal": "Metrocuadrado",
       "telefono_bloqueado": "313 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:31a65c44c44784b9795d535f:6cdc87db8ec7aafa515625fbcd6c2416:654e0c06f4c03ce5cf46ebb05db3619adf5c9f31dd96820fef2ed2baef8958e94d2ca9f674733db23c5026873cfe0eeee3ed5d34414c26dcdea8582f215f24b3429f582ff3b07ffd70fd12f9d9d8be6805746b0884b97845fef515c0bf93e97825b035f781c7840d05fa2d05e0164fd5583066a11333d96c2069ac5f31a68cf23c0503b1f7008914ea0dd32f9ee629f104441310fdf15d2f85bffebd59e233ae8a36387fec06d1afd460b1c49c1c33a19c3280e379b76324550772cf6933dec62fc7c832b9321ef8e773194cbe87ce7650528c9dc31622f47f57f017549a190768896e3c8b11681617fe76b38688de268289ed11173d905d6fdce001672de97d72f44494f1dd539713eb16248794409ce8566ce75dbd39e92ac52f93539a05eaa8eaf9e2afb4411ee96ce479aecce8117cb8cb287b624685ec047a8090bd04fa69648b9e2d9df3ab5739a04e5f04b7678df471",
+      "contacto_cifrado": "v1:ea96670d97faf4290f34e8a2:cbe13246d94501190261b7d279256762:cd16bd6256f974940e6d8c893900bebbd45d7352ae8712947d5c4079168d99e49b2ea894bcc0fe212c23fc5048f10338c22568fc7444d925a92984c1fbdbfae0527d93bc042b45556b7cb84cc1230afb2ee83d5794e3b84e6509515bc8e99a343e4d0ef4d604f49b3181087c14fe63d33dbe1a45fde2dc851070060ce2cc84c5e053c7a17966182fd54a09742c7c27c446841a50c202c976f1160c137213cf0a5d6e0f9ffe66eb38cc29613dc9a561626d099a6aa52f1f6b863806a66c14654d488ac73dd1ce3525a3910813af2ecdc790fcab445479bb78f050818fbfba55ec11cc864ccb49dbb4200a3fed59928670850c12a8d0799eb010fdb546e83756dfc3512995e3d0eb4a7015ef4b4d3ae5a51d02c1171bb72895278b2c9286000d4754d7cd9450149664e21caa89939cb03d6ae4afad8f1b24699d3d54aae48b930df39ebbec319213c9481b55a0083c610b18689e",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "70 m²",
@@ -2964,108 +3066,6 @@
         "Stratum": "4 Residential",
         "Built Area": "70 sqm",
         "Bedrooms": "2 Bedrooms",
-        "Bathrooms": "1 Full Bath",
-        "Parking": "1 Space",
-        "Contact": "Verified Owner"
-      }
-    },
-    {
-      "id": "lead-inm-650",
-      "titulo": "Apartamento en Venta — Bogota",
-      "titulo_en": "Apartment for Sale — Bogota",
-      "ubicacion": "Bogota • Estrato 4",
-      "ciudad": "Bogota",
-      "barrio": "EL TINTAL",
-      "tipo_operacion": "venta",
-      "tipo_inmueble": "Apartamento",
-      "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-      "imagenes": [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-      ],
-      "dato_1": "84.92 m²",
-      "dato_2": "3 Hab • 2 Baños • 1 Garajes",
-      "precio_m2": "$ 8.831.842 / m²",
-      "precio": "$ 750.000.000",
-      "precio_raw": 750000000,
-      "precio_usd": "≈ $182,927 USD",
-      "rebaja": "",
-      "urgencia": "⚡ Trato Directo",
-      "urgencia_en": "⚡ Direct Deal",
-      "urgencia_tipo": "urgente",
-      "descuento_arbitraje": 0,
-      "mediana_sector_m2": "$ 4.438.295 / m²",
-      "dias_en_mercado": 1,
-      "senales_urgencia": [],
-      "timestamp_ms": 1789430502013,
-      "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
-      "telefono_bloqueado": "320 ••• ••••",
-      "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:c79bd23cbf3a55808f99927c:3186514d7f875448ab0f72121b942b5a:017b78b4eba165b75e68fd984ee2c95db8e559887dda01a53f5190814b598d48feff27281359f255ebf2e1518028bc79fc35dab80a7d650914a1b889b61d9c14de378849ae48544b35b6525d2bb20ffd3c6cc2062653321eeba21ad9818300654827ce8df94b15c0655bcd3a1875d22036b7d9cabd4ed996fd621d7913cc91e7a9661d6008e78baf209e01b6831fa4fcacb41ec01143912fb9d09a307e44352f49c62bc19947d2e91864086316c54419ac807f3b5e803f143d9de327562f37fd7a09b1db35584087b5e700344da01960103f3a99a0a94cbcbaa6f2e0e18f405835dca4c00b2d6925e8c07c0d612b9c6a27f3fb9e2bd697cb447451f71cdaa73aa4d4e9ce45273944bba267e2bf4f637b1dbeac12562cf89de9ff1d67b841c97ba62d8b2fbb65d39eb546de3538944c3331d8fbeb5e2d75e9243cff9c8e34aceb00a4e5afed5b0c960332e15c5eeac18d8073dbeb0c9792cae312cacef64659",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "84.92 m²",
-        "Habitaciones": "3 alcobas",
-        "Baños": "2 completos",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "detalles_en": {
-        "Stratum": "4 Residential",
-        "Built Area": "84.92 sqm",
-        "Bedrooms": "3 Bedrooms",
-        "Bathrooms": "2 Full Baths",
-        "Parking": "1 Space",
-        "Contact": "Verified Owner"
-      }
-    },
-    {
-      "id": "lead-inm-649",
-      "titulo": "Apartamento en Arriendo — Bogota",
-      "titulo_en": "Apartment for Rent — Bogota",
-      "ubicacion": "Bogota • Estrato 4",
-      "ciudad": "Bogota",
-      "barrio": "LOS CEDROS",
-      "tipo_operacion": "arriendo",
-      "tipo_inmueble": "Apartamento",
-      "tipo_inmueble_en": "Apartment",
-      "imagen": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80",
-      "imagenes": [
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
-      ],
-      "dato_1": "40 m²",
-      "dato_2": "1 Hab • 1 Baños • 1 Garajes",
-      "precio_m2": "$ 72.500 / m²",
-      "precio": "$ 2.900.000",
-      "precio_raw": 2900000,
-      "precio_usd": "≈ $707 USD",
-      "rebaja": "",
-      "urgencia": "📊 -99% vs Mediana",
-      "urgencia_en": "📊 -99% vs Median",
-      "urgencia_tipo": "arbitraje",
-      "descuento_arbitraje": 99,
-      "mediana_sector_m2": "$ 4.933.333 / m²",
-      "dias_en_mercado": 1,
-      "senales_urgencia": [],
-      "timestamp_ms": 1789428026629,
-      "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
-      "telefono_bloqueado": "318 ••• ••••",
-      "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:5580889f58cc2ff7342ded7e:271472f50d025a93a75d3c49da20ab37:ac394008dc67b7fffb584c3c127ded81121c2e54453599e877c01b35ed19d843e1078b70ca35145651d858539f7a59cdb36a9af4dfa744cf754feccda8fe9ee64740b1ed3040ae2bfbd86253b3047441aac06f7c856994258186fd37830ce3cc6b730beb9987a43ade1a28d41717db938dd762261840787cfd42dfd16c63643fc10a59e89d907971c8242d88acbf55b9c7104c75b38d946886057a3adeb664402a628f48b024b24d634be24fa648580d5e5423a049ca24bfcc7419ba6c95d87ee9cf0c582d609d900673d18a91b5f67684f0e5d46fb05934e6d63a48d3698ce494e7b4589336ab8e27dddf4e0f239ef27893eaea8c0795b999b2caabfd92557dc37d73f4fb10bb1278d85251aba2d1e7665d98e6bc485c59eccd4598492cf4f1f0b5aa39e74c69c26e23a019037f4ecc78fd18dd29c1849ca4c51d0e90c7b6e62283ec69c58857b30414b6558ba283c9cbb2724541b6343059aed4aa52a715cd",
-      "detalles": {
-        "Estrato": "4 Residencial",
-        "Área": "40 m²",
-        "Habitaciones": "1 alcoba",
-        "Baños": "1 completo",
-        "Parqueaderos": "1 espacio",
-        "Contacto": "Propietario Verificado"
-      },
-      "detalles_en": {
-        "Stratum": "4 Residential",
-        "Built Area": "40 sqm",
-        "Bedrooms": "1 Bedroom",
         "Bathrooms": "1 Full Bath",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
