@@ -1693,9 +1693,9 @@ function deduplicarLeads(leads) {
       vistosIds.add(idLimpio);
     }
 
-    // 2. Deduplicación por enlace original
-    const enlace = item.enlace || item.url || item.enlace_bloqueado;
-    if (enlace && typeof enlace === "string" && enlace.length > 5) {
+    // 2. Deduplicación por enlace original público (si no está ofuscado)
+    const enlace = item.enlace || item.url;
+    if (enlace && typeof enlace === "string" && enlace.length > 5 && !enlace.includes("••••")) {
       const enlaceNorm = enlace.trim().toLowerCase().split("?")[0];
       if (vistosEnlaces.has(enlaceNorm)) return false;
       vistosEnlaces.add(enlaceNorm);

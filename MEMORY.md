@@ -1,6 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-15 19:58 (GMT-5)
+Última actualización: 2026-09-16 03:28 (GMT-5)
+
+---
+
+-75. **Corrección Crítica de Deduplicación en Catálogo (Colapso a 1 Oportunidad por Enlace Ofuscado) y Clarificación de Rol de Firebase**:
+    - **Diagnóstico y Causa Raíz:**
+      1. *Colapso del catálogo a un solo producto:* La función `deduplicarLeads` en `modules/04-filters.js` utilizaba `item.enlace || item.url || item.enlace_bloqueado` como clave para el conjunto de enlaces vistos (`vistosEnlaces`). En el catálogo público de Origgo, todos los leads protegidos tienen `enlace_bloqueado: "https://metrocuadrado.com.co/inmueble-••••••"`. Como resultado, tras procesar el primer lead, los 59 restantes eran erróneamente clasificados como "duplicados de enlace" y descartados, mostrando "1 oportunidad directa".
+      2. *Confusión sobre Firebase vs. Catálogo Público:* Se aclaró que Firebase Firestore se utiliza exclusivamente para persistencia de usuarios, saldos de créditos, ledger inmutable de pagos Wompi y suscripciones Web Push, mientras que el catálogo de inmuebles se alimenta de `data/inmobiliario.json` o Cloudflare R2 (`catalogoR2Url` en `config.js`). La pestaña "Inmuebles Directos" en la barra de comandos es el selector de nicho activo por defecto de la plataforma, no un filtro excluyente.
+    - **Solución Implementada:**
+      1. **Aislamiento de Enlace Público en Deduplicación (`modules/04-filters.js`):**
+         - Se retiró `item.enlace_bloqueado` del filtro de duplicados.
+         - Se condicionó la deduplicación por enlace únicamente a `item.enlace` o `item.url` que no contengan caracteres ofuscados (`••••`).
+         - La unicidad de los 60 inmuebles se preserva con total solidez mediante el ID único (`item.id`) y la firma estructural canónica (`item.titulo + item.precio + item.ciudad + item.dato_1`).
+      2. **Recompilación de Módulos (`scripts/build.js`):**
+         - Generación y sincronización de `app.js` y `app.min.js`.
+      3. **Validación DevSecOps y Pruebas Unitarias:**
+         - Verificación en Node: 60 leads únicos intactos tras deduplicación y filtros.
+         - 100% de las pruebas unitarias y fases DevSecOps aprobadas con 0 errores.
+    - **Archivos Afectados:**
+      - `modules/04-filters.js`
+      - `app.js`, `app.min.js`
+      - `MEMORY.md`
 
 ---
 
