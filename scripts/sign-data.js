@@ -13,20 +13,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-
-// Cargar variables de entorno
-const envPath = path.join(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-  fs.readFileSync(envPath, 'utf8').split('\n').forEach(line => {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#')) {
-      const idx = trimmed.indexOf('=');
-      if (idx !== -1) {
-        process.env[trimmed.slice(0, idx).trim()] = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-      }
-    }
-  });
-}
+require('../lib/env');
 
 const SECRET = process.env.LEADS_ENCRYPTION_KEY;
 if (!SECRET) {

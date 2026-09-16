@@ -60,6 +60,19 @@ const server = http.createServer(async (req, res) => {
       apiFilePath += '.js';
     }
 
+    // Soporte para rewrites de funciones consolidadas
+    if (!fs.existsSync(apiFilePath) || !fs.statSync(apiFilePath).isFile()) {
+      if (rutaRelativa.startsWith('/api/auth/')) {
+        apiFilePath = path.join(__dirname, 'api', 'auth.js');
+        req.action = rutaRelativa.split('/')[3] || 'session';
+      } else if (rutaRelativa.startsWith('/api/notifications/')) {
+        apiFilePath = path.join(__dirname, 'api', 'notifications.js');
+        req.action = rutaRelativa.split('/')[3] || 'subscribe';
+      } else if (rutaRelativa === '/api/payments/verify') {
+        apiFilePath = path.join(__dirname, 'api', 'payments', 'create-order.js');
+      }
+    }
+
     if (fs.existsSync(apiFilePath) && fs.statSync(apiFilePath).isFile()) {
       // Decorar response con métodos express-like
       res.status = function(code) {
@@ -79,6 +92,9 @@ const server = http.createServer(async (req, res) => {
         for (const [key, value] of params.entries()) {
           req.query[key] = value;
         }
+      }
+      if (req.action && !req.query.action) {
+        req.query.action = req.action;
       }
 
       // Parsear body en POST / PUT / PATCH

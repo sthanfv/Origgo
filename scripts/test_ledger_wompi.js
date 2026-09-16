@@ -20,7 +20,7 @@ const {
 const webhookHandler = require('../api/payments/webhook-wompi');
 const createOrderHandler = require('../api/payments/create-order');
 const unlockHandler = require('../api/leads/unlock');
-const sessionHandler = require('../api/auth/session');
+const sessionHandler = require('../lib/auth/session');
 
 // Mock simple de req y res para probar handlers de Vercel en Node local
 function createMockRes() {

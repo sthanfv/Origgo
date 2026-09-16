@@ -14,8 +14,8 @@ const assert = require('node:assert');
 process.env.NODE_ENV = 'test';
 require('../lib/env');
 
-const subscribeHandler = require('../api/notifications/subscribe');
-const dispatchHandler = require('../api/notifications/dispatch');
+const subscribeHandler = require('../lib/notifications/subscribe');
+const dispatchHandler = require('../lib/notifications/dispatch');
 const { 
   hashEndpoint, 
   registrarSuscripcion, 

@@ -9,8 +9,16 @@
   ],
   "rewrites": [
     {
+      "source": "/api/auth/:action",
+      "destination": "/api/auth?action=:action"
+    },
+    {
+      "source": "/api/notifications/:action",
+      "destination": "/api/notifications?action=:action"
+    },
+    {
       "source": "/api/notifications/vapid-public-key",
-      "destination": "/api/notifications/subscribe"
+      "destination": "/api/notifications?action=vapid-public-key"
     },
     {
       "source": "/api/payments/verify",

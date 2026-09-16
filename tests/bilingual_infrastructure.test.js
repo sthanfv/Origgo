@@ -299,7 +299,7 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
   });
 
   it('session login con PIN debe validar lang y devolver error en inglés ante credenciales inválidas', async () => {
-    const handler = require('../api/auth/session');
+    const handler = require('../lib/auth/session');
     const req = {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -325,7 +325,7 @@ describe('🃏 Infraestructura de Traducción — Catálogo y Desbloqueo', () =>
 
   it('recover endpoint debe responder con mensaje genérico en inglés cuando lang === "en"', async () => {
     resetRateLimiter();
-    const handler = require('../api/auth/recover');
+    const handler = require('../lib/auth/recover');
     const req = {
       method: 'POST',
       headers: {

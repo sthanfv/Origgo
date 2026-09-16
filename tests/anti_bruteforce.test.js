@@ -113,7 +113,7 @@ describe('🛡️ Escudo Anti-Fuerza Bruta: Proof-of-Work Criptográfico y Sesi�
   });
 
   it('GET /api/auth/challenge debe emitir un desafío de seguridad accesible', async () => {
-    const challengeHandler = require('../api/auth/challenge');
+    const challengeHandler = require('../lib/auth/challenge');
     let statusCode = 0;
     let resData = null;
     const req = { method: 'GET', headers: {} };
@@ -131,7 +131,7 @@ describe('🛡️ Escudo Anti-Fuerza Bruta: Proof-of-Work Criptográfico y Sesi�
   });
 
   it('POST /api/auth/session debe rechazar con HTTP 403 login con PIN que presente desafío inválido', async () => {
-    const sessionHandler = require('../api/auth/session');
+    const sessionHandler = require('../lib/auth/session');
     const db = require('../lib/db');
 
     const testPhone = '3199998811';
@@ -170,7 +170,7 @@ describe('🛡️ Escudo Anti-Fuerza Bruta: Proof-of-Work Criptográfico y Sesi�
   });
 
   it('POST /api/auth/session debe autenticar exitosamente con credenciales y PoW resuelto', async () => {
-    const sessionHandler = require('../api/auth/session');
+    const sessionHandler = require('../lib/auth/session');
     const db = require('../lib/db');
 
     const testPhone = '3199998822';

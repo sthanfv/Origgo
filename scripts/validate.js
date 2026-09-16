@@ -44,20 +44,23 @@ async function ejecutarValidacionCompleta() {
     'lib/leads.js',
     'lib/cors.js',
     'lib/push-subscriptions.js',
+    'lib/push-dispatcher.js',
     'lib/email-templates.js',
     'lib/challenge.js',
+    'lib/auth/session.js',
+    'lib/auth/challenge.js',
+    'lib/auth/recover.js',
+    'lib/notifications/subscribe.js',
+    'lib/notifications/dispatch.js',
     'api/payments/create-order.js',
     'api/payments/webhook-wompi.js',
     'api/payments/reconcile-cron.js',
-    'api/auth/session.js',
-    'api/auth/challenge.js',
-    'api/auth/recover.js',
+    'api/auth.js',
     'api/leads/unlock.js',
     'api/leads/list.js',
     'api/user/balance.js',
     'api/media/proxy.js',
-    'api/notifications/subscribe.js',
-    'api/notifications/dispatch.js',
+    'api/notifications.js',
     'api/telemetry/report.js'
   ];
 
@@ -342,7 +345,7 @@ async function ejecutarValidacionCompleta() {
     if (!process.env.JWT_SECRET) {
       process.env.JWT_SECRET = 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232';
     }
-    const sessionHandler = require('../api/auth/session');
+    const sessionHandler = require('../lib/auth/session');
     let resStatus = 0;
     let resPayload = null;
 
