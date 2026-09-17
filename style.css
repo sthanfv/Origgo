@@ -2360,19 +2360,6 @@ main {
   background: rgba(245, 158, 11, 0.08);
 }
 
-.btn-unlock-lead.closed {
-  background: var(--bg-card-inner);
-  color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
-  box-shadow: none;
-}
-
-.btn-unlock-lead.closed:hover {
-  background: var(--border-subtle);
-  color: var(--text-main);
-  transform: translateY(-1px);
-}
-
 .btn-unlock-lead.closed::after {
   display: none;
 }
@@ -4123,12 +4110,15 @@ main {
     gap: 1.5rem;
   }
 
-  /* Tarjetas Bento en Pantalla Pequeña */
-  .bento-card { border-radius: 2rem; }
-  .card-media-wrapper { aspect-ratio: 16 / 10; height: auto; }
-  .card-footer { padding: 0.85rem 1.15rem 1.15rem; flex-wrap: wrap; gap: 0.65rem; }
-  .card-price-block { width: 100%; }
-  .btn-unlock { width: 100%; justify-content: center; padding: 0.75rem 1.25rem; }
+  /* Tarjetas Bento en Pantalla Pequeña (Fase 1 Editorial) */
+  .bento-card { border-radius: 1.85rem; }
+  .card-media-wrapper { aspect-ratio: 16 / 10; height: auto; min-height: 205px; }
+  .card-body { padding: 0.75rem 1.15rem 1.25rem; min-height: auto; }
+  .card-price-row { gap: 0.5rem; }
+  .card-specs-inline { font-size: 0.8rem; margin-bottom: 0.95rem; }
+  .btn-unlock-lead { height: 44px; font-size: 0.8rem; }
+  .card-slideup-overlay { padding: 1rem 0.9rem; border-radius: 1.85rem; }
+  .carousel-nav-btn { opacity: 0.85; width: 30px; height: 30px; font-size: 0.75rem; }
 }
 
 /* Teléfonos Compactos / Pantallas Angostas (<= 480px) */

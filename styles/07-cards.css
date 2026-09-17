@@ -346,19 +346,6 @@
   background: rgba(245, 158, 11, 0.08);
 }
 
-.btn-unlock-lead.closed {
-  background: var(--bg-card-inner);
-  color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
-  box-shadow: none;
-}
-
-.btn-unlock-lead.closed:hover {
-  background: var(--border-subtle);
-  color: var(--text-main);
-  transform: translateY(-1px);
-}
-
 .btn-unlock-lead.closed::after {
   display: none;
 }

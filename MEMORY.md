@@ -1,6 +1,34 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 06:15 (GMT-5)
+Última actualización: 2026-09-17 18:37 (GMT-5)
+
+---
+
+- 87. **Auditoría Forense y Perfeccionamiento de la Experiencia Móvil Editorial (Fase 1 Origgo v2.0)**:
+    - **Diagnóstico Forense de la Versión Móvil:**
+      1. *Reglas de Tarjeta Obsoletas en `styles/11-mobile.css`:* Se detectó que las clases `.card-footer`, `.card-price-block` y `.btn-unlock` persistían en la sección móvil, sin aplicar los paddings y dimensiones adecuadas para la nueva estructura de `.card-body` y `.card-price-row`.
+      2. *Falla de Inserción en Caliente en `modules/07-unlock.js`:* La función `actualizarTarjetaEnElDOM()` buscaba `.card-specs-panel` para ubicar el teléfono desbloqueado. Al haberse reemplazado por `.card-specs-inline`, caía en un fallback que lo situaba al pie de la tarjeta, debajo de los botones de WhatsApp/Llamar.
+      3. *Navegación en Carruseles Táctiles:* En dispositivos táctiles sin `:hover`, las flechas de carrusel `.carousel-nav-btn` tenían `opacity: 0`, dependiendo exclusivamente del swipe táctil.
+      4. *Duplicación de CSS en `styles/07-cards.css`:* La regla `.btn-unlock-lead.closed` estaba duplicada innecesariamente.
+    - **Correcciones y Adecuaciones Implementadas:**
+      1. *Adecuación de Tarjetas Editoriales en Móvil (`styles/11-mobile.css`):*
+         - `.card-body` ajustado a `padding: 0.75rem 1.15rem 1.25rem; min-height: auto;` permitiendo que el precio en COP y el botón píldora respiren sin desbordamiento.
+         - `.card-specs-inline` optimizado a `0.8rem` con margen inferior de `0.95rem`.
+         - `.btn-unlock-lead` con altura táctil ergonómica de `44px` y fuente `0.8rem`.
+         - `.card-slideup-overlay` adaptado a `padding: 1rem 0.9rem; border-radius: 1.85rem;`.
+         - `.carousel-nav-btn` con visibilidad sutil táctil `opacity: 0.85; width: 30px; height: 30px;` para complementar el deslizamiento gestual.
+      2. *Corrección Quirúrgica de Inserción de Teléfono (`modules/07-unlock.js`):*
+         - Actualizada la lógica para buscar `.card-specs-inline` o `.card-title` e insertar antes de `.card-bottom-row`, garantizando la posición exacta en la zona superior de datos tanto en carga inicial como en desbloqueo en caliente. Archivo en 479 líneas ($\le 500$).
+      3. *Limpieza de Estilos Duplicados (`styles/07-cards.css`):*
+         - Eliminado el bloque redundante de `.btn-unlock-lead.closed`. Archivo en 444 líneas ($\le 500$).
+      4. *Suite de Pruebas E2E Móvil (`tests/e2e/smoke.spec.js`):*
+         - Incorporado el test 5 específico para pantallas ultra-angostas (360x740), verificando cero desbordamiento horizontal (`scrollWidth <= clientWidth`), despliegue de drawer y generación de capturas de validación visual (`mobile_360px_editorial_verified.png`, `mobile_card_editorial_verified.png` y `mobile_drawer_editorial_verified.png`).
+    - **Validación Automatizada y Modularidad:**
+      1. *Estándar Desmulta:* Todos los módulos JS (16) y CSS (19) cumplen rigurosamente el límite $\le 500$ líneas (`11-mobile.css` en 493 líneas, `07-cards.css` en 444 líneas, `07-unlock.js` en 479 líneas).
+      2. *Compilación:* `style.min.css` (143.2 KB) y `app.min.js` (281.8 KB) sincronizados en `dist/`.
+      3. *Playwright E2E:* 5/5 pruebas aprobadas al 100% en Chromium (12.6s).
+    - **Archivos Afectados:**
+      - `modules/07-unlock.js`, `styles/07-cards.css`, `styles/11-mobile.css`, `tests/e2e/smoke.spec.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

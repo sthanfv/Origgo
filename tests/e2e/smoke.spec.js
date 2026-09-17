@@ -72,4 +72,44 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
     const pricingPlans = page.locator('.pricing-option-card, .checkout-modal-card');
     await expect(pricingPlans.first()).toBeVisible();
   });
+
+  test('5. La vista móvil a 360px renderiza sin desbordamiento horizontal', async ({ page }) => {
+    // Configurar viewport móvil angosto
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto('/');
+
+    const cards = page.locator('.bento-card');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+
+    // Verificar que no haya desbordamiento horizontal
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 2);
+
+    // Tomar captura móvil para comprobación visual
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_360px_editorial_verified.png'
+    });
+
+    // Desplazar a la primera tarjeta para capturar la tarjeta completa
+    const firstCard = cards.first();
+    await firstCard.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_card_editorial_verified.png'
+    });
+
+    // Abrir Drawer en móvil y verificar que se despliegue
+    const btnSpecs = firstCard.locator('.btn-specs-pill');
+    await expect(btnSpecs).toBeVisible();
+    await btnSpecs.click();
+
+    const slideup = page.locator('.card-slideup-overlay.active');
+    await expect(slideup.first()).toBeVisible();
+
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_drawer_editorial_verified.png'
+    });
+  });
 });
+
