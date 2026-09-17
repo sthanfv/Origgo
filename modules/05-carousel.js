@@ -81,6 +81,11 @@ function actualizarVistaCarrusel(cardIndex, activeIndex) {
       }
     });
   }
+
+  const photoBadge = document.getElementById(`carousel-badge-${cardIndex}`);
+  if (photoBadge && slides.length > 0) {
+    photoBadge.innerHTML = `<i class="fa-regular fa-image"></i> ${activeIndex + 1}/${slides.length}`;
+  }
 }
 
 /**

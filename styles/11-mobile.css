@@ -200,7 +200,7 @@
 
   /* Tarjetas Bento en Pantalla Pequeña */
   .bento-card { border-radius: 2rem; }
-  .card-media-wrapper { height: 240px; }
+  .card-media-wrapper { aspect-ratio: 16 / 10; height: auto; }
   .card-footer { padding: 0.85rem 1.15rem 1.15rem; flex-wrap: wrap; gap: 0.65rem; }
   .card-price-block { width: 100%; }
   .btn-unlock { width: 100%; justify-content: center; padding: 0.75rem 1.25rem; }
@@ -482,4 +482,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════
+/* Salvaguarda pantallas ultra-estrechas (<= 360px) */
+@media (max-width: 360px) {
+  .price-number { font-size: 1.25rem; }
+  .card-specs-inline { font-size: 0.78rem; gap: 0.3rem; }
+  .btn-unlock-lead { font-size: 0.78rem; padding: 0 0.75rem; }
+}

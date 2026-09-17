@@ -327,6 +327,17 @@ function renderizarInterfaz(dataset) {
     const detalles = Object.keys(detallesBase).length > 0 ? { ...detallesBase, [isEn ? "Location" : "Ubicación"]: ubicacionFinal } : { [col1NombreRaw]: item.dato_1 || "No especificado", [col2NombreRaw]: item.dato_2 || "No especificado", [isEn ? "Location" : "Ubicación"]: ubicacionFinal, [isEn ? "Property Type" : "Tipo"]: (isEn && item.tipo_inmueble_en) ? item.tipo_inmueble_en : (item.tipo_inmueble || "Propiedad Residencial"), [isEn ? "Deal Type" : "Operación"]: isEn ? "Direct Deal with Owner" : "Venta Directa con Propietario" };
     const detallesTraducidos = (isEn && item.detalles_en) ? detalles : traducirSlideupDetalles(detalles, isEn);
 
+    const tipoBase = (isEn && item.tipo_inmueble_en) ? item.tipo_inmueble_en : (item.tipo_inmueble || (isEn ? 'Property' : 'Inmueble'));
+    const tipoOp = isEn ? `${tipoBase} for Sale` : `${tipoBase} en Venta`;
+    const barrioTexto = item.barrio ? item.barrio.trim() : '';
+    const ciudadTexto = item.ciudad ? item.ciudad.trim() : '';
+    const zonaTexto = barrioTexto ? (ciudadTexto ? `${barrioTexto}, ${ciudadTexto}` : barrioTexto) : ciudadTexto;
+    const subtituloEditorial = zonaTexto ? `${tipoOp} · ${zonaTexto}` : tipoOp;
+
+    const areaLimpia = (item.dato_1 || '').replace(/Superficie\s*/i, '').trim();
+    const distLimpia = (dato2Texto || '').replace(/\s*[•·]\s*/g, ' · ').trim();
+    const specsInline = [areaLimpia, distLimpia].filter(Boolean).join(' · ');
+
     const claseRetrasoEntrada = index === 1 ? 'enter-delay-soft' : '';
     const detallesStr = item.detalles ? Object.entries(item.detalles).map(([k, v]) => `${k} ${v}`).join(' ') : '';
     const corpusBruto = [item.titulo, item.ubicacion, item.barrio, item.ciudad, item.tipo_inmueble, item.urgencia, item.rebaja, item.dato_1, item.dato_2, item.precio, item.precio_m2, detallesStr, 'inmueble propiedad vivienda particular directo dueno property real estate direct owner fsbo apartment house flat'].filter(Boolean).join(' ');
@@ -336,51 +347,36 @@ function renderizarInterfaz(dataset) {
       <article class="bento-card ${estaDesbloqueado ? 'card-unlocked' : ''} ${claseRetrasoEntrada}" data-index="${index}" data-lead-id="${escaparHtml(item.id || '')}" data-ciudad="${escaparHtml(item.ciudad || '')}" data-ciudad-norm="${escaparHtml(ciudadNorm)}" data-barrio-norm="${escaparHtml(barrioNorm)}" data-tipo="${escaparHtml(item.tipo_inmueble || '')}" data-search="${escaparHtml(searchDataCorpus)}">
         <div class="card-media-wrapper" data-action="abrir-ficha" data-index="${index}">
           ${mediaHtml}
+          ${tieneMultiplesFotos ? `<span class="carousel-photo-badge" id="carousel-badge-${index}"><i class="fa-regular fa-image"></i> 1/${fotos.length}</span>` : ''}
           <div class="card-media-gradient"></div>
           <div class="card-floating-badges">
             <span class="badge-time-pill" data-timestamp="${item.timestamp_ms || ''}"><i class="fa-regular fa-clock"></i> <span class="time-relative-text">${escaparHtml(tiempoRelativoTexto)}</span></span>
-            ${estaDesbloqueado ? `<span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked' : 'Desbloqueado'}</span>` : (item.urgencia ? `<span class="badge-status-pill ${claseUrgencia}">${escaparHtml(statusBadgeTexto)}</span>` : '')}
+            ${estaDesbloqueado ? `<span class="card-unlocked-badge"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked' : 'Desbloqueado'}</span>` : ''}
           </div>
         </div>
 
         <div class="card-body">
           <div>
-            <div class="card-meta-header">
-              <span class="card-location"><i class="fa-solid fa-location-dot"></i> ${escaparHtml(ubicacionFinal)}</span>
-              <button class="btn-specs-pill" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'View Full Details' : 'Ver Detalles Completos'}">${isEn ? 'View Details' : 'Ver Detalles'} <i class="fa-solid fa-chevron-up"></i></button>
+            <div class="card-price-row">
+              <div class="price-main">${formatearPrecioDisplay(item.precio)}</div>
+              <button class="btn-specs-pill" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'View Dossier' : 'Ver Ficha'}">${isEn ? 'Dossier' : 'Ficha'} <i class="fa-solid fa-chevron-up"></i></button>
             </div>
+            <div class="card-location"><i class="fa-solid fa-location-dot"></i> <span>${escaparHtml(subtituloEditorial)}</span></div>
             <h3 class="card-title" data-action="abrir-ficha" data-index="${index}">${escaparHtml(tituloFinal)}</h3>
-            <div class="card-specs-panel" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'Click to open full overview' : 'Click para abrir especificaciones completas'}">
-              <div class="specs-row">
-                <div class="spec-item"><span class="spec-label">${escaparHtml(col1Nombre)}</span><span class="spec-value">${escaparHtml(item.dato_1 || 'N/A')}</span></div>
-                <div class="spec-item"><span class="spec-label">${escaparHtml(col2Nombre)}</span><span class="spec-value">${escaparHtml(dato2Texto)}</span></div>
-              </div>
-            </div>
+            ${specsInline ? `<div class="card-specs-inline" data-action="abrir-ficha" data-index="${index}" title="${isEn ? 'Click to open details' : 'Click para ver detalles'}"><i class="fa-solid fa-ruler-combined"></i> <span>${escaparHtml(specsInline)}</span></div>` : ''}
             ${(estaDesbloqueado && contacto) ? `<div class="card-contact-phone-bar"><span><i class="fa-solid fa-phone"></i> <strong class="contact-phone-number">${escaparHtml(contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'View in Ad' : 'Ver en Anuncio'))}</strong></span><span class="unlocked-portal-pill"><i class="fa-solid fa-building-flag"></i> ${escaparHtml(portalNombre)}</span></div>` : ''}
           </div>
 
           <div class="card-bottom-row">
-            <div class="pricing-column">
-              <span class="pricing-label">${isEn ? 'Listed Price' : 'Precio Publicado'}</span>
-              <div class="price-main">${formatearPrecioDisplay(item.precio)}</div>
-              ${item.precio_m2 ? `<div class="pricing-sub-row">
-                <span class="unit-rate-badge">${escaparHtml(item.precio_m2)}</span>
-                ${item.descuento_arbitraje > 0 ? `<span class="unit-rate-badge badge-arbitraje" title="${isEn ? 'Quantitative Arbitrage Opportunity' : 'Oportunidad de Arbitraje Cuantitativo'}">-${item.descuento_arbitraje}% vs ${isEn ? 'Median' : 'Mediana'}</span>` : ''}
-                ${item.ahorro_spread ? `<span class="unit-rate-badge badge-spread" title="${isEn ? 'Cross-portal Spread Discount' : 'Rebaja inter-portal detectada'}"><i class="fa-solid fa-tags"></i> -${escaparHtml(item.ahorro_spread)}</span>` : ''}
-                ${item.rebaja ? `<span class="unit-rate-badge badge-rebaja" title="${isEn ? 'Confirmed price drop' : 'Rebaja de precio confirmada'}">${escaparHtml(isEn ? 'Price Drop' : item.rebaja)}</span>` : ''}
-              </div>` : ''}
-            </div>
-
             ${estaDesbloqueado ? `
               <div class="unlocked-action-cluster">
-                ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="${isEn ? 'View original owner listing' : 'Ver anuncio original del propietario directo'}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
+                ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="${isEn ? 'View original owner listing' : 'Ver anuncio original'}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
                 ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                 ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
-                ${(!contactoSeguro?.enlace && !contactoSeguro?.whatsappUrl && !contactoSeguro?.telLlamar) ? `<button class="btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="${isEn ? 'Reveal owner contact and link' : 'Revelar contacto y enlace del propietario'}"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Reveal Contact' : 'Revelar Contacto'}</button>` : ''}
               </div>
             ` : `
-              <button class="btn-unlock-lead ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
-                <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? (isEn ? 'View Closed' : 'Ver Cierre') : (isEn ? 'Unlock' : 'Desbloquear')}
+              <button class="btn-unlock-lead btn-action-primary ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
+                <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? (isEn ? 'View Closed' : 'Ver Cierre') : (isEn ? 'View Direct Contact' : 'Ver Contacto Directo')}
               </button>
             `}
           </div>
@@ -394,12 +390,13 @@ function renderizarInterfaz(dataset) {
 
           <div class="slideup-body">
             <div class="slideup-specs-grid">
+              ${item.precio_m2 ? `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid fa-calculator"></i> ${isEn ? 'Rate per m²' : 'Valor por m²'}</span><span class="slideup-spec-val">${escaparHtml(item.precio_m2)}</span></div>` : ''}
+              ${item.descuento_arbitraje > 0 ? `<div class="slideup-spec-card highlight-arbitrage"><span class="slideup-spec-key"><i class="fa-solid fa-chart-line"></i> ${isEn ? 'Arbitrage Opportunity' : 'Margen Arbitraje'}</span><span class="slideup-spec-val">-${item.descuento_arbitraje}% vs ${isEn ? 'Median' : 'Mediana'}</span></div>` : ''}
+              ${item.ahorro_spread ? `<div class="slideup-spec-card highlight-spread"><span class="slideup-spec-key"><i class="fa-solid fa-tags"></i> ${isEn ? 'Spread Discount' : 'Rebaja Inter-Portal'}</span><span class="slideup-spec-val">-${escaparHtml(item.ahorro_spread)}</span></div>` : ''}
+              <div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid fa-building-flag"></i> ${isEn ? 'Source Portal' : 'Portal de Origen'}</span><span class="slideup-spec-val">${escaparHtml(portalNombre)}</span></div>
               ${Object.entries(detallesTraducidos).map(([k, v]) => {
                 const kLow = k.toLowerCase();
                 const iconClass = (kLow.includes('estrato') || kLow.includes('stratum')) ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('built area') || kLow.includes('superficie')) ? 'fa-ruler-combined' : (kLow.includes('hab') || kLow.includes('bedroom')) ? 'fa-bed' : (kLow.includes('baño') || kLow.includes('bath')) ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero') || kLow.includes('parking')) ? 'fa-square-parking' : (kLow.includes('contacto') || kLow.includes('contact')) ? 'fa-user-shield' : 'fa-circle-info';
-                // ✅ HAL-05: Los valores de campo "contacto" son HTML confiable generado localmente
-                // por traducirSlideupDetalles. Todos los demás valores YA están escapados.
-                // Se elimina la detección de strings del JSON externo que era el vector XSS.
                 const esBadgeConfiable = kLow.includes('contacto') || kLow.includes('contact');
                 return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${esBadgeConfiable ? v : v}</span></div>`;
               }).join('')}

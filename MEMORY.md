@@ -1,6 +1,35 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 05:49 (GMT-5)
+Última actualización: 2026-09-17 06:15 (GMT-5)
+
+---
+
+- 86. **Fase 1 Origgo v2.0: Identidad Visual Editorial, Tema Claro Predeterminado y Descompresión de Bento Grid**:
+    - **Inversión de Tema por Defecto (Light Mode Editorial):**
+      1. *Identidad Inmobiliaria Cálida y Confiable:* Se configuró `data-theme="light"` como predeterminado en `<html>`, eliminando el aspecto de terminal de trading oscura para inspirar confianza doméstica en compradores e inversionistas colombianos.
+      2. *Paleta Cromática Editorial (`styles/01-tokens.css`):* Fondos en marfil cálido (`#FBFBF9`), tarjetas en blanco puro (`#FFFFFF`) con bordes gris arena (`#E7E5E4`), títulos en carbón profundo (`#1C1917`), texto secundario (`#78716C`) y acento de marca esmeralda institucional (`#059669` / `#10B981`) sin resplandores neón artificiales.
+      3. *Consistencia en JS (`modules/00-security.js` y `modules/10-listeners.js`):* `obtenerTemaActual()` inicializa en `light` si no hay preferencia almacenada en `localStorage`.
+    - **Descompresión Visual de Tarjetas Bento Grid (`modules/06-cards.js` & `styles/07-cards.css`):**
+      1. *Erradicación de la Saturación de Badges:* Se eliminaron las 6 etiquetas compitiendo simultáneamente en la tarjeta. Se estableció una jerarquía editorial limpia:
+         - **Media Panorámica:** Ratio de aspecto nativo `16 / 10` con indicador sutil de fotos en esquina superior (`1/8`).
+         - **Fila de Precio:** Precio COP de alto impacto (`$ 450.000.000 COP`) acompañado del botón discreto de Ficha Técnica (`.btn-specs-pill`).
+         - **Subtítulo Editorial:** Tipo de inmueble y ubicación refinada (`Apartamento en Venta · Chico Norte, Bogotá`).
+         - **Título Descriptivo:** Acotado limpiamente a 2 líneas con elipsis.
+         - **Atributos Clave:** Métricas esenciales en una sola línea clara (`85 m² · 3 Hab · 2 Baños`).
+         - **Botón de Acción Primaria:** Botón único de conversión directa (`Ver Contacto Directo`).
+      2. *Reubicación de Métricas Analíticas al Slide-up Drawer:* Las métricas cuantitativas complejas (Margen de Arbitraje, Spread Inter-portal y $/m²) se trasladaron a la ficha técnica expandida del cajón inferior (`.slideup-specs-grid`), accesibles con un toque sin saturar la vista principal.
+      3. *Contador Dinámico del Carrusel (`modules/05-carousel.js`):* Actualización en tiempo real del badge (`1/${fotos.length}`) al deslizar imágenes en cada tarjeta.
+    - **Rendimiento, Accesibilidad y Zero CLS:**
+      1. *Cumulative Layout Shift Cero (CLS = 0):* Aplicado `aspect-ratio: 16 / 10; height: auto; min-height: 220px;` en `.card-media-wrapper` junto con fondo neutro de reserva dimensional, garantizando renderizado sin saltos visuales antes de la descarga de fotos.
+      2. *Protección Mobile-First a 360px:* Ajustada la cuadrícula y tipografía en pantallas ultra-angostas para evitar quiebres de precios o desbordamientos horizontales.
+      3. *Soporte Bilingüe (`modules/13-i18n.js`):* Claves `card_unlock_btn` actualizadas a 'Ver Contacto Directo' / 'View Direct Contact'.
+    - **Validación DevSecOps y Modularidad:**
+      1. *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen rigurosamente el límite estricto de $\le 500$ líneas (`06-cards.js` en 489 líneas, `07-cards.css` en 458 líneas, `13-i18n.js` en 499 líneas).
+      2. *Compilación:* `style.min.css` (143.2 KB) y `app.min.js` (281.6 KB) compilados y sincronizados en `dist/`.
+      3. *Validación 8/8:* Todas las fases de `scripts/validate.js` aprobadas al 100% con 0 errores.
+      4. *Pruebas E2E:* 4/4 pruebas de humo Playwright aprobadas en Chromium (7.3s).
+    - **Archivos Afectados:**
+      - `index.html`, `modules/00-security.js`, `modules/05-carousel.js`, `modules/06-cards.js`, `modules/10-listeners.js`, `modules/13-i18n.js`, `styles/01-tokens.css`, `styles/06-bento-grid.css`, `styles/07-cards.css`, `styles/11-mobile.css`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

@@ -340,7 +340,7 @@ function obtenerTemaActual() {
       if (p.theme === 'light' || p.theme === 'dark') return p.theme;
     } catch (_) {}
   }
-  return 'dark';
+  return 'light';
 }
 
 /**

@@ -15,7 +15,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 6. **Resiliencia ante el Caos:** Envoltorio `withRetry` con backoff exponencial y jitter aleatorio en operaciones críticas de base de datos, absorbiendo caídas de red o picos de latencia.
 7. **Rate Limiting Anti-DDoS:** Middleware en memoria que protege endpoints financieros y autenticación contra ataques de fuerza bruta y saturación.
 8. **Arquitectura Modular (< 500 líneas por módulo):** Frontend y estilos 100% particionados en módulos especializados bajo `modules/` y `styles/`.
-9. **Estética Glassmorphic, Bento Grid & View Transitions API:** Modo oscuro y claro con cross-fade cinematográfico acelerado por GPU (`document.startViewTransition`), visualización ejecutiva con carruseles bajo demanda, deslizamiento táctil, ambient glow y modal de checkout nativo sin parpadeos.
+9. **Estética Editorial Inmobiliaria, Bento Grid & View Transitions API:** Modo claro editorial por defecto con paleta cálida y aspiracional (marfil, arena y esmeralda institucional), soporte alternable a modo oscuro, cross-fade cinematográfico acelerado por GPU (`document.startViewTransition`), descompresión visual con ratio panorámico 16:10, cero saltos de diseño (CLS = 0) y slide-up drawer para análisis cuantitativo.
 
 ## 🗺️ Índice Maestro de Comportamientos y Rutas de Archivos
 > **Guía rápida para desarrolladores**: Localiza inmediatamente qué archivo y qué función controlan cada funcionalidad del portal sin tener que buscar palabras clave a ciegas.

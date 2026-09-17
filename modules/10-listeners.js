@@ -397,14 +397,14 @@ function configurarListeners() {
   const btnThemeMobile = document.getElementById("btnThemeToggleMobile");
   const temaInicial = document.documentElement.getAttribute("data-theme") || (function() {
     try { const local = localStorage.getItem("hunter_theme"); if (local) return local; } catch (e) {}
-    return (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_theme') : null) || "dark";
+    return (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_theme') : null) || "light";
   })();
 
   document.documentElement.setAttribute("data-theme", temaInicial);
   actualizarIconoTema(temaInicial);
 
   const toggleTheme = () => {
-    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
     const newTheme = currentTheme === "dark" ? "light" : "dark";
     if (typeof aplicarTema === 'function') {
       aplicarTema(newTheme);

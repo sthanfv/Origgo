@@ -197,62 +197,62 @@
   --font-display: 'Lufga', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-body: 'Graphik', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* 🏛️ MODO CLARO ARQUITECTÓNICO — VERDE SALVIA PORCELANA (Cero blanco hospital plano) */
-  --bg-main: hsl(140, 20%, 91%);           /* Salvia Lino / Menta Porcelana Arquitectónica #E4EEE7 */
-  --bg-card: hsl(0, 0%, 100%);             /* Blanco Puro que flota con alto contraste */
-  --bg-card-hover: hsl(140, 25%, 98%);
-  --bg-card-inner: hsla(140, 25%, 95%, 0.85); /* Contenedores interiores translúcidos */
-  --bg-card-fade: hsla(0, 0%, 100%, 0.9);
-  --bg-surface: hsla(140, 20%, 88%, 0.6);
+  /* 🏛️ MODO CLARO EDITORIAL INMOBILIARIO — BLANCO MARFIL & GRIS ARENA */
+  --bg-main: #FBFBF9;                          /* Blanco marfil cálido aspiracional */
+  --bg-card: #FFFFFF;                          /* Blanco puro de alto contraste */
+  --bg-card-hover: #FAFAF9;
+  --bg-card-inner: #F5F5F4;
+  --bg-card-fade: rgba(255, 255, 255, 0.95);
+  --bg-surface: #F5F5F4;
 
   /* Superficies Canónicas Modo Claro */
-  --color-surface-card: hsl(0, 0%, 100%);
-  --color-surface-hover: hsla(140, 25%, 88%, 0.95);
-  --color-surface-inner: hsla(140, 25%, 95%, 0.85);
+  --color-surface-card: #FFFFFF;
+  --color-surface-hover: #FAFAF9;
+  --color-surface-inner: #F5F5F4;
 
-  /* Glassmorphism Flotante Modo Claro (Estilo Leafora) */
-  --glass-bg: hsla(0, 0%, 100%, 0.85);
-  --glass-border: hsla(166, 40%, 23%, 0.16);
-  --glass-shadow: 0 20px 40px -15px rgba(5, 31, 32, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  --glass-pill-bg: hsla(0, 0%, 100%, 0.85);
-  --glass-pill-border: hsla(166, 40%, 23%, 0.18);
-  --glass-pill-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 14px rgba(5, 31, 32, 0.08);
-  --glass-metrics-bg: hsla(140, 25%, 95%, 0.85);
-  --glass-metrics-border: hsla(166, 40%, 23%, 0.14);
+  /* Glassmorphism Editorial Flotante */
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: #E7E5E4;                     /* Gris arena sutil 1px */
+  --glass-shadow: 0 10px 25px -5px rgba(28, 25, 23, 0.05), 0 4px 6px -2px rgba(28, 25, 23, 0.03);
+  --glass-pill-bg: #FFFFFF;
+  --glass-pill-border: #E7E5E4;
+  --glass-pill-shadow: 0 2px 6px rgba(28, 25, 23, 0.04);
+  --glass-metrics-bg: #F5F5F4;
+  --glass-metrics-border: #E7E5E4;
   --glass-blur: blur(16px);
 
-  --border-card: hsla(166, 40%, 23%, 0.16);
-  --border-subtle: hsla(166, 40%, 23%, 0.12);
-  --border-hover: hsl(170, 59%, 22%);
+  --border-card: #E7E5E4;                      /* Borde 1px gris arena */
+  --border-subtle: #E7E5E4;
+  --border-hover: #D6D3D1;
 
-  --text-main: #0A110E;                        /* Carbón Obsidiana Orgánico: Cero tinte azul slate */
-  --text-muted: #242E29;                       /* Carbón Esmerilado Neutro de Alto Contraste (ratio > 8.5:1) */
-  --text-dim: #374640;                         /* Salvia Oscuro Neutro de Alto Contraste (ratio > 6.5:1) */
+  --text-main: #1C1917;                        /* Gris carbón profundo (WCAG AA > 12:1) */
+  --text-muted: #78716C;                       /* Gris secundario cálido y legible (WCAG AA > 4.8:1) */
+  --text-dim: #A8A29E;                         /* Gris sutil para meta tags */
 
-  --accent-emerald: hsl(170, 59%, 18%);    /* Verde bosque esmeralda de alta prestancia */
-  --accent-emerald-hover: hsl(170, 59%, 12%);
-  --accent-emerald-glow: hsla(170, 59%, 20%, 0.25);
-  --accent-emerald-bg: hsla(140, 30%, 88%, 0.85);
+  --accent-emerald: #059669;                   /* Esmeralda institucional puro */
+  --accent-emerald-hover: #047857;
+  --accent-emerald-glow: transparent;          /* Cero resplandor neón */
+  --accent-emerald-bg: rgba(5, 150, 105, 0.08);
 
-  --accent-gold: hsl(43, 85%, 45%);
-  --accent-gold-bg: hsl(43, 85%, 94%);
+  --accent-gold: #D97706;
+  --accent-gold-bg: rgba(217, 119, 6, 0.08);
 
-  --accent-rose: hsl(348, 83%, 50%);
-  --accent-rose-bg: hsl(348, 83%, 95%);
+  --accent-rose: #E11D48;
+  --accent-rose-bg: rgba(225, 29, 72, 0.08);
 
-  --accent-amber: hsl(38, 75%, 45%);
-  --accent-amber-bg: hsl(38, 75%, 95%);
+  --accent-amber: #D97706;
+  --accent-amber-bg: rgba(217, 119, 6, 0.08);
 
   --radius-card: 2.5rem;
   --radius-lg: 2.5rem;
   --radius-md: 1.25rem;
   --radius-sm: 0.75rem;
-  --shadow-card: 0 14px 34px -8px rgba(5, 31, 32, 0.1);
-  --shadow-glow: 0 18px 36px -5px rgba(11, 43, 38, 0.2);
+  --shadow-card: 0 10px 25px -5px rgba(28, 25, 23, 0.05), 0 4px 6px -2px rgba(28, 25, 23, 0.03);
+  --shadow-glow: 0 8px 20px -4px rgba(28, 25, 23, 0.06);
 
-  --gradient-img-fade: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 35%, rgba(255, 255, 255, 0.88) 75%, #FFFFFF 100%);
-  --dossier-bg: linear-gradient(180deg, rgba(228, 238, 231, 0.6) 0%, rgba(255, 255, 255, 0.98) 100%);
-  --dossier-curtain: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, rgba(228, 238, 231, 0.85) 100%);
+  --gradient-img-fade: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 45%, #FFFFFF 100%);
+  --dossier-bg: linear-gradient(180deg, #FBFBF9 0%, #FFFFFF 100%);
+  --dossier-curtain: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, #FBFBF9 100%);
 }
 
 * {
