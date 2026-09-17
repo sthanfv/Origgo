@@ -1,6 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-16 03:38 (GMT-5)
+Última actualización: 2026-09-17 00:48 (GMT-5)
+
+---
+
+-78. **Resiliencia Automática del Scraper, Detección de Fallos Silenciosos con Alertas a Telegram, Variedad Multiciudad Round-Robin y Verificación de Persistencia Firestore**:
+    - **Diagnóstico y Causa Raíz de Repetición Visual:**
+      1. *Repetición de imágenes en bucle en columnas:* En `db.js`, las fotografías captadas a nivel raíz (`lead.imagen` e `lead.imagenes`) no se transferían al objeto `metadataObj` previo a serializarse en `metadata_json`. Por ello, los leads persistidos históricamente en SQLite carecían de fotos en su metadata. Al exportar, `publisher_web.js` recurría a un fallback de 3 imágenes de Unsplash, las cuales en una cuadrícula CSS de 3 columnas repetían exactamente la misma imagen verticalmente en cada fila.
+      2. *Falta de diversidad geográfica:* `publisher_web.js` ejecutaba un simple `ORDER BY timestamp_ms DESC LIMIT 60`, monopolizando la vitrina con decenas de anuncios de la última ciudad escaneada (Bogotá) con timestamps espaciados (2h, 5h, 7h) sin novedad real.
+      3. *Fallo silencioso sin alertas:* Cuando un portal cambiaba sus etiquetas, el scraper degradaba silenciosamente a imágenes de prueba sin avisar a los operadores.
+    - **Solución Integral Implementada:**
+      1. **Detección de Calidad y Alertas a Telegram (`data_contract.js`):**
+         - Función `auditarLoteExtraccion` ahora audita la tasa de fotos ausentes. Si supera el 25% en un lote, dispara una alerta de sistema automática vía Telegram: `⚠️ [ALERTA DE CALIDAD] Degradación en portal X: Y% de anuncios vinieron sin fotos reales`.
+      2. **Extracción Heurística Multicapa (`adapters/metrocuadrado/parser.js` y `adapters/fincaraiz/parser.js`):**
+         - Si las claves primarias fallan, el parser recurre a claves estándar alternativas (`photos`, `gallery`, `pictures`, `galeria`) y ejecuta búsqueda profunda por regex de URLs de CDN (.jpg/.webp).
+      3. **Persistencia Retroactiva en SQLite (`db.js`):**
+         - Inyección de `lead.imagen` e `lead.imagenes` en `metadataObj`.
+         - Actualización automática de fotos en leads existentes (`existentePorEnlace`) cuando el escaneo captura imágenes de inmuebles que antes no las tenían.
+      4. **Variedad Multiciudad Round-Robin (`publisher_web.js`):**
+         - Agrupación por ciudad e intercalado inteligente: el catálogo ahora alterna equitativamente entre las 13 ciudades activas (Bucaramanga, Bogotá, Ibagué, Barranquilla, Pereira, Cali, Armenia, Medellín, Cartagena, Santa Marta, Envigado, Floridablanca, Manizales).
+         - Prioridad 100% a leads con fotos auténticas del portal.
+      5. **Despliegue Móvil en Samsung Galaxy J7 Prime (`3300aebadc113449`):**
+         - Código desplegado por ADB a Termux, sintaxis verificada al 100% (`PUBLISHER_OK`) y proceso PM2 `scraper` reiniciado (PID 19012 `online`).
+         - Ejecución del publicador: nuevo catálogo con variedad multiciudad subido con éxito a Cloudflare R2 y GitHub (commit `9033ad7`).
+      6. **Verificación de Persistencia Firebase Firestore (`lib/db.js`):**
+         - Verificado que las colecciones `users`, `transactions` y `orders` persisten de forma permanente en la nube de Firestore mediante credenciales seguras, blindando los saldos de créditos, paquetes adquiridos e historial de compras contra el reciclaje efímero de contenedores serverless en Vercel.
+    - **Archivos Afectados:**
+      - `adapters/metrocuadrado/parser.js`, `adapters/fincaraiz/parser.js`, `data_contract.js`, `db.js`, `publisher_web.js`, `tests/data_quality_resilience.test.js` (en `ofertas-hunter-pro`).
+      - `data/inmobiliario.json`, `data/inmobiliario.json.sig`, `MEMORY.md` (en `hunter-portal-showcase`).
 
 ---
 
