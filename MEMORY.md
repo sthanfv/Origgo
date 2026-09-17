@@ -1,6 +1,21 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 01:05 (GMT-5)
+Última actualización: 2026-09-17 02:15 (GMT-5)
+
+---
+
+-80. **Resolución Definitiva de Bloqueo CSP en Service Worker (`sw.js`), Desacoplamiento de CDNs Externos y Despliegue de Caché Core v12**:
+    - **Diagnóstico y Causa Raíz de Violación CSP:**
+      1. *Interceptación indiferenciada de imágenes:* En `sw.js`, la regla previa evaluaba `evento.request.destination === 'image' || url.pathname.match(/\.(jpg...)$/i)`. Esto forzaba al Service Worker a interceptar las imágenes de portales externos (`multimedia.metrocuadrado.com`, `img.fincaraiz.com.co`, etc.) y disparar una petición programática `fetch(evento.request)`.
+      2. *Divergencia entre `img-src` y `connect-src`:* Cuando el navegador ejecuta un `fetch()` dentro del hilo de un Service Worker, clasifica la solicitud como una conexión de red controlada por la directiva CSP `connect-src` en lugar de la directiva de elementos multimedia `img-src`. Si el cliente retenía una versión anterior de encabezados en su caché local o si los servidores de terceros no proporcionaban encabezados CORS permisivos (`Access-Control-Allow-Origin: *`), el motor de seguridad del navegador bloqueaba la petición (`sw.js:133 Connecting to '...' violates connect-src 'self'`).
+    - **Solución Implementada:**
+      1. **Desacoplamiento Selectivo de Imágenes (`sw.js`):**
+         - Se restringió el ámbito de intercepción de imágenes para que **solo** actúe sobre recursos locales (`url.origin === self.location.origin`), del CDN de almacenamiento Cloudflare R2 (`r2.dev`) y de fallbacks de Unsplash (`unsplash.com`).
+         - Para todos los CDNs externos de terceros (`multimedia.metrocuadrado.com`, `fincaraiz.com.co`, `mercadolibre.com`, `ciencuadras.com`), el Service Worker omite `evento.respondWith()` y delega el flujo de carga al navegador nativo vía `<img src="...">`. Esto garantiza que se aplique `img-src` (donde están explícitamente autorizados) y previene cualquier conflicto de `connect-src` o CORS.
+      2. **Versionado de Caché PWA Core v12:**
+         - Se actualizaron las variables a `NOMBRE_CACHE_CORE = 'origgo-core-v12-20260917'` y `NOMBRE_CACHE_IMGS = 'origgo-images-v12'`, forzando el ciclo de activación inmediata (`skipWaiting()` / `clients.claim()`) y la purga automática de versiones previas en los navegadores de los usuarios.
+    - **Archivos Afectados:**
+      - `sw.js`, `MEMORY.md`.
 
 ---
 

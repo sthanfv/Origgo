@@ -51,7 +51,7 @@ async function ejecutarPruebasRedis() {
   console.log(`  ℹ️ Credenciales Upstash Redis: ${tieneCredenciales ? 'CONFIGURADAS ✅' : 'NO CONFIGURADAS (modo fallback)'}`);
 
   // Test 1: Petición permitida bajo umbral
-  const claveUnica = `test_usr_${Date.now()}`;
+  const claveUnica = `test_usr_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
   const { req, res } = mockReqRes('201.244.10.20');
 
   const permitido = await checkRateLimitAsync(req, res, {
