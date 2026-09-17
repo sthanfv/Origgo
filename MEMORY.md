@@ -20,6 +20,24 @@
 
 ---
 
+-77. **Eliminación de Píldora Huérfana de Nicho en Barra de Comandos y Desacoplamiento de Navegación Lateral**:
+    - **Diagnóstico y Necesidad Visual:**
+      1. *Píldora blanca descontextualizada en cabecera:* El contenedor `#nicheSwitcher` albergaba un botón único solitario (`Inmuebles Directos`) con clase `.active` y fondo blanco puro (`#FFFFFF`). No cumplía función de filtro ni alternancia de nichos, rompiendo la armonía visual glassmorphic oscura de la barra de comandos.
+      2. *Acoplamiento en navegación de menú lateral:* `modules/09-ui-effects.js` dependía del selector `.cmd-niche-tab` para resetear vistas al hacer clic en "Inmuebles Directos" o "Dashboard".
+    - **Solución Implementada:**
+      1. **Depuración de Marcado (`index.html`):**
+         - Se eliminó el bloque `#nicheSwitcher` de la barra de comandos.
+      2. **Resiliencia en Navegación Lateral (`modules/09-ui-effects.js`):**
+         - Manejo defensivo en `inicializarEfectosPremium`: si la pestaña de nicho no existe, invoca de forma limpia `restablecerTodosLosFiltros()`.
+         - Modularidad verificada: 498 líneas ($\le 500$).
+      3. **Compilación y Certificación DevSecOps:**
+         - Recompilación con `scripts/build.js` de `app.js`, `app.min.js`, `style.css` y `style.min.css`.
+         - 8/8 Fases de validación aprobadas al 100% (0 errores).
+    - **Archivos Afectados:**
+      - `index.html`, `modules/09-ui-effects.js`, `app.js`, `app.min.js`, `MEMORY.md`.
+
+---
+
 -76. **Sincronización End-to-End: Optimización de Resolución Fotográfica a HD en Scraper, Integración Firebase Firestore y Certificación Vercel Hobby (<12 Funciones)**:
     - **Diagnóstico y Necesidad de Integración:**
       1. *Calidad visual de imágenes del catálogo:* Fotografías captadas por los adaptadores FincaRaíz y Metrocuadrado presentaban sufijos de baja resolución (`_150x150`, `thumbnail`, `/resize/`), degradando la visualización en el frontend de Origgo.

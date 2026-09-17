@@ -3793,6 +3793,7 @@ function inicializarEfectosPremium() {
         e.preventDefault();
         const tabInm = document.querySelector('.cmd-niche-tab[data-dataset="./data/inmobiliario.json"]');
         if (tabInm) tabInm.click();
+        else if (typeof restablecerTodosLosFiltros === 'function') restablecerTodosLosFiltros();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (action === 'vip') {
         e.preventDefault();
