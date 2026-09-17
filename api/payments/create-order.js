@@ -71,9 +71,18 @@ module.exports = async function handler(req, res) {
     try {
       const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
       const host = isProd ? 'production.wompi.co' : 'sandbox.wompi.co';
+      const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_local_suite';
       
       const data = await new Promise((resolve, reject) => {
-        https.get(`https://${host}/v1/transactions/${encodeURIComponent(id)}`, (response) => {
+        const reqWompi = https.request({
+          hostname: host,
+          path: `/v1/transactions/${encodeURIComponent(id)}`,
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${publicKey}`,
+            'Accept': 'application/json'
+          }
+        }, (response) => {
           let body = '';
           response.on('data', (chunk) => body += chunk);
           response.on('end', () => {
@@ -83,7 +92,9 @@ module.exports = async function handler(req, res) {
               reject(e);
             }
           });
-        }).on('error', reject);
+        });
+        reqWompi.on('error', reject);
+        reqWompi.end();
       });
 
       if (data && data.data && data.data.reference) {

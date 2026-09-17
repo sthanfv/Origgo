@@ -423,7 +423,8 @@ async function ejecutarPagoWompi() {
         publicKey: orderData.publicKey,
         signature: {
           integrity: orderData.signature
-        }
+        },
+        redirectUrl: `${window.location.origin}?ref=${encodeURIComponent(orderData.reference)}`
       });
 
       cerrarModalCheckout();

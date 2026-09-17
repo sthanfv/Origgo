@@ -328,6 +328,11 @@
   display: inline-block;
   white-space: nowrap;
 }
+.unit-rate-badge.badge-spread {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.38);
+}
 
 .btn-unlock-lead {
   position: relative;
@@ -402,7 +407,6 @@
 @media (prefers-reduced-motion: reduce) {
   .btn-unlock-lead::after { animation: none; display: none; }
 }
-
 
 /* Barra de Contacto y Teléfono Revelado */
 .card-contact-phone-bar {
@@ -491,5 +495,4 @@
 .btn-view-ad-direct:hover i { transform: translate(2px, -2px); }
 [data-theme="light"] .btn-view-ad-direct { background: #FFFFFF; border-color: #059669; color: #059669 !important; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15); }
 [data-theme="light"] .btn-view-ad-direct:hover { background: #059669; color: #FFFFFF !important; }
-
 

@@ -1,6 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 02:55 (GMT-5)
+Última actualización: 2026-09-17 03:20 (GMT-5)
+
+---
+
+-82. **Auditoría Forense de Pagos Wompi, Integración Visual de Arbitraje de Precios e Instalación de Suite Playwright E2E**:
+    - **Auditoría Forense y Blindaje de Pasarela Wompi:**
+      1. *Cabecera de Autorización en Verificación S2S (`api/payments/create-order.js`):* Corregida la consulta a la API de transacciones de Wompi inyectando `Authorization: Bearer ${publicKey}`. En el entorno de producción de Wompi, cualquier consulta no autenticada a `/v1/transactions/:id` es rechazada con HTTP 401 Unauthorized.
+      2. *Inyección Determinista de URL de Retorno PSE/Bancolombia (`modules/08-checkout.js`):* Inyectado el parámetro canónico `redirectUrl: `${window.location.origin}?ref=${encodeURIComponent(orderData.reference)}`` en la configuración de `WidgetCheckout`. Garantiza que al pagar vía PSE o transferencia bancaria, el usuario sea redirigido de vuelta al portal con la referencia en la query string, disparando el reclamo atómico automático en `modules/01-state.js`.
+      3. *Blindaje de Idempotencia y Desfase Horario:* Validado el cerrojo tridimensional (`claim_${reference}`) y la ventana anti-replay de 24 horas en `api/payments/webhook-wompi.js` y `api/payments/reconcile-cron.js`.
+    - **Visualización Frontend de Oportunidades con Spread Arbitrage (`hunter-portal-showcase`):**
+      1. *Badge de Ahorro en Tarjetas (`modules/06-cards.js`):* Renderizado del tag visual de arbitraje en `.pricing-sub-row` con badge `unit-rate-badge badge-spread` e ícono `fa-tags` cuando el anuncio posee `ahorro_spread` positivo generado por la deduplicación inter-portales. Archivo acotado a 492 líneas ($\le 500$).
+      2. *Estilos Acentuados Ámbar (`styles/07-cards.css`):* Implementado `.unit-rate-badge.badge-spread` con fondo sutil y borde ámbar (`#f59e0b`), integrado armónicamente en temas claro y oscuro. Archivo acotado a 499 líneas ($\le 500$).
+    - **Suite de Pruebas E2E Automatizadas con Playwright:**
+      1. *Configuración Oficial (`playwright.config.js`):* Configurado ejecutor en Chromium contra servidor local de pruebas en el puerto 3000 con arranque automático (`webServer: node server.js`).
+      2. *Pruebas de Flujo Crítico (`tests/e2e/smoke.spec.js`):* 4 pruebas automatizadas cubriendo:
+         - Carga inicial, metadatos SEO y favicon.
+         - Renderizado de tarjetas de la cuadrícula Bento y visualización de precios/ubicaciones.
+         - Apertura y filtrado dinámico del menú desplegable de ciudades.
+         - Despliegue e interactividad del modal nativo de recarga de créditos y planes VIP.
+      3. *Aprobación:* 4/4 pruebas pasando en verde (10.2s).
+    - **Validación DevSecOps Integral:**
+      - Las 8 fases de `scripts/validate.js` aprobadas al 100% con 0 errores.
+      - Todos los módulos JS (16) y CSS (19) cumplen rigurosamente el Estándar Desmulta ($\le 500$ líneas).
+    - **Archivos Afectados:**
+      - `api/payments/create-order.js`, `modules/06-cards.js`, `modules/08-checkout.js`, `styles/07-cards.css`, `playwright.config.js`, `tests/e2e/smoke.spec.js`, `package.json`, `package-lock.json`, `MEMORY.md`.
 
 ---
 
