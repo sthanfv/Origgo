@@ -101,7 +101,7 @@ module.exports = async function handler(req, res) {
         if (vistosIds.has(id)) return false;
         vistosIds.add(id);
       }
-      const firma = `${normalizar(item.titulo || '')}_${normalizar(item.precio || '')}_${normalizar(item.ciudad || item.ubicacion || '')}`;
+      const firma = `${normalizar(item.titulo || '')}_${normalizar(item.precio || '')}_${normalizar(item.ciudad || item.ubicacion || '')}_${normalizar(item.dato_1 || '')}`;
       if (firma.length > 5) {
         if (vistosFirmas.has(firma)) return false;
         vistosFirmas.add(firma);
