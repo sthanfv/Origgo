@@ -13,12 +13,12 @@
       "destination": "/api/auth?action=:action"
     },
     {
-      "source": "/api/notifications/:action",
-      "destination": "/api/notifications?action=:action"
-    },
-    {
       "source": "/api/notifications/vapid-public-key",
       "destination": "/api/notifications?action=vapid-public-key"
+    },
+    {
+      "source": "/api/notifications/:action",
+      "destination": "/api/notifications?action=:action"
     },
     {
       "source": "/api/payments/verify",

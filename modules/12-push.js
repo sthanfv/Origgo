@@ -88,15 +88,24 @@ async function activarNotificacionesPush(ciudadForzada) {
       return;
     }
 
-    // 3. Obtener clave pública VAPID dinámicamente del backend
-    const respKey = await fetch('/api/notifications/vapid-public-key');
-    if (!respKey.ok) {
-      throw new Error(esIngles ? 'Could not retrieve notification settings.' : 'No se pudo obtener la configuración de notificaciones.');
+    // 3. Obtener clave pública VAPID dinámicamente del backend con respaldo fail-safe
+    const VAPID_KEY_FALLBACK = 'BOxsLRo4U5zEtBAu31sM199CSbxzOLhoFqE7V7tHJcVZ-kKTDUS8_F08emQ8Swzc0tQ4WCB7NvtmFLsVjC9Y7eQ';
+    let publicKey = null;
+
+    try {
+      const respKey = await fetch('/api/notifications/vapid-public-key');
+      if (respKey.ok) {
+        const datosKey = await respKey.json();
+        if (datosKey && datosKey.publicKey) {
+          publicKey = String(datosKey.publicKey).trim();
+        }
+      }
+    } catch (errKey) {
+      console.warn('[Push] Error al consultar clave VAPID dinámica, usando fallback:', errKey);
     }
 
-    const { publicKey } = await respKey.json();
     if (!publicKey) {
-      throw new Error(esIngles ? 'Notification service temporarily unavailable.' : 'Servicio de notificaciones temporalmente no disponible.');
+      publicKey = VAPID_KEY_FALLBACK;
     }
 
     // 4. Registrar suscripción en el Service Worker

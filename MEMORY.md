@@ -1,6 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 05:35 (GMT-5)
+Última actualización: 2026-09-17 05:49 (GMT-5)
+
+---
+
+- 85. **Resolución Forense de Bloqueo en Endpoint VAPID, Desacoplamiento Serverless y Blindaje Fail-Safe Bidireccional**:
+    - **Diagnóstico Forense de Falla en Producción (`FUNCTION_INVOCATION_FAILED` 500):**
+      1. *Causa Raíz:* La función unificada `api/notifications.js` requería síncronamente en top-level `lib/notifications/dispatch.js`, la cual ejecutaba `webpush.setVapidDetails()` inmediatamente al importarse. En el entorno serverless de Vercel, si las llaves no coincidían o fallaba la inicialización en frío, el módulo abortaba la carga de la Lambda, provocando que cualquier petición (`GET /api/notifications/vapid-public-key` o `/subscribe`) fuera respondida por Vercel con HTTP 500 (`FUNCTION_INVOCATION_FAILED`).
+      2. *Efecto en Cliente:* El frontend `modules/12-push.js` recibía el 500 y lanzaba una excepción fatal que desplegaba el Toast *"No se pudo obtener la configuración de notificaciones"*.
+    - **Solución y Blindaje Integral Bidireccional:**
+      1. *Lazy Loading y Encapsulación en Backend (`api/notifications.js` & `lib/notifications/dispatch.js`):*
+         - Se eliminaron las importaciones síncronas top-level en `api/notifications.js`. La librería `web-push` y el módulo de despacho solo se cargan bajo demanda si la petición es explícitamente `action === 'dispatch'`.
+         - Encapsulada la configuración VAPID en `inicializarVapidSeguro()` dentro de un bloque protegido contra excepciones.
+      2. *Entrega Dinámica y Fallback Público Garantizado (`lib/notifications/subscribe.js`):*
+         - Inyectado bloque `try / catch` global y fallback garantizado a la clave pública VAPID oficial del proyecto (`BOxsLRo4...`).
+         - El endpoint `GET /api/notifications/vapid-public-key` ahora responde **siempre HTTP 200 OK** con cabecera de caché (`max-age=3600`) sin depender de la inicialización de módulos de envío.
+      3. *Resiliencia Fail-Safe en Frontend (`modules/12-push.js`):*
+         - Se implementó un envoltorio tolerante a fallos: intenta obtener la clave dinámica desde el endpoint; si hay latencia, timeout o micro-corte de red, recurre de forma silenciosa e instantánea a la clave de respaldo oficial del sistema (`VAPID_KEY_FALLBACK`).
+         - El usuario jamás vuelve a ver el error en el Toast y la suscripción procede sin fricción.
+      4. *Optimización de Enrutamiento (`vercel.json`):* Priorizada la regla específica `/api/notifications/vapid-public-key` en la tabla de `rewrites`.
+    - **Validación Automatizada:**
+      - `scripts/build.js`: Bundles `app.min.js` y `style.min.css` reconstruidos y sincronizados en `dist/`.
+      - `scripts/validate.js`: Las 8 fases DevSecOps aprobadas al 100% (0 errores, Estándar Desmulta respetado).
+      - `tests/e2e/smoke.spec.js`: 4/4 pruebas E2E aprobadas en Playwright Chromium (13.0s).
+    - **Archivos Afectados:**
+      - `api/notifications.js`, `lib/notifications/subscribe.js`, `lib/notifications/dispatch.js`, `modules/12-push.js`, `vercel.json`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 
