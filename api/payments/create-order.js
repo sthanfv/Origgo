@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
     if (!id) return res.status(400).json({ error: 'Falta ID de transacción' });
 
     try {
-      const isProd = process.env.NODE_ENV === 'production' && !process.env.WOMPI_PUBLIC_KEY?.includes('test');
+      const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
       const host = isProd ? 'production.wompi.co' : 'sandbox.wompi.co';
       
       const data = await new Promise((resolve, reject) => {

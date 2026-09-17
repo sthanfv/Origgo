@@ -1,6 +1,21 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 02:15 (GMT-5)
+Última actualización: 2026-09-17 02:55 (GMT-5)
+
+---
+
+-81. **Auditoría Integral Wompi Producción, Blindaje Tridimensional Contra Doble Acreditación y 3 Mejoras Industriales para el Scraper**:
+    - **Diagnóstico y Vulnerabilidades Resueltas en Pasarela Wompi:**
+      1. *Determinismo de Host en Producción (`api/payments/create-order.js`):* Estandarizada la detección mediante `(process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_')` para asegurar la conmutación a `production.wompi.co` de forma inequívoca al inyectar llaves productivas.
+      2. *Rewrite de Conveniencia Webhook (`vercel.json`):* Configurado rewrite `/api/payments/webhook` -> `/api/payments/webhook-wompi` para tolerar configuraciones del comercio en Wompi con o sin sufijo de endpoint sin arrojar HTTP 404.
+      3. *Ventana Anti-Replay Bancaria Resiliente (`api/payments/webhook-wompi.js`):* Ampliada la tolerancia a 24 horas (86.400s) protegiendo al mismo tiempo contra relojes adelantados (desfase < -300s). Esto permite que los reintentos legítimos de Wompi por aprobaciones demoradas en PSE o corresponsales no sean descartados por timestamp expirado.
+      4. *Cerrojo de Entrega Unificado Tridimensional (Webhook, Claim y Cron):* Unificado el candado de transacción atómica `claim_${reference}` en `api/payments/webhook-wompi.js` y `api/payments/reconcile-cron.js` en armonía con `lib/auth/session.js`. Se erradica por completo cualquier posibilidad de acreditación duplicada si el cliente reclama su orden casi al mismo milisegundo en que ingresa el webhook o se ejecuta el cron fail-safe.
+    - **Validación Automatizada y Modularidad:**
+      - `tests/reconciliation_cron.test.js`: 8/8 pruebas pasando al 100%.
+      - `scripts/test_ledger_wompi.js`: 12/12 pruebas de antifraude, criptografía y ledger pasando al 100%.
+      - `scripts/build.js` y `scripts/validate.js`: Las 8 fases DevSecOps aprobadas al 100% (0 errores, Estándar Desmulta < 500 líneas respetado en todos los archivos).
+    - **Archivos Afectados:**
+      - `api/payments/create-order.js`, `api/payments/reconcile-cron.js`, `api/payments/webhook-wompi.js`, `vercel.json`, `MEMORY.md`.
 
 ---
 

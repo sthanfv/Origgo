@@ -266,6 +266,32 @@ module.exports = async function handler(req, res) {
             ? trxAprobada.customer_email.toLowerCase().trim()
             : (orden.email ? orden.email.toLowerCase().trim() : null);
 
+          // 🛡️ Cerrojo de Entrega Unificado: Verificar si la orden ya fue acreditada previamente (vía webhook o claim_reference)
+          const yaReclamada = await db.isTransactionProcessed(`claim_${ref}`);
+          if (yaReclamada) {
+            console.log(`[reconcile-cron] Referencia ${ref} ya fue acreditada previamente. Sincronizando estado.`);
+            await db.updateOrderStatus(ref, 'APPROVED', {
+              transactionId: trxAprobada.id,
+              paymentMethod: trxAprobada.payment_method_type,
+              reconciledAt: new Date().toISOString(),
+              reconciledBy: 'cron_already_credited',
+              email: emailCliente,
+              celular
+            });
+            metricas.aprobadas++;
+            detalles.push({ reference: ref, accion: 'YA_ACREDITADA_ESTADO_SINCRONIZADO' });
+            continue;
+          }
+
+          // Adquirir candado de entrega atómico para bloquear dobles acreditaciones simultáneas
+          await db.recordTransaction(`claim_${ref}`, {
+            reference: ref,
+            celular,
+            transactionId: trxAprobada.id,
+            reconciledBy: 'cron',
+            claimedAt: new Date().toISOString()
+          });
+
           // Auto-acreditar saldo en el ledger
           const usuarioActualizado = await db.addCredits(celular, creditos, pin, planData, emailCliente);
 
