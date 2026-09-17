@@ -1,6 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 03:20 (GMT-5)
+Última actualización: 2026-09-17 03:50 (GMT-5)
+
+---
+
+-83. **Transparencia Comercial de Facturación Desmulta en Checkout, Plantillas de Correo y Sistema de Cámaras de Observabilidad en Scraper**:
+    - **Aclaración y Transparencia de Pasarela Wompi ("Desmulta"):**
+      1. *Aviso Transparente en Modal de Checkout (`index.html` & `styles/09-checkout-modal.css`):* Inyectado bloque institucional `.checkout-merchant-notice` con ícono `fa-building-shield` explicando con total profesionalismo que el cobro es procesado vía Wompi Bancolombia a nombre del comercio operador registrado **Desmulta**. Esto elimina la desconfianza del usuario cuando la pasarela o la app de Nequi/PSE le muestre "Desmulta".
+      2. *Soporte Bilingüe Estricto (`modules/13-i18n.js`):* Agregadas claves `checkout_merchant_title` y `checkout_merchant_desc` en español e inglés sin rebasar el límite (mantenido en 499 líneas $\le 500$).
+      3. *Acreditación y Comprobantes Transaccionales (`lib/email-templates.js`):* Agregada fila explícita en la tabla del comprobante (*"Comercio Operador: Desmulta (Wompi Bancolombia)"*) y aclaración en el texto para coincidir exactamente con el extracto bancario del cliente.
+    - **Sistema de Cámaras y Perro Guardián en el Scraper (`ofertas-hunter-pro`):**
+      1. *Módulo Central de Vigilancia (`watchdog_cameras.js`):* Implementado sistema de telemetría en tiempo real con 3 cámaras de vigilancia:
+         - *Cámara 1 (JSON-LD):* Contabiliza bloques, entidades rescatadas, errores de sintaxis y caídas de Schema.org con alerta si un portal altera su estructura.
+         - *Cámara 2 (Red TLS & HTTP/2):* Supervisa handshakes, fallbacks a HTTP/1.1 y emite alerta crítica si un portal bloquea 3 peticiones consecutivas con WAF (403/429).
+         - *Cámara 3 (Spread Arbitrage):* Audita deduplicaciones inter-portales, filtra discrepancias aberrantes (> 60%) y despacha alertas por Telegram ante super oportunidades con ahorro $> \$20M$ COP.
+      2. *Suite de Pruebas (`tests/watchdog_cameras.test.js`):* 3/3 pruebas aprobadas al 100% validando acumulación de métricas, transiciones de estado (`optimo`, `degradado`, `critico`) y alertas a Telegram.
+    - **Validación Automatizada y Modularidad:**
+      - `scripts/validate.js`: Las 8 fases DevSecOps aprobadas al 100% (0 errores).
+      - `tests/e2e/smoke.spec.js`: 4/4 pruebas E2E aprobadas en Playwright Chromium (11.3s).
+      - Todos los módulos JS y CSS respetan rigurosamente el Estándar Desmulta ($\le 500$ líneas).
+    - **Archivos Afectados:**
+      - En `hunter-portal-showcase`: `index.html`, `styles/09-checkout-modal.css`, `styles/10-checkout-plans.css`, `modules/13-i18n.js`, `lib/email-templates.js`, `MEMORY.md`.
+      - En `ofertas-hunter-pro`: `watchdog_cameras.js`, `jsonld_extractor.js`, `network_fingerprint.js`, `spread_arbitrage.js`, `tests/watchdog_cameras.test.js`.
 
 ---
 
