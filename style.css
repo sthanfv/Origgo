@@ -2998,7 +2998,7 @@ main {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 3rem 1rem 4rem;
+  padding: 1.5rem 1rem;
 }
 
 .modal-backdrop::-webkit-scrollbar {
@@ -3018,9 +3018,16 @@ main {
   display: flex;
   pointer-events: auto;
   justify-content: center;
-  align-items: flex-start; /* Crucial: inicia arriba para que NUNCA recorte el encabezado ni el botón X */
-  animation: fadeInBackdrop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  align-items: center; /* Centrado vertical armónico y balanceado */
+  min-height: 100%;
+  animation: fadeInBackdrop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: opacity, backdrop-filter;
+}
+
+@media (max-height: 640px) {
+  .modal-backdrop.active {
+    align-items: flex-start; /* Salvaguarda en pantallas de poca altura */
+  }
 }
 
 @keyframes fadeInBackdrop {
@@ -3034,7 +3041,7 @@ main {
   border-radius: var(--radius-card); /* 2.5rem / 40px */
   max-width: 490px;
   width: 100%;
-  margin: 0 auto;
+  margin: auto;
   padding: 1.75rem 1.75rem 1.85rem;
   box-shadow: 0 30px 65px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px hsla(166, 40%, 23%, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   position: relative;
@@ -4884,6 +4891,7 @@ main {
   width: 100%;
   max-width: 640px;
   max-height: 88vh;
+  margin: auto;
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
@@ -5553,6 +5561,7 @@ main {
 .welcome-modal-card {
   max-width: 520px;
   width: 100%;
+  margin: auto;
   position: relative;
   text-align: center;
   padding: 2.2rem 1.85rem 2rem;
@@ -5900,7 +5909,7 @@ main {
    MODAL DE ONBOARDING Y BIENVENIDA UNIVERSAL (PRIMERA VISITA)
    ═══════════════════════════════════════════════════════════════════ */
 .onboarding-modal-card {
-  max-width: 530px; width: 100%; position: relative; text-align: center;
+  max-width: 530px; width: 100%; margin: auto; position: relative; text-align: center;
   padding: 2.25rem 1.85rem 1.85rem; background: var(--bg-card);
   border: 1px solid rgba(10, 159, 104, 0.3); border-radius: var(--radius-card);
   box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -6338,75 +6347,106 @@ main {
 
 /**
  * 🔔 ESTILOS DEL MODAL DE RADAR WEB PUSH (styles/17-push-modal.css)
- * Componente Soft-Prompt para activación de alertas de oportunidades sin intermediarios.
- * Cumple con tokens CSS del proyecto y límite de líneas < 500.
+ * Componente Soft-Prompt Glassmorphic de Alta Gama para alertas en tiempo real.
+ * Diseño esmeralda esmerilado con centrado armónico, microinteracciones y tokens de marca.
+ * Estándar Ecosistema Desmulta UI/UX (< 500 líneas).
  */
 
-/* Contenedor y tarjeta del modal de alertas */
+/* 1. Tarjeta Contenedora del Modal de Alertas (Glassmorphic) */
 .push-prompt-card {
-  max-width: 480px;
-  width: 92%;
-  background: var(--bg-surface-elevated, #161c24);
-  border: 1px solid rgba(10, 159, 104, 0.25);
-  border-radius: var(--radius-lg, 16px);
-  padding: 1.75rem 1.5rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(10, 159, 104, 0.15);
+  max-width: 490px;
+  width: 100%;
+  margin: auto;
+  background: linear-gradient(145deg, hsla(166, 35%, 11%, 0.88), hsla(170, 45%, 6%, 0.95));
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid hsla(158, 64%, 52%, 0.28);
+  border-radius: var(--radius-card, 28px);
+  padding: 2rem 1.75rem 1.85rem;
+  box-shadow: 0 32px 75px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px hsla(158, 64%, 52%, 0.15), inset 0 1px 0 hsla(129, 48%, 87%, 0.15);
   position: relative;
   overflow: hidden;
-  animation: modalPushScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modalPushScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+[data-theme="light"] .push-prompt-card {
+  background: linear-gradient(145deg, hsla(0, 0%, 100%, 0.94), hsla(140, 25%, 96%, 0.97));
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-color: hsla(166, 40%, 23%, 0.2);
+  box-shadow: 0 32px 75px -12px rgba(5, 31, 32, 0.16), 0 0 0 1px hsla(166, 40%, 23%, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 @keyframes modalPushScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.94) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Cabecera del modal: Logo de Origgo y Radar */
+/* 2. Halo Ambiental Esmeralda */
+.push-modal-aura {
+  position: absolute;
+  top: -110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 210px;
+  background: radial-gradient(circle, hsla(158, 64%, 48%, 0.26) 0%, hsla(166, 40%, 23%, 0.12) 50%, transparent 75%);
+  filter: blur(38px);
+  pointer-events: none;
+  z-index: 1;
+  animation: pushAuraBreath 6s ease-in-out infinite;
+}
+
+[data-theme="light"] .push-modal-aura {
+  background: radial-gradient(circle, hsla(158, 64%, 40%, 0.18) 0%, hsla(166, 40%, 23%, 0.08) 50%, transparent 75%);
+}
+
+@keyframes pushAuraBreath {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+  50% { transform: translateX(-50%) scale(1.2); opacity: 1; filter: blur(32px); }
+}
+
+/* 3. Cabecera del Modal: Marca y Radar en Tiempo Real */
 .push-prompt-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding-right: 3.5rem; /* Margen de seguridad estricto para no colisionar con la 'X' */
+  margin-bottom: 1.15rem;
+  padding-right: 3.5rem; /* Margen estricto para no rozar la 'X' */
 }
 
-.push-prompt-brand-logo {
-  height: 28px;
-  width: auto;
-  max-width: 110px;
-  object-fit: contain;
-  display: block;
-}
-
-[data-theme="light"] .push-prompt-brand-logo {
-  filter: drop-shadow(0 1px 2px rgba(10, 159, 104, 0.2));
-}
+.push-prompt-brand-logo { height: 28px; width: auto; max-width: 110px; object-fit: contain; display: block; }
+[data-theme="light"] .push-prompt-brand-logo { filter: drop-shadow(0 1px 2px rgba(10, 159, 104, 0.2)); }
 
 /* Badge con radar en tiempo real */
 .push-prompt-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background: rgba(10, 159, 104, 0.12);
-  border: 1px solid rgba(10, 159, 104, 0.35);
-  padding: 0.32rem 0.75rem;
+  background: linear-gradient(135deg, hsla(158, 64%, 48%, 0.16) 0%, hsla(166, 40%, 23%, 0.18) 100%);
+  border: 1px solid hsla(158, 64%, 52%, 0.35);
+  padding: 0.32rem 0.85rem;
   border-radius: var(--radius-full, 9999px);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--accent-emerald, #0a9f68);
-  margin-bottom: 0;
-  position: relative;
   line-height: 1;
   white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(10, 159, 104, 0.15);
+}
+
+[data-theme="light"] .push-prompt-badge {
+  background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%);
+  border-color: rgba(10, 159, 104, 0.45);
+  color: #047857;
 }
 
 .push-radar-ping {
@@ -6417,7 +6457,6 @@ main {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  line-height: 1;
 }
 
 .push-radar-ping::before {
@@ -6441,73 +6480,70 @@ main {
   border-radius: 50%;
   border: 1.5px solid var(--accent-emerald, #0a9f68);
   transform: translate(-50%, -50%) scale(1);
-  transform-origin: center center;
   animation: pushPulseCenter 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   pointer-events: none;
   z-index: 1;
-  box-sizing: border-box;
 }
 
 @keyframes pushPulseCenter {
-  0% {
-    transform: translate(-50%, -50%) scale(0.9);
-    opacity: 0.9;
-  }
-  65% {
-    transform: translate(-50%, -50%) scale(2.4);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(2.4);
-    opacity: 0;
-  }
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.9; }
+  65% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
 }
 
-.push-prompt-iso {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* Títulos y textos del prompt */
+/* 4. Título y Subtítulo de Impacto */
 .push-prompt-title {
-  font-family: var(--font-family-display, 'Lufga', sans-serif);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary, #ffffff);
-  line-height: 1.3;
-  margin: 0 0 0.5rem 0;
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--text-main, #ffffff);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.45rem 0;
 }
 
 .push-prompt-subtitle {
-  font-size: 0.88rem;
-  color: var(--text-secondary, #94a3b8);
-  line-height: 1.45;
+  position: relative;
+  z-index: 2;
+  font-size: 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.48;
   margin: 0 0 1.25rem 0;
 }
 
-/* Lista de ventajas y beneficios persuasivos */
+/* 5. Lista Glassmorphic de Beneficios */
 .push-prompt-features {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-md, 12px);
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.5rem;
+  background: hsla(170, 50%, 8%, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid hsla(158, 64%, 52%, 0.18);
+  border-radius: var(--radius-md, 16px);
+  padding: 0.95rem 1.05rem;
+  margin-bottom: 1.35rem;
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.08);
 }
 
-.push-feature-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+[data-theme="light"] .push-prompt-features {
+  background: hsla(0, 0%, 100%, 0.85);
+  border-color: hsla(166, 40%, 23%, 0.15);
+  box-shadow: 0 4px 16px rgba(5, 31, 32, 0.05);
 }
+
+.push-feature-row { display: flex; align-items: flex-start; gap: 0.75rem; }
 
 .push-feature-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgba(10, 159, 104, 0.15);
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(10, 159, 104, 0.16);
+  border: 1px solid rgba(10, 159, 104, 0.3);
   color: var(--accent-emerald, #0a9f68);
   display: flex;
   align-items: center;
@@ -6517,30 +6553,33 @@ main {
   margin-top: 2px;
 }
 
-.push-feature-text {
-  font-size: 0.82rem;
-  line-height: 1.35;
-  color: var(--text-secondary, #cbd5e1);
+[data-theme="light"] .push-feature-icon {
+  background: rgba(10, 159, 104, 0.12);
+  border-color: rgba(10, 159, 104, 0.35);
+  color: #047857;
 }
 
-.push-feature-text strong {
-  color: var(--text-primary, #ffffff);
-  display: inline;
-  margin-right: 0.25rem;
+.push-feature-text { font-size: 0.82rem; line-height: 1.4; color: var(--text-muted, #cbd5e1); }
+[data-theme="light"] .push-feature-text { color: #475569; }
+.push-feature-text strong { color: var(--text-main, #ffffff); font-weight: 700; display: inline; margin-right: 0.25rem; }
+[data-theme="light"] .push-feature-text strong { color: #0f172a; }
+
+/* 6. Selector Multicriterio Fluido (Columna Completa para Evitar Truncados) */
+.push-prompt-filters-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.95rem;
 }
 
-/* Selector de Ciudad Segmentada */
-.push-prompt-city-selector {
-  margin-bottom: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
+.push-filter-field { display: flex; flex-direction: column; gap: 0.35rem; }
 
 .push-city-label {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text-secondary, #94a3b8);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-muted, #94a3b8);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -6548,30 +6587,26 @@ main {
   letter-spacing: 0.05em;
 }
 
-.push-city-label i {
-  color: var(--accent-emerald, #0a9f68);
-  font-size: 0.85rem;
-}
-
-.push-city-select-wrapper {
-  position: relative;
-  width: 100%;
-}
+.push-city-label i { color: var(--accent-emerald, #0a9f68); font-size: 0.85rem; }
+.push-city-select-wrapper { position: relative; width: 100%; }
 
 .push-city-select {
   width: 100%;
-  min-height: 44px;
-  padding: 0.65rem 2.25rem 0.65rem 0.85rem;
-  background: var(--bg-surface-secondary, rgba(0, 0, 0, 0.35));
-  border: 1px solid rgba(10, 159, 104, 0.35);
-  border-radius: var(--radius-md, 10px);
-  color: var(--text-primary, #ffffff);
+  min-height: 46px;
+  padding: 0.65rem 2.25rem 0.65rem 0.95rem;
+  background: hsla(170, 45%, 9%, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid hsla(158, 64%, 52%, 0.32);
+  border-radius: 12px;
+  color: var(--text-main, #ffffff);
   font-size: 0.88rem;
   font-weight: 600;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
   outline: none;
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.08);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -6580,16 +6615,12 @@ main {
   box-shadow: 0 0 0 3px rgba(10, 159, 104, 0.25);
 }
 
-.push-city-select option {
-  background: #1a222d;
-  color: #ffffff;
-  padding: 0.5rem;
-}
+.push-city-select option { background: #121a17; color: #ffffff; padding: 0.65rem; }
 
 .push-city-select-wrapper::after {
   content: '';
   position: absolute;
-  right: 0.9rem;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   width: 0;
@@ -6601,78 +6632,72 @@ main {
 }
 
 [data-theme="light"] .push-city-select {
-  background: #f8fafc;
+  background: hsla(0, 0%, 100%, 0.9);
   color: #0f172a;
   border-color: rgba(10, 159, 104, 0.45);
+  box-shadow: 0 2px 6px rgba(5, 31, 32, 0.06);
 }
 
-[data-theme="light"] .push-city-select option {
-  background: #ffffff;
-  color: #0f172a;
-}
+[data-theme="light"] .push-city-select option { background: #ffffff; color: #0f172a; }
 
-/* Selector multicriterio de operación y descuento */
-.push-prompt-filters-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 0.85rem;
-}
-
-@media (max-width: 480px) {
-  .push-prompt-filters-grid {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-  }
-}
-
-.push-filter-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
+/* 7. Checkbox de Rebajas Urgentes (Tarjeta Interactiva Sin Líneas Discontinuas) */
 .push-discount-toggle-row {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  background: rgba(10, 159, 104, 0.08);
-  border: 1px dashed rgba(10, 159, 104, 0.3);
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-md, 10px);
-  margin-bottom: 1.15rem;
+  gap: 0.75rem;
+  background: hsla(158, 64%, 52%, 0.06);
+  border: 1px solid hsla(158, 64%, 52%, 0.22);
+  padding: 0.75rem 0.95rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
   cursor: pointer;
   user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.06);
+}
+
+.push-discount-toggle-row:hover {
+  background: hsla(158, 64%, 52%, 0.12);
+  border-color: hsla(158, 64%, 52%, 0.42);
+  transform: translateY(-1px);
 }
 
 .push-discount-checkbox {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   accent-color: var(--accent-emerald, #0a9f68);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .push-discount-label {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary, #cbd5e1);
   cursor: pointer;
-  line-height: 1.3;
+  line-height: 1.38;
 }
 
-[data-theme="light"] .push-discount-label {
-  color: #334155;
+[data-theme="light"] .push-discount-toggle-row {
+  background: hsla(158, 64%, 52%, 0.08);
+  border-color: rgba(10, 159, 104, 0.3);
 }
+[data-theme="light"] .push-discount-toggle-row:hover { background: hsla(158, 64%, 52%, 0.14); }
+[data-theme="light"] .push-discount-label { color: #334155; }
 
-/* Banner de ayuda contextual para iPhone / iOS Safari */
+/* 8. Banner de Ayuda Contextual para iPhone / iOS Safari */
 .push-ios-hint {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: var(--radius-md, 10px);
+  background: hsla(199, 89%, 48%, 0.1);
+  border: 1px solid hsla(199, 89%, 48%, 0.28);
+  border-radius: 12px;
   padding: 0.75rem 0.85rem;
   margin-bottom: 1rem;
   font-size: 0.78rem;
@@ -6680,16 +6705,8 @@ main {
   line-height: 1.4;
 }
 
-.push-ios-hint-icon {
-  color: #38bdf8;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.push-ios-hint strong {
-  color: #38bdf8;
-}
+.push-ios-hint-icon { color: #38bdf8; font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.push-ios-hint strong { color: #38bdf8; }
 
 [data-theme="light"] .push-ios-hint {
   background: rgba(14, 165, 233, 0.08);
@@ -6697,8 +6714,10 @@ main {
   color: #0f172a;
 }
 
-/* Acciones del modal */
+/* 9. Acciones y Botones del Modal */
 .push-prompt-actions {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -6706,30 +6725,32 @@ main {
 
 .btn-push-prompt-accept {
   width: 100%;
-  padding: 0.85rem 1.25rem;
-  background: linear-gradient(135deg, #0a9f68 0%, #07794e 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-md, 10px);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
+  height: 48px;
+  background: var(--accent-emerald, #0a9f68);
+  color: #041B12;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 20px -4px rgba(10, 159, 104, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(10, 159, 104, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-push-prompt-accept:hover {
+  background-color: #058656;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(10, 159, 104, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(10, 159, 104, 0.6);
 }
 
-.btn-push-prompt-accept:active {
-  transform: translateY(1px);
-}
+.btn-push-prompt-accept:active { transform: scale(0.98); }
 
 .btn-push-prompt-later {
   width: 100%;
@@ -6737,9 +6758,9 @@ main {
   background: transparent;
   color: var(--text-muted, #64748b);
   border: 1px solid transparent;
-  border-radius: var(--radius-md, 10px);
+  border-radius: 12px;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   text-align: center;
   transition: color 0.15s ease, background-color 0.15s ease;
@@ -6747,21 +6768,23 @@ main {
 
 .btn-push-prompt-later:hover {
   color: var(--text-secondary, #94a3b8);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Botón de cierre superior con área táctil protegida */
+[data-theme="light"] .btn-push-prompt-later:hover { background: rgba(0, 0, 0, 0.05); }
+
+/* 10. Botón de Cierre Superior Circular Glassmorphic */
 .push-prompt-card .btn-modal-close {
   position: absolute;
   top: 1.15rem;
   right: 1.15rem;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 9999px;
-  background: var(--glass-metrics-bg, rgba(255, 255, 255, 0.06));
+  background: var(--glass-metrics-bg, hsla(170, 50%, 8%, 0.6));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--border-subtle, hsla(158, 64%, 52%, 0.25));
   color: var(--text-muted, #94a3b8);
   font-size: 1.35rem;
   display: flex;
@@ -6779,34 +6802,24 @@ main {
   background-color: #EF4444;
   color: #FFFFFF;
   border-color: #EF4444;
-  transform: scale(1.06);
+  transform: scale(1.08);
 }
 
-/* Adaptación para pantallas móviles */
-@media (max-width: 640px) {
-  .push-prompt-card {
-    padding: 1.35rem 1.15rem;
-  }
-  .push-prompt-header {
-    padding-right: 3.25rem;
-    gap: 0.55rem;
-    margin-bottom: 1rem;
-  }
-  .push-prompt-brand-logo {
-    height: 25px;
-    max-width: 95px;
-  }
-  .push-prompt-badge {
-    font-size: 0.66rem;
-    padding: 0.26rem 0.65rem;
-    letter-spacing: 0.04em;
-  }
-  .push-prompt-title {
-    font-size: 1.12rem;
-  }
-  .push-prompt-subtitle {
-    font-size: 0.82rem;
-  }
+/* 11. Adaptación Mobile First para Pantallas Estrechas */
+@media (max-width: 480px) {
+  .push-prompt-card { padding: 1.5rem 1.15rem 1.35rem; border-radius: 22px; }
+  .push-prompt-header { padding-right: 3rem; gap: 0.55rem; margin-bottom: 0.95rem; }
+  .push-prompt-brand-logo { height: 24px; max-width: 95px; }
+  .push-prompt-badge { font-size: 0.66rem; padding: 0.28rem 0.65rem; }
+  .push-prompt-title { font-size: 1.18rem; line-height: 1.25; }
+  .push-prompt-subtitle { font-size: 0.8rem; margin-bottom: 1rem; }
+  .push-prompt-features { padding: 0.85rem 0.9rem; gap: 0.65rem; margin-bottom: 1.15rem; }
+  .push-feature-icon { width: 28px; height: 28px; font-size: 0.78rem; }
+  .push-feature-text { font-size: 0.78rem; }
+  .push-city-select { min-height: 44px; font-size: 0.84rem; }
+  .push-discount-toggle-row { padding: 0.65rem 0.85rem; margin-bottom: 1.1rem; }
+  .push-discount-label { font-size: 0.78rem; }
+  .btn-push-prompt-accept { height: 46px; font-size: 0.86rem; }
 }
 
 /**

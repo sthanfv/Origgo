@@ -1,10 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 03:50 (GMT-5)
+Última actualización: 2026-09-17 05:35 (GMT-5)
 
 ---
 
--83. **Transparencia Comercial de Facturación Desmulta en Checkout, Plantillas de Correo y Sistema de Cámaras de Observabilidad en Scraper**:
+- 84. **Refactorización Estética Glassmorphic Suprema, Centrado Vertical Seguro y Fluidez Mobile-First en Modales**:
+    - **Diagnóstico y Solución de Desviaciones Estéticas en Móvil:**
+      1. *Centrado Vertical Universal en `.modal-backdrop` (`styles/09-checkout-modal.css`):* Sustituido `align-items: flex-start; padding: 3rem 1rem 4rem;` por `align-items: center; justify-content: center; min-height: 100%; padding: 1.5rem 1rem;` junto con `margin: auto;` en las tarjetas modales (`.modal-card`, `.push-prompt-card`, `.welcome-modal-card`, `.onboarding-modal-card`, `.legal-modal-card`). Esto centra de forma geométrica y elegante todos los modales en el centro del viewport en dispositivos móviles y de escritorio, incorporando salvaguarda `@media (max-height: 640px)` para evitar cortes en pantallas panorámicas o de baja altura.
+      2. *Restauración Completa de Glassmorphism en Modal Push (`styles/17-push-modal.css`):* Erradicados fondos oscuros planos y bordes cuadrados rígidos. Aplicado gradiente esmerilado profundo `linear-gradient(145deg, hsla(166, 35%, 11%, 0.88), hsla(170, 45%, 6%, 0.95))` con desenfoque de cristal `backdrop-filter: blur(24px) saturate(180%)`, borde esmeralda translúcido `border: 1px solid hsla(158, 64%, 52%, 0.28)`, esquinas fluidas `border-radius: var(--radius-card, 28px)` y bisel interno de luz.
+      3. *Aura Ambiental Esmeralda (`index.html` & `styles/17-push-modal.css`):* Inyectado el halo luminoso `.push-modal-aura` con respiración radial dinámica, unificando la identidad visual con los modales VIP de Origgo.
+      4. *Filtros Multicriterio Fluidos sin Truncamientos:* Conmutado `.push-prompt-filters-grid` a `grid-template-columns: 1fr` con selectores al 100% de ancho, eliminando el truncamiento antiestético de textos de ciudades y tipos de operación ("🇨🇴 Toda Colombia (T...", "🏷️ Todo (Venta y Arri...").
+      5. *Erradicación del Borde Dashed en Checkbox de Rebajas:* Sustituido el tosco borde punteado por una tarjeta píldora glassmorphic interactiva (`.push-discount-toggle-row`) con microinteracción táctil, acento esmeralda refinado y checkbox estilizado.
+      6. *Optimización Bilingüe Concisa (`modules/13-i18n.js`):* Ajustadas las cadenas `push_city_all` en español e inglés para que sean elegantes y directas sin romper líneas, respetando el límite estricto de 499 líneas ($\le 500$).
+    - **Validación Automatizada y Modularidad:**
+      - `scripts/build.js`: Compilación limpia de bundles `style.min.css` (144 KB) y `app.min.js` (281 KB).
+      - `scripts/validate.js`: 8/8 fases DevSecOps aprobadas al 100% (0 errores, Estándar Desmulta respetado en los 16 módulos JS y 19 módulos CSS).
+      - `tests/e2e/smoke.spec.js`: 4/4 pruebas E2E aprobadas en Playwright Chromium (10.9s).
+    - **Archivos Afectados:**
+      - `styles/09-checkout-modal.css`, `styles/13-footer.css`, `styles/15-welcome-modal.css`, `styles/17-push-modal.css`, `index.html`, `modules/13-i18n.js`, `style.css`, `style.min.css`, `app.js`, `app.min.js`, `MEMORY.md`.
+
+---
+
+- 83. **Transparencia Comercial de Facturación Desmulta en Checkout, Plantillas de Correo y Sistema de Cámaras de Observabilidad en Scraper**:
     - **Aclaración y Transparencia de Pasarela Wompi ("Desmulta"):**
       1. *Aviso Transparente en Modal de Checkout (`index.html` & `styles/09-checkout-modal.css`):* Inyectado bloque institucional `.checkout-merchant-notice` con ícono `fa-building-shield` explicando con total profesionalismo que el cobro es procesado vía Wompi Bancolombia a nombre del comercio operador registrado **Desmulta**. Esto elimina la desconfianza del usuario cuando la pasarela o la app de Nequi/PSE le muestre "Desmulta".
       2. *Soporte Bilingüe Estricto (`modules/13-i18n.js`):* Agregadas claves `checkout_merchant_title` y `checkout_merchant_desc` en español e inglés sin rebasar el límite (mantenido en 499 líneas $\le 500$).

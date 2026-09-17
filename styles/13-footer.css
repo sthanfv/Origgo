@@ -127,6 +127,7 @@
   width: 100%;
   max-width: 640px;
   max-height: 88vh;
+  margin: auto;
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);

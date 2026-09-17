@@ -8,6 +8,7 @@
 .welcome-modal-card {
   max-width: 520px;
   width: 100%;
+  margin: auto;
   position: relative;
   text-align: center;
   padding: 2.2rem 1.85rem 2rem;
@@ -355,7 +356,7 @@
    MODAL DE ONBOARDING Y BIENVENIDA UNIVERSAL (PRIMERA VISITA)
    ═══════════════════════════════════════════════════════════════════ */
 .onboarding-modal-card {
-  max-width: 530px; width: 100%; position: relative; text-align: center;
+  max-width: 530px; width: 100%; margin: auto; position: relative; text-align: center;
   padding: 2.25rem 1.85rem 1.85rem; background: var(--bg-card);
   border: 1px solid rgba(10, 159, 104, 0.3); border-radius: var(--radius-card);
   box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.08);
