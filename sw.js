@@ -75,12 +75,13 @@ async function purgarExcesoCache(nombreCache, maxItems = LIMITE_MAXIMO_IMAGENES_
 }
 
 self.addEventListener('install', (evento) => {
+  self.skipWaiting();
   evento.waitUntil(
     caches.open(NOMBRE_CACHE_CORE).then((cache) => {
       return cache.addAll(RECURSOS_CRITICOS).catch((err) => {
         console.warn('[SW] Aviso de pre-cache parcial:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 

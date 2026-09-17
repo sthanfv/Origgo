@@ -12,10 +12,11 @@
       1. **Desacoplamiento Selectivo de Imágenes (`sw.js`):**
          - Se restringió el ámbito de intercepción de imágenes para que **solo** actúe sobre recursos locales (`url.origin === self.location.origin`), del CDN de almacenamiento Cloudflare R2 (`r2.dev`) y de fallbacks de Unsplash (`unsplash.com`).
          - Para todos los CDNs externos de terceros (`multimedia.metrocuadrado.com`, `fincaraiz.com.co`, `mercadolibre.com`, `ciencuadras.com`), el Service Worker omite `evento.respondWith()` y delega el flujo de carga al navegador nativo vía `<img src="...">`. Esto garantiza que se aplique `img-src` (donde están explícitamente autorizados) y previene cualquier conflicto de `connect-src` o CORS.
-      2. **Versionado de Caché PWA Core v12:**
-         - Se actualizaron las variables a `NOMBRE_CACHE_CORE = 'origgo-core-v12-20260917'` y `NOMBRE_CACHE_IMGS = 'origgo-images-v12'`, forzando el ciclo de activación inmediata (`skipWaiting()` / `clients.claim()`) y la purga automática de versiones previas en los navegadores de los usuarios.
+      2. **Versionado de Caché PWA Core v12 y Auto-Activación Síncrona:**
+         - Se actualizaron las variables a `NOMBRE_CACHE_CORE = 'origgo-core-v12-20260917'` y `NOMBRE_CACHE_IMGS = 'origgo-images-v12'`.
+         - Se movió `self.skipWaiting()` a la primera instrucción del evento `install` en `sw.js` y se agregó `reg.update()` proactivo en `modules/10-listeners.js` para asegurar reemplazo en caliente en todos los navegadores sin depender de recargas duras manuales.
     - **Archivos Afectados:**
-      - `sw.js`, `MEMORY.md`.
+      - `sw.js`, `modules/10-listeners.js`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 
