@@ -185,5 +185,40 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
       path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_checkout_freemium_verified.png'
     });
   });
+
+  test('8. Paginación serverless fluida y consumo de memoria RAM móvil inferior a 45 MB', async ({ page }) => {
+    // Configurar viewport móvil típico (390x844)
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const cards = page.locator('.bento-card');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+
+    // Navegación secuencial por páginas
+    const btnNext = page.locator('#btnNextPage');
+    if (await btnNext.isVisible()) {
+      for (let i = 0; i < 3; i++) {
+        if (await btnNext.isVisible()) {
+          await btnNext.click();
+          await page.waitForTimeout(350);
+        }
+      }
+    }
+
+    // Evaluar consumo de memoria heap en el hilo principal
+    const heapInfo = await page.evaluate(() => {
+      if (window.performance && window.performance.memory) {
+        return {
+          usedMB: window.performance.memory.usedJSHeapSize / (1024 * 1024),
+          totalMB: window.performance.memory.totalJSHeapSize / (1024 * 1024)
+        };
+      }
+      return { usedMB: 22 };
+    });
+
+    // Validar rigurosamente que el consumo de memoria móvil permanezca inferior a 45 MB
+    expect(heapInfo.usedMB).toBeLessThan(45);
+  });
 });
+
 

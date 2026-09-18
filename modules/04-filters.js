@@ -31,25 +31,13 @@ function normalizarTextoBusqueda(str) {
  * para búsquedas inmobiliarias y vehiculares de alta precisión.
  */
 const DICCIONARIO_TERMINOS = {
-  "apto": ["apartamento", "departamento", "apto"], "aptos": ["apartamento", "apto"], "apartamento": ["apartamento", "apto"], "apartamentos": ["apartamento", "apto"],
-  "ph": ["penthouse", "duplex", "ph"], "penthouse": ["penthouse", "ph", "duplex"], "duplex": ["duplex", "penthouse"],
-  "casa": ["casa", "quinta", "campestre", "chalet"], "casas": ["casa", "quinta", "campestre"], "lote": ["lote", "terreno", "campestre"], "campestre": ["campestre", "quinta", "casa", "lote"],
-  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "cuarto"], "alcobas": ["habitacion", "hab", "alcoba"], "habitacion": ["habitacion", "hab", "alcoba", "cuarto"], "habitaciones": ["habitacion", "hab", "alcoba"],
-  "hab": ["habitacion", "hab", "alcoba"], "cuarto": ["habitacion", "hab", "alcoba"], "bano": ["bano", "banos", "ducha"], "banos": ["bano", "banos", "ducha"],
-  "garaje": ["garaje", "garajes", "parqueadero", "parq"], "garajes": ["garaje", "parqueadero", "parq"], "parqueadero": ["garaje", "parqueadero", "parq"], "parqueaderos": ["garaje", "parqueadero", "parq"], "parq": ["garaje", "parqueadero"],
-  "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"], "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"], "propietario": ["propietario", "particular", "directo", "dueno"], "particular": ["propietario", "particular", "directo", "dueno"], "directo": ["directo", "dueno", "propietario", "particular"],
-  "rebaja": ["rebaja", "descuento", "ganga", "barato", "oportunidad"], "descuento": ["rebaja", "descuento", "ganga", "arbitraje"], "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"], "viaje": ["viaje", "motivo", "urgente"], "urgente": ["urgente", "viaje", "motivo", "oportunidad"], "arbitraje": ["arbitraje", "descuento", "ganga"],
-  "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"], "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"], "vehiculo": ["vehiculo", "carro", "camioneta", "auto"],
-  "camioneta": ["camioneta", "suv", "pickup", "4x4"], "suv": ["suv", "camioneta", "4x4"], "pickup": ["pickup", "camioneta", "4x4"], "sedan": ["sedan", "carro", "auto"], "4x4": ["4x4", "camioneta", "suv", "pickup"],
-  "apartment": ["apartamento", "apto"], "apartments": ["apartamento", "apto"], "flat": ["apartamento", "apto"], "condo": ["apartamento", "apto"], "house": ["casa", "quinta", "campestre"], "houses": ["casa", "quinta"], "home": ["casa", "apartamento"],
-  "land": ["lote", "terreno"], "lot": ["lote", "terreno"], "plot": ["lote", "terreno"], "office": ["oficina"], "building": ["edificio"], "estate": ["finca", "campestre"], "warehouse": ["bodega"], "commercial": ["local", "comercial"], "store": ["local"],
-  "bedroom": ["habitacion", "hab", "alcoba"], "bedrooms": ["habitacion", "hab", "alcoba"], "bed": ["habitacion", "hab"], "beds": ["habitaciones", "hab"], "bath": ["bano", "banos"], "baths": ["bano", "banos"], "bathroom": ["bano"], "bathrooms": ["bano", "banos"],
-  "parking": ["garaje", "parqueadero"], "garage": ["garaje", "parqueadero"], "owner": ["propietario", "directo", "dueno"], "owners": ["propietario", "dueno"], "direct": ["directo", "dueno"],
-  "discount": ["rebaja", "descuento", "ganga"], "bargain": ["ganga", "rebaja"], "deal": ["oportunidad", "directo"], "urgent": ["urgente", "viaje"],
-  "studio": ["apartaestudio", "apartamento", "apto"], "pool": ["piscina"], "gym": ["gimnasio"], "balcony": ["balcon", "terraza"], "terrace": ["terraza", "balcon"],
-  "furnished": ["amoblado", "amoblada"], "view": ["vista", "panoramica"], "security": ["vigilancia", "porteria"], "elevator": ["ascensor"], "storage": ["deposito", "bodega"],
-  "rent": ["arriendo", "alquiler"], "sale": ["venta"], "luxury": ["lujo", "penthouse"], "investment": ["inversion", "arbitraje"], "remodeled": ["remodelado", "nuevo"],
-  "bogota": ["bogota", "rosales", "chico"], "medellin": ["medellin", "poblado", "laureles"], "cali": ["cali", "pance"], "cartagena": ["cartagena", "bocagrande"], "pereira": ["pereira", "cerritos"], "bucaramanga": ["bucaramanga"]
+  "apto": ["apartamento", "departamento", "apto"], "aptos": ["apartamento", "apto"], "apartamento": ["apartamento", "apto"], "apartamentos": ["apartamento", "apto"], "ph": ["penthouse", "duplex", "ph"], "penthouse": ["penthouse", "ph", "duplex"], "duplex": ["duplex", "penthouse"], "casa": ["casa", "quinta", "campestre", "chalet"], "casas": ["casa", "quinta", "campestre"], "lote": ["lote", "terreno", "campestre"], "campestre": ["campestre", "quinta", "casa", "lote"],
+  "alcoba": ["habitacion", "habitaciones", "hab", "alcoba", "cuarto"], "alcobas": ["habitacion", "hab", "alcoba"], "habitacion": ["habitacion", "hab", "alcoba", "cuarto"], "habitaciones": ["habitacion", "hab", "alcoba"], "hab": ["habitacion", "hab", "alcoba"], "cuarto": ["habitacion", "hab", "alcoba"], "bano": ["bano", "banos", "ducha"], "banos": ["bano", "banos", "ducha"],
+  "garaje": ["garaje", "garajes", "parqueadero", "parq"], "garajes": ["garaje", "parqueadero", "parq"], "parqueadero": ["garaje", "parqueadero", "parq"], "parqueaderos": ["garaje", "parqueadero", "parq"], "parq": ["garaje", "parqueadero"], "dueno": ["propietario", "particular", "directo", "dueno", "fsbo"], "dueño": ["propietario", "particular", "directo", "dueno", "fsbo"], "propietario": ["propietario", "particular", "directo", "dueno"], "particular": ["propietario", "particular", "directo", "dueno"], "directo": ["directo", "dueno", "propietario", "particular"],
+  "rebaja": ["rebaja", "descuento", "ganga", "barato", "oportunidad"], "descuento": ["rebaja", "descuento", "ganga", "arbitraje"], "ganga": ["rebaja", "ganga", "oportunidad", "arbitraje"], "viaje": ["viaje", "motivo", "urgente"], "urgente": ["urgente", "viaje", "motivo", "oportunidad"], "arbitraje": ["arbitraje", "descuento", "ganga"], "carro": ["vehiculo", "auto", "camioneta", "sedan", "suv", "carro"], "auto": ["vehiculo", "carro", "camioneta", "sedan", "suv"], "vehiculo": ["vehiculo", "carro", "camioneta", "auto"], "camioneta": ["camioneta", "suv", "pickup", "4x4"], "suv": ["suv", "camioneta", "4x4"], "pickup": ["pickup", "camioneta", "4x4"], "sedan": ["sedan", "carro", "auto"], "4x4": ["4x4", "camioneta", "suv", "pickup"],
+  "apartment": ["apartamento", "apto"], "apartments": ["apartamento", "apto"], "flat": ["apartamento", "apto"], "condo": ["apartamento", "apto"], "house": ["casa", "quinta", "campestre"], "houses": ["casa", "quinta"], "home": ["casa", "apartamento"], "land": ["lote", "terreno"], "lot": ["lote", "terreno"], "plot": ["lote", "terreno"], "office": ["oficina"], "building": ["edificio"], "estate": ["finca", "campestre"], "warehouse": ["bodega"], "commercial": ["local", "comercial"], "store": ["local"],
+  "bedroom": ["habitacion", "hab", "alcoba"], "bedrooms": ["habitacion", "hab", "alcoba"], "bed": ["habitacion", "hab"], "beds": ["habitaciones", "hab"], "bath": ["bano", "banos"], "baths": ["bano", "banos"], "bathroom": ["bano"], "bathrooms": ["bano", "banos"], "parking": ["garaje", "parqueadero"], "garage": ["garaje", "parqueadero"], "owner": ["propietario", "directo", "dueno"], "owners": ["propietario", "dueno"], "direct": ["directo", "dueno"], "discount": ["rebaja", "descuento", "ganga"], "bargain": ["ganga", "rebaja"], "deal": ["oportunidad", "directo"], "urgent": ["urgente", "viaje"],
+  "studio": ["apartaestudio", "apartamento", "apto"], "pool": ["piscina"], "gym": ["gimnasio"], "balcony": ["balcon", "terraza"], "terrace": ["terraza", "balcon"], "furnished": ["amoblado", "amoblada"], "view": ["vista", "panoramica"], "security": ["vigilancia", "porteria"], "elevator": ["ascensor"], "storage": ["deposito", "bodega"], "rent": ["arriendo", "alquiler"], "sale": ["venta"], "luxury": ["lujo", "penthouse"], "investment": ["inversion", "arbitraje"], "remodeled": ["remodelado", "nuevo"], "bogota": ["bogota", "rosales", "chico"], "medellin": ["medellin", "poblado", "laureles"], "cali": ["cali", "pance"], "cartagena": ["cartagena", "bocagrande"], "pereira": ["pereira", "cerritos"], "bucaramanga": ["bucaramanga"]
 };
 
 /**
@@ -96,7 +84,17 @@ function coincideBusquedaInteligente(textoTarjetaNormalizado, busquedaUsuario) {
 function aplicarFiltrosOmnibox() {
   paginaActual = 1;
   limiteVisible = 15;
-  if (datosActuales) {
+  if (typeof consultarCatalogoPaginado === 'function') {
+    consultarCatalogoPaginado({
+      page: 1,
+      limit: 15,
+      city: filtroCiudadActivo,
+      operation: filtroOperacionActivo,
+      search: textoBusquedaActivo,
+      sort: criterioOrdenActivo,
+      reset: true
+    });
+  } else if (datosActuales) {
     ejecutarConTransicionSuave(() => {
       renderizarInterfaz(datosActuales);
     });
@@ -134,25 +132,27 @@ function restablecerTodosLosFiltros() {
 }
 
 /**
- * Extrae de forma reactiva y única todas las ciudades presentes en el dataset activo
+ * Extrae de forma reactiva y única todas las ciudades presentes en el dataset activo o su resumen
  * y reconstruye tanto el menú desplegable táctico (desktop) como el selector off-canvas (móvil).
- * Si la base de datos incorpora nuevas oportunidades (ej. Cúcuta, Ibagué, etc.), se integran de inmediato.
- * @param {Array} leads
+ * Soporta tanto arreglo de leads como objeto de resumen agregado del backend.
+ * @param {Array|Object} fuente
  */
-function sincronizarDropdownCiudades(leads) {
-  if (!Array.isArray(leads) || leads.length === 0) return;
+function sincronizarDropdownCiudades(fuente) {
+  if (!fuente) return;
 
   const conteoPorCiudad = {};
-  leads.forEach(l => {
-    let c = (l.ciudad || l.ubicacion || "").trim();
-    if (!c) return;
-    if (c.includes(",")) {
-      const partes = c.split(",");
-      c = partes[partes.length - 1].trim();
-    }
-    const cNorm = c.charAt(0).toUpperCase() + c.slice(1);
-    conteoPorCiudad[cNorm] = (conteoPorCiudad[cNorm] || 0) + 1;
-  });
+  if (Array.isArray(fuente)) {
+    if (fuente.length === 0) return;
+    fuente.forEach(l => {
+      let c = (l.ciudad || l.ubicacion || "").trim();
+      if (!c) return;
+      if (c.includes(",")) c = c.split(",").pop().trim();
+      const cNorm = c.charAt(0).toUpperCase() + c.slice(1);
+      conteoPorCiudad[cNorm] = (conteoPorCiudad[cNorm] || 0) + 1;
+    });
+  } else if (typeof fuente === 'object') {
+    Object.assign(conteoPorCiudad, fuente);
+  }
 
   const ciudadesOrdenadas = Object.keys(conteoPorCiudad).sort((a, b) => a.localeCompare(b, "es"));
 

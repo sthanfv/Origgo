@@ -2011,6 +2011,67 @@ main {
   border: 1px solid hsla(166, 40%, 23%, 0.2);
 }
 
+/* ═════════════════════════════════════════════════════════════════════════
+ * CONTROLES DE CARGA PROGRESIVA Y PAGINACIÓN SERVERLESS
+ * ═════════════════════════════════════════════════════════════════════════ */
+.btn-load-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--surface-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--accent-emerald, #10B981);
+  color: var(--accent-emerald, #10B981);
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  font-family: var(--font-body, inherit);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+}
+
+.btn-load-more:hover {
+  background: var(--accent-emerald, #10B981);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+.btn-load-more:active {
+  transform: translateY(0);
+}
+
+.btn-load-more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+[data-theme="light"] .btn-load-more {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: #059669;
+  color: #059669;
+}
+
+[data-theme="light"] .btn-load-more:hover {
+  background: #059669;
+  color: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+  .pagination-controls {
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+  .btn-load-more {
+    width: 100%;
+    order: 3;
+    margin-top: 0.5rem;
+  }
+}
+
 
 /* ═══════════════════════════════════════════════════
    CARRUSEL MULTI-FOTO CONDICIONAL

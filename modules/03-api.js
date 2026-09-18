@@ -95,82 +95,144 @@ function validarContratoCatalogo(datos) {
 }
 
 /**
+ * Consulta el catálogo mediante el endpoint serverless paginado (/api/leads/list).
+ * Soporta filtros en backend, ordenamiento, particionamiento en lotes de 15 items
+ * y fallback automático a contingencia local offline.
+ * @param {object} [opciones]
+ * @param {number} [opciones.page=1]
+ * @param {number} [opciones.limit=15]
+ * @param {string} [opciones.city='']
+ * @param {string} [opciones.operation='']
+ * @param {string} [opciones.search='']
+ * @param {string} [opciones.sort='recientes']
+ * @param {boolean} [opciones.reset=false]
+ * @param {boolean} [opciones.append=false]
+ */
+async function consultarCatalogoPaginado({
+  page = 1,
+  limit = 15,
+  city = (typeof filtroCiudadActivo !== 'undefined' ? filtroCiudadActivo : ''),
+  operation = (typeof filtroOperacionActivo !== 'undefined' ? filtroOperacionActivo : ''),
+  search = (typeof textoBusquedaActivo !== 'undefined' ? textoBusquedaActivo : ''),
+  sort = (typeof criterioOrdenActivo !== 'undefined' ? criterioOrdenActivo : 'recientes'),
+  reset = false,
+  append = false
+} = {}) {
+  const container = document.getElementById("bentoGridContainer");
+  if (container && (page === 1 || reset) && !append) {
+    container.innerHTML = typeof generarHtmlSkeletons === 'function' ? generarHtmlSkeletons(6) : '';
+  }
+
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    sort: String(sort || 'recientes')
+  });
+  if (city) queryParams.set('city', city);
+  if (operation) queryParams.set('operation', operation);
+  if (search) queryParams.set('search', search);
+
+  const url = `/api/leads/list?${queryParams.toString()}`;
+
+  try {
+    const data = await fetchConReintentos(url, { cache: 'no-cache' }, {
+      maxReintentos: 2,
+      delayBaseMs: 500,
+      timeoutMs: 3500
+    });
+
+    if (!data || !data.ok || !Array.isArray(data.leads)) {
+      throw new Error(data?.error || 'Respuesta inválida del catálogo serverless.');
+    }
+
+    if (data.ciudades && typeof sincronizarDropdownCiudades === 'function') {
+      sincronizarDropdownCiudades(data.ciudades);
+    }
+
+    if (append && datosActuales && Array.isArray(datosActuales.leads)) {
+      datosActuales.leads.push(...data.leads);
+      datosActuales.page = data.page;
+      datosActuales.hayMas = data.hayMas;
+      datosActuales.totalPages = data.totalPages;
+      datosActuales.total = data.total;
+    } else {
+      datosActuales = {
+        config: data.config || (datosActuales?.config || {}),
+        leads: data.leads,
+        total: data.total,
+        totalPages: data.totalPages,
+        page: data.page,
+        hayMas: data.hayMas,
+        ciudades: data.ciudades
+      };
+    }
+
+    paginaActual = data.page;
+    limiteVisible = limit;
+
+    if (typeof renderizarInterfaz === 'function') {
+      renderizarInterfaz(datosActuales);
+    }
+    return data;
+  } catch (err) {
+    registrarLogDesarrollo('warn', '[consultarCatalogoPaginado] Fallback a contingencia local offline:', err.message);
+    return await cargarDatosLocalFallback('./data/inmobiliario.json');
+  }
+}
+
+/**
+ * Fallback resiliente offline que carga el dataset estático local ante fallos de conexión.
+ * @param {string} rutaJson
+ */
+async function cargarDatosLocalFallback(rutaJson) {
+  const container = document.getElementById("bentoGridContainer");
+  try {
+    const localData = await fetchConReintentos(rutaJson, {}, {
+      maxReintentos: 1,
+      delayBaseMs: 600,
+      timeoutMs: 3500
+    });
+    if (validarContratoCatalogo(localData)) {
+      if (Array.isArray(localData.leads) && typeof deduplicarLeads === 'function') {
+        localData.leads = deduplicarLeads(localData.leads);
+      }
+      datosActuales = localData;
+      limiteVisible = 15;
+      paginaActual = 1;
+      if (typeof renderizarInterfaz === 'function') renderizarInterfaz(localData);
+      return localData;
+    }
+    throw new Error('Estructura de catálogo local inválida');
+  } catch (fallbackErr) {
+    registrarLogDesarrollo('error', '[cargarDatosLocalFallback] Falló la carga local de emergencia:', fallbackErr);
+    if (container) {
+      const errTxt = typeof escaparHtml === 'function' ? escaparHtml(fallbackErr.message) : String(fallbackErr.message || '');
+      container.innerHTML = `
+        <div class="error-state-msg">
+          <p class="error-state-title">Terminal de oportunidades fuera de línea.</p>
+          <p class="error-state-detail">${errTxt}</p>
+          <button type="button" class="btn-retry-catalog" onclick="consultarCatalogoPaginado({ page: 1, reset: true })">
+            <i class="fa-solid fa-rotate-right"></i> Reintentar Conexión
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+/**
  * Carga un archivo JSON y realiza el mapeo dinámico de llaves en la interfaz.
- * Soporta carga primaria en tiempo real desde Cloudflare R2 con fail-safe local inmediato y reintentos.
+ * Soporta carga primaria serverless con fallback local inmediato ante fallos de red.
  * @param {string} rutaJson
  */
 async function cargarDatos(rutaJson) {
-  const container = document.getElementById("bentoGridContainer");
-  if (container) {
-    container.innerHTML = generarHtmlSkeletons();
+  if (typeof rutaJson === 'string' && rutaJson.includes('inmobiliario.json')) {
+    return await consultarCatalogoPaginado({ page: 1, reset: true });
   }
+  return await cargarDatosLocalFallback(rutaJson);
+}
 
-  let json = null;
-  const urlR2 = typeof window !== 'undefined' && window.PORTAL_CONFIG && window.PORTAL_CONFIG.catalogoR2Url;
-
-  // 1. Intentar cargar desde Cloudflare R2 con reintento rápido (catálogo en vivo)
-  if (urlR2 && rutaJson.includes('inmobiliario.json')) {
-    try {
-      const r2Data = await fetchConReintentos(urlR2, { cache: 'no-cache' }, {
-        maxReintentos: 1,
-        delayBaseMs: 500,
-        timeoutMs: 3500
-      });
-      if (validarContratoCatalogo(r2Data)) {
-        json = r2Data;
-        registrarLogDesarrollo('info', 'Catálogo cargado en tiempo real desde Cloudflare R2');
-      }
-    } catch (errR2) {
-      registrarLogDesarrollo('warn', 'Fallback activado: R2 no disponible, cargando local', errR2.message);
-    }
-  }
-
-  // 2. Si R2 falla o no valida, cargar desde ruta local empaquetada (Fail-Safe con 2 reintentos)
-  if (!json) {
-    try {
-      const localData = await fetchConReintentos(rutaJson, {}, {
-        maxReintentos: 2,
-        delayBaseMs: 800,
-        timeoutMs: 4000
-      });
-      if (validarContratoCatalogo(localData)) {
-        json = localData;
-      } else {
-        throw new Error('El catálogo de oportunidades no tiene una estructura válida.');
-      }
-    } catch (err) {
-      registrarLogDesarrollo('error', 'Error crítico cargando dataset local:', err);
-      if (typeof reportarFalloCliente === 'function') {
-        reportarFalloCliente({
-          tipo: 'CARGA_CATALOGO_FALLIDA',
-          mensaje: err.message,
-          origen: 'modules/03-api.js:cargarDatos'
-        });
-      }
-
-      if (container) {
-        const detalleError = typeof escaparHtml === 'function'
-          ? escaparHtml(err.message)
-          : String(err.message || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        container.innerHTML = `
-          <div class="error-state-msg">
-            <p class="error-state-title">Error de conexión con la terminal de oportunidades.</p>
-            <p class="error-state-detail">${detalleError}</p>
-            <button type="button" class="btn-retry-catalog" onclick="cargarDatos('${escaparHtml(rutaJson)}')">
-              <i class="fa-solid fa-rotate-right"></i> Reintentar Conexión
-            </button>
-          </div>
-        `;
-      }
-      return;
-    }
-  }
-
-  if (json && Array.isArray(json.leads) && typeof deduplicarLeads === 'function') {
-    json.leads = deduplicarLeads(json.leads);
-  }
-  datosActuales = json;
-  limiteVisible = 15;
-  renderizarInterfaz(json);
-  aplicarFiltrosOmnibox();
+if (typeof window !== 'undefined') {
+  window.consultarCatalogoPaginado = consultarCatalogoPaginado;
+  window.cargarDatos = cargarDatos;
 }

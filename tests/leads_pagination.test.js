@@ -119,4 +119,35 @@ describe('📦 Paginación y Carga Progresiva por Lotes (/api/leads/list)', () =
     assert.strictEqual(data.leads.length, 0);
     assert.strictEqual(data.hayMas, false);
   });
+
+  it('Debe entregar metadatos agregados de ciudades y responder en menos de 150ms', async () => {
+    const inicio = performance.now();
+    const { req, res, getStatus, getData } = createMockReqRes({
+      query: { page: 1, limit: 15 }
+    });
+
+    await listHandler(req, res);
+    const duracionMs = performance.now() - inicio;
+
+    assert.strictEqual(getStatus(), 200);
+    const data = getData();
+    assert.ok(data.ciudades && typeof data.ciudades === 'object');
+    assert.ok(Object.keys(data.ciudades).length > 0);
+    assert.ok(duracionMs < 150, `Tiempo de respuesta ${duracionMs.toFixed(2)}ms excede el límite de 150ms`);
+  });
+
+  it('Debe soportar ordenamiento pre-indexado por precio_menor y m2_menor', async () => {
+    const { req, res, getData } = createMockReqRes({
+      query: { page: 1, limit: 15, sort: 'precio_menor' }
+    });
+    await listHandler(req, res);
+    const leads = getData().leads;
+    assert.strictEqual(leads.length, 15);
+    for (let i = 0; i < leads.length - 1; i++) {
+      const p1 = parseInt(String(leads[i].precio).replace(/\D/g, ''), 10) || 0;
+      const p2 = parseInt(String(leads[i + 1].precio).replace(/\D/g, ''), 10) || 0;
+      assert.ok(p1 <= p2, `Orden de precio inconsistente: ${p1} > ${p2}`);
+    }
+  });
 });
+

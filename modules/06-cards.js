@@ -10,28 +10,7 @@
  * Optimizado a nivel de bytes, no bloqueante y 100% resiliente sin dependencia de red.
  */
 const FALLBACK_INMUEBLE_SVG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">' +
-  '<defs>' +
-    '<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">' +
-      '<stop offset="0%" stop-color="#0b131e"/>' +
-      '<stop offset="50%" stop-color="#111b2b"/>' +
-      '<stop offset="100%" stop-color="#060a11"/>' +
-    '</linearGradient>' +
-    '<radialGradient id="glow" cx="50%" cy="45%" r="55%">' +
-      '<stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>' +
-      '<stop offset="100%" stop-color="#10b981" stop-opacity="0"/>' +
-    '</radialGradient>' +
-  '</defs>' +
-  '<rect width="800" height="500" fill="url(#bg)"/>' +
-  '<rect width="800" height="500" fill="url(#glow)"/>' +
-  '<g transform="translate(400, 215)" text-anchor="middle">' +
-    '<circle cx="0" cy="-10" r="50" fill="#10b981" fill-opacity="0.08" stroke="#10b981" stroke-width="2" stroke-dasharray="5 3"/>' +
-    '<path d="M-26 10 L0 -16 L26 10 L17 10 L17 28 L-17 28 L-17 10 Z" fill="none" stroke="#10b981" stroke-width="3" stroke-linejoin="round"/>' +
-    '<rect x="-6" y="14" width="12" height="14" fill="#10b981" fill-opacity="0.3" rx="1"/>' +
-    '<text y="78" fill="#e2e8f0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5">ORIGGO DIRECT</text>' +
-    '<text y="100" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500" letter-spacing="1">VERIFIED PROPERTY</text>' +
-  '</g>' +
-  '</svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0b131e"/><stop offset="50%" stop-color="#111b2b"/><stop offset="100%" stop-color="#060a11"/></linearGradient><radialGradient id="glow" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/><stop offset="100%" stop-color="#10b981" stop-opacity="0"/></radialGradient></defs><rect width="800" height="500" fill="url(#bg)"/><rect width="800" height="500" fill="url(#glow)"/><g transform="translate(400, 215)" text-anchor="middle"><circle cx="0" cy="-10" r="50" fill="#10b981" fill-opacity="0.08" stroke="#10b981" stroke-width="2" stroke-dasharray="5 3"/><path d="M-26 10 L0 -16 L26 10 L17 10 L17 28 L-17 28 L-17 10 Z" fill="none" stroke="#10b981" stroke-width="3" stroke-linejoin="round"/><rect x="-6" y="14" width="12" height="14" fill="#10b981" fill-opacity="0.3" rx="1"/><text y="78" fill="#e2e8f0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5">ORIGGO DIRECT</text><text y="100" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500" letter-spacing="1">VERIFIED PROPERTY</text></g></svg>'
 );
 
 /**
@@ -269,27 +248,16 @@ function renderizarInterfaz(dataset) {
   const col1Nombre = isEn ? (col1NombreRaw.toLowerCase().includes('superficie') ? 'Area' : col1NombreRaw) : col1NombreRaw;
   const col2Nombre = isEn ? (col2NombreRaw.toLowerCase().includes('distribución') ? 'Layout' : col2NombreRaw) : col2NombreRaw;
 
-  const leadsFiltrados = typeof filtrarYOrdenarLeads === 'function' ? filtrarYOrdenarLeads(leads) : leads;
+  const esServerless = Boolean(dataset && (dataset.totalPages !== undefined || dataset.total !== undefined));
+  const totalPaginas = esServerless ? (dataset.totalPages || 1) : Math.ceil(leadsFiltrados.length / limiteVisible);
+  if (!esServerless && paginaActual > totalPaginas && totalPaginas > 0) paginaActual = totalPaginas;
+  const leadsVisibles = esServerless ? leads : leadsFiltrados.slice((paginaActual - 1) * limiteVisible, paginaActual * limiteVisible);
 
   if (countEl) {
     const sufijoCiudad = filtroCiudadActivo ? (isEn ? ` in ${filtroCiudadActivo}` : ` en ${filtroCiudadActivo}`) : '';
-    countEl.textContent = isEn ? `${leadsFiltrados.length} ${leadsFiltrados.length === 1 ? (dict.catalog_count_single || 'direct opportunity') : (dict.catalog_count_suffix || 'direct opportunities')}${sufijoCiudad}` : `${leadsFiltrados.length} oportunidad${leadsFiltrados.length === 1 ? '' : 'es'} directa${leadsFiltrados.length === 1 ? '' : 's'}${sufijoCiudad}`;
+    const conteoTotal = esServerless ? (dataset.total || leads.length) : leadsFiltrados.length;
+    countEl.textContent = isEn ? `${conteoTotal} ${conteoTotal === 1 ? (dict.catalog_count_single || 'direct opportunity') : (dict.catalog_count_suffix || 'direct opportunities')}${sufijoCiudad}` : `${conteoTotal} oportunidad${conteoTotal === 1 ? '' : 'es'} directa${conteoTotal === 1 ? '' : 's'}${sufijoCiudad}`;
   }
-
-  if (leadsFiltrados.length === 0) {
-    const ciudadTexto = filtroCiudadActivo ? (isEn ? ` in ${filtroCiudadActivo}` : ` en ${filtroCiudadActivo}`) : '';
-    const querySegura = escaparHtml((textoBusquedaActivo || "").slice(0, 40).trim());
-    const busquedaTexto = querySegura ? (isEn ? ` for "${querySegura}"` : ` para "${querySegura}"`) : '';
-    container.innerHTML = `<div class="empty-catalog-state" id="emptyCatalogState"><div class="empty-state-icon-box"><i class="fa-solid fa-filter-circle-xmark"></i></div><div class="empty-state-content"><h3 class="empty-state-title">${isEn ? 'No opportunities found in this area' : 'Sin oportunidades en esta zona'}</h3><p class="empty-state-desc">${isEn ? `No direct owner listings found${busquedaTexto}${ciudadTexto}. You can explore other cities or reset filters.` : `No se encontraron avisos directos${busquedaTexto}${ciudadTexto}. Puedes explorar otras ciudades o restablecer los filtros.`}</p></div><button type="button" class="btn-empty-reset" id="btnResetFilters"><i class="fa-solid fa-rotate-left"></i> ${isEn ? 'Reset all filters' : 'Restablecer todos los filtros'}</button></div>`;
-    const btnReset = document.getElementById("btnResetFilters");
-    if (btnReset) btnReset.addEventListener("click", restablecerTodosLosFiltros);
-    return;
-  }
-
-  const totalPaginas = Math.ceil(leadsFiltrados.length / limiteVisible);
-  if (paginaActual > totalPaginas && totalPaginas > 0) paginaActual = totalPaginas;
-  const startIndex = (paginaActual - 1) * limiteVisible, endIndex = startIndex + limiteVisible;
-  const leadsVisibles = leadsFiltrados.slice(startIndex, endIndex);
 
   let htmlContenido = leadsVisibles.map((item, visibleIdx) => {
     const index = dataset.leads.indexOf(item), claseUrgencia = item.urgencia_tipo || "urgente";
@@ -447,28 +415,46 @@ function renderizarInterfaz(dataset) {
     `;
   }).join("");
 
-  if (totalPaginas > 1) {
-    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" aria-label="${isEn ? 'Go to previous page' : 'Ir a la página anterior'}"><i class="fa-solid fa-chevron-left"></i> ${isEn ? 'Previous' : 'Anterior'}</button>` : '';
-    const btnNextHtml = paginaActual < totalPaginas ? `<button type="button" class="btn-pagination" id="btnNextPage" aria-label="${isEn ? 'Go to next page' : 'Ir a la página siguiente'}">${isEn ? 'Next' : 'Siguiente'} <i class="fa-solid fa-chevron-right"></i></button>` : '';
-    htmlContenido += `<div class="pagination-controls">${btnPrevHtml}<span class="pagination-info">${isEn ? `Page ${paginaActual} of ${totalPaginas}` : `Página ${paginaActual} de ${totalPaginas}`}</span>${btnNextHtml}</div>`;
+  if (totalPaginas > 1 || dataset?.hayMas) {
+    const btnPrevHtml = paginaActual > 1 ? `<button type="button" class="btn-pagination" id="btnPrevPage" aria-label="${isEn ? 'Previous page' : 'Página anterior'}"><i class="fa-solid fa-chevron-left"></i> ${isEn ? 'Previous' : 'Anterior'}</button>` : '';
+    const btnNextHtml = (paginaActual < totalPaginas || dataset?.hayMas) ? `<button type="button" class="btn-pagination" id="btnNextPage" aria-label="${isEn ? 'Next page' : 'Página siguiente'}">${isEn ? 'Next' : 'Siguiente'} <i class="fa-solid fa-chevron-right"></i></button>` : '';
+    const btnLoadMore = dataset?.hayMas ? `<button type="button" class="btn-load-more" id="btnLoadMoreLeads"><i class="fa-solid fa-angles-down"></i> ${isEn ? 'Load more opportunities' : 'Cargar más oportunidades'}</button>` : '';
+    htmlContenido += `<div class="pagination-controls">${btnPrevHtml}<span class="pagination-info">${isEn ? `Page ${paginaActual} of ${totalPaginas}` : `Página ${paginaActual} de ${totalPaginas}`}</span>${btnNextHtml}${btnLoadMore}</div>`;
   }
 
   container.innerHTML = htmlContenido;
 
-  if (totalPaginas > 1) {
-    const btnPrev = document.getElementById("btnPrevPage"), btnNext = document.getElementById("btnNextPage");
+  if (totalPaginas > 1 || dataset?.hayMas) {
+    const btnPrev = document.getElementById("btnPrevPage"), btnNext = document.getElementById("btnNextPage"), btnLoad = document.getElementById("btnLoadMoreLeads");
     if (btnPrev && paginaActual > 1) {
       btnPrev.addEventListener("click", () => {
-        paginaActual--;
-        renderizarInterfaz(dataset);
+        if (typeof consultarCatalogoPaginado === 'function') {
+          consultarCatalogoPaginado({ page: paginaActual - 1, reset: true });
+        } else {
+          paginaActual--;
+          renderizarInterfaz(dataset);
+        }
         document.getElementById("catalogHeaderRow")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
-    if (btnNext && paginaActual < totalPaginas) {
+    if (btnNext && (paginaActual < totalPaginas || dataset?.hayMas)) {
       btnNext.addEventListener("click", () => {
-        paginaActual++;
-        renderizarInterfaz(dataset);
+        if (typeof consultarCatalogoPaginado === 'function') {
+          consultarCatalogoPaginado({ page: paginaActual + 1, reset: true });
+        } else {
+          paginaActual++;
+          renderizarInterfaz(dataset);
+        }
         document.getElementById("catalogHeaderRow")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+    if (btnLoad) {
+      btnLoad.addEventListener("click", () => {
+        btnLoad.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cargando...';
+        btnLoad.disabled = true;
+        if (typeof consultarCatalogoPaginado === 'function') {
+          consultarCatalogoPaginado({ page: paginaActual + 1, append: true });
+        }
       });
     }
   }

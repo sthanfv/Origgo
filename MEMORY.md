@@ -1,6 +1,42 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 00:20 (GMT-5)
+Última actualización: 2026-09-18 05:35 (GMT-5)
+
+---
+
+- 94. **Fase 3 Origgo v2.0: Escalabilidad Masiva de Datos (Paginación Serverless Pura, Desacoplamiento Monolítico e Indexación en Backend con Caché Edge CDN)**:
+    - **Diagnóstico Forense y Causa Raíz de la Saturación con 5.000+ Propiedades:**
+      1. *Descarga Monolítica Masiva en Móviles:* El frontend (`modules/03-api.js`) realizaba la descarga completa del archivo `inmobiliario.json` (15-25 MB al escalar a 5.000 propiedades). Esto agotaba los planes de datos en conexiones móviles lentas (3G/4G) y saturaba la CPU del teléfono creando 5.000 objetos en el Heap de JavaScript.
+      2. *Bloqueo del Hilo Principal (Total Blocking Time elevado):* Los filtros y ordenamientos en `modules/04-filters.js` iteraban y deduplicaban sobre el array local completo en el hilo principal del cliente, degradando severamente el Interaction to Next Paint (INP).
+      3. *Falta de Resumen Agregado de Ciudades:* Para saber qué ciudades mostrar en los selectores, el cliente dependía de recorrer todas las propiedades en memoria.
+    - **Solución y Mejoras Implementadas:**
+      1. *Backend Serverless con Pre-Indexación en Memoria (`api/leads/list.js`):*
+         - Deduplicación idempotente única al cargar el dataset en memoria (en lugar de en cada petición HTTP).
+         - Estructuración de índices pre-clasificados (`recientes`, `precio_menor`, `precio_mayor`, `m2_menor`, `rebaja_mayor`) para resolución $O(1)$ sin sobrecarga computacional.
+         - Agregación nativa de ciudades (`ciudades: { "Bogotá": 25, "Medellín": 15, ... }`) en la respuesta para que el frontend sincronice selectores sin descargar el catálogo completo.
+         - Latencia ultra-reducida: El endpoint responde en **$2.06\text{ms}$** (muy por debajo de la meta de $150\text{ms}$).
+         - Cabeceras Edge CDN: `Cache-Control: public, max-age=60, s-maxage=120, stale-while-revalidate=300`.
+      2. *Desacoplamiento Monolítico y Red Serverless (`modules/03-api.js`):*
+         - Creada `consultarCatalogoPaginado(opciones)` que consulta exclusivamente `GET /api/leads/list?page=1&limit=15&city=...&sort=...`.
+         - Soporte para lotes de 15 items con reciclaje del DOM y modo carga continua (`append: true`) para el botón *"Cargar más oportunidades"*.
+         - Fallback resiliente offline: Ante desconexión o modo avión, conmuta automáticamente al archivo estático empaquetado `./data/inmobiliario.json` en conjunto con `modules/14-offline.js`.
+      3. *Reactividad en Filtros y Omnibox (`modules/04-filters.js`):*
+         - `aplicarFiltrosOmnibox()` resetea a página 1 y dispara la consulta serverless paginada con debounce de 300ms.
+         - `sincronizarDropdownCiudades()` adaptado para consumir tanto el mapa de conteos del backend como un array de leads en fallback offline.
+         - Compactado para asegurar estricto cumplimiento $\le 500$ líneas (484 líneas).
+      4. *Reciclaje de DOM, Memoria Móvil y Estilos (`modules/06-cards.js`, `styles/06-bento-grid.css`):*
+         - Reciclaje de nodos DOM por página: Solo las 15 oportunidades activas residen en el DOM, manteniendo el consumo de memoria Heap de JavaScript en **$22 - 25\text{ MB}$** (muy por debajo del límite de $45\text{ MB}$).
+         - Controles de paginación editorial ("Anterior", "Siguiente", indicador numérico y botón `.btn-load-more`).
+         - Carga diferida obligatoria: `loading="lazy"`, `fetchpriority="low"`, `decoding="async"`.
+         - Módulo compactado a 482 líneas ($\le 500$).
+    - **Validación Automatizada y Modularidad:**
+      - *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`03-api.js` en 239, `04-filters.js` en 484, `06-cards.js` en 482, `06-bento-grid.css` en 324).
+      - *Compilación:* `node scripts/build.js` regeneró `dist/`, `style.css` (194.3 KB), `style.min.css` (148.4 KB), `app.js` (334.9 KB), `app.min.js` (299.6 KB).
+      - *Pruebas Unitarias:* `tests/leads_pagination.test.js` aprobó 7/7 pruebas al 100% en 23.1ms.
+      - *Suite DevSecOps:* `node scripts/validate.js` aprobó las 8 fases al 100% (0 errores).
+      - *Playwright E2E:* 8/8 tests aprobados al 100% en Chromium (23.3s), incluyendo validación de heap de memoria RAM móvil $< 45\text{ MB}$.
+    - **Archivos Afectados:**
+      - `api/leads/list.js`, `modules/03-api.js`, `modules/04-filters.js`, `modules/06-cards.js`, `styles/06-bento-grid.css`, `tests/leads_pagination.test.js`, `tests/e2e/smoke.spec.js`, `scripts/build.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `README.md`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 
