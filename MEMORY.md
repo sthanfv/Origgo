@@ -1,6 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 20:15 (GMT-5)
+Última actualización: 2026-09-17 21:16 (GMT-5)
+
+---
+
+- 90. **Corrección Canónica de Magic Link (`origgo.online`), Erradicación de Azul en Botón Llamar y Purga Reactiva de Token ante 404 en Balance**:
+    - **Diagnóstico Forense y Causa Raíz:**
+      1. *Magic Link Roto / 404 en AI Studio / Previews:* Los correos transaccionales de Resend (`lib/auth/magic-link.js`, `lib/auth/welcome-credit.js`, `lib/auth/recover.js`) leían `process.env.APP_URL` o cabeceras dinámicas `x-forwarded-host` de Google Cloud Shell / AI Studio (`ais-dev-qs4bbdh4r5g6qj...`). Al hacer clic en "Ingresar ahora con 1 clic", el usuario era redirigido a un host efímero de desarrollo ya expirado o cerrado, generando error de página no encontrada.
+      2. *Inconsistencia Cromática (Azul en Botón Llamar):* En `styles/08-slideup.css`, el botón de llamada directa `.btn-call-direct` y `.slideup-cta-btn.cta-call` contenían reglas residuales con fondo `rgba(59, 130, 246, 0.15)` y texto azul `#60a5fa`, rompiendo la armonía visual de los Design Tokens esmeralda/arena/marfil de Origgo.
+      3. *Error 404 en Consola (`/api/user/balance`):* Al eliminar manualmente un usuario de prueba en Firestore mientras el navegador conservaba el JWT firmado en `localStorage`, la llamada reactiva a `/api/user/balance` devolvía `HTTP 404 (Usuario no encontrado)`. El cliente solo purgaba credenciales en códigos 401/403, persistiendo un ciclo roto de intentos con error en DevTools.
+    - **Solución y Mejoras Implementadas:**
+      1. *Fijación Inmutable de Dominio Canónico (`https://origgo.online`):*
+         - En `lib/auth/welcome-credit.js`, `lib/auth/magic-link.js`, `lib/auth/recover.js` y `lib/email-templates.js`, se configuró `'https://origgo.online'` como dominio canónico garantizado de producción (permitiendo `localhost` únicamente si el host es explícitamente local de desarrollo). Ningún correo volverá a emitir URLs de preview ni dominios temporales.
+      2. *Armonización de Botón Llamar al Design System:*
+         - En `styles/08-slideup.css`: En modo oscuro, `.btn-call-direct` utiliza `background: hsla(166, 40%, 18%, 0.6)` con borde sutil y texto carbón/marfil. En modo claro, utiliza fondo blanco `#FFFFFF`, borde sutil e icono esmeralda `var(--accent-emerald)`. `.slideup-cta-btn.cta-call` reemplazó el fondo azul por tarjeta neutra con bisel esmeralda. Archivo en 482 líneas ($\le 500$).
+      3. *Purga Atómica y Auto-Reset ante 404 en Balance (`modules/01-state.js`):*
+         - Se añadió `res.status === 404` a la condición de invalidación de sesión en `modules/01-state.js`. Si Firestore reporta que el usuario no existe, el cliente purga inmediatamente `hunter_pro_token`, elimina cookies, limpia caché y restablece `sesionUsuario = null` de forma silenciosa y limpia. Archivo en 494 líneas ($\le 500$).
+    - **Validación Automatizada y Modularidad:**
+      - *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`01-state.js` en 494, `08-slideup.css` en 482).
+      - *Compilación:* `node scripts/build.js` regeneró `dist/` (`style.css` 192.0 KB, `style.min.css` 146.7 KB, `app.js` 321.0 KB, `app.min.js` 287.8 KB).
+      - *DevSecOps:* `node scripts/validate.js` con las 8 fases aprobadas al 100% (0 errores).
+    - **Archivos Afectados:**
+      - `lib/auth/magic-link.js`, `lib/auth/recover.js`, `lib/auth/welcome-credit.js`, `lib/email-templates.js`, `modules/01-state.js`, `styles/08-slideup.css`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

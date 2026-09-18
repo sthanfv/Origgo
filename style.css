@@ -2822,23 +2822,31 @@ main {
 
 /* Botón de llamada telefónica en tarjetas y drawer */
 .btn-call-direct {
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #60a5fa;
-  padding: 7px 9px;
+  background: hsla(166, 40%, 18%, 0.6);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 7px 11px;
   border-radius: 8px;
   font-weight: 700;
   font-size: 0.78rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  transition: all 0.2s ease;
 }
+.btn-call-direct i { color: var(--accent-emerald); }
+.btn-call-direct:hover { border-color: var(--accent-emerald); }
 
 [data-theme="light"] .btn-call-direct {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563EB;
-  border-color: rgba(59, 130, 246, 0.35);
+  background: #FFFFFF;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+[data-theme="light"] .btn-call-direct:hover {
+  border-color: var(--accent-emerald);
+  background: hsla(140, 25%, 97%, 0.95);
 }
 
 /* Botón de WhatsApp compacto en tarjetas desbloqueadas */
@@ -2858,7 +2866,8 @@ main {
 /* Estilos para botones principales dentro del drawer desbloqueado */
 .slideup-cta-btn.cta-flex { flex: 1; min-width: 120px; justify-content: center; text-decoration: none; }
 .slideup-cta-btn.cta-flex-sm { flex: 1; min-width: 100px; justify-content: center; text-decoration: none; }
-.slideup-cta-btn.cta-call { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; text-decoration: none; }
+.slideup-cta-btn.cta-call { background: var(--surface-card, rgba(255, 255, 255, 0.06)); border: 1px solid var(--border-subtle); color: var(--text-main); text-decoration: none; }
+.slideup-cta-btn.cta-call i { color: var(--accent-emerald); }
 .slideup-cta-btn.cta-neutral { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none; }
 .slideup-cta-note-ok { color: #22C55E; }
 

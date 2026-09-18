@@ -696,7 +696,7 @@ async function inicializarSesionUsuario() {
         aplicarPreferenciasUsuario(data);
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
-      } else if (res.status === 401 || res.status === 403) {
+      } else if (res.status === 401 || res.status === 403 || res.status === 404) {
         localStorage.removeItem('hunter_pro_token');
         if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
         localStorage.removeItem('hunter_user_data');
