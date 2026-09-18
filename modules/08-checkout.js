@@ -325,16 +325,16 @@ async function ejecutarPagoWompi() {
       delete sesionUsuario.pin;
       actualizarBadgeVip();
       sincronizarFiltroCiudadUsuario();
-      renderizarInterfaz(datosActuales);
-      mostrarNotificacionToast(
-        esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
-        'success',
-        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
-      );
       cerrarModalCheckout();
       if (leadSeleccionado) {
         const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
         await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+      } else {
+        mostrarNotificacionToast(
+          esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+          'success',
+          { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
+        );
       }
       return;
     } catch (errGift) {

@@ -2727,9 +2727,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, sigui
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
-      <button type="button" class="btn-dossier-direct" onclick="abrirDossierImprimible('${leadId}')" title="${isEn ? 'Print / Download Property Dossier' : 'Imprimir / Descargar Ficha PDF'}">
-        <i class="fa-solid fa-file-pdf"></i> ${isEn ? 'PDF' : 'PDF'}
-      </button>
       ${contactoSeguro?.telLlamar ? `
         <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar">
           <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
@@ -2807,9 +2804,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, sigui
                 <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
               </a>
             ` : ''}
-            <button type="button" class="slideup-cta-btn cta-flex-sm cta-neutral" onclick="abrirDossierImprimible('${leadId}')" title="${isEn ? 'Print / Download PDF Dossier' : 'Imprimir / Descargar Ficha PDF'}">
-              <i class="fa-solid fa-file-pdf"></i> ${isEn ? 'PDF' : 'PDF'}
-            </button>
             ${contactoSeguro?.enlace ? `
               <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}
@@ -3409,16 +3403,16 @@ async function ejecutarPagoWompi() {
       delete sesionUsuario.pin;
       actualizarBadgeVip();
       sincronizarFiltroCiudadUsuario();
-      renderizarInterfaz(datosActuales);
-      mostrarNotificacionToast(
-        esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
-        'success',
-        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
-      );
       cerrarModalCheckout();
       if (leadSeleccionado) {
         const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
         await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+      } else {
+        mostrarNotificacionToast(
+          esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+          'success',
+          { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
+        );
       }
       return;
     } catch (errGift) {

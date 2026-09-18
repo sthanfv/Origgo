@@ -124,9 +124,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, sigui
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       ` : ''}
-      <button type="button" class="btn-dossier-direct" onclick="abrirDossierImprimible('${leadId}')" title="${isEn ? 'Print / Download Property Dossier' : 'Imprimir / Descargar Ficha PDF'}">
-        <i class="fa-solid fa-file-pdf"></i> ${isEn ? 'PDF' : 'PDF'}
-      </button>
       ${contactoSeguro?.telLlamar ? `
         <a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar">
           <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
@@ -204,9 +201,6 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, sigui
                 <i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}
               </a>
             ` : ''}
-            <button type="button" class="slideup-cta-btn cta-flex-sm cta-neutral" onclick="abrirDossierImprimible('${leadId}')" title="${isEn ? 'Print / Download PDF Dossier' : 'Imprimir / Descargar Ficha PDF'}">
-              <i class="fa-solid fa-file-pdf"></i> ${isEn ? 'PDF' : 'PDF'}
-            </button>
             ${contactoSeguro?.enlace ? `
               <a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}

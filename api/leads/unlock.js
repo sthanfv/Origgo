@@ -403,29 +403,6 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ ok: false, error: respuestaFinal.error });
     }
 
-    // Despacho transaccional autónomo del Dossier en PDF/HTML por correo (Fase 2)
-    if (respuestaFinal.ok) {
-      (async () => {
-        try {
-          const userDoc = await db.getUserByPhone(session.phone);
-          const buyerEmail = session.email || userDoc?.email || (req.body?.email ? String(req.body.email).trim() : null);
-          if (buyerEmail) {
-            const { despacharReporteDossierEmail } = require('../../lib/report-generator');
-            await despacharReporteDossierEmail({
-              email: buyerEmail,
-              lead: leadEncontrado,
-              contacto: respuestaFinal.contacto,
-              datosRevelados: respuestaFinal.datosRevelados,
-              userPhone: session.phone,
-              lang
-            });
-          }
-        } catch (eEmail) {
-          console.warn('[unlock] Aviso en despacho de dossier por email:', eEmail.message);
-        }
-      })();
-    }
-
     return res.status(200).json(respuestaFinal);
   } catch (error) {
     console.error('[unlock] Error en desbloqueo:', error);

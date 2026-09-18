@@ -30,8 +30,12 @@
          - Maquetación de 3 barras geométricas (`.hamburger-bar.bar-1`, `.bar-2`, `.bar-3`) en `#btnNavMenuBottom`.
          - En `styles/11-mobile.css`: Animación con `transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)`. Al alternar `.is-active`, `.bar-1` rota $45^\circ$, `.bar-3` rota $-45^\circ$ y `.bar-2` hace fade-out y reducción de escala a $0.3$, transformándose fluidamente en una "X" verde esmeralda idéntica a Desmulta.
          - En `modules/09-ui-effects.js`: Corrección forense del selector de etiqueta (`span[data-i18n="nav_menu"]`) para garantizar que el texto "Cerrar" no se superponga sobre las barras.
+      5. *Erradicación del Botón PDF en Tarjetas Individuales y Corrección en Vercel:*
+         - Eliminado el botón `[📄 PDF]` en `modules/07-unlock.js` tanto en la tarjeta Bento como en el cajón de ficha técnica, dejando únicamente las acciones directas de contacto (`WhatsApp`, `Llamar` y `Ver Anuncio`).
+         - Erradicado de raíz en `api/leads/unlock.js` el bloque innecesario de despacho de dossier PDF por email que provocaba el error `leadEncontrado is not defined` en Vercel.
+         - En `modules/08-checkout.js`, suprimida la doble notificación redundante al reclamar el regalo freemium cuando se auto-desbloquea de inmediato un inmueble seleccionado.
     - **Validación Automatizada y Modularidad:**
-      1. *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`01-state.js` en 494, `08-checkout.js` en 499, `09-ui-effects.js` en 489, `10-listeners.js` en 496, `13-i18n.js` en 499, `10-checkout-plans.css` en 490, `11-mobile.css` en 471).
+      1. *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`01-state.js` en 494, `07-unlock.js` en 474, `08-checkout.js` en 499, `09-ui-effects.js` en 489, `10-listeners.js` en 496, `13-i18n.js` en 499, `10-checkout-plans.css` en 490, `11-mobile.css` en 471).
       2. *Pruebas Unitarias DevSecOps:* `tests/freemium_welcome_credit.test.js` ampliado a 5/5 pruebas aprobadas (cubriendo teléfono polimórfico y desinfección XSS de emails). Suite `scripts/validate.js` con las 8 fases aprobadas al 100% (0 errores).
       3. *Pruebas E2E Playwright (`tests/e2e/smoke.spec.js`):* 7/7 pruebas aprobadas en Chromium (26.7s), certificando visualmente la "X" esmeralda y la tarjeta freemium ($0).
     - **Archivos Afectados:**
