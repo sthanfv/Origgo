@@ -34,8 +34,6 @@ function iniciarScrollReveal() {
   cards.forEach(card => observer.observe(card));
 }
 
-
-
 /**
  * Sincroniza visualmente el icono y tooltip del conmutador de tema.
  * @param {string} theme - 'dark' o 'light'
@@ -163,12 +161,23 @@ function inicializarEfectosPremium() {
   const btnNavMenuBottom = document.getElementById('btnNavMenuBottom');
   const btnMenuTrigger = document.getElementById('btnMenuTrigger');
 
+  const actualizarIconoBotonMenu = (estaAbierto) => {
+    if (btnNavMenuBottom) {
+      const icon = btnNavMenuBottom.querySelector('i');
+      const span = btnNavMenuBottom.querySelector('span');
+      if (icon) icon.className = estaAbierto ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      if (span) span.textContent = estaAbierto ? (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Close' : 'Cerrar') : (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Menu' : 'Menú');
+      btnNavMenuBottom.classList.toggle('active', estaAbierto);
+    }
+    if (btnMenuTrigger) btnMenuTrigger.classList.toggle('is-active', estaAbierto);
+  };
+
   const abrirSideMenu = () => {
     if (sideMenu && menuOverlay) {
       sideMenu.classList.add('active');
       menuOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
-      if (btnNavMenuBottom) btnNavMenuBottom.classList.add('active');
+      actualizarIconoBotonMenu(true);
     }
   };
 
@@ -177,7 +186,7 @@ function inicializarEfectosPremium() {
       sideMenu.classList.remove('active');
       menuOverlay.classList.remove('active');
       document.body.style.overflow = '';
-      if (btnNavMenuBottom) btnNavMenuBottom.classList.remove('active');
+      actualizarIconoBotonMenu(false);
     }
   };
 
@@ -197,7 +206,12 @@ function inicializarEfectosPremium() {
   if (btnMenuTrigger) {
     btnMenuTrigger.addEventListener('click', (e) => {
       e.preventDefault();
-      abrirSideMenu();
+      e.stopPropagation();
+      if (sideMenu && sideMenu.classList.contains('active')) {
+        cerrarSideMenu();
+      } else {
+        abrirSideMenu();
+      }
     });
   }
 
@@ -426,12 +440,7 @@ function inicializarModalLegal() {
     }, { passive: false });
   }
 
-  if (btnAccept) {
-    btnAccept.addEventListener('click', (e) => {
-      e.preventDefault();
-      cerrarModalLegal();
-    });
-  }
+  if (btnAccept) btnAccept.addEventListener('click', (e) => { e.preventDefault(); cerrarModalLegal(); });
 
   if (modal) {
     modal.addEventListener('click', (e) => {
@@ -440,7 +449,7 @@ function inicializarModalLegal() {
 
     const tabBtns = modal.querySelectorAll('.legal-tab-btn');
     tabBtns.forEach(btn => {
-      const cambiarTab = (e) => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
         const tab = btn.getAttribute('data-legal-tab');
         if (tab && TEXTOS_LEGALES_ORIGGO[tab]) {
@@ -452,31 +461,13 @@ function inicializarModalLegal() {
           });
           renderizarContenidoLegal(tab);
         }
-      };
-      btn.addEventListener('click', cambiarTab);
+      });
     });
   }
 
-  if (btnTerminosFooter) {
-    btnTerminosFooter.addEventListener('click', (e) => {
-      e.preventDefault();
-      abrirModalLegal('terminos');
-    });
-  }
-
-  if (btnPrivacidadFooter) {
-    btnPrivacidadFooter.addEventListener('click', (e) => {
-      e.preventDefault();
-      abrirModalLegal('privacidad');
-    });
-  }
-
-  if (btnReembolsosFooter) {
-    btnReembolsosFooter.addEventListener('click', (e) => {
-      e.preventDefault();
-      abrirModalLegal('reembolsos');
-    });
-  }
+  if (btnTerminosFooter) btnTerminosFooter.addEventListener('click', (e) => { e.preventDefault(); abrirModalLegal('terminos'); });
+  if (btnPrivacidadFooter) btnPrivacidadFooter.addEventListener('click', (e) => { e.preventDefault(); abrirModalLegal('privacidad'); });
+  if (btnReembolsosFooter) btnReembolsosFooter.addEventListener('click', (e) => { e.preventDefault(); abrirModalLegal('reembolsos'); });
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal && modal.classList.contains('active')) {

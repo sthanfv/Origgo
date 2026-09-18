@@ -1,6 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 18:37 (GMT-5)
+Última actualización: 2026-09-17 19:00 (GMT-5)
+
+---
+
+- 88. **Cristal Esmerilado (Frosted Glass) en Menú Lateral, Barra Móvil Glassmorphic y Toggle Bidireccional de Menú**:
+    - **Diagnóstico y Causa Raíz de Transparencia:**
+      1. *Token Huérfano en Menú Lateral (`styles/12-sidebar.css`):* La propiedad `background: var(--bg-body);` referenciaba una variable inexistente en los tokens (el token canónico es `--bg-main`). Esto provocaba que el navegador renderizara el menú lateral 100% transparente sin contraste alguno frente a la landing page.
+      2. *Barra Inferior Móvil Plana (`styles/11-mobile.css`):* La propiedad `background: var(--glass-pill-bg);` evaluaba a `#FFFFFF` plano y 100% opaco en modo claro, anulando el `backdrop-filter: blur(20px)`.
+      3. *Botón de Menú Unidireccional y Conflicto de Z-Index:* El overlay `.menu-overlay` poseía `z-index: 1050` mientras que `.mobile-bottom-bar` tenía `z-index: 1000`. Al abrir el menú, el overlay bloqueaba los clics sobre la barra inferior, impidiendo que el botón de menú funcionara para cerrar (`toggle`). Además, los eventos no sincronizaban el cambio de icono a 'X'.
+    - **Solución y Mejoras Implementadas:**
+      1. *Fondo Vidrio Esmerilado de Alta Gama (`styles/12-sidebar.css`):*
+         - En modo oscuro: `linear-gradient(165deg, hsla(170, 45%, 8%, 0.88), hsla(183, 65%, 6%, 0.94))` con `backdrop-filter: blur(28px) saturate(190%)`, borde esmeralda sutil y sombra de elevación volumétrica (`box-shadow: -12px 0 45px rgba(0, 0, 0, 0.75)`).
+         - En modo claro: `linear-gradient(165deg, hsla(0, 0%, 100%, 0.92), hsla(140, 25%, 97%, 0.95))` con `backdrop-filter: blur(28px) saturate(160%)`, borde arena y bisel de luz interno (`box-shadow: -12px 0 45px rgba(28, 25, 23, 0.18)`). Contraste absoluto y separación visual total de la landing.
+         - Overlay mejorado con difuminado gaussiano (`backdrop-filter: blur(8px)`).
+         - Enlaces `.side-menu-link` optimizados con contraste carbón y estados hover/active esmeralda. Archivo en 342 líneas ($\le 500$).
+      2. *Barra Inferior Móvil Glassmorphic Translúcida (`styles/11-mobile.css`):*
+         - Elevado `z-index: 1150` para mantenerse por encima del overlay.
+         - Fondo translúcido `hsla(0, 0%, 100%, 0.84)` en modo claro y `hsla(183, 73%, 7%, 0.84)` en modo oscuro con `backdrop-filter: blur(24px) saturate(180%)`, esquinas superiores redondeadas a `20px` y bisel superior de luz. Archivo en 493 líneas ($\le 500$).
+      3. *Toggle Bidireccional y Mutación de Icono (`modules/09-ui-effects.js`):*
+         - Implementada la función `actualizarIconoBotonMenu(estaAbierto)`: conmuta el icono entre `fa-bars` y `fa-xmark` y el texto entre `Menú` y `Cerrar` (bilingüe ES/EN).
+         - Tanto `btnNavMenuBottom` como `btnMenuTrigger` ahora abren y cierran el menú lateral al hacer clic. Archivo en 488 líneas ($\le 500$).
+      4. *Suite Playwright E2E (`tests/e2e/smoke.spec.js`):*
+         - Creado el Test 6 que valida apertura con fondo esmerilado, captura visual (`mobile_side_menu_glass_verified.png`), cierre mediante el mismo botón (toggle) y captura de la barra translúcida (`mobile_bottom_bar_glass_verified.png`).
+    - **Validación Automatizada:**
+      - `scripts/build.js`: Bundles `style.min.css` (144.5 KB) y `app.min.js` (282.5 KB) sincronizados en `dist/`.
+      - `npx playwright test`: **6/6 pruebas aprobadas al 100% en Chromium (18.1s)**.
+    - **Archivos Afectados:**
+      - `styles/12-sidebar.css`, `styles/11-mobile.css`, `modules/09-ui-effects.js`, `tests/e2e/smoke.spec.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

@@ -111,5 +111,34 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
       path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_drawer_editorial_verified.png'
     });
   });
+
+  test('6. El menú lateral abre con fondo vidrio esmerilado y el botón conmuta a cerrar', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+
+    const btnNavMenu = page.locator('#btnNavMenuBottom');
+    await expect(btnNavMenu).toBeVisible();
+
+    // 1. Abrir menú lateral con botón de navegación
+    await btnNavMenu.click();
+    const sideMenu = page.locator('#sideMenu');
+    await expect(sideMenu).toHaveClass(/active/);
+
+    // Esperar transición suave y capturar menú desplegado con fondo esmerilado
+    await page.waitForTimeout(400);
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_side_menu_glass_verified.png'
+    });
+
+    // 2. Cerrar menú volviendo a pulsar el botón de menú (toggle bidireccional)
+    await btnNavMenu.click();
+    await page.waitForTimeout(400);
+    await expect(sideMenu).not.toHaveClass(/active/);
+
+    // 3. Capturar la barra inferior móvil translúcida con glassmorphism
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_bottom_bar_glass_verified.png'
+    });
+  });
 });
 

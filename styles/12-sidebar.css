@@ -6,39 +6,50 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(4, 12, 9, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1050;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
 }
 .menu-overlay.active {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
+[data-theme="light"] .menu-overlay {
+  background: rgba(28, 25, 23, 0.38);
+}
 
 .side-menu {
   position: fixed;
   top: 0;
-  right: -280px;
-  width: 280px;
+  right: -310px;
+  width: 310px;
+  max-width: 86vw;
   height: 100%;
-  background: var(--bg-body);
-  border-left: 1px solid var(--border-subtle);
+  background: linear-gradient(165deg, hsla(170, 45%, 8%, 0.88) 0%, hsla(183, 65%, 6%, 0.94) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-left: 1px solid hsla(158, 64%, 52%, 0.28);
   z-index: 1100;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: -4px 0 24px rgba(0,0,0,0.5);
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -12px 0 45px rgba(0, 0, 0, 0.75), inset 1px 0 0 hsla(129, 48%, 87%, 0.12);
 }
 .side-menu.active {
   right: 0;
 }
 [data-theme="light"] .side-menu {
-  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  background: linear-gradient(165deg, hsla(0, 0%, 100%, 0.92) 0%, hsla(140, 25%, 97%, 0.95) 100%);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border-left: 1px solid hsla(166, 40%, 23%, 0.18);
+  box-shadow: -12px 0 45px rgba(28, 25, 23, 0.18), inset 1px 0 0 rgba(255, 255, 255, 0.95);
 }
 
 .side-menu-header {
@@ -96,6 +107,22 @@
 }
 .side-menu-link.active i, .side-menu-link:hover i {
   color: var(--accent-emerald);
+}
+
+[data-theme="light"] .side-menu-link {
+  color: #1C1917;
+}
+[data-theme="light"] .side-menu-link i {
+  color: #78716C;
+}
+[data-theme="light"] .side-menu-link.active,
+[data-theme="light"] .side-menu-link:hover {
+  background: hsla(158, 64%, 52%, 0.12);
+  color: #059669;
+}
+[data-theme="light"] .side-menu-link.active i,
+[data-theme="light"] .side-menu-link:hover i {
+  color: #059669;
 }
 /* ═══════════════════════════════════════════════════
    PAGINACIÓN Y CARGA DINÁMICA DE OPORTUNIDADES
