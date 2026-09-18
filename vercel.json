@@ -7,6 +7,19 @@
       "schedule": "0 4 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.origgo.online"
+        }
+      ],
+      "destination": "https://origgo.online/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/auth/:action",
