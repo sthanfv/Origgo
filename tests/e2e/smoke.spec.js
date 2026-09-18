@@ -78,8 +78,8 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
     await page.setViewportSize({ width: 360, height: 740 });
     await page.goto('/');
 
-    const cards = page.locator('.bento-card');
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await page.waitForSelector('.bento-card[data-index="0"]', { state: 'visible', timeout: 10000 });
+    const firstCard = page.locator('.bento-card[data-index="0"]');
 
     // Verificar que no haya desbordamiento horizontal
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -92,7 +92,6 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
     });
 
     // Desplazar a la primera tarjeta para capturar la tarjeta completa
-    const firstCard = cards.first();
     await firstCard.scrollIntoViewIfNeeded();
     await page.waitForTimeout(400);
     await page.screenshot({ 

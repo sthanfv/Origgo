@@ -261,6 +261,8 @@ function actualizarBadgeVip() {
     }
     if (btnMobileChip) { btnMobileChip.innerHTML = htmlChipMovil; btnMobileChip.classList.remove('is-hidden'); }
     if (sideUserBox) { sideUserBox.innerHTML = htmlSideUser; sideUserBox.classList.remove('is-hidden'); }
+    const btnSideLogout = document.getElementById('sideMenuLogoutBtn');
+    if (btnSideLogout) btnSideLogout.classList.remove('is-hidden');
   } else {
     if (btnHeader) btnHeader.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">${isEn ? 'Credits / Plans' : 'Créditos / Planes'}</span>`;
     if (btnNavVip) {
@@ -270,6 +272,8 @@ function actualizarBadgeVip() {
     }
     if (btnMobileChip) { btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`; btnMobileChip.classList.remove('is-hidden'); }
     if (sideUserBox) { sideUserBox.innerHTML = ''; sideUserBox.classList.add('is-hidden'); }
+    const btnSideLogout = document.getElementById('sideMenuLogoutBtn');
+    if (btnSideLogout) btnSideLogout.classList.add('is-hidden');
   }
 }
 
@@ -322,38 +326,22 @@ function sincronizarFiltroCiudadUsuario() {
  * ✅ HAL-06: Protegido con flag atómico anti-race-condition.
  */
 async function restaurarSesionConPin() {
-  // Guardia atómica: bloquear ejecuciones concurrentes
   if (restauracionEnProgreso) return;
   restauracionEnProgreso = true;
-
-
   const inputWa = document.getElementById('restoreWhatsappInput'), inputPin = document.getElementById('restorePinInput');
   const msgBox = document.getElementById('restoreStatusMsg'), btn = document.getElementById('btnRestoreSession');
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const celular = inputWa ? inputWa.value.trim() : '', pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
-
   if (!celular || !pin) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.'; msgBox.style.display = 'block'; }
+    restauracionEnProgreso = false;
     return;
   }
-
-  if (btn) {
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`;
-    btn.disabled = true;
-  }
-
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`; btn.disabled = true; }
   const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
   let securityData = {};
-  if (!esReferencia && typeof obtenerDesafioSeguridadResuelto === 'function') {
-    securityData = await obtenerDesafioSeguridadResuelto();
-  }
-  const requestBody = esReferencia
-    ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' }
-    : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
+  if (!esReferencia && typeof obtenerDesafioSeguridadResuelto === 'function') securityData = await obtenerDesafioSeguridadResuelto();
+  const requestBody = esReferencia ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' } : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
 
   try {
     const res = await fetch('/api/auth/session', {
@@ -480,14 +468,21 @@ async function solicitarMagicLinkPorCorreo() {
       msgBox.style.display = 'block';
     }
   } catch (err) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.';
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.'; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
   }
 }
 
+// 🛡️ Secreto Comercial: purga automática de contactos volátiles tras inactividad prolongada (>15m)
+let _lastActive = Date.now();
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') _lastActive = Date.now();
+    else if (document.visibilityState === 'visible' && Date.now() - _lastActive > 15 * 60 * 1000 && Object.keys(cacheContactosDesbloqueados).length > 0) {
+      cacheContactosDesbloqueados = {};
+      if (typeof renderizarInterfaz === 'function' && datosActuales) renderizarInterfaz(datosActuales);
+    }
+  });
+}
 window.solicitarMagicLinkPorCorreo = solicitarMagicLinkPorCorreo;

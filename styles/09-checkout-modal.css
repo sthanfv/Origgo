@@ -34,16 +34,10 @@
   display: flex;
   pointer-events: auto;
   justify-content: center;
-  align-items: center; /* Centrado vertical armónico y balanceado */
+  align-items: flex-start; /* Permite desplazamiento accesible desde arriba en todas las pantallas */
   min-height: 100%;
   animation: fadeInBackdrop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: opacity, backdrop-filter;
-}
-
-@media (max-height: 640px) {
-  .modal-backdrop.active {
-    align-items: flex-start; /* Salvaguarda en pantallas de poca altura */
-  }
 }
 
 @keyframes fadeInBackdrop {
@@ -55,13 +49,16 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-card); /* 2.5rem / 40px */
-  max-width: 490px;
+  max-width: 510px;
   width: 100%;
-  margin: auto;
+  margin: 1.25rem auto;
+  max-height: calc(100vh - 2.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
   padding: 1.75rem 1.75rem 1.85rem;
   box-shadow: 0 30px 65px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px hsla(166, 40%, 23%, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   position: relative;
-  overflow: hidden;
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -75,9 +72,12 @@
 }
 
 .btn-modal-close {
-  position: absolute;
-  top: 1.15rem;
-  right: 1.15rem;
+  position: sticky;
+  top: 0.25rem;
+  float: right;
+  margin-top: -0.25rem;
+  margin-right: -0.25rem;
+  margin-bottom: -38px;
   width: 38px;
   height: 38px;
   border-radius: 9999px;
@@ -91,7 +91,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 50;
+  z-index: 60;
   font-size: 1.35rem;
   box-shadow: inset 0 1px 0 hsla(129, 48%, 87%, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
 }

@@ -124,6 +124,21 @@
 [data-theme="light"] .side-menu-link:hover i {
   color: #059669;
 }
+.side-menu-link.side-menu-logout {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+  color: #F87171;
+}
+.side-menu-link.side-menu-logout i {
+  color: #F87171;
+}
+.side-menu-link.side-menu-logout:hover {
+  background: hsla(0, 84%, 60%, 0.12);
+  color: #EF4444;
+}
+.side-menu-link.side-menu-logout:hover i {
+  color: #EF4444;
+}
 /* ═══════════════════════════════════════════════════
    PAGINACIÓN Y CARGA DINÁMICA DE OPORTUNIDADES
    ═══════════════════════════════════════════════════ */

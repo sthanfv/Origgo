@@ -21,10 +21,11 @@ async function manejarClicDesbloquear(index, opciones = {}) {
     leadSeleccionado._fichaIndex = index;
   }
 
+  const yaEstaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(lead.id);
   const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
   const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
 
-  if (sesionUsuario && (tieneCreditos || tienePlanActivo)) {
+  if (sesionUsuario && (yaEstaDesbloqueado || tieneCreditos || tienePlanActivo)) {
     await ejecutarDesbloqueoLead(lead, index);
   } else {
     abrirModalCheckout(index, 'comprar');

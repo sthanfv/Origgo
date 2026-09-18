@@ -756,6 +756,8 @@ function actualizarBadgeVip() {
     }
     if (btnMobileChip) { btnMobileChip.innerHTML = htmlChipMovil; btnMobileChip.classList.remove('is-hidden'); }
     if (sideUserBox) { sideUserBox.innerHTML = htmlSideUser; sideUserBox.classList.remove('is-hidden'); }
+    const btnSideLogout = document.getElementById('sideMenuLogoutBtn');
+    if (btnSideLogout) btnSideLogout.classList.remove('is-hidden');
   } else {
     if (btnHeader) btnHeader.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">${isEn ? 'Credits / Plans' : 'Créditos / Planes'}</span>`;
     if (btnNavVip) {
@@ -765,6 +767,8 @@ function actualizarBadgeVip() {
     }
     if (btnMobileChip) { btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`; btnMobileChip.classList.remove('is-hidden'); }
     if (sideUserBox) { sideUserBox.innerHTML = ''; sideUserBox.classList.add('is-hidden'); }
+    const btnSideLogout = document.getElementById('sideMenuLogoutBtn');
+    if (btnSideLogout) btnSideLogout.classList.add('is-hidden');
   }
 }
 
@@ -817,38 +821,22 @@ function sincronizarFiltroCiudadUsuario() {
  * ✅ HAL-06: Protegido con flag atómico anti-race-condition.
  */
 async function restaurarSesionConPin() {
-  // Guardia atómica: bloquear ejecuciones concurrentes
   if (restauracionEnProgreso) return;
   restauracionEnProgreso = true;
-
-
   const inputWa = document.getElementById('restoreWhatsappInput'), inputPin = document.getElementById('restorePinInput');
   const msgBox = document.getElementById('restoreStatusMsg'), btn = document.getElementById('btnRestoreSession');
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const celular = inputWa ? inputWa.value.trim() : '', pin = inputPin ? inputPin.value.trim().toUpperCase() : '';
-
   if (!celular || !pin) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.';
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Enter your WhatsApp number and security PIN.' : 'Ingresa tu número de WhatsApp y tu PIN de seguridad.'; msgBox.style.display = 'block'; }
+    restauracionEnProgreso = false;
     return;
   }
-
-  if (btn) {
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`;
-    btn.disabled = true;
-  }
-
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Verifying credentials...' : 'Verificando credenciales...'}`; btn.disabled = true; }
   const esReferencia = pin.startsWith('HNT-') && pin.length > 12;
   let securityData = {};
-  if (!esReferencia && typeof obtenerDesafioSeguridadResuelto === 'function') {
-    securityData = await obtenerDesafioSeguridadResuelto();
-  }
-  const requestBody = esReferencia
-    ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' }
-    : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
+  if (!esReferencia && typeof obtenerDesafioSeguridadResuelto === 'function') securityData = await obtenerDesafioSeguridadResuelto();
+  const requestBody = esReferencia ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' } : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
 
   try {
     const res = await fetch('/api/auth/session', {
@@ -975,16 +963,23 @@ async function solicitarMagicLinkPorCorreo() {
       msgBox.style.display = 'block';
     }
   } catch (err) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.';
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.'; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
   }
 }
 
+// 🛡️ Secreto Comercial: purga automática de contactos volátiles tras inactividad prolongada (>15m)
+let _lastActive = Date.now();
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') _lastActive = Date.now();
+    else if (document.visibilityState === 'visible' && Date.now() - _lastActive > 15 * 60 * 1000 && Object.keys(cacheContactosDesbloqueados).length > 0) {
+      cacheContactosDesbloqueados = {};
+      if (typeof renderizarInterfaz === 'function' && datosActuales) renderizarInterfaz(datosActuales);
+    }
+  });
+}
 window.solicitarMagicLinkPorCorreo = solicitarMagicLinkPorCorreo;
 
 
@@ -2481,12 +2476,16 @@ function renderizarInterfaz(dataset) {
           </div>
 
           <div class="card-bottom-row">
-            ${estaDesbloqueado ? `
+            ${estaDesbloqueado && contacto ? `
               <div class="unlocked-action-cluster">
                 ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="${isEn ? 'View original owner listing' : 'Ver anuncio original'}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
                 ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                 ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
               </div>
+            ` : estaDesbloqueado && !contacto ? `
+              <button class="btn-unlock-lead btn-already-unlocked" data-action="revelar-desbloqueado" data-index="${index}">
+                <i class="fa-solid fa-lock-open"></i> ${isEn ? 'Reveal Contact (Unlocked)' : 'Ver Contacto (Desbloqueado)'}
+              </button>
             ` : `
               <button class="btn-unlock-lead btn-action-primary ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
                 <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? (isEn ? 'View Closed' : 'Ver Cierre') : (isEn ? 'View Direct Contact' : 'Ver Contacto Directo')}
@@ -2521,7 +2520,7 @@ function renderizarInterfaz(dataset) {
             </div>
 
             <div class="slideup-action-group">
-              ${estaDesbloqueado ? `
+              ${estaDesbloqueado && contacto ? `
                 <div class="slideup-unlocked-layout">
                   <div class="unlocked-phone-box">
                     <div class="unlocked-phone-label"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked Contact Details' : 'Datos de Contacto Desbloqueados'}</div>
@@ -2530,7 +2529,7 @@ function renderizarInterfaz(dataset) {
                   <div class="slideup-unlocked-row">
                     ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                     ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
-                    ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : `<button class="slideup-cta-btn btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="${isEn ? 'Reveal Direct Contact' : 'Revelar contacto directo'}"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Reveal Direct Contact' : 'Revelar Contacto Directo'}</button>`}
+                    ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
                   </div>
                   <div class="slideup-next-steps">
                     <div class="next-steps-title"><i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}</div>
@@ -2542,6 +2541,9 @@ function renderizarInterfaz(dataset) {
                   </div>
                   <span class="slideup-cta-note slideup-cta-note-ok"><i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}</span>
                 </div>
+              ` : estaDesbloqueado && !contacto ? `
+                <button class="slideup-cta-btn btn-already-unlocked" data-action="revelar-desbloqueado" data-index="${index}"><i class="fa-solid fa-lock-open"></i> ${isEn ? 'Reveal Contact (Unlocked)' : 'Ver Contacto (Desbloqueado)'}</button>
+                <span class="slideup-cta-note slideup-cta-note-ok"><i class="fa-solid fa-check-double"></i> ${isEn ? 'Already unlocked for your account ($0 cost)' : 'Ya desbloqueado para tu cuenta (Costo $0)'}</span>
               ` : `
                 <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}"><i class="fa-solid fa-unlock-keyhole"></i> ${isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño'}</button>
                 <span class="slideup-cta-note"><i class="fa-solid fa-bolt"></i> ${isEn ? 'Instant access • Zero broker commissions' : 'Acceso al instante • Sin pagar comisiones'}</span>
@@ -2624,10 +2626,11 @@ async function manejarClicDesbloquear(index, opciones = {}) {
     leadSeleccionado._fichaIndex = index;
   }
 
+  const yaEstaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(lead.id);
   const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
   const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
 
-  if (sesionUsuario && (tieneCreditos || tienePlanActivo)) {
+  if (sesionUsuario && (yaEstaDesbloqueado || tieneCreditos || tienePlanActivo)) {
     await ejecutarDesbloqueoLead(lead, index);
   } else {
     abrirModalCheckout(index, 'comprar');
@@ -4159,9 +4162,9 @@ function configurarListeners() {
       } else if (action === "cerrar-ficha") {
         e.stopPropagation();
         cerrarFichaTecnica(idx, e);
-      } else if (action === "abrir-checkout") {
+      } else if (action === "abrir-checkout" || action === "revelar-desbloqueado") {
         e.stopPropagation();
-        manejarClicDesbloquear(idx);
+        manejarClicDesbloquear(idx, { desdeFicha: Boolean(e.target.closest('.card-slideup-overlay')) });
       } else if (action === "slideup-cta") {
         e.stopPropagation();
         manejarClicDesbloquear(idx, { desdeFicha: true });
@@ -4434,8 +4437,9 @@ function configurarListeners() {
   if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
   const btnMagic = document.getElementById("btnSendMagicLink");
   if (btnMagic) btnMagic.addEventListener("click", solicitarMagicLinkPorCorreo);
-  const btnLogout = document.getElementById("btnLogoutSession");
+  const btnLogout = document.getElementById("btnLogoutSession"), btnSideLogout = document.getElementById("sideMenuLogoutBtn");
   if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
+  if (btnSideLogout) btnSideLogout.addEventListener("click", (e) => { e.preventDefault(); cerrarSesionUsuario(); document.getElementById('sideMenu')?.classList.remove('active'); document.getElementById('sideMenuOverlay')?.classList.remove('active'); document.body.style.overflow = ''; });
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
   if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
@@ -5298,7 +5302,7 @@ const DICCIONARIO_I18N = {
     push_feature_1: 'Primicia total:', push_feature_1_desc: 'Entérate antes de que el inmueble llegue a portales o agencias con comisiones.', push_feature_2: 'Filtro por tu ciudad:', push_feature_2_desc: 'Avisos geolocalizados de tu zona de interés o inversión comercial.', push_feature_3: '100% libre de spam:', push_feature_3_desc: 'Solo señales cuando se confirme una oportunidad real negociada entre particulares.', push_btn_accept: 'Activar Radar en mi Teléfono', push_btn_later: 'Quizás más tarde / Explorar primero', push_city_label: 'Zona o ciudad de alertas:', push_city_all: '🇨🇴 Toda Colombia', push_btn_update: 'Actualizar Preferencia de Zona',
     push_ios_title: 'Para activar en iPhone:', push_ios_desc: ' Toca Compartir (⎋) en Safari y selecciona "Agregar al inicio" (+).', push_op_label: 'Tipo de negocio:', push_op_all: '🏷️ Todo (Venta y Arriendo)', push_op_sale: '🏡 Solo Venta', push_op_rent: '🔑 Solo Arriendo', push_discount_label: '📉 Solo alertarme si el propietario baja el precio o aplica rebaja urgente',
     nav_home: 'Inicio', nav_search: 'Buscar', nav_theme: 'Tema', nav_credits: 'Créditos', nav_menu: 'Menú', menu_lang_label: 'Idioma / Language', menu_city_label: 'Ciudad de Interés',
-    menu_about: '¿Qué es Origgo?', menu_dashboard: 'Dashboard Principal', menu_direct_leads: 'Inmuebles Directos', menu_push: 'Activar Alertas en Vivo', menu_theme: 'Modo Claro / Oscuro', menu_vip: 'Desbloqueo VIP', menu_support: 'Soporte VIP WhatsApp', menu_terms: 'Términos & Exoneración',
+    menu_about: '¿Qué es Origgo?', menu_dashboard: 'Dashboard Principal', menu_direct_leads: 'Inmuebles Directos', menu_push: 'Activar Alertas en Vivo', menu_theme: 'Modo Claro / Oscuro', menu_vip: 'Desbloqueo VIP', menu_support: 'Soporte VIP WhatsApp', menu_terms: 'Términos & Exoneración', menu_logout: 'Cerrar Sesión',
     onboarding_badge: 'BIENVENIDO A ORIGGO', onboarding_title: 'Oportunidades directas, de persona a persona.',
     onboarding_subtitle: 'El punto de encuentro donde compradores e inversionistas tratan directamente con los dueños reales, sin intermediarios.',
     onboarding_p1_title: 'Encuentra antes que los demás', onboarding_p1_desc: 'Rastreamos el mercado todos los días para encontrar oportunidades recién publicadas por sus dueños, antes de que pasen a terceros.',
@@ -5365,7 +5369,7 @@ const DICCIONARIO_I18N = {
     push_feature_1: 'Total head-start:', push_feature_1_desc: 'Catch fresh deals before they reach saturated portals or agency catalogs.', push_feature_2: 'Filter by city:', push_feature_2_desc: 'Geolocated alerts tailored to your investment or residential area.', push_feature_3: '100% spam-free:', push_feature_3_desc: 'Only genuine verified direct-owner listings and urgent discounts.', push_btn_accept: 'Activate Radar on Phone', push_btn_later: 'Maybe later / Explore first', push_city_label: 'Alerts target city or region:', push_city_all: '🇨🇴 All Colombia', push_btn_update: 'Save Radar Preference',
     push_ios_title: 'To activate on iPhone:', push_ios_desc: ' Tap Share (⎋) in Safari and tap "Add to Home Screen" (+).', push_op_label: 'Deal type:', push_op_all: '🏷️ All (Sale & Rent)', push_op_sale: '🏡 For Sale Only', push_op_rent: '🔑 For Rent Only', push_discount_label: '📉 Only alert me if the owner drops the price or applies an urgent discount',
     nav_home: 'Home', nav_search: 'Search', nav_theme: 'Theme', nav_credits: 'Credits', nav_menu: 'Menu', menu_lang_label: 'Language / Idioma', menu_city_label: 'Target City',
-    menu_about: 'What is Origgo?', menu_dashboard: 'Main Dashboard', menu_direct_leads: 'Direct Properties', menu_push: 'Enable Live Radar Alerts', menu_theme: 'Light / Dark Mode', menu_vip: 'VIP Unlocks', menu_support: 'WhatsApp VIP Support', menu_terms: 'Terms & Disclaimers',
+    menu_about: 'What is Origgo?', menu_dashboard: 'Main Dashboard', menu_direct_leads: 'Direct Properties', menu_push: 'Enable Live Radar Alerts', menu_theme: 'Light / Dark Mode', menu_vip: 'VIP Unlocks', menu_support: 'WhatsApp VIP Support', menu_terms: 'Terms & Disclaimers', menu_logout: 'Log Out',
     onboarding_badge: 'WELCOME TO ORIGGO', onboarding_title: 'Direct deals, person to person.',
     onboarding_subtitle: 'Where buyers and investors connect directly with verified owners, zero middlemen.',
     onboarding_p1_title: 'Discover first, before the crowd', onboarding_p1_desc: 'We monitor the market daily to catch deals freshly listed by their owners, before agencies step in.',

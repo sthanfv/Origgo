@@ -368,12 +368,16 @@ function renderizarInterfaz(dataset) {
           </div>
 
           <div class="card-bottom-row">
-            ${estaDesbloqueado ? `
+            ${estaDesbloqueado && contacto ? `
               <div class="unlocked-action-cluster">
                 ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="btn-view-ad-direct" title="${isEn ? 'View original owner listing' : 'Ver anuncio original'}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
                 ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct btn-whatsapp-compact" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                 ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="btn-call-direct" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
               </div>
+            ` : estaDesbloqueado && !contacto ? `
+              <button class="btn-unlock-lead btn-already-unlocked" data-action="revelar-desbloqueado" data-index="${index}">
+                <i class="fa-solid fa-lock-open"></i> ${isEn ? 'Reveal Contact (Unlocked)' : 'Ver Contacto (Desbloqueado)'}
+              </button>
             ` : `
               <button class="btn-unlock-lead btn-action-primary ${item.urgencia_tipo === 'cerrado' ? 'closed' : ''}" data-action="abrir-checkout" data-index="${index}">
                 <i class="fa-solid fa-lock"></i> ${item.urgencia_tipo === 'cerrado' ? (isEn ? 'View Closed' : 'Ver Cierre') : (isEn ? 'View Direct Contact' : 'Ver Contacto Directo')}
@@ -408,7 +412,7 @@ function renderizarInterfaz(dataset) {
             </div>
 
             <div class="slideup-action-group">
-              ${estaDesbloqueado ? `
+              ${estaDesbloqueado && contacto ? `
                 <div class="slideup-unlocked-layout">
                   <div class="unlocked-phone-box">
                     <div class="unlocked-phone-label"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Unlocked Contact Details' : 'Datos de Contacto Desbloqueados'}</div>
@@ -417,7 +421,7 @@ function renderizarInterfaz(dataset) {
                   <div class="slideup-unlocked-row">
                     ${contactoSeguro?.whatsappUrl ? `<a href="${contactoSeguro.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn btn-whatsapp-direct cta-flex" title="WhatsApp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
                     ${contactoSeguro?.telLlamar ? `<a href="tel:${contactoSeguro.telLlamar}" class="slideup-cta-btn cta-flex-sm cta-call" title="${isEn ? 'Call Owner' : 'Llamar al dueño'}" aria-label="Llamar"><i class="fa-solid fa-phone"></i> ${isEn ? 'Call' : 'Llamar'}</a>` : ''}
-                    ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : `<button class="slideup-cta-btn btn-whatsapp-direct" data-action="contactar-whatsapp" data-index="${index}" title="${isEn ? 'Reveal Direct Contact' : 'Revelar contacto directo'}"><i class="fa-solid fa-unlock"></i> ${isEn ? 'Reveal Direct Contact' : 'Revelar Contacto Directo'}</button>`}
+                    ${contactoSeguro?.enlace ? `<a href="${contactoSeguro.enlace}" target="_blank" rel="noopener noreferrer" class="slideup-cta-btn cta-flex cta-neutral" title="${isEn ? 'View Original Listing' : 'Ver Anuncio Original'}" aria-label="Anuncio"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${isEn ? 'View Listing' : 'Ver Anuncio'}</a>` : ''}
                   </div>
                   <div class="slideup-next-steps">
                     <div class="next-steps-title"><i class="fa-solid fa-list-check"></i> ${isEn ? 'Next Steps to Close Deal' : 'Siguientes Pasos de Negociación'}</div>
@@ -429,6 +433,9 @@ function renderizarInterfaz(dataset) {
                   </div>
                   <span class="slideup-cta-note slideup-cta-note-ok"><i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}</span>
                 </div>
+              ` : estaDesbloqueado && !contacto ? `
+                <button class="slideup-cta-btn btn-already-unlocked" data-action="revelar-desbloqueado" data-index="${index}"><i class="fa-solid fa-lock-open"></i> ${isEn ? 'Reveal Contact (Unlocked)' : 'Ver Contacto (Desbloqueado)'}</button>
+                <span class="slideup-cta-note slideup-cta-note-ok"><i class="fa-solid fa-check-double"></i> ${isEn ? 'Already unlocked for your account ($0 cost)' : 'Ya desbloqueado para tu cuenta (Costo $0)'}</span>
               ` : `
                 <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}"><i class="fa-solid fa-unlock-keyhole"></i> ${isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño'}</button>
                 <span class="slideup-cta-note"><i class="fa-solid fa-bolt"></i> ${isEn ? 'Instant access • Zero broker commissions' : 'Acceso al instante • Sin pagar comisiones'}</span>

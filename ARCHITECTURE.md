@@ -79,13 +79,34 @@ Toda interacción crítica con la capa de base de datos se ejecuta a través del
 $$\text{delay} = \min(200 \times 2^{\text{intento}}, 2000) + \text{random}(0, 150) \text{ ms}$$
 Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) ante micro-cortes de red en la infraestructura de Google Cloud.
 
+### 3.4 Modelo Freemium Atómico ($0) y CRO (Fase 2)
+- **Problema previo**: Fricción y desconfianza inicial del usuario ("¿esto será una estafa?") antes de poder verificar la autenticidad de un propietario directo.
+- **Solución implementada**: Función `claimWelcomeCredit(phone, email)` en `lib/db.js` y `lib/auth/welcome-credit.js`. Asigna de forma atómica en transacción Firestore 1 crédito gratuito de bienvenida ($0), fija `welcomeClaimed: true` para prevenir abusos, emite un JWT firmado y activa de inmediato el desbloqueo en pantalla sin pasar por pasarela bancaria.
+
+### 3.5 Autenticación Passwordless y Magic Link Criptográfico (Fase 2)
+- **Problema previo**: Pérdida de conversión por olvido de PIN numérico de 4 dígitos al cambiar de dispositivo o limpiar cookies.
+- **Solución implementada**: Colección zero-trust `magic_tokens` en Firestore con reglas estrictas de acceso (`allow read, write: if false`). `createMagicToken()` genera un token criptográfico de un solo uso con vigencia de 30 minutos. Despachado por correo transaccional vía Resend API con plantilla HTML responsiva apuntando inmutablemente al dominio canónico `https://origgo.online/?magic_token=...`. Al hacer clic, `consumeMagicToken()` valida la expiración, invalida el token y firma un JWT de sesión sin requerir contraseñas.
+
+### 3.6 Salvaguarda de Secreto Comercial y Memoria Volátil Zero-Trust
+- **Principio Fundamental**: Los números telefónicos y enlaces directos descifrados NUNCA se guardan en texto plano en almacenamiento local (`localStorage`, `sessionStorage` o IndexedDB).
+- **Mecanismo Volátil**: Residen exclusivamente en memoria volátil de JavaScript (`cacheContactosDesbloqueados`).
+- **TTL de Inactividad**: Temporizador de 15 minutos e invalidación automática ante desenfoque de ventana (`document.visibilitychange = 'hidden'`). Al transcurrir dicho tiempo, la memoria de contactos se purga.
+- **Re-descifrado $0 de Leads Adquiridos**: Si el usuario recarga la página o expira la memoria volátil, la tarjeta y el slideup drawer muestran el botón interactivo `[ 🔓 Ver Contacto (Desbloqueado) ]`. Al pulsar, el endpoint `/api/leads/unlock` consulta el ledger del usuario (`unlockedLeads`), reconoce la compra previa y devuelve el contacto descifrado al instante a costo $0 sin descontar saldo ni requerir pagos repetidos.
+
+### 3.7 Cierre de Sesión Seguro (Logout) y Purga Reactiva
+- **Cierre de Sesión Accesible**: Enlaces dedicados de "Cerrar Sesión" en el menú lateral (`#sideMenuLogoutBtn`) y en el modal de membresía (`#btnLogoutSession`). Al activarse, purga atómicamente `localStorage`, elimina la cookie HttpOnly `origgo_token`, vacía la caché de memoria y re-renderiza la interfaz al estado anónimo.
+- **Auto-Reset ante HTTP 404**: Si un usuario de prueba es borrado manualmente de Firestore, la verificación en cliente `/api/user/balance` captura el 404 e invalida de inmediato las credenciales locales sin generar errores rojos en la consola de DevTools.
+
 ---
 
 ### 4.0 Localizador Rápido de Archivos Backend, Serverless y Scripts
 | Responsabilidad / Comportamiento | Archivo / Ruta | Función o Mecanismo Clave |
 |---|---|---|
-| **Cálculo de firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | SHA-256 de integridad para widget Wompi |
-| **Validación y procesamiento de webhooks** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | HMAC `timingSafeEqual`, acreditación atómica |
+| **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | SHA-256 de integridad para widget Wompi |
+| **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | HMAC `timingSafeEqual`, acreditación atómica |
+| **Modelo Freemium (1 Desbloqueo Gratis $0)** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | `claimWelcomeCredit()`, asignación atómica $0 |
+| **Emisión de Magic Link sin contraseña** | [`lib/auth/magic-link.js`](lib/auth/magic-link.js) | Tokens criptográficos temporales en Firestore |
+| **Inicio de sesión con Magic Link** | [`lib/auth/magic-login.js`](lib/auth/magic-login.js) | `consumeMagicToken()`, emisión de JWT seguro |
 | **Conciliación automática Vercel Cron** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |
 | **Inicio de sesión y reclamo de referencias** | [`api/auth/session.js`](api/auth/session.js) | Verificación directa con API oficial de Wompi |
 | **Recuperación de PIN por email** | [`api/auth/recover.js`](api/auth/recover.js) | Tokens temporales firmados con Resend |
@@ -93,7 +114,7 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | **Consulta de saldo y estado reactivo** | [`api/user/balance.js`](api/user/balance.js) | Ledger y verificación de sesión JWT |
 | **Persistencia Firestore y reintentos** | [`lib/db.js`](lib/db.js) | `withRetry()`, aislamiento de fallos de red |
 | **Criptografía (JWT, AES, hashes)** | [`lib/crypto.js`](lib/crypto.js) | Cifrado y validación en tiempo constante |
-| **Entorno y compatibilidad Sandbox** | [`lib/env.js`](lib/env.js) | Control de `WOMPI_ENV=sandbox` y llaves |
+| **Control de variables de entorno y sandbox** | [`lib/env.js`](lib/env.js) | Validación de entorno (`WOMPI_ENV=sandbox`) |
 | **Mitigación DDoS y Rate Limiting** | [`lib/rate-limiter.js`](lib/rate-limiter.js) | Ventana deslizante en memoria por IP |
 | **Validación estricta de esquemas Zod** | [`lib/validation.js`](lib/validation.js) | Validadores para pagos, auth y leads |
 | **Persistencia de suscripciones Web Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Deduplicación SHA-256 y soporte Firestore/local |
@@ -109,23 +130,27 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
 | `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 494 |
-| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage` y recuperación por token. | 487 |
+| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404 y protección de secreto comercial. | 489 |
 | `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 299 |
 | `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 177 |
-| `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 480 |
-| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 154 |
-| `06-cards.js` | Renderizado Bento Grid con deduplicación canónica, skeletons y precios. | 489 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y WhatsApp. | 477 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes, idempotencia y widget checkout. | 489 |
-| `09-ui-effects.js`| Háptica táctil, ondas ripple, parallax GPU y menú off-canvas. | 497 |
-| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado y orquestación. | 492 |
+| `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 484 |
+| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 159 |
+| `06-cards.js` | Renderizado Bento Grid, re-desbloqueo de contactos $0, skeletons y precios. | 496 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y revelación de datos. | 475 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0, idempotencia y widget checkout. | 499 |
+| `09-ui-effects.js`| Menú móvil animado de hamburguesa a X (estilo Desmulta), háptica y temas. | 489 |
+| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado, logout y orquestación. | 497 |
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 263 |
-| `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 403 |
+| `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 412 |
 | `13-i18n.js`   | Motor bilingüe ES/EN reactivo, diccionario de UI y persistencia de idioma. | 499 |
+| `14-offline.js`| Resiliencia offline, partición LRU de caché de imágenes y banner de conectividad. | 181 |
+| `15-autocomplete.js`| Sugerencias multicapa de autocompletado en búsqueda con accesibilidad W3C ARIA. | 386 |
 
 ### 4.2 Módulos CSS (`styles/`):
-Divididos en 18 submódulos semánticos (`01-tokens.css` a `18-i18n.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css`.
+Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocomplete.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css`.
 - **Aislamiento de Stacking Context y Opacidad:** `styles/04-command-bar.css` y `styles/11-mobile.css` aplican `isolation: isolate`, fondos 100% opacos (`var(--bg-card)` y `#111622`) y `z-index: 100` en los menús desplegables para erradicar cualquier solapamiento o efecto fantasma entre barras de filtros.
+- **Grilla Balanceada de Planes:** `styles/10-checkout-plans.css` posiciona la tarjeta de Bienvenida ($0) en `grid-column: 1 / -1;`, asegurando una grilla de 2x2 simétrica para los demás planes sin espacios vacíos.
+- **Scroll Total en Modal:** `styles/09-checkout-modal.css` habilita `overflow-y: auto`, `align-items: flex-start` y botón de cierre sticky que garantiza navegación total y visibilidad permanente de la X.
 
 ### 4.3 Deduplicación Canónica de Oportunidades
 - **Motor Triple-Key:** `deduplicarLeads` aplica un filtrado idempotente en tres dimensiones:

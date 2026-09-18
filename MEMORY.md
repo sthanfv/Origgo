@@ -1,6 +1,39 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 21:16 (GMT-5)
+Última actualización: 2026-09-17 21:55 (GMT-5)
+
+---
+
+- 91. **Fase 2 Origgo v2.0: Perfeccionamiento de Conversión — Cuadrícula Simétrica de Planes en Modal (1 + 2x2), Scroll Completo con "X" Sticky, Re-desbloqueo a $0 de Inmuebles Previos, Protección de Secreto Comercial (TTL 15m) y Cierre de Sesión Seguro**:
+    - **Diagnóstico Forense y Causa Raíz:**
+      1. *Desbalance Visual en Planes de Checkout:* Con 5 tarjetas en el modal, la cuadrícula 2x2 dejaba la 5ta tarjeta huérfana en una fila con un hueco negro/verde a la derecha, luciendo inconclusa y asimétrica.
+      2. *Desbordamiento Vertical y Pérdida de la "X" para Cerrar:* El modal con `align-items: center` empujaba la cabecera por encima del viewport en pantallas de altura reducida o con zoom, perdiéndose el botón de cierre "X" e impidiendo el scroll vertical completo.
+      3. *Pérdida de Botones de Contacto al Recargar (Tarjeta 3 Mocha):* Si un usuario desbloqueaba una tarjeta y recargaba la página, `sesionUsuario.unlockedLeads` conservaba el ID del lead pero la caché en memoria volátil de JS estaba vacía (`null`). El template evaluaba `estaDesbloqueado ? ...` y como los teléfonos no estaban en memoria, renderizaba un cluster vacío sin ningún botón de acción ni de contacto.
+      4. *Exposición de Secreto Comercial y Falta de Cierre de Sesión:* Los números de teléfono de propietarios son secreto comercial y activo estratégico. No debían quedar expuestos indefinidamente en la pantalla si el usuario dejaba el dispositivo desatendido; además, el usuario carecía de un botón claro de "Cerrar Sesión" en el menú lateral.
+    - **Solución y Mejoras Implementadas:**
+      1. *Layout Simétrico 1 + (2x2) en Planes (`styles/10-checkout-plans.css`):*
+         - Opción Freemium de Bienvenida configurada como tarjeta Hero destacada a ancho completo (`grid-column: 1 / -1;`), con cabecera horizontal equilibrada (título/subtítulo a la izquierda, `$ 0` a la derecha) y ribbon esmeralda superior.
+         - Las 4 opciones comerciales restantes se organizan en una cuadrícula 2x2 armónica (Desbloqueo Individual & Bolsa 10 Contactos; Plan Pro Ciudad & Plan Nacional VIP), sin espacios vacíos. Archivo en 492 líneas ($\le 500$).
+      2. *Scroll Vertical Total y Botón X Sticky en Modal (`styles/09-checkout-modal.css`):*
+         - En `.modal-backdrop.active`: Sustituido el centrado vertical rígido por `align-items: flex-start;`, garantizando que la parte superior del modal siempre sea visible.
+         - `.modal-card`: Ajustado con `max-width: 510px; margin: 1.25rem auto; max-height: calc(100vh - 2.5rem); overflow-y: auto;` para permitir navegación y scroll fluido en cualquier pantalla o zoom.
+         - `.btn-modal-close`: Modificado a `position: sticky; top: 0.25rem; float: right; margin-bottom: -38px; z-index: 60;`, permaneciendo siempre visible al scrollear para poder cerrar el modal en cualquier instante. Archivo en 498 líneas ($\le 500$).
+      3. *Re-desbloqueo a $0 y Erradicación de Tarjeta Mocha (`modules/06-cards.js`, `modules/07-unlock.js`, `modules/10-listeners.js`):*
+         - En `modules/06-cards.js`: Si `estaDesbloqueado && !contacto`, el template ahora renderiza el botón interactivo `<button class="btn-unlock-lead btn-already-unlocked" data-action="revelar-desbloqueado" data-index="${index}"><i class="fa-solid fa-lock-open"></i> Ver Contacto (Desbloqueado)</button>`. Se replica la misma salvaguarda en el drawer de ficha técnica. Archivo en 496 líneas ($\le 500$).
+         - En `modules/07-unlock.js`: `manejarClicDesbloquear` detecta si el lead ya fue desbloqueado previamente por el usuario. En tal caso, ejecuta de inmediato la llamada al backend pasando por alto el requerimiento de balance (`credits === 0`), devolviendo el contacto descifrado a costo $0 con notificación toast amigable. Archivo en 475 líneas ($\le 500$).
+         - En `modules/10-listeners.js`: Se mapeó la acción delegada `revelar-desbloqueado`. Archivo en 497 líneas ($\le 500$).
+      4. *Salvaguarda de Secreto Comercial (TTL 15m) y Cierre de Sesión Seguro (`modules/01-state.js`, `index.html`, `styles/12-sidebar.css`, `modules/13-i18n.js`):*
+         - En `modules/01-state.js`: Implementado un detector reactivo de `visibilitychange`. Si la pestaña permanece en segundo plano o el dispositivo entra en suspensión por más de 15 minutos, se purga la memoria volátil de contactos (`cacheContactosDesbloqueados = {}`) y se re-renderizan las tarjetas, obligando al usuario a hacer clic en "Ver Contacto (Desbloqueado)" para verificar su identidad y proteger el secreto comercial. Archivo en 489 líneas ($\le 500$).
+         - Botón "Cerrar Sesión" integrado en el menú lateral `#sideMenuLogoutBtn` que aparece reactivamente solo cuando hay sesión activa (`actualizarBadgeVip`), eliminando credenciales, limpiando caché y reseteando la UI de forma transparente.
+      5. *Sincronización Exhaustiva de Documentación Técnica:*
+         - Actualizados `README.md` (Principios 10, 11, 12, 13) y `ARCHITECTURE.md` (Secciones 3.4, 3.5, 3.6, 3.7 y tabla de líneas de módulos).
+    - **Validación Automatizada y Modularidad:**
+      - *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen con $\le 500$ líneas (`01-state.js` en 489, `06-cards.js` en 496, `07-unlock.js` en 475, `10-listeners.js` en 497, `13-i18n.js` en 499, `09-checkout-modal.css` en 498, `10-checkout-plans.css` en 492, `12-sidebar.css` en 357).
+      - *Compilación:* `node scripts/build.js` regeneró `dist/`, `style.css`, `style.min.css`, `app.js`, `app.min.js`.
+      - *Suite DevSecOps:* `node scripts/validate.js` aprobó las 8 fases al 100% (0 errores).
+      - *Playwright E2E:* 7/7 pruebas aprobadas al 100% en Chromium (19.5s).
+    - **Archivos Afectados:**
+      - `README.md`, `ARCHITECTURE.md`, `index.html`, `modules/01-state.js`, `modules/06-cards.js`, `modules/07-unlock.js`, `modules/10-listeners.js`, `modules/13-i18n.js`, `styles/09-checkout-modal.css`, `styles/10-checkout-plans.css`, `styles/12-sidebar.css`, `tests/e2e/smoke.spec.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

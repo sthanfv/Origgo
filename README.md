@@ -16,6 +16,10 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 7. **Rate Limiting Anti-DDoS:** Middleware en memoria que protege endpoints financieros y autenticación contra ataques de fuerza bruta y saturación.
 8. **Arquitectura Modular (< 500 líneas por módulo):** Frontend y estilos 100% particionados en módulos especializados bajo `modules/` y `styles/`.
 9. **Estética Editorial Inmobiliaria, Bento Grid & View Transitions API:** Modo claro editorial por defecto con paleta cálida y aspiracional (marfil, arena y esmeralda institucional), soporte alternable a modo oscuro, cross-fade cinematográfico acelerado por GPU (`document.startViewTransition`), descompresión visual con ratio panorámico 16:10, cero saltos de diseño (CLS = 0) y slide-up drawer para análisis cuantitativo.
+10. **Modelo Freemium y Reducción de Fricción CRO (Fase 2):** "1 Desbloqueo Gratis de Bienvenida" a $0 al ingresar WhatsApp y correo electrónico, acreditado de forma atómica en Firestore para vencer la desconfianza inicial del comprador sin requerir tarjetas bancarias.
+11. **Autenticación Passwordless y Magic Link de 1 Clic (Fase 2):** Ingreso instantáneo por correo vía Resend API con token criptográfico temporal en Firestore (`magic_tokens`) que mitiga el olvido de PIN y la fricción de acceso, enlazando siempre al dominio canónico inmutable `https://origgo.online`.
+12. **Salvaguarda de Secreto Comercial y Memoria Volátil:** Los contactos y teléfonos descifrados residen exclusivamente en memoria volátil de JavaScript (`cacheContactosDesbloqueados`) sin persistir en texto plano en disco ni `localStorage`. Cuentan con TTL de 15 minutos e invalidación automática ante inactividad o cambio de pestaña (`visibilitychange`). Los leads previamente adquiridos por el usuario se re-descifran al instante a costo $0 sin consumir saldo adicional.
+13. **Cierre de Sesión Seguro y Purga de Credenciales:** Botón de "Cerrar Sesión" integrado en el menú lateral y modal de membresía que purga tokens JWT, cookies y memoria volátil, complementado con auto-reset reactivo ante usuarios eliminados (HTTP 404).
 
 ## 🗺️ Índice Maestro de Comportamientos y Rutas de Archivos
 > **Guía rápida para desarrolladores**: Localiza inmediatamente qué archivo y qué función controlan cada funcionalidad del portal sin tener que buscar palabras clave a ciegas.
@@ -25,10 +29,13 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | Generación SHA-256 de integridad para pasarela |
 | **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | Validación HMAC `timingSafeEqual` y ledger |
 | **Login por WhatsApp + PIN y reclamo post-pago** | [`api/auth/session.js`](api/auth/session.js) | `claim_reference`, reconciliación API Wompi |
+| **Modelo Freemium (1 Desbloqueo Gratis $0)** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | `claimWelcomeCredit()`, asignación atómica $0 |
+| **Emisión de Magic Link sin contraseña** | [`lib/auth/magic-link.js`](lib/auth/magic-link.js) | Tokens criptográficos temporales en Firestore |
+| **Inicio de sesión con Magic Link** | [`lib/auth/magic-login.js`](lib/auth/magic-login.js) | `consumeMagicToken()`, emisión de JWT seguro |
 | **Emisión de desafíos anti-bot (PoW / Turnstile)** | [`api/auth/challenge.js`](api/auth/challenge.js) | Retos firmados HMAC-SHA256 con ventana temporal |
 | **Motor de desafíos y Proof-of-Work criptográfico**| [`lib/challenge.js`](lib/challenge.js) | Generación y verificación de PoW y Turnstile |
 | **Conciliación automática y Vercel Cron Fail-Safe** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |
-| **Recuperación segura de PIN por correo** | [`api/auth/recover.js`](api/auth/recover.js) | Envío transaccional vía Resend |
+| **Recuperación segura de PIN por correo** | [`api/auth/recover.js`](api/auth/recover.js) | Envío transaccional vía Resend canónico |
 | **Desbloqueo de lead y descifrado de contacto** | [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y deducción de créditos |
 | **Verificación de firma HMAC del dataset JSON** | [`api/leads/unlock.js`](api/leads/unlock.js) | `verificarIntegridadDataset()` con `.json.sig` |
 | **Consulta de saldo, perfil y compras** | [`api/user/balance.js`](api/user/balance.js) | Validación JWT y balance en tiempo real |
@@ -40,15 +47,15 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **CORS restringido con whitelist** | [`lib/cors.js`](lib/cors.js) | Cabeceras de seguridad e idempotencia |
 | **Índice server-side de leads** | [`lib/leads.js`](lib/leads.js) | Caché de búsqueda en memoria para API |
 | **Sanitización, escape HTML y View Transitions** | [`modules/00-security.js`](modules/00-security.js) | `escaparHtml()`, `ejecutarConTransicionSuave()` |
-| **Estado reactivo y gestión de sesión** | [`modules/01-state.js`](modules/01-state.js) | `sesionUsuario`, actualización de badge VIP |
+| **Estado reactivo, sesión y secreto comercial** | [`modules/01-state.js`](modules/01-state.js) | `sesionUsuario`, TTL inactividad, purga 404 |
 | **Notificaciones flotantes (Toasts)** | [`modules/02-toast.js`](modules/02-toast.js) | `mostrarNotificacionToast()`, barra progreso |
 | **Carga de catálogo JSON con trace ID** | [`modules/03-api.js`](modules/03-api.js) | `cargarDatosPublicos()`, `x-trace-id` |
 | **Filtros de ciudad, precio y búsqueda** | [`modules/04-filters.js`](modules/04-filters.js) | Normalización fonética y actualización de grilla |
 | **Carrusel fotográfico y gestos táctiles** | [`modules/05-carousel.js`](modules/05-carousel.js) | Swipe táctil en móvil, drawer de ficha |
-| **Renderizado Bento Grid y tarjetas** | [`modules/06-cards.js`](modules/06-cards.js) | `renderizarTarjetas()`, skeletons, botón ver anuncio |
+| **Renderizado Bento Grid y re-desbloqueo $0** | [`modules/06-cards.js`](modules/06-cards.js) | Tarjetas Bento, botón ver contacto desbloqueado |
 | **Lógica de desbloqueo y revelación de título** | [`modules/07-unlock.js`](modules/07-unlock.js) | `actualizarTarjetaEnElDOM()`, datos revelados |
 | **Checkout, planes y reconciliación Wompi** | [`modules/08-checkout.js`](modules/08-checkout.js) | Integración Wompi widget, reintentos post-pago, planes |
-| **Efectos visuales, ripple y modo oscuro** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | GPU acceleration, parallax sin reflow y temas |
+| **Efectos visuales, menú móvil a X y temas** | [`modules/09-ui-effects.js`](modules/09-ui-effects.js) | Animación hamburguesa a X, GPU acceleration |
 | **Event listeners y atajos de teclado** | [`modules/10-listeners.js`](modules/10-listeners.js) | Orquestación de eventos globales en DOM |
 | **Modal de bienvenida VIP y entrega de PIN** | [`modules/11-welcome.js`](modules/11-welcome.js) | `abrirModalBienvenidaVIP()`, guía de PIN |
 | **Suscripción y modal Web Push** | [`modules/12-push.js`](modules/12-push.js) | Manejador de notificaciones push en cliente |

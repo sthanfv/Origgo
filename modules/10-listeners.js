@@ -91,9 +91,9 @@ function configurarListeners() {
       } else if (action === "cerrar-ficha") {
         e.stopPropagation();
         cerrarFichaTecnica(idx, e);
-      } else if (action === "abrir-checkout") {
+      } else if (action === "abrir-checkout" || action === "revelar-desbloqueado") {
         e.stopPropagation();
-        manejarClicDesbloquear(idx);
+        manejarClicDesbloquear(idx, { desdeFicha: Boolean(e.target.closest('.card-slideup-overlay')) });
       } else if (action === "slideup-cta") {
         e.stopPropagation();
         manejarClicDesbloquear(idx, { desdeFicha: true });
@@ -366,8 +366,9 @@ function configurarListeners() {
   if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
   const btnMagic = document.getElementById("btnSendMagicLink");
   if (btnMagic) btnMagic.addEventListener("click", solicitarMagicLinkPorCorreo);
-  const btnLogout = document.getElementById("btnLogoutSession");
+  const btnLogout = document.getElementById("btnLogoutSession"), btnSideLogout = document.getElementById("sideMenuLogoutBtn");
   if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
+  if (btnSideLogout) btnSideLogout.addEventListener("click", (e) => { e.preventDefault(); cerrarSesionUsuario(); document.getElementById('sideMenu')?.classList.remove('active'); document.getElementById('sideMenuOverlay')?.classList.remove('active'); document.body.style.overflow = ''; });
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
   if (btnBuyMore) btnBuyMore.addEventListener("click", () => cambiarPestanaCheckout('comprar'));
 
