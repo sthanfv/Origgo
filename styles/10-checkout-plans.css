@@ -481,9 +481,9 @@
 }
 
 /* 🎁 Estilos Freemium & Enlace Mágico (Fase 2 CRO) */
-.pricing-option-card.freemium-option { border-color: rgba(59, 130, 246, 0.38); background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), transparent); }
-.pricing-option-card.freemium-option.active-option, .pricing-option-card.freemium-option:has(input:checked) { border-color: #3B82F6; box-shadow: 0 0 0 1px #3B82F6, 0 8px 20px -4px rgba(59, 130, 246, 0.4); }
-.freemium-ribbon { position: absolute; top: -9px; right: 12px; background: #3B82F6; color: #FFFFFF; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4); }
-.option-price-free { color: #3B82F6 !important; font-weight: 900; }
+.pricing-option-card.freemium-option { border-color: hsla(158, 64%, 52%, 0.35); background: linear-gradient(145deg, hsla(158, 64%, 52%, 0.08), transparent); }
+.pricing-option-card.freemium-option.active-option, .pricing-option-card.freemium-option:has(input:checked) { border-color: var(--accent-emerald); box-shadow: 0 0 0 1px var(--accent-emerald), 0 8px 20px -4px var(--accent-emerald-glow); }
+.freemium-ribbon { position: absolute; top: -9px; right: 12px; background: var(--accent-emerald); color: #041B12; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 8px var(--accent-emerald-glow); }
+.option-price-free { color: var(--accent-emerald) !important; font-weight: 900; }
 .btn-claim-freemium { background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important; }
-.btn-magic-link { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important; }
+.btn-magic-link { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important; }

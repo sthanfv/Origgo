@@ -315,7 +315,7 @@ async function ejecutarPagoWompi() {
       const res = await fetch('/api/auth/welcome-credit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
+        body: JSON.stringify({ celular, phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo reclamar el regalo.'));
@@ -329,7 +329,7 @@ async function ejecutarPagoWompi() {
       mostrarNotificacionToast(
         esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
         'success',
-        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0 COP)', duration: 6000 }
+        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
       );
       cerrarModalCheckout();
       if (leadSeleccionado) {

@@ -306,7 +306,7 @@ function configurarListeners() {
         if (groupEmailInput) groupEmailInput.style.display = (val === 'welcome_free') ? 'block' : 'none';
         if (btnPagar) {
           if (val === 'welcome_free') {
-            btnPagar.innerHTML = `<i class="fa-solid fa-gift"></i> <span>${isEn ? 'Claim 1 Free Unlock ($0 COP)' : 'Reclamar 1 Desbloqueo Gratis ($0 COP)'}</span>`;
+            btnPagar.innerHTML = `<i class="fa-solid fa-gift"></i> <span>${isEn ? 'Claim 1 Free Unlock ($0)' : 'Reclamar 1 Desbloqueo Gratis ($0)'}</span>`;
             btnPagar.className = 'btn-confirm-wompi btn-claim-freemium';
           } else {
             btnPagar.innerHTML = `<i class="fa-solid fa-lock"></i> <span>${isEn ? 'Proceed to Secure Checkout with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>`;

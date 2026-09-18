@@ -107,4 +107,45 @@ describe('🎁 Suite Freemium — 1 Desbloqueo Gratis de Bienvenida', () => {
     assert.equal(res.statusCode, 400);
     assert.equal(res.payload?.error, 'VALIDACION_FALLIDA');
   });
+
+  it('4. Debe aceptar el campo polimórfico "phone" y procesar exitosamente', async () => {
+    const phone = '315' + Math.floor(1000000 + Math.random() * 9000000);
+    const email = `test.phone.${Date.now()}@origgo.online`;
+
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      body: { phone, email, lang: 'es' }
+    };
+    const res = crearMockRes();
+
+    await welcomeCreditHandler(req, res);
+
+    assert.equal(res.statusCode, 200, 'Debe aceptar la clave "phone"');
+    assert.equal(res.payload?.ok, true);
+    assert.equal(res.payload?.user?.credits, 1);
+  });
+
+  it('5. Debe rechazar correos con caracteres sospechosos de inyección XSS o scripts', async () => {
+    const celular = '318' + Math.floor(1000000 + Math.random() * 9000000);
+    const correosMaliciosos = [
+      'usuario<script>@gmail.com',
+      'ataque";alert(1)@hack.com',
+      'user`id`@test.com',
+      'test\\injection@evil.com'
+    ];
+
+    for (const emailMalicioso of correosMaliciosos) {
+      const req = {
+        method: 'POST',
+        headers: { 'x-forwarded-for': '127.0.0.1' },
+        body: { celular, email: emailMalicioso }
+      };
+      const res = crearMockRes();
+      await welcomeCreditHandler(req, res);
+
+      assert.equal(res.statusCode, 400, `Debe rechazar el correo malicioso: ${emailMalicioso}`);
+      assert.equal(res.payload?.error, 'VALIDACION_FALLIDA');
+    }
+  });
 });
