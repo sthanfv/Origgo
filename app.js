@@ -566,71 +566,71 @@ function aplicarPreferenciasUsuario(usr) {
   }
 }
 
+function establecerSesionDesdeToken(data, { msgEs, msgEn, titleEs, titleEn, isWelcome = false }) {
+  localStorage.setItem('hunter_pro_token', data.token);
+  if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+  if (isWelcome && typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado();
+  sesionUsuario = { ...data.user, token: data.token };
+  delete sesionUsuario.pin;
+  aplicarPreferenciasUsuario(data.user);
+  actualizarBadgeVip();
+  sincronizarFiltroCiudadUsuario();
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? msgEn : msgEs, 'success', { title: esIngles ? titleEn : titleEs, duration: 6000 });
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 /**
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
 async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL o token de acceso (magic / recovery)
   const urlParams = new URLSearchParams(window.location.search);
-  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token');
+  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token'), welcomeToken = urlParams.get('welcome_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
 
-  if (magicToken) {
+  // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo)
+  if (welcomeToken) {
     try {
-      const res = await fetch('/api/auth/magic-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: magicToken })
-      });
+      const res = await fetch('/api/auth/welcome-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: welcomeToken }) });
       const data = await res.json();
-      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      aplicarPreferenciasUsuario(data.user);
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(esIngles ? 'Welcome back! Instant access verified.' : '¡Bienvenido! Sesión iniciada con Enlace Mágico.', 'success', { title: esIngles ? 'Instant Access' : 'Acceso Instantáneo', duration: 5000 });
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de activación no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: '🎉 ¡Regalo activado! Tienes 1 desbloqueo directo listo.', msgEn: '🎉 Welcome gift activated! 1 free unlock ready.', titleEs: 'Regalo de Bienvenida ($0)', titleEn: 'Gift Activated', isWelcome: true });
       return;
     } catch (e) {
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Link' : 'Enlace no válido', duration: 7000 });
+      mostrarNotificacionToast(e.message || (esIngles ? 'The welcome link is invalid or expired.' : 'El enlace de activación no es válido o expiró.'), 'warning');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  if (magicToken) {
+    try {
+      const res = await fetch('/api/auth/magic-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: magicToken }) });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: '¡Bienvenido! Sesión iniciada con Enlace Mágico.', msgEn: 'Welcome back! Instant access verified.', titleEs: 'Acceso Instantáneo', titleEn: 'Instant Access' });
+      return;
+    } catch (e) {
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
 
   if (recoveryToken) {
     try {
-      const res = await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'recover_token', recoveryToken })
-      });
+      const res = await fetch('/api/auth/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'recover_token', recoveryToken }) });
       const data = await res.json();
-      if (!res.ok || !data.ok || !data.token) {
-        throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
-      }
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      aplicarPreferenciasUsuario(data.user);
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(esIngles ? 'Session successfully restored.' : 'Sesión restaurada correctamente.', 'success', { title: esIngles ? 'Access Restored' : 'Acceso recuperado', duration: 5000 });
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: 'Sesión restaurada correctamente.', msgEn: 'Session successfully restored.', titleEs: 'Acceso recuperado', titleEn: 'Access Restored' });
       return;
     } catch (e) {
       localStorage.removeItem('hunter_pro_token');
       if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
       sesionUsuario = null;
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Recovery' : 'Recuperación no válida', duration: 7000 });
+      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -739,12 +739,8 @@ function actualizarBadgeVip() {
       const palabraCred = cr === 1 ? (isEn ? 'Credit' : 'Crédito') : (isEn ? 'Credits' : 'Créditos');
       htmlBadge = `<span class="vip-btn-text">⚡ ${cr} ${palabraCred}</span>`;
       labelMovil = `${cr} Creds`;
-      htmlChipMovil = cr > 0 
-        ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>`
-        : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
-      const descCreds = cr > 0
-        ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.')
-        : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
+      htmlChipMovil = cr > 0 ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>` : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
+      const descCreds = cr > 0 ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.') : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
       htmlSideUser = `<div class="side-user-card"><div class="side-user-top"><span class="side-user-badge-creds">⚡ ${cr} ${palabraCred}</span><span class="side-user-phone">${escaparHtml(phoneFormateado)}</span></div><p class="side-user-desc">${descCreds}</p></div>`;
     }
 
@@ -877,6 +873,8 @@ async function restaurarSesionConPin() {
 
 /**
  * Cierra la sesión activa del usuario.
+ * Preserva intacta la marca Zombie del dispositivo (origgo_device_claimed)
+ * para evitar que el usuario burle el modelo freemium al desloguearse.
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
@@ -885,6 +883,7 @@ function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_unlocked_contacts');
   cacheContactosDesbloqueados = {};
   sesionUsuario = null;
+  if (typeof esDispositivoMarcadoComoReclamado === 'function') esDispositivoMarcadoComoReclamado();
   actualizarBadgeVip();
   renderizarInterfaz(datosActuales);
   const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
@@ -937,35 +936,39 @@ async function recuperarPinConReferencia() {
 async function solicitarMagicLinkPorCorreo() {
   const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
   const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnSendMagicLink');
-  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const btn = document.getElementById('btnSendMagicLink'), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
 
   if (!email || !email.includes('@')) {
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Please enter a valid email address.' : 'Por favor ingresa un correo electrónico válido.';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
+      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
       msgBox.style.display = 'block';
     }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
   try {
-    const res = await fetch('/api/auth/magic-link', {
+    const response = await fetch('/api/auth/magic-link', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
+      body: JSON.stringify({ identifier: email, lang: isEn ? 'en' : 'es' })
     });
-    const data = await res.json();
+    const result = await response.json();
     if (msgBox) {
-      msgBox.className = res.ok ? 'restore-status-msg success' : 'restore-status-msg error';
-      msgBox.textContent = data.message || (res.ok ? (isEn ? 'Magic Link sent! Check your inbox.' : '¡Enlace Mágico enviado! Revisa tu correo.') : (isEn ? 'Could not send link.' : 'No se pudo enviar el enlace.'));
+      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'Instant access link sent to your inbox.' : 'Enlace de acceso rápido enviado a tu correo.') : (isEn ? 'Could not send access link.' : 'No se pudo enviar el enlace de acceso.'));
+      msgBox.style.display = 'block';
+      if (response.ok && inputEmail) inputEmail.value = '';
+    }
+  } catch (error) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
-  } catch (err) {
-    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.'; msgBox.style.display = 'block'; }
   } finally {
-    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send 1-Click Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
   }
 }
 
@@ -3097,13 +3100,8 @@ function cargarScriptWompi() {
   script.id = "wompi-widget-script";
   script.src = "https://checkout.wompi.co/widget.js";
   script.async = true;
-  script.onload = () => {
-    wompiScriptCargado = true;
-    registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente.");
-  };
-  script.onerror = () => {
-    registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
-  };
+  script.onload = () => { wompiScriptCargado = true; registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente."); };
+  script.onerror = () => { registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN."); };
   document.head.appendChild(script);
 }
 
@@ -3189,9 +3187,7 @@ function abrirModalCheckout(index, pestana = null) {
         if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn
-        ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li><li><i class="fa-solid fa-shield"></i> Vault credits remain intact.</li>`
-        : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li><li><i class="fa-solid fa-shield"></i> Créditos en bóveda protegidos.</li>`;
+      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li>` : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li>`;
     } else if (sesionUsuario.plan === 'city') {
       const cNom = sesionUsuario.planCity || 'Bogotá', cNomSeguro = escaparHtml(cNom);
       cardCredits?.classList.add('vip-mode');
@@ -3205,9 +3201,7 @@ function abrirModalCheckout(index, pestana = null) {
         if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn
-        ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>`
-        : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
+      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>` : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
     } else {
       cardCredits?.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
@@ -3235,11 +3229,28 @@ function abrirModalCheckout(index, pestana = null) {
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
-  // Sincronizar visibilidad de selectores según la opción seleccionada
+  // Sincronizar visibilidad y bloqueo de regalo freemium si ya fue reclamado en este dispositivo
   const radioActivo = document.querySelector('input[name="checkoutProduct"]:checked');
   const groupCity = document.getElementById("groupCitySelect"), groupEmail = document.getElementById("groupEmailInput");
   const optWelcome = document.getElementById("optWelcomeFree");
-  if (optWelcome) optWelcome.style.display = (sesionUsuario && sesionUsuario.welcomeCreditClaimed) ? 'none' : 'block';
+  const yaReclamado = typeof esDispositivoMarcadoComoReclamado === 'function' && esDispositivoMarcadoComoReclamado();
+  const bloquearWelcome = Boolean((sesionUsuario && sesionUsuario.welcomeCreditClaimed) || yaReclamado);
+
+  if (optWelcome) {
+    if (bloquearWelcome) {
+      optWelcome.classList.add('is-claimed');
+      const ribbon = optWelcome.querySelector('.freemium-ribbon');
+      if (ribbon) ribbon.textContent = (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en') ? '✓ CLAIMED' : '✓ YA CANJEADO';
+      const radioW = optWelcome.querySelector('input[type="radio"]');
+      if (radioW?.checked) {
+        radioW.checked = false;
+        const rSingle = document.getElementById('optSingleLead')?.querySelector('input[type="radio"]');
+        if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change', { bubbles: true })); }
+      }
+    } else {
+      optWelcome.classList.remove('is-claimed');
+    }
+  }
   if (groupCity) groupCity.style.display = (radioActivo?.value === 'subscription_city') ? 'block' : 'none';
   if (groupEmail) groupEmail.style.display = (radioActivo?.value === 'welcome_free') ? 'block' : 'none';
 
@@ -3352,24 +3363,12 @@ async function ejecutarPagoWompi() {
   const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const whatsappRaw = inputWa ? inputWa.value.trim() : '';
   const celularLimpio = whatsappRaw.replace(/\D/g, '');
-  const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
-    ? celularLimpio.substring(2) 
-    : celularLimpio;
+  const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 ? celularLimpio.substring(2) : celularLimpio;
 
   if (!celular || celular.length < 10) {
-    if (errorBox) {
-      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number. Example: 300 123 4567' : 'Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567');
-      errorBox.classList.remove('is-hidden');
-      errorBox.style.display = 'block';
-    }
-    if (inputWrapper) {
-      inputWrapper.classList.add('input-error-shake');
-      setTimeout(() => inputWrapper.classList.remove('input-error-shake'), 600);
-    }
-    if (inputWa) {
-      inputWa.focus();
-      inputWa.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (errorBox) { errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number.' : 'Por favor ingresa tu WhatsApp real (10 dígitos).'); errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block'; }
+    if (inputWrapper) { inputWrapper.classList.add('input-error-shake'); setTimeout(() => inputWrapper.classList.remove('input-error-shake'), 600); }
+    if (inputWa) { inputWa.focus(); inputWa.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
 
@@ -3378,44 +3377,57 @@ async function ejecutarPagoWompi() {
     errorBox.style.display = 'none';
   }
 
-  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP)
+  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP) con Doble Opt-In
   if (productType === 'welcome_free') {
     const inputEmail = document.getElementById('checkoutEmailInput'), emailError = document.getElementById('checkoutEmailError');
     const emailVal = inputEmail ? inputEmail.value.trim() : '';
     if (!emailVal || !emailVal.includes('@')) {
       if (emailError) {
-        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email to receive access.' : 'Por favor ingresa un correo válido para enviarte el acceso.');
+        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email.' : 'Por favor ingresa un correo válido.');
         emailError.classList.remove('is-hidden'); emailError.style.display = 'block';
       }
       inputEmail?.focus(); return;
     }
     if (emailError) { emailError.classList.add('is-hidden'); emailError.style.display = 'none'; }
     const btnPagar = document.getElementById('btnConfirmWompi'), textoOriginal = btnPagar ? btnPagar.innerHTML : '';
-    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Activating gift...' : 'Activando regalo...'}`; btnPagar.disabled = true; }
+    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Sending link...' : 'Enviando enlace...'}`; btnPagar.disabled = true; }
     try {
+      let deviceId = null;
+      if (typeof obtenerDeviceFingerprint === 'function') {
+        try { deviceId = await obtenerDeviceFingerprint(); } catch (_) {}
+      }
       const res = await fetch('/api/auth/welcome-credit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ celular, phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
+        body: JSON.stringify({ celular, phone: celular, email: emailVal, deviceId, lang: esIngles ? 'en' : 'es' })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo reclamar el regalo.'));
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      cerrarModalCheckout();
-      if (leadSeleccionado) {
-        const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
-        await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
-      } else {
+      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+
+      if (data.pendingVerification) {
+        if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
+        cerrarModalCheckout();
         mostrarNotificacionToast(
-          esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+          esIngles ? `📧 Activation link sent to ${data.email}. Check your inbox to unlock!` : `📧 Enviamos un enlace de activación a ${data.email}. ¡Ábrelo para activar tu regalo!`,
           'success',
-          { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
+          { title: esIngles ? 'Confirm Email' : 'Confirma tu Correo', duration: 9000 }
         );
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem('hunter_pro_token', data.token);
+        if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+        if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
+        sesionUsuario = { ...data.user, token: data.token };
+        delete sesionUsuario.pin;
+        actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
+        cerrarModalCheckout();
+        if (leadSeleccionado) {
+          const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
+          await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+        }
       }
       return;
     } catch (errGift) {
@@ -3430,25 +3442,14 @@ async function ejecutarPagoWompi() {
   // Validación estricta de ciudad para Plan Pro Ciudad
   let ciudad = null;
   if (productType === 'subscription_city') {
-    const selectCity = document.getElementById('checkoutCitySelect');
-    const cityError = document.getElementById('checkoutCityError');
+    const selectCity = document.getElementById('checkoutCitySelect'), cityError = document.getElementById('checkoutCityError');
     ciudad = selectCity ? selectCity.value.trim() : '';
     if (!ciudad) {
-      if (cityError) {
-        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city for this pass.' : 'Por favor selecciona la ciudad de cobertura para tu membresía.');
-        cityError.classList.remove('is-hidden');
-        cityError.style.display = 'block';
-      }
-      if (selectCity) {
-        selectCity.focus();
-        selectCity.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (cityError) { cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city.' : 'Por favor selecciona la ciudad de cobertura.'); cityError.classList.remove('is-hidden'); cityError.style.display = 'block'; }
+      if (selectCity) { selectCity.focus(); selectCity.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       return;
     }
-    if (cityError) {
-      cityError.classList.add('is-hidden');
-      cityError.style.display = 'none';
-    }
+    if (cityError) { cityError.classList.add('is-hidden'); cityError.style.display = 'none'; }
   }
 
   const btnPagar = document.getElementById('btnConfirmWompi');
@@ -5908,11 +5909,165 @@ function inicializarSoporteOffline() {
   }
 }
 
+/**
+ * Calcula una huella digital determinista del dispositivo (Device Fingerprint)
+ * combinando hardware, motor gráfico, resolución, zona horaria y arquitectura.
+ * 
+ * @returns {Promise<string>} Hash SHA-256 de la huella digital
+ */
+async function obtenerDeviceFingerprint() {
+  if (typeof window === 'undefined') return 'server_mock_device';
+
+  // Caché en sesión de ventana para evitar recalcular innecesariamente
+  if (window._origgoCachedDeviceId) return window._origgoCachedDeviceId;
+
+  const componentes = [];
+
+  try {
+    // 1. Hardware y entorno de ejecución
+    componentes.push(navigator.userAgent || '');
+    componentes.push(navigator.language || '');
+    componentes.push(navigator.hardwareConcurrency || 2);
+    componentes.push(navigator.deviceMemory || 4);
+    componentes.push(navigator.platform || '');
+    componentes.push(screen.width + 'x' + screen.height + 'x' + screen.colorDepth);
+    componentes.push(Intl.DateTimeFormat().resolvedOptions().timeZone || '');
+
+    // 2. Huella gráfica Canvas 2D
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 240;
+      canvas.height = 60;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.textBaseline = 'top';
+        ctx.font = "14px 'Arial'";
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = '#069';
+        ctx.fillText('Origgo,DevSecOps 2026! 🏢', 2, 15);
+        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+        ctx.fillText('Origgo,DevSecOps 2026! 🏢', 4, 17);
+        componentes.push(canvas.toDataURL());
+      }
+    } catch (_) {}
+
+    // 3. Huella WebGL (Tarjeta gráfica y renderer físico)
+    try {
+      const glCanvas = document.createElement('canvas');
+      const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          componentes.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || '');
+          componentes.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '');
+        }
+      }
+    } catch (_) {}
+  } catch (err) {
+    componentes.push('fallback_fingerprint_' + Math.random());
+  }
+
+  const huellaPlana = componentes.join('###');
+
+  // Cálculo criptográfico con WebCrypto (SHA-256)
+  try {
+    if (typeof crypto !== 'undefined' && crypto.subtle && typeof TextEncoder !== 'undefined') {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(huellaPlana);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      window._origgoCachedDeviceId = hashHex;
+      return hashHex;
+    }
+  } catch (_) {}
+
+  // Fallback determinista en entornos sin WebCrypto
+  let hash = 0;
+  for (let i = 0; i < huellaPlana.length; i++) {
+    hash = ((hash << 5) - hash) + huellaPlana.charCodeAt(i);
+    hash |= 0;
+  }
+  const fallbackId = 'dev_' + Math.abs(hash).toString(16).padStart(16, '0');
+  window._origgoCachedDeviceId = fallbackId;
+  return fallbackId;
+}
+
+/**
+ * Comprueba de forma multicapa (Zombie Storage) si este dispositivo ya consumió su regalo de bienvenida.
+ * Lee concurrentemente de localStorage y cookies para resistir borrados selectivos.
+ * 
+ * @returns {boolean}
+ */
+function esDispositivoMarcadoComoReclamado() {
+  if (typeof window === 'undefined') return false;
+
+  let reclamado = false;
+
+  // 1. Chequeo en localStorage
+  try {
+    if (localStorage.getItem('origgo_device_claimed') === '1') {
+      reclamado = true;
+    }
+  } catch (_) {}
+
+  // 2. Chequeo en Cookies persistentes
+  try {
+    if (typeof document !== 'undefined' && document.cookie) {
+      if (document.cookie.includes('origgo_device_claimed=1')) {
+        reclamado = true;
+      }
+    }
+  } catch (_) {}
+
+  // Sincronización de auto-reparación Zombie si alguna capa fue purgada
+  if (reclamado) {
+    marcarDispositivoComoReclamado();
+  }
+
+  return reclamado;
+}
+
+/**
+ * Persiste de forma indestructible (Zombie Storage) la marca de dispositivo que ya reclamó su regalo.
+ * Escribe en localStorage y en una cookie de 10 años que no se elimina al cerrar sesión.
+ * 
+ * @param {string} [deviceId]
+ */
+function marcarDispositivoComoReclamado(deviceId) {
+  if (typeof window === 'undefined') return;
+
+  // 1. Persistencia en localStorage
+  try {
+    localStorage.setItem('origgo_device_claimed', '1');
+    if (deviceId) {
+      localStorage.setItem('origgo_device_id', String(deviceId));
+    }
+  } catch (_) {}
+
+  // 2. Persistencia en Cookie con expiración a 10 años (inmune a cierre de sesión)
+  try {
+    if (typeof document !== 'undefined') {
+      const diezAniosEnSegundos = 10 * 365 * 24 * 60 * 60;
+      document.cookie = `origgo_device_claimed=1; max-age=${diezAniosEnSegundos}; path=/; SameSite=Lax`;
+      if (deviceId) {
+        document.cookie = `origgo_device_id=${encodeURIComponent(deviceId)}; max-age=${diezAniosEnSegundos}; path=/; SameSite=Lax`;
+      }
+    }
+  } catch (_) {}
+}
+
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarSoporteOffline);
+    document.addEventListener('DOMContentLoaded', () => {
+      inicializarSoporteOffline();
+      esDispositivoMarcadoComoReclamado();
+    });
   } else {
     inicializarSoporteOffline();
+    esDispositivoMarcadoComoReclamado();
   }
 }
 
@@ -5921,7 +6076,10 @@ if (typeof module !== 'undefined' && module.exports) {
     estaDispositivoOnline,
     actualizarBannerConectividad,
     asegurarConexionParaAccion,
-    inicializarSoporteOffline
+    inicializarSoporteOffline,
+    obtenerDeviceFingerprint,
+    esDispositivoMarcadoComoReclamado,
+    marcarDispositivoComoReclamado
   };
 }
 

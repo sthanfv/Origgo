@@ -1,6 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 21:55 (GMT-5)
+Última actualización: 2026-09-17 23:55 (GMT-5)
+
+---
+
+- 92. **Fase 2 Origgo v2.0: Blindaje Anti-Sybil Freemium ($0) con Defensa en Profundidad — Device Fingerprint Zombie, Normalización Estricta de Correo, Filtro de Desechables y Doble Opt-In Obligatorio**:
+    - **Diagnóstico Forense y Causa Raíz de la Brecha Sybil:**
+      1. *Ataque Sybil y Saqueo de Catálogo:* WhatsApp no es el autenticador criptográfico en el registro inicial ni se envía SMS/OTP de verificación. Al cambiar un solo dígito de celular y usar cualquier correo sintético, inventado o desechable (`tempmail`), el backend acreditaba de inmediato 1 crédito gratis y devolvía un token JWT de sesión. Un usuario malintencionado podía repetir el proceso miles de veces y saquear la base de datos de propietarios sin pagar un solo peso.
+      2. *Vulnerabilidad ante Cierre de Sesión:* Al cerrar sesión, si se limpiaba el almacenamiento local, un usuario con el mismo dispositivo podía reintentar el proceso sin ningún obstáculo de hardware.
+      3. *Evasión mediante Alias de Gmail / Outlook:* Variantes con puntos (`u.s.u.a.r.i.o@gmail.com`) o sufijos con signo más (`usuario+1@gmail.com`) eludían la restricción de correo único existiendo en realidad un solo buzón físico.
+    - **Solución y Mejoras Implementadas (3 Barreras de Defensa en Profundidad):**
+      1. *Barrera 1: Identificador de Hardware / Device Fingerprint Zombie (`modules/14-offline.js`, `lib/db.js`):*
+         - En `modules/14-offline.js`: Implementada `obtenerDeviceFingerprint()`, que calcula una huella determinista de hardware basada en 6 componentes: renderizado WebGL (GPU Renderer/Vendor), Canvas 2D (trazado y lectura de píxeles), resolución y profundidad de pantalla, AudioContext fingerprinting, número de núcleos de CPU y zona horaria, computando un digest SHA-256 inmutable de 64 caracteres.
+         - *Persistencia Zombie Multicapa:* `esDispositivoMarcadoComoReclamado()` y `marcarDispositivoComoReclamado()` almacenan la huella tanto en `localStorage` (`origgo_device_claimed`) como en una cookie de 10 años.
+         - *Inmunidad al Logout:* En `modules/01-state.js`, `cerrarSesionUsuario()` purga tokens JWT, cookies de sesión y contactos volátiles, pero **preserva intacta la marca Zombie** del dispositivo.
+         - *Bloqueo Reactivo en Frontend & Backend:* En `modules/08-checkout.js`, si el dispositivo ya reclamó, la tarjeta freemium se desactiva con clase `.is-claimed`, ribbon "✓ YA CANJEADO", opacidad atenuada (`styles/10-checkout-plans.css`) y se selecciona automáticamente la opción individual. En el backend, `isDeviceClaimed(deviceId)` en Firestore rechaza la petición con `HTTP 409 DISPOSITIVO_YA_RECLAMADO`. Archivos en estricto cumplimiento $\le 500$ líneas (`01-state.js` en 492, `08-checkout.js` en 497, `14-offline.js` en 338, `10-checkout-plans.css` en 494).
+      2. *Barrera 2: Normalización de Correo y Filtro de Dominios Desechables (`lib/validation.js`, `lib/db.js`):*
+         - En `lib/validation.js`: Creada lista negra `DISPOSABLE_EMAIL_DOMAINS` con más de 35 proveedores de correos temporales (`tempmail.com`, `yopmail.com`, `10minutemail.com`, `mailinator.com`, etc.).
+         - Función `normalizarEmail(email)`: Convierte a minúsculas, recorta espacios, remueve sufijos `+alias` y elimina todos los puntos (`.`) en dominios de Gmail y Outlook (`googlemail.com`, `outlook.com`, `hotmail.com`).
+         - Esquema Zod `emailSchema` refinado con `.refine(val => !esCorreoDesechable(val))` para rechazo fulminante (`HTTP 400 VALIDACION_FALLIDA`).
+         - En `lib/db.js`: Verificación y registro en la colección `claimed_emails` indexada por correo canonizado. Si ya existe, rechaza con `HTTP 409 EMAIL_YA_RECLAMADO`.
+      3. *Barrera 3: Doble Opt-In Obligatorio por Correo (`lib/auth/welcome-credit.js`, `lib/auth/welcome-verify.js`):*
+         - `lib/auth/welcome-credit.js`: Comprueba las barreras 1, 2 y 3. Si todo es legítimo, genera un token criptográfico de 64 caracteres en Firestore (`welcome_tokens`) con TTL de 60 minutos y despacha el correo transaccional vía Resend API con enlace `https://origgo.online/?welcome_token=...`. Responde `HTTP 200 { ok: true, pendingVerification: true, email }` **sin emitir créditos ni JWT**.
+         - Creado `lib/auth/welcome-verify.js`: Endpoint serverless que valida el token mediante `db.consumeWelcomeVerificationToken(token)` en transacción atómica. Quema el token (`used: true`), registra el dispositivo en `claimed_devices` y el correo en `claimed_emails`, acredita 1 crédito de regalo y emite el JWT firmado de sesión de 30 días.
+         - En `modules/01-state.js`: Detección automática de `?welcome_token=` al cargar la página, POST a `/api/auth/welcome-verify`, marcado Zombie del hardware, actualización reactiva del balance a 1 crédito y limpieza limpia de la URL con `history.replaceState`.
+    - **Validación Automatizada y Modularidad:**
+      - *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`01-state.js` en 492, `08-checkout.js` en 497, `14-offline.js` en 338, `10-checkout-plans.css` en 494).
+      - *Pruebas Unitarias DevSecOps (`tests/freemium_welcome_credit.test.js`):* 9/9 pruebas aprobadas al 100% en 21.6s, cubriendo Doble Opt-In, activación y quema de token, prevención de reutilización, bloqueo por `deviceId`, bloqueo por alias de correo canonizado, rechazo de dominios desechables, validación de prefijos móviles 3XX y desinfección XSS.
+      - *Compilación:* `node scripts/build.js` regeneró `dist/`, `style.css` (192.8 KB), `style.min.css` (147.4 KB), `app.js` (330.4 KB), `app.min.js` (295.7 KB).
+      - *Suite DevSecOps:* `node scripts/validate.js` aprobó las 8 fases al 100% (0 errores).
+      - *Playwright E2E:* 7/7 pruebas aprobadas al 100% en Chromium (17.9s).
+    - **Archivos Afectados:**
+      - `lib/validation.js`, `lib/db.js`, `lib/email-templates.js`, `lib/auth/welcome-credit.js`, `lib/auth/welcome-verify.js` (nuevo), `api/auth.js`, `modules/14-offline.js`, `modules/01-state.js`, `modules/08-checkout.js`, `styles/10-checkout-plans.css`, `tests/freemium_welcome_credit.test.js`, `README.md`, `ARCHITECTURE.md`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

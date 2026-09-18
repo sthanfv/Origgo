@@ -97,6 +97,13 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 - **Cierre de Sesión Accesible**: Enlaces dedicados de "Cerrar Sesión" en el menú lateral (`#sideMenuLogoutBtn`) y en el modal de membresía (`#btnLogoutSession`). Al activarse, purga atómicamente `localStorage`, elimina la cookie HttpOnly `origgo_token`, vacía la caché de memoria y re-renderiza la interfaz al estado anónimo.
 - **Auto-Reset ante HTTP 404**: Si un usuario de prueba es borrado manualmente de Firestore, la verificación en cliente `/api/user/balance` captura el 404 e invalida de inmediato las credenciales locales sin generar errores rojos en la consola de DevTools.
 
+### 3.8 Blindaje Anti-Sybil Freemium y Defensa en Profundidad ($0)
+- **Problema Previo**: Al no ser WhatsApp el autenticador criptográfico y no mediar verificación, un atacante podía cambiar un solo dígito de celular y usar cualquier correo inventado o temporal (`tempmail`) para saquear de forma infinita el catálogo sin pagar nunca.
+- **Solución Implementada (3 Barreras de Defensa en Profundidad)**:
+  1. **Barrera 1 (Hardware ID / Device Fingerprint Zombie)**: En `modules/14-offline.js`, `obtenerDeviceFingerprint()` calcula una huella digital determinista basada en hardware (WebGL, Canvas 2D, Screen, AudioContext, Cores, Zona horaria) y hash SHA-256. Dicha marca se almacena en modo *Zombie multicapa* (`localStorage` y cookie de 10 años `origgo_device_claimed`) para que **sobreviva al cierre de sesión**. Si el dispositivo ya reclamó, el cliente deshabilita el plan freemium y el backend (`db.isDeviceClaimed`) rechaza la solicitud con `HTTP 409 DISPOSITIVO_YA_RECLAMADO`.
+  2. **Barrera 2 (Normalización Estricta y Lista Negra de Temporales)**: En `lib/validation.js`, `normalizarEmail()` elimina puntos y alias (`+alias`) en Gmail y Outlook para impedir crear infinitas cuentas con el mismo buzón. `DISPOSABLE_EMAIL_DOMAINS` bloquea de forma inmediata dominios de correo desechables (`yopmail.com`, `tempmail.com`, `10minutemail.com`, etc.) con `HTTP 400 VALIDACION_FALLIDA`.
+  3. **Barrera 3 (Doble Opt-In Obligatorio por Correo)**: `lib/auth/welcome-credit.js` **NO emite crédito ni JWT de inmediato**. Genera un token criptográfico temporal en Firestore (`welcome_tokens`) y despacha un correo de bienvenida. Solo cuando el usuario abre el enlace (`/api/auth/welcome-verify` -> `db.consumeWelcomeVerificationToken`), se valida la existencia real del buzón, se quema el token, se registran el dispositivo y correo como reclamados (`claimed_devices`, `claimed_emails`), se entrega el crédito y se firma el JWT de sesión de 30 días.
+
 ---
 
 ### 4.0 Localizador Rápido de Archivos Backend, Serverless y Scripts
@@ -130,20 +137,20 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
 | `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 494 |
-| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404 y protección de secreto comercial. | 489 |
+| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404, detección ?welcome_token= y protección de secreto comercial. | 492 |
 | `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 299 |
 | `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 177 |
 | `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 484 |
 | `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 159 |
 | `06-cards.js` | Renderizado Bento Grid, re-desbloqueo de contactos $0, skeletons y precios. | 496 |
 | `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y revelación de datos. | 475 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0, idempotencia y widget checkout. | 499 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0 anti-sybil, idempotencia y widget checkout. | 497 |
 | `09-ui-effects.js`| Menú móvil animado de hamburguesa a X (estilo Desmulta), háptica y temas. | 489 |
 | `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado, logout y orquestación. | 497 |
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 263 |
 | `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 412 |
 | `13-i18n.js`   | Motor bilingüe ES/EN reactivo, diccionario de UI y persistencia de idioma. | 499 |
-| `14-offline.js`| Resiliencia offline, partición LRU de caché de imágenes y banner de conectividad. | 181 |
+| `14-offline.js`| Resiliencia offline, Device Fingerprint SHA-256 de hardware y persistencia Zombie multicapa. | 338 |
 | `15-autocomplete.js`| Sugerencias multicapa de autocompletado en búsqueda con accesibilidad W3C ARIA. | 386 |
 
 ### 4.2 Módulos CSS (`styles/`):

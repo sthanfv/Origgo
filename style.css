@@ -3923,6 +3923,8 @@ main {
 .pricing-option-card.freemium-option { grid-column: 1 / -1; border-color: hsla(158, 64%, 52%, 0.4); background: linear-gradient(145deg, hsla(158, 64%, 52%, 0.1), transparent); padding: 1rem 1.15rem; }
 .pricing-option-card.freemium-option .option-header-row { flex-direction: row; justify-content: space-between; align-items: baseline; }
 .pricing-option-card.freemium-option.active-option, .pricing-option-card.freemium-option:has(input:checked) { border-color: var(--accent-emerald); box-shadow: 0 0 0 1px var(--accent-emerald), 0 8px 20px -4px var(--accent-emerald-glow); }
+.pricing-option-card.freemium-option.is-claimed { opacity: 0.55; filter: grayscale(0.6); cursor: not-allowed; }
+.pricing-option-card.freemium-option.is-claimed .freemium-ribbon { background: #64748B; color: #FFFFFF; box-shadow: none; }
 .freemium-ribbon { position: absolute; top: -9px; right: 12px; background: var(--accent-emerald); color: #041B12; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 8px var(--accent-emerald-glow); }
 .option-price-free { color: var(--accent-emerald) !important; font-weight: 900; }
 .btn-claim-freemium { background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important; }

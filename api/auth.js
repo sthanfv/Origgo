@@ -12,6 +12,7 @@ const sessionHandler = require('../lib/auth/session');
 const challengeHandler = require('../lib/auth/challenge');
 const recoverHandler = require('../lib/auth/recover');
 const welcomeCreditHandler = require('../lib/auth/welcome-credit');
+const welcomeVerifyHandler = require('../lib/auth/welcome-verify');
 const magicLinkHandler = require('../lib/auth/magic-link');
 const magicLoginHandler = require('../lib/auth/magic-login');
 
@@ -22,6 +23,8 @@ async function handler(req, res) {
     urlPath.endsWith('/recover') ? 'recover' :
     urlPath.endsWith('/welcome-credit') ? 'welcome-credit' :
     urlPath.endsWith('/welcome_credit') ? 'welcome-credit' :
+    urlPath.endsWith('/welcome-verify') ? 'welcome-verify' :
+    urlPath.endsWith('/welcome_verify') ? 'welcome-verify' :
     urlPath.endsWith('/magic-link') ? 'magic-link' :
     urlPath.endsWith('/magic_link') ? 'magic-link' :
     urlPath.endsWith('/magic-login') ? 'magic-login' :
@@ -38,6 +41,9 @@ async function handler(req, res) {
   if (action === 'welcome-credit' || action === 'welcome_credit') {
     return welcomeCreditHandler(req, res);
   }
+  if (action === 'welcome-verify' || action === 'welcome_verify') {
+    return welcomeVerifyHandler(req, res);
+  }
   if (action === 'magic-link' || action === 'magic_link') {
     return magicLinkHandler(req, res);
   }
@@ -51,6 +57,7 @@ handler.session = sessionHandler;
 handler.challenge = challengeHandler;
 handler.recover = recoverHandler;
 handler.welcomeCredit = welcomeCreditHandler;
+handler.welcomeVerify = welcomeVerifyHandler;
 handler.magicLink = magicLinkHandler;
 handler.magicLogin = magicLoginHandler;
 

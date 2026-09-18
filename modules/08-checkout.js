@@ -16,13 +16,8 @@ function cargarScriptWompi() {
   script.id = "wompi-widget-script";
   script.src = "https://checkout.wompi.co/widget.js";
   script.async = true;
-  script.onload = () => {
-    wompiScriptCargado = true;
-    registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente.");
-  };
-  script.onerror = () => {
-    registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN. Fallback comercial activo.");
-  };
+  script.onload = () => { wompiScriptCargado = true; registrarLogDesarrollo('log', "✅ Widget de Wompi cargado exitosamente."); };
+  script.onerror = () => { registrarLogDesarrollo('warn', "⚠️ No se pudo cargar el script de Wompi de la CDN."); };
   document.head.appendChild(script);
 }
 
@@ -108,9 +103,7 @@ function abrirModalCheckout(index, pestana = null) {
         if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn
-        ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li><li><i class="fa-solid fa-shield"></i> Vault credits remain intact.</li>`
-        : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li><li><i class="fa-solid fa-shield"></i> Créditos en bóveda protegidos.</li>`;
+      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li>` : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li>`;
     } else if (sesionUsuario.plan === 'city') {
       const cNom = sesionUsuario.planCity || 'Bogotá', cNomSeguro = escaparHtml(cNom);
       cardCredits?.classList.add('vip-mode');
@@ -124,9 +117,7 @@ function abrirModalCheckout(index, pestana = null) {
         if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn
-        ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>`
-        : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
+      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>` : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
     } else {
       cardCredits?.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
@@ -154,11 +145,28 @@ function abrirModalCheckout(index, pestana = null) {
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
-  // Sincronizar visibilidad de selectores según la opción seleccionada
+  // Sincronizar visibilidad y bloqueo de regalo freemium si ya fue reclamado en este dispositivo
   const radioActivo = document.querySelector('input[name="checkoutProduct"]:checked');
   const groupCity = document.getElementById("groupCitySelect"), groupEmail = document.getElementById("groupEmailInput");
   const optWelcome = document.getElementById("optWelcomeFree");
-  if (optWelcome) optWelcome.style.display = (sesionUsuario && sesionUsuario.welcomeCreditClaimed) ? 'none' : 'block';
+  const yaReclamado = typeof esDispositivoMarcadoComoReclamado === 'function' && esDispositivoMarcadoComoReclamado();
+  const bloquearWelcome = Boolean((sesionUsuario && sesionUsuario.welcomeCreditClaimed) || yaReclamado);
+
+  if (optWelcome) {
+    if (bloquearWelcome) {
+      optWelcome.classList.add('is-claimed');
+      const ribbon = optWelcome.querySelector('.freemium-ribbon');
+      if (ribbon) ribbon.textContent = (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en') ? '✓ CLAIMED' : '✓ YA CANJEADO';
+      const radioW = optWelcome.querySelector('input[type="radio"]');
+      if (radioW?.checked) {
+        radioW.checked = false;
+        const rSingle = document.getElementById('optSingleLead')?.querySelector('input[type="radio"]');
+        if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change', { bubbles: true })); }
+      }
+    } else {
+      optWelcome.classList.remove('is-claimed');
+    }
+  }
   if (groupCity) groupCity.style.display = (radioActivo?.value === 'subscription_city') ? 'block' : 'none';
   if (groupEmail) groupEmail.style.display = (radioActivo?.value === 'welcome_free') ? 'block' : 'none';
 
@@ -271,24 +279,12 @@ async function ejecutarPagoWompi() {
   const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const whatsappRaw = inputWa ? inputWa.value.trim() : '';
   const celularLimpio = whatsappRaw.replace(/\D/g, '');
-  const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 
-    ? celularLimpio.substring(2) 
-    : celularLimpio;
+  const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 ? celularLimpio.substring(2) : celularLimpio;
 
   if (!celular || celular.length < 10) {
-    if (errorBox) {
-      errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number. Example: 300 123 4567' : 'Por favor ingresa tu número de WhatsApp real (10 dígitos). Ejemplo: 300 123 4567');
-      errorBox.classList.remove('is-hidden');
-      errorBox.style.display = 'block';
-    }
-    if (inputWrapper) {
-      inputWrapper.classList.add('input-error-shake');
-      setTimeout(() => inputWrapper.classList.remove('input-error-shake'), 600);
-    }
-    if (inputWa) {
-      inputWa.focus();
-      inputWa.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (errorBox) { errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter your real 10-digit WhatsApp number.' : 'Por favor ingresa tu WhatsApp real (10 dígitos).'); errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block'; }
+    if (inputWrapper) { inputWrapper.classList.add('input-error-shake'); setTimeout(() => inputWrapper.classList.remove('input-error-shake'), 600); }
+    if (inputWa) { inputWa.focus(); inputWa.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
 
@@ -297,44 +293,57 @@ async function ejecutarPagoWompi() {
     errorBox.style.display = 'none';
   }
 
-  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP)
+  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP) con Doble Opt-In
   if (productType === 'welcome_free') {
     const inputEmail = document.getElementById('checkoutEmailInput'), emailError = document.getElementById('checkoutEmailError');
     const emailVal = inputEmail ? inputEmail.value.trim() : '';
     if (!emailVal || !emailVal.includes('@')) {
       if (emailError) {
-        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email to receive access.' : 'Por favor ingresa un correo válido para enviarte el acceso.');
+        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email.' : 'Por favor ingresa un correo válido.');
         emailError.classList.remove('is-hidden'); emailError.style.display = 'block';
       }
       inputEmail?.focus(); return;
     }
     if (emailError) { emailError.classList.add('is-hidden'); emailError.style.display = 'none'; }
     const btnPagar = document.getElementById('btnConfirmWompi'), textoOriginal = btnPagar ? btnPagar.innerHTML : '';
-    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Activating gift...' : 'Activando regalo...'}`; btnPagar.disabled = true; }
+    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Sending link...' : 'Enviando enlace...'}`; btnPagar.disabled = true; }
     try {
+      let deviceId = null;
+      if (typeof obtenerDeviceFingerprint === 'function') {
+        try { deviceId = await obtenerDeviceFingerprint(); } catch (_) {}
+      }
       const res = await fetch('/api/auth/welcome-credit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ celular, phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
+        body: JSON.stringify({ celular, phone: celular, email: emailVal, deviceId, lang: esIngles ? 'en' : 'es' })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo reclamar el regalo.'));
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      cerrarModalCheckout();
-      if (leadSeleccionado) {
-        const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
-        await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
-      } else {
+      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+
+      if (data.pendingVerification) {
+        if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
+        cerrarModalCheckout();
         mostrarNotificacionToast(
-          esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+          esIngles ? `📧 Activation link sent to ${data.email}. Check your inbox to unlock!` : `📧 Enviamos un enlace de activación a ${data.email}. ¡Ábrelo para activar tu regalo!`,
           'success',
-          { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0)', duration: 6000 }
+          { title: esIngles ? 'Confirm Email' : 'Confirma tu Correo', duration: 9000 }
         );
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem('hunter_pro_token', data.token);
+        if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+        if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
+        sesionUsuario = { ...data.user, token: data.token };
+        delete sesionUsuario.pin;
+        actualizarBadgeVip();
+        sincronizarFiltroCiudadUsuario();
+        cerrarModalCheckout();
+        if (leadSeleccionado) {
+          const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
+          await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+        }
       }
       return;
     } catch (errGift) {
@@ -349,25 +358,14 @@ async function ejecutarPagoWompi() {
   // Validación estricta de ciudad para Plan Pro Ciudad
   let ciudad = null;
   if (productType === 'subscription_city') {
-    const selectCity = document.getElementById('checkoutCitySelect');
-    const cityError = document.getElementById('checkoutCityError');
+    const selectCity = document.getElementById('checkoutCitySelect'), cityError = document.getElementById('checkoutCityError');
     ciudad = selectCity ? selectCity.value.trim() : '';
     if (!ciudad) {
-      if (cityError) {
-        cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city for this pass.' : 'Por favor selecciona la ciudad de cobertura para tu membresía.');
-        cityError.classList.remove('is-hidden');
-        cityError.style.display = 'block';
-      }
-      if (selectCity) {
-        selectCity.focus();
-        selectCity.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (cityError) { cityError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please select your coverage city.' : 'Por favor selecciona la ciudad de cobertura.'); cityError.classList.remove('is-hidden'); cityError.style.display = 'block'; }
+      if (selectCity) { selectCity.focus(); selectCity.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       return;
     }
-    if (cityError) {
-      cityError.classList.add('is-hidden');
-      cityError.style.display = 'none';
-    }
+    if (cityError) { cityError.classList.add('is-hidden'); cityError.style.display = 'none'; }
   }
 
   const btnPagar = document.getElementById('btnConfirmWompi');

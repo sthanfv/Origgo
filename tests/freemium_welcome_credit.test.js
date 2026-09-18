@@ -1,19 +1,23 @@
 /**
- * 🧪 PRUEBAS UNITARIAS: MODELO FREEMIUM (1 DESBLOQUEO GRATIS DE BIENVENIDA)
+ * 🧪 PRUEBAS UNITARIAS: MODELO FREEMIUM BLINDADO CONTRA ATAQUES SYBIL
  * tests/freemium_welcome_credit.test.js
  * 
- * Verifica de forma rigurosa:
- * 1. Acreditación atómica de 1 crédito gratis a un nuevo usuario.
- * 2. Marcado inmutable de welcomeCreditClaimed = true.
- * 3. Rechazo estricto (HTTP 409 CREDITO_YA_RECLAMADO) ante intentos repetidos.
- * 4. Validación Zod de números de celular de Colombia (prefijos móviles 3XX).
- * 5. Emisión de token JWT válido para sesión persistente.
+ * Verifica de forma rigurosa las 3 barreras de defensa en profundidad:
+ * 1. Doble Opt-In Obligatorio: Solicitud inicial devuelve pendingVerification = true sin emitir crédito inmediato ni JWT.
+ * 2. Verificación y Acreditación Atómica: /api/auth/welcome-verify quema el token, entrega 1 crédito y emite JWT firmado.
+ * 3. Prevención de Reutilización: Un token ya consumido es rechazado (TOKEN_YA_USADO).
+ * 4. Barrera de Correo Canonizado: Rechazo de correos duplicados con alias o puntos.
+ * 5. Filtro de Dominios Desechables: Rechazo de correos temporales (@tempmail.com, @yopmail.com, etc.).
+ * 6. Barrera de Dispositivo (Hardware ID): Rechazo de intentos desde un deviceId que ya reclamó.
+ * 7. Barrera de Celular Móvil (3XX): Rechazo de números fijos y aceptación polimórfica (celular/phone).
+ * 8. Blindaje Anti-Inyección XSS: Rechazo de correos con caracteres sospechosos.
  */
 
 const { describe, it, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
 const db = require('../lib/db');
 const welcomeCreditHandler = require('../lib/auth/welcome-credit');
+const welcomeVerifyHandler = require('../lib/auth/welcome-verify');
 const { verifyJwt } = require('../lib/crypto');
 const { requireEnv } = require('../lib/env');
 
@@ -37,19 +41,20 @@ function crearMockRes() {
   return res;
 }
 
-describe('🎁 Suite Freemium — 1 Desbloqueo Gratis de Bienvenida', () => {
+describe('🎁 Suite Freemium Anti-Sybil — 3 Barreras y Doble Opt-In', () => {
   beforeEach(() => {
     process.env.NODE_ENV = 'test';
   });
 
-  it('1. Debe acreditar 1 crédito gratis a un nuevo WhatsApp de Colombia y emitir JWT', async () => {
+  it('1. Debe solicitar confirmación (Doble Opt-In) sin otorgar crédito directo ni JWT', async () => {
     const celular = '310' + Math.floor(1000000 + Math.random() * 9000000);
-    const email = `test.freemium.${Date.now()}@origgo.online`;
+    const email = `test.optin.${Date.now()}@origgo.online`;
+    const deviceId = 'dev_fingerprint_' + Math.random().toString(36).substring(2, 15);
 
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '127.0.0.1' },
-      body: { celular, email, lang: 'es' }
+      body: { celular, email, deviceId, lang: 'es' }
     };
     const res = crearMockRes();
 
@@ -57,48 +62,138 @@ describe('🎁 Suite Freemium — 1 Desbloqueo Gratis de Bienvenida', () => {
 
     assert.equal(res.statusCode, 200, 'Debe responder HTTP 200');
     assert.equal(res.payload?.ok, true);
-    assert.equal(res.payload?.user?.credits, 1, 'Debe otorgar exactamente 1 crédito');
+    assert.equal(res.payload?.pendingVerification, true, 'Debe quedar pendiente de verificación');
+    assert.equal(res.payload?.token, undefined, 'NO debe emitir token JWT antes de verificar correo');
+  });
+
+  it('2. Debe verificar token de correo, entregar 1 crédito, registrar dispositivo y emitir JWT', async () => {
+    const celular = '311' + Math.floor(1000000 + Math.random() * 9000000);
+    const email = `test.verify.${Date.now()}@origgo.online`;
+    const deviceId = 'dev_fingerprint_ver_' + Math.random().toString(36).substring(2, 15);
+
+    const tokenObj = await db.createWelcomeVerificationToken(celular, email, deviceId, 60);
+
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      body: { token: tokenObj.token, lang: 'es' }
+    };
+    const res = crearMockRes();
+
+    await welcomeVerifyHandler(req, res);
+
+    assert.equal(res.statusCode, 200, 'Debe responder HTTP 200 tras verificar');
+    assert.equal(res.payload?.ok, true);
+    assert.equal(res.payload?.user?.credits, 1, 'Debe acreditar exactamente 1 crédito');
     assert.equal(res.payload?.user?.phone, celular);
-    assert.ok(res.payload?.token, 'Debe retornar un token JWT');
+    assert.ok(res.payload?.token, 'Debe retornar un token JWT de sesión');
 
     const decoded = verifyJwt(res.payload.token, JWT_SECRET);
     assert.ok(decoded, 'El token debe ser un JWT válido');
     assert.equal(decoded.phone, celular);
     assert.equal(decoded.credits, 1);
+
+    const isDevClaimed = await db.isDeviceClaimed(deviceId);
+    assert.equal(isDevClaimed, true, 'El deviceId debe estar marcado como reclamado');
+
+    const isMailClaimed = await db.isEmailClaimed(email);
+    assert.equal(isMailClaimed, true, 'El email debe estar marcado como reclamado');
   });
 
-  it('2. Debe rechazar con HTTP 409 CREDITO_YA_RECLAMADO en un segundo intento con el mismo número', async () => {
-    const celular = '320' + Math.floor(1000000 + Math.random() * 9000000);
-    const email = `duplicado.${Date.now()}@origgo.online`;
+  it('3. Debe rechazar con HTTP 400 TOKEN_YA_USADO al intentar reutilizar el mismo enlace', async () => {
+    const celular = '312' + Math.floor(1000000 + Math.random() * 9000000);
+    const email = `test.reuse.${Date.now()}@origgo.online`;
+    const deviceId = 'dev_fingerprint_reuse_' + Math.random().toString(36).substring(2, 15);
 
-    // Primer reclamo legítimo
-    const req1 = {
-      method: 'POST',
-      headers: { 'x-forwarded-for': '127.0.0.1' },
-      body: { celular, email }
-    };
+    const tokenObj = await db.createWelcomeVerificationToken(celular, email, deviceId, 60);
+
+    const req1 = { method: 'POST', headers: { 'x-forwarded-for': '127.0.0.1' }, body: { token: tokenObj.token } };
     const res1 = crearMockRes();
-    await welcomeCreditHandler(req1, res1);
+    await welcomeVerifyHandler(req1, res1);
     assert.equal(res1.statusCode, 200);
 
-    // Segundo reclamo con el mismo celular
-    const req2 = {
-      method: 'POST',
-      headers: { 'x-forwarded-for': '127.0.0.1' },
-      body: { celular, email: 'otro.correo@gmail.com' }
-    };
+    const req2 = { method: 'POST', headers: { 'x-forwarded-for': '127.0.0.1' }, body: { token: tokenObj.token } };
     const res2 = crearMockRes();
-    await welcomeCreditHandler(req2, res2);
+    await welcomeVerifyHandler(req2, res2);
 
-    assert.equal(res2.statusCode, 409, 'Debe rechazar con 409 conflicto');
-    assert.equal(res2.payload?.error, 'CREDITO_YA_RECLAMADO');
+    assert.equal(res2.statusCode, 400);
+    assert.equal(res2.payload?.error, 'TOKEN_YA_USADO');
   });
 
-  it('3. Debe rechazar números inválidos que no sean celulares móviles colombianos (3XX)', async () => {
+  it('4. Barrera Device Fingerprint: Debe rechazar con HTTP 409 DISPOSITIVO_YA_RECLAMADO si el hardware ya reclamó', async () => {
+    const celular1 = '313' + Math.floor(1000000 + Math.random() * 9000000);
+    const celular2 = '314' + Math.floor(1000000 + Math.random() * 9000000);
+    const deviceIdCompartido = 'hardware_id_fijo_' + Date.now();
+
+    const tkn = await db.createWelcomeVerificationToken(celular1, `correo1.${Date.now()}@origgo.online`, deviceIdCompartido);
+    const verifyRes = crearMockRes();
+    await welcomeVerifyHandler({ method: 'POST', headers: { 'x-forwarded-for': '127.0.0.1' }, body: { token: tkn.token } }, verifyRes);
+    assert.equal(verifyRes.statusCode, 200);
+
+    const reqFraud = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      body: { celular: celular2, email: `correo2.${Date.now()}@origgo.online`, deviceId: deviceIdCompartido }
+    };
+    const resFraud = crearMockRes();
+    await welcomeCreditHandler(reqFraud, resFraud);
+
+    assert.equal(resFraud.statusCode, 409, 'Debe rechazar con 409 conflicto');
+    assert.equal(resFraud.payload?.error, 'DISPOSITIVO_YA_RECLAMADO');
+  });
+
+  it('5. Barrera Email Canonizado: Debe rechazar alias de Gmail (+algo o puntos) si el correo ya reclamó', async () => {
+    const baseEmail = `usuario.prueba.${Date.now()}@gmail.com`;
+    const aliasEmail = baseEmail.replace('@gmail.com', '+ataque123@gmail.com');
+    const cel1 = '315' + Math.floor(1000000 + Math.random() * 9000000);
+    const cel2 = '316' + Math.floor(1000000 + Math.random() * 9000000);
+
+    const tkn = await db.createWelcomeVerificationToken(cel1, baseEmail, 'dev_1_' + Date.now());
+    const verifyRes = crearMockRes();
+    await welcomeVerifyHandler({ method: 'POST', headers: { 'x-forwarded-for': '127.0.0.1' }, body: { token: tkn.token } }, verifyRes);
+    assert.equal(verifyRes.statusCode, 200);
+
+    const reqAlias = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      body: { celular: cel2, email: aliasEmail, deviceId: 'dev_2_' + Date.now() }
+    };
+    const resAlias = crearMockRes();
+    await welcomeCreditHandler(reqAlias, resAlias);
+
+    assert.equal(resAlias.statusCode, 409);
+    assert.equal(resAlias.payload?.error, 'EMAIL_YA_RECLAMADO');
+  });
+
+  it('6. Barrera Filtro de Desechables: Debe rechazar dominios temporales (@tempmail, @yopmail, etc.)', async () => {
+    const dominiosDesechables = [
+      'spammer@tempmail.com',
+      'fraud@yopmail.com',
+      'fake@10minutemail.com',
+      'burner@mailinator.com',
+      'throwaway@guerrillamail.com'
+    ];
+
+    for (const correoTemporal of dominiosDesechables) {
+      const celular = '317' + Math.floor(1000000 + Math.random() * 9000000);
+      const req = {
+        method: 'POST',
+        headers: { 'x-forwarded-for': '127.0.0.1' },
+        body: { celular, email: correoTemporal, deviceId: 'dev_temp_' + Math.random().toString(36).substring(2, 10) }
+      };
+      const res = crearMockRes();
+      await welcomeCreditHandler(req, res);
+
+      assert.equal(res.statusCode, 400, `Debe rechazar el correo temporal: ${correoTemporal}`);
+      assert.equal(res.payload?.error, 'VALIDACION_FALLIDA');
+    }
+  });
+
+  it('7. Debe rechazar números inválidos que no sean celulares móviles colombianos (3XX)', async () => {
     const reqInvalido = {
       method: 'POST',
       headers: { 'x-forwarded-for': '127.0.0.1' },
-      body: { celular: '6012345678', email: 'fijo@bogota.com' } // Prefijo 601 es teléfono fijo
+      body: { celular: '6012345678', email: 'fijo@bogota.com' }
     };
     const res = crearMockRes();
 
@@ -108,8 +203,8 @@ describe('🎁 Suite Freemium — 1 Desbloqueo Gratis de Bienvenida', () => {
     assert.equal(res.payload?.error, 'VALIDACION_FALLIDA');
   });
 
-  it('4. Debe aceptar el campo polimórfico "phone" y procesar exitosamente', async () => {
-    const phone = '315' + Math.floor(1000000 + Math.random() * 9000000);
+  it('8. Debe aceptar el campo polimórfico "phone" y procesar exitosamente', async () => {
+    const phone = '318' + Math.floor(1000000 + Math.random() * 9000000);
     const email = `test.phone.${Date.now()}@origgo.online`;
 
     const req = {
@@ -123,11 +218,11 @@ describe('🎁 Suite Freemium — 1 Desbloqueo Gratis de Bienvenida', () => {
 
     assert.equal(res.statusCode, 200, 'Debe aceptar la clave "phone"');
     assert.equal(res.payload?.ok, true);
-    assert.equal(res.payload?.user?.credits, 1);
+    assert.equal(res.payload?.pendingVerification, true);
   });
 
-  it('5. Debe rechazar correos con caracteres sospechosos de inyección XSS o scripts', async () => {
-    const celular = '318' + Math.floor(1000000 + Math.random() * 9000000);
+  it('9. Debe rechazar correos con caracteres sospechosos de inyección XSS o scripts', async () => {
+    const celular = '319' + Math.floor(1000000 + Math.random() * 9000000);
     const correosMaliciosos = [
       'usuario<script>@gmail.com',
       'ataque";alert(1)@hack.com',

@@ -71,71 +71,71 @@ function aplicarPreferenciasUsuario(usr) {
   }
 }
 
+function establecerSesionDesdeToken(data, { msgEs, msgEn, titleEs, titleEn, isWelcome = false }) {
+  localStorage.setItem('hunter_pro_token', data.token);
+  if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+  if (isWelcome && typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado();
+  sesionUsuario = { ...data.user, token: data.token };
+  delete sesionUsuario.pin;
+  aplicarPreferenciasUsuario(data.user);
+  actualizarBadgeVip();
+  sincronizarFiltroCiudadUsuario();
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  mostrarNotificacionToast(esIngles ? msgEn : msgEs, 'success', { title: esIngles ? titleEn : titleEs, duration: 6000 });
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 /**
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
 async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL o token de acceso (magic / recovery)
   const urlParams = new URLSearchParams(window.location.search);
-  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token');
+  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token'), welcomeToken = urlParams.get('welcome_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
 
-  if (magicToken) {
+  // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo)
+  if (welcomeToken) {
     try {
-      const res = await fetch('/api/auth/magic-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: magicToken })
-      });
+      const res = await fetch('/api/auth/welcome-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: welcomeToken }) });
       const data = await res.json();
-      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      aplicarPreferenciasUsuario(data.user);
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(esIngles ? 'Welcome back! Instant access verified.' : '¡Bienvenido! Sesión iniciada con Enlace Mágico.', 'success', { title: esIngles ? 'Instant Access' : 'Acceso Instantáneo', duration: 5000 });
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de activación no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: '🎉 ¡Regalo activado! Tienes 1 desbloqueo directo listo.', msgEn: '🎉 Welcome gift activated! 1 free unlock ready.', titleEs: 'Regalo de Bienvenida ($0)', titleEn: 'Gift Activated', isWelcome: true });
       return;
     } catch (e) {
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Link' : 'Enlace no válido', duration: 7000 });
+      mostrarNotificacionToast(e.message || (esIngles ? 'The welcome link is invalid or expired.' : 'El enlace de activación no es válido o expiró.'), 'warning');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  if (magicToken) {
+    try {
+      const res = await fetch('/api/auth/magic-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: magicToken }) });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: '¡Bienvenido! Sesión iniciada con Enlace Mágico.', msgEn: 'Welcome back! Instant access verified.', titleEs: 'Acceso Instantáneo', titleEn: 'Instant Access' });
+      return;
+    } catch (e) {
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
 
   if (recoveryToken) {
     try {
-      const res = await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'recover_token', recoveryToken })
-      });
+      const res = await fetch('/api/auth/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'recover_token', recoveryToken }) });
       const data = await res.json();
-      if (!res.ok || !data.ok || !data.token) {
-        throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
-      }
-      localStorage.setItem('hunter_pro_token', data.token);
-      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
-      sesionUsuario = { ...data.user, token: data.token };
-      delete sesionUsuario.pin;
-      aplicarPreferenciasUsuario(data.user);
-      actualizarBadgeVip();
-      sincronizarFiltroCiudadUsuario();
-      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(esIngles ? 'Session successfully restored.' : 'Sesión restaurada correctamente.', 'success', { title: esIngles ? 'Access Restored' : 'Acceso recuperado', duration: 5000 });
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de recuperación no es válido o expiró.');
+      establecerSesionDesdeToken(data, { msgEs: 'Sesión restaurada correctamente.', msgEn: 'Session successfully restored.', titleEs: 'Acceso recuperado', titleEn: 'Access Restored' });
       return;
     } catch (e) {
       localStorage.removeItem('hunter_pro_token');
       if (typeof borrarCookieSegura === 'function') borrarCookieSegura('origgo_token');
       sesionUsuario = null;
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Recovery' : 'Recuperación no válida', duration: 7000 });
+      mostrarNotificacionToast(e.message || (esIngles ? 'The recovery link is invalid or has expired.' : 'El enlace de recuperación no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -244,12 +244,8 @@ function actualizarBadgeVip() {
       const palabraCred = cr === 1 ? (isEn ? 'Credit' : 'Crédito') : (isEn ? 'Credits' : 'Créditos');
       htmlBadge = `<span class="vip-btn-text">⚡ ${cr} ${palabraCred}</span>`;
       labelMovil = `${cr} Creds`;
-      htmlChipMovil = cr > 0 
-        ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>`
-        : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
-      const descCreds = cr > 0
-        ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.')
-        : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
+      htmlChipMovil = cr > 0 ? `<i class="fa-solid fa-bolt" style="color:#34D399;"></i><span>${cr} Creds</span>` : `<i class="fa-solid fa-bolt" style="color:#F59E0B;"></i><span>0 Creds</span>`;
+      const descCreds = cr > 0 ? (isEn ? 'Active balance to unlock verified direct owners.' : 'Saldo activo para desbloquear propietarios directos.') : (isEn ? 'No active balance. Top up to unlock contacts.' : 'Sin saldo activo. Recarga para desbloquear contactos.');
       htmlSideUser = `<div class="side-user-card"><div class="side-user-top"><span class="side-user-badge-creds">⚡ ${cr} ${palabraCred}</span><span class="side-user-phone">${escaparHtml(phoneFormateado)}</span></div><p class="side-user-desc">${descCreds}</p></div>`;
     }
 
@@ -382,6 +378,8 @@ async function restaurarSesionConPin() {
 
 /**
  * Cierra la sesión activa del usuario.
+ * Preserva intacta la marca Zombie del dispositivo (origgo_device_claimed)
+ * para evitar que el usuario burle el modelo freemium al desloguearse.
  */
 function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_pro_token');
@@ -390,6 +388,7 @@ function cerrarSesionUsuario() {
   localStorage.removeItem('hunter_unlocked_contacts');
   cacheContactosDesbloqueados = {};
   sesionUsuario = null;
+  if (typeof esDispositivoMarcadoComoReclamado === 'function') esDispositivoMarcadoComoReclamado();
   actualizarBadgeVip();
   renderizarInterfaz(datosActuales);
   const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
@@ -442,35 +441,39 @@ async function recuperarPinConReferencia() {
 async function solicitarMagicLinkPorCorreo() {
   const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
   const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnSendMagicLink');
-  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const btn = document.getElementById('btnSendMagicLink'), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
 
   if (!email || !email.includes('@')) {
     if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = isEn ? 'Please enter a valid email address.' : 'Por favor ingresa un correo electrónico válido.';
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
+      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
       msgBox.style.display = 'block';
     }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
   try {
-    const res = await fetch('/api/auth/magic-link', {
+    const response = await fetch('/api/auth/magic-link', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
+      body: JSON.stringify({ identifier: email, lang: isEn ? 'en' : 'es' })
     });
-    const data = await res.json();
+    const result = await response.json();
     if (msgBox) {
-      msgBox.className = res.ok ? 'restore-status-msg success' : 'restore-status-msg error';
-      msgBox.textContent = data.message || (res.ok ? (isEn ? 'Magic Link sent! Check your inbox.' : '¡Enlace Mágico enviado! Revisa tu correo.') : (isEn ? 'Could not send link.' : 'No se pudo enviar el enlace.'));
+      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'Instant access link sent to your inbox.' : 'Enlace de acceso rápido enviado a tu correo.') : (isEn ? 'Could not send access link.' : 'No se pudo enviar el enlace de acceso.'));
+      msgBox.style.display = 'block';
+      if (response.ok && inputEmail) inputEmail.value = '';
+    }
+  } catch (error) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
-  } catch (err) {
-    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.'; msgBox.style.display = 'block'; }
   } finally {
-    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send 1-Click Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
   }
 }
 

@@ -20,6 +20,7 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 11. **Autenticación Passwordless y Magic Link de 1 Clic (Fase 2):** Ingreso instantáneo por correo vía Resend API con token criptográfico temporal en Firestore (`magic_tokens`) que mitiga el olvido de PIN y la fricción de acceso, enlazando siempre al dominio canónico inmutable `https://origgo.online`.
 12. **Salvaguarda de Secreto Comercial y Memoria Volátil:** Los contactos y teléfonos descifrados residen exclusivamente en memoria volátil de JavaScript (`cacheContactosDesbloqueados`) sin persistir en texto plano en disco ni `localStorage`. Cuentan con TTL de 15 minutos e invalidación automática ante inactividad o cambio de pestaña (`visibilitychange`). Los leads previamente adquiridos por el usuario se re-descifran al instante a costo $0 sin consumir saldo adicional.
 13. **Cierre de Sesión Seguro y Purga de Credenciales:** Botón de "Cerrar Sesión" integrado en el menú lateral y modal de membresía que purga tokens JWT, cookies y memoria volátil, complementado con auto-reset reactivo ante usuarios eliminados (HTTP 404).
+14. **Blindaje Anti-Sybil Freemium y Defensa en Profundidad ($0):** Prevención de saqueo del catálogo mediante 3 barreras: (a) Identificador de Hardware / Device Fingerprint persistido en almacenamiento Zombie multicapa que sobrevive al cierre de sesión; (b) Normalización estricta de correo (eliminación de puntos y alias `+` en Gmail/Outlook) y lista negra de dominios temporales desechables; (c) Doble Opt-In obligatorio con verificación por correo antes de emitir cualquier crédito de regalo o token JWT.
 
 ## 🗺️ Índice Maestro de Comportamientos y Rutas de Archivos
 > **Guía rápida para desarrolladores**: Localiza inmediatamente qué archivo y qué función controlan cada funcionalidad del portal sin tener que buscar palabras clave a ciegas.
@@ -29,7 +30,8 @@ Este repositorio contiene la interfaz pública desacoplada e independiente dise�
 | **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | Generación SHA-256 de integridad para pasarela |
 | **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | Validación HMAC `timingSafeEqual` y ledger |
 | **Login por WhatsApp + PIN y reclamo post-pago** | [`api/auth/session.js`](api/auth/session.js) | `claim_reference`, reconciliación API Wompi |
-| **Modelo Freemium (1 Desbloqueo Gratis $0)** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | `claimWelcomeCredit()`, asignación atómica $0 |
+| **Modelo Freemium (1 Desbloqueo Gratis $0)** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | `createWelcomeVerificationToken()`, Doble Opt-In |
+| **Activación Freemium y emisión de JWT** | [`lib/auth/welcome-verify.js`](lib/auth/welcome-verify.js) | `consumeWelcomeVerificationToken()`, Anti-Sybil |
 | **Emisión de Magic Link sin contraseña** | [`lib/auth/magic-link.js`](lib/auth/magic-link.js) | Tokens criptográficos temporales en Firestore |
 | **Inicio de sesión con Magic Link** | [`lib/auth/magic-login.js`](lib/auth/magic-login.js) | `consumeMagicToken()`, emisión de JWT seguro |
 | **Emisión de desafíos anti-bot (PoW / Turnstile)** | [`api/auth/challenge.js`](api/auth/challenge.js) | Retos firmados HMAC-SHA256 con ventana temporal |
