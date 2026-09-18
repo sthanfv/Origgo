@@ -312,21 +312,24 @@ async function ejecutarPagoWompi() {
       if (typeof obtenerDeviceFingerprint === 'function') {
         try { deviceId = await obtenerDeviceFingerprint(); } catch (_) {}
       }
+      const pendingLeadId = leadSeleccionado?.id || null;
+      if (pendingLeadId) {
+        try { sessionStorage.setItem('origgo_pending_unlock_lead', pendingLeadId); } catch (_) {}
+      }
       const res = await fetch('/api/auth/welcome-credit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ celular, phone: celular, email: emailVal, deviceId, lang: esIngles ? 'en' : 'es' })
+        body: JSON.stringify({ celular, phone: celular, email: emailVal, deviceId, leadId: pendingLeadId, lang: esIngles ? 'en' : 'es' })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
 
       if (data.pendingVerification) {
-        if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
         cerrarModalCheckout();
         mostrarNotificacionToast(
-          esIngles ? `📧 Activation link sent to ${data.email}. Check your inbox to unlock!` : `📧 Enviamos un enlace de activación a ${data.email}. ¡Ábrelo para activar tu regalo!`,
+          esIngles ? `📧 Activation link sent to ${data.email}. Open it to reveal direct owner contact!` : `📧 Enviamos un enlace de activación a ${data.email}. Ábrelo para ver de inmediato el contacto directo del propietario.`,
           'success',
-          { title: esIngles ? 'Confirm Email' : 'Confirma tu Correo', duration: 9000 }
+          { title: esIngles ? 'Verify Email' : 'Verifica tu Correo', duration: 9000 }
         );
         return;
       }
@@ -470,12 +473,8 @@ async function ejecutarPagoWompi() {
   } catch (err) {
     registrarLogDesarrollo('error', '[Pago Wompi] Error:', err);
     const mensajeError = err?.message || (typeof err === 'string' ? err : 'Error al conectar con la pasarela de pagos.');
-    if (errorBox) {
-      errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`;
-      errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block';
-    } else {
-      mostrarNotificacionToast(`⚠️ ${mensajeError}`);
-    }
+    if (errorBox) { errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escaparHtml(mensajeError)}`; errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block'; }
+    else mostrarNotificacionToast(`⚠️ ${mensajeError}`);
   } finally {
     pagoWompiEnProgreso = false;
     if (btnPagar) { btnPagar.innerHTML = textoOriginal; btnPagar.disabled = false; }

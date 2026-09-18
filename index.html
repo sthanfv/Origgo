@@ -643,10 +643,10 @@
           <span class="checkout-input-help" data-i18n="checkout_help_whatsapp">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
         </div>
 
-        <!-- Formulario de Correo Electrónico (para Magic Link y Confirmación) -->
+        <!-- Formulario de Correo Electrónico (para Acceso Seguro y Verificación) -->
         <div class="checkout-form-group is-hidden" id="groupEmailInput">
           <label for="checkoutEmailInput" class="checkout-form-label">
-            <i class="fa-solid fa-envelope checkout-icon-email"></i> <span data-i18n="checkout_label_email">Correo Electrónico (para Enlace Mágico sin PIN):</span>
+            <i class="fa-solid fa-envelope checkout-icon-email"></i> <span data-i18n="checkout_label_email">Correo Electrónico (para Acceso Seguro):</span>
           </label>
           <div class="checkout-input-wrapper" id="checkoutEmailWrapper">
             <input 
@@ -660,7 +660,7 @@
             />
           </div>
           <div id="checkoutEmailError" class="checkout-inline-error is-hidden"></div>
-          <span class="checkout-input-help" data-i18n="checkout_help_email">Te enviaremos tu Enlace Mágico de acceso instantáneo sin contraseñas ni PINs difíciles.</span>
+          <span class="checkout-input-help" data-i18n="checkout_help_email">Te enviaremos tu enlace de acceso seguro sin contraseñas ni PINs difíciles.</span>
         </div>
 
         <!-- Botón de Acción Wompi / Reclamar Regalo -->
@@ -737,7 +737,7 @@
           <!-- Recuperación Automática por Correo Electrónico (100% Autoservicio) -->
           <div class="auto-recovery-box" id="autoRecoveryBox">
             <button type="button" class="btn-toggle-recovery" id="btnToggleAutoRecovery">
-              <span><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="checkout_forgot_pin_btn">¿Olvidaste tu Código? Restaurar por Correo</span></span>
+              <span><i class="fa-solid fa-envelope-open-text"></i> <span data-i18n="checkout_forgot_pin_btn">¿Olvidaste tu Código? Restaurar por Correo</span></span>
               <i class="fa-solid fa-chevron-down recovery-toggle-icon" id="recoveryToggleIcon"></i>
             </button>
             <div id="recoveryContentArea" class="recovery-content-area is-hidden">
@@ -764,7 +764,7 @@
                   <i class="fa-solid fa-key"></i> <span data-i18n="checkout_btn_send_instructions">Recuperar PIN</span>
                 </button>
                 <button type="button" class="btn-confirm-wompi btn-magic-link" id="btnSendMagicLink" style="flex: 1; min-width: 140px;">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="checkout_btn_magic_link">Enlace Mágico 1 Clic</span>
+                  <i class="fa-solid fa-envelope-circle-check"></i> <span data-i18n="checkout_btn_magic_link">Acceso Seguro sin PIN</span>
                 </button>
               </div>
               <div id="recoveryResultMsg" class="restore-status-msg restore-status-recovery-result is-hidden"></div>

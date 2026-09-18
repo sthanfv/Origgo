@@ -352,12 +352,18 @@ async function ejecutarDesbloqueoLead(lead, index) {
         ? `👑 Contact unlocked at zero cost via your Pro Pass!${restHoy}`
         : `👑 ¡Contacto desbloqueado sin costo por tu Membresía Pro!${restHoy}`;
     } else {
-      const palabraCredito = data.creditsRemaining === 1
-        ? (esIngles ? 'credit' : 'crédito')
-        : (esIngles ? 'credits' : 'créditos');
-      mensajeExito = esIngles
-        ? `🎉 Contact unlocked! Remaining balance: ${data.creditsRemaining} ${palabraCredito}.`
-        : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
+      if (data.creditsRemaining === 0) {
+        mensajeExito = esIngles
+          ? '🎉 Direct owner contact unlocked! WhatsApp & call ready.'
+          : '🎉 ¡Contacto del propietario desbloqueado! WhatsApp y llamada listos.';
+      } else {
+        const palabraCredito = data.creditsRemaining === 1
+          ? (esIngles ? 'credit' : 'crédito')
+          : (esIngles ? 'credits' : 'créditos');
+        mensajeExito = esIngles
+          ? `🎉 Contact unlocked! Remaining balance: ${data.creditsRemaining} ${palabraCredito}.`
+          : `🎉 ¡Contacto desbloqueado! Saldo restante: ${data.creditsRemaining} ${palabraCredito}.`;
+      }
     }
     mostrarNotificacionToast(mensajeExito);
   } catch (err) {
@@ -468,7 +474,25 @@ function abrirDossierImprimible(leadId) {
       <button onclick="window.print()" class="btn" style="font-size:14px;padding:12px 28px;">🖨️ ${isEn ? 'Print / Save as PDF' : 'Imprimir / Guardar como PDF'}</button>
     </div>
   </body></html>`;
-  w.document.write(html);
-  w.document.close();
+  w.document.write(html); w.document.close();
 }
 window.abrirDossierImprimible = abrirDossierImprimible;
+
+/**
+ * Desbloquea automáticamente un lead por su ID, enfocando la tarjeta en pantalla.
+ * @param {string} leadId
+ */
+async function ejecutarDesbloqueoLeadPorId(leadId) {
+  if (!leadId) return;
+  let intentos = 0;
+  while ((!datosActuales?.leads || datosActuales.leads.length === 0) && intentos < 15) {
+    await new Promise(r => setTimeout(r, 200));
+    intentos++;
+  }
+  const idx = datosActuales?.leads ? datosActuales.leads.findIndex(l => String(l.id) === String(leadId)) : -1;
+  if (idx === -1) return;
+  await ejecutarDesbloqueoLead(datosActuales.leads[idx], idx);
+  const card = document.querySelector(`.bento-card[data-lead-id="${leadId}"]`) || document.querySelector(`.bento-card[data-index="${idx}"]`);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+window.ejecutarDesbloqueoLeadPorId = ejecutarDesbloqueoLeadPorId;

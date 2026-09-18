@@ -3919,7 +3919,7 @@ main {
   text-transform: uppercase;
 }
 
-/* 🎁 Estilos Freemium & Enlace Mágico (Fase 2 CRO) */
+/* 🎁 Estilos Freemium & Acceso Seguro (Fase 2 CRO) */
 .pricing-option-card.freemium-option { grid-column: 1 / -1; border-color: hsla(158, 64%, 52%, 0.4); background: linear-gradient(145deg, hsla(158, 64%, 52%, 0.1), transparent); padding: 1rem 1.15rem; }
 .pricing-option-card.freemium-option .option-header-row { flex-direction: row; justify-content: space-between; align-items: baseline; }
 .pricing-option-card.freemium-option.active-option, .pricing-option-card.freemium-option:has(input:checked) { border-color: var(--accent-emerald); box-shadow: 0 0 0 1px var(--accent-emerald), 0 8px 20px -4px var(--accent-emerald-glow); }

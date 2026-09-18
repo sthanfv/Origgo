@@ -63,12 +63,8 @@ let criterioOrdenActivo = "recientes";
 
 function aplicarPreferenciasUsuario(usr) {
   if (!usr) return;
-  if (usr.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && usr.preferredLang !== obtenerIdiomaActual()) {
-    cambiarIdioma(usr.preferredLang);
-  }
-  if (usr.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && usr.preferredTheme !== obtenerTemaActual()) {
-    aplicarTema(usr.preferredTheme);
-  }
+  if (usr.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && usr.preferredLang !== obtenerIdiomaActual()) cambiarIdioma(usr.preferredLang);
+  if (usr.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && usr.preferredTheme !== obtenerTemaActual()) aplicarTema(usr.preferredTheme);
 }
 
 function establecerSesionDesdeToken(data, { msgEs, msgEn, titleEs, titleEn, isWelcome = false }) {
@@ -94,17 +90,24 @@ async function inicializarSesionUsuario() {
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
 
-  // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo)
+  // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo) con auto-desbloqueo de propiedad
   if (welcomeToken) {
     try {
+      const targetLeadId = urlParams.get('lead') || sessionStorage.getItem('origgo_pending_unlock_lead');
+      sessionStorage.removeItem('origgo_pending_unlock_lead');
       const res = await fetch('/api/auth/welcome-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: welcomeToken }) });
       const data = await res.json();
       if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de activación no es válido o expiró.');
-      establecerSesionDesdeToken(data, { msgEs: '🎉 ¡Regalo activado! Tienes 1 desbloqueo directo listo.', msgEn: '🎉 Welcome gift activated! 1 free unlock ready.', titleEs: 'Regalo de Bienvenida ($0)', titleEn: 'Gift Activated', isWelcome: true });
+      establecerSesionDesdeToken(data, { 
+        msgEs: targetLeadId ? '🎉 ¡Acceso activado! Revelando contacto directo...' : '🎉 ¡Acceso activado! Tienes 1 desbloqueo directo listo.', 
+        msgEn: targetLeadId ? '🎉 Access verified! Revealing direct contact...' : '🎉 Access verified! 1 courtesy unlock ready.', 
+        titleEs: 'Desbloqueo de Cortesía ($0)', titleEn: 'Courtesy Pass', isWelcome: true 
+      });
+      if (targetLeadId) setTimeout(() => { if (typeof ejecutarDesbloqueoLeadPorId === 'function') ejecutarDesbloqueoLeadPorId(targetLeadId); }, 350);
       return;
     } catch (e) {
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The welcome link is invalid or expired.' : 'El enlace de activación no es válido o expiró.'), 'warning');
+      mostrarNotificacionToast(e.message || (esIngles ? 'The activation link is invalid or expired.' : 'El enlace de activación no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -114,11 +117,11 @@ async function inicializarSesionUsuario() {
       const res = await fetch('/api/auth/magic-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: magicToken }) });
       const data = await res.json();
       if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
-      establecerSesionDesdeToken(data, { msgEs: '¡Bienvenido! Sesión iniciada con Enlace Mágico.', msgEn: 'Welcome back! Instant access verified.', titleEs: 'Acceso Instantáneo', titleEn: 'Instant Access' });
+      establecerSesionDesdeToken(data, { msgEs: '¡Bienvenido! Sesión iniciada con Acceso Seguro.', msgEn: 'Welcome back! Secure access verified.', titleEs: 'Acceso Seguro', titleEn: 'Secure Access' });
       return;
     } catch (e) {
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning');
+      mostrarNotificacionToast(e.message || (esIngles ? 'The access link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
@@ -473,11 +476,11 @@ async function solicitarMagicLinkPorCorreo() {
       msgBox.style.display = 'block';
     }
   } finally {
-    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send 1-Click Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${isEn ? 'Send Direct Link' : 'Enviar Enlace de Acceso'}`; btn.disabled = false; }
   }
 }
 
-// 🛡️ Secreto Comercial: purga automática de contactos volátiles tras inactividad prolongada (>15m)
+// 🛡️ Secreto Comercial: purga automática tras inactividad (>15m) y sincronización multi-pestaña
 let _lastActive = Date.now();
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
@@ -487,5 +490,6 @@ if (typeof document !== 'undefined') {
       if (typeof renderizarInterfaz === 'function' && datosActuales) renderizarInterfaz(datosActuales);
     }
   });
+  window.addEventListener('storage', e => { if (e.key === 'hunter_pro_token' && typeof inicializarSesionUsuario === 'function') inicializarSesionUsuario(); });
 }
 window.solicitarMagicLinkPorCorreo = solicitarMagicLinkPorCorreo;

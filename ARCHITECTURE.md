@@ -137,14 +137,14 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | Archivo | Responsabilidad | Líneas |
 | :--- | :--- | :---: |
 | `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 494 |
-| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404, detección ?welcome_token= y protección de secreto comercial. | 492 |
+| `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404, sincronización multi-pestaña, detección ?welcome_token= y secreto comercial. | 496 |
 | `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 299 |
 | `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 177 |
 | `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 484 |
 | `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 159 |
 | `06-cards.js` | Renderizado Bento Grid, re-desbloqueo de contactos $0, skeletons y precios. | 496 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, actualización DOM y revelación de datos. | 475 |
-| `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0 anti-sybil, idempotencia y widget checkout. | 497 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, auto-desbloqueo por ID, actualización DOM y revelación de datos. | 499 |
+| `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0 anti-sybil, idempotencia y widget checkout. | 496 |
 | `09-ui-effects.js`| Menú móvil animado de hamburguesa a X (estilo Desmulta), háptica y temas. | 489 |
 | `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado, logout y orquestación. | 497 |
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 263 |
@@ -191,6 +191,12 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
 - **Aceleración por Hardware:** Los skeletons y animaciones de onda utilizan `transform: translateZ(0)` y `will-change: background-position` garantizando 60 FPS estables sin recalentamiento de CPU.
 - **Respeto a Accesibilidad:** Conforme a WCAG, se implementa `@media (prefers-reduced-motion: reduce)` para reemplazar el desplazamiento visual continuo por un pulso suave de opacidad.
 - **Cero Cumulative Layout Shift (CLS = 0):** Las dimensiones de los skeletons coinciden de forma exacta con la tarjeta Bento definitiva.
+
+### 4.8 Continuidad de Oportunidad, Auto-Desbloqueo al Validar Correo y Sincronización Multi-Pestaña
+- **Continuidad de Oportunidad (`&lead=...`):** Al solicitar el regalo de bienvenida desde una tarjeta específica, el backend (`lib/auth/welcome-credit.js`) asocia el identificador del inmueble en el correo transaccional personalizado y el cliente lo preserva en `sessionStorage`.
+- **Auto-Desbloqueo Reactivo (`modules/07-unlock.js` & `modules/01-state.js`):** Al retornar con `?welcome_token=...`, el cliente valida la cuenta, ejecuta `ejecutarDesbloqueoLeadPorId()` y enfoca la tarjeta con scroll suave automático (`scrollIntoView`).
+- **Sincronización Multi-Pestaña:** Escucha el evento `storage` en `window` para actualizar de inmediato cualquier otra pestaña abierta si el usuario confirma su enlace en otra ventana o WebView de correo.
+- **Notificación Positiva y Asertiva:** Sustitución de mensajes confusos ("0 créditos restantes") por confirmaciones asertivas de contacto del propietario desbloqueado listo para llamada y WhatsApp.
 
 ---
 

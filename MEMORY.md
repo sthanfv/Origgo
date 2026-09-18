@@ -1,6 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 23:55 (GMT-5)
+Última actualización: 2026-09-18 00:20 (GMT-5)
+
+---
+
+- 93. **Fase 2 Origgo v2.0: Profesionalización de Nomenclatura ("Enlace Mágico" → "Acceso Seguro"), Auto-Desbloqueo de Propiedad en Bienvenida y Blindaje Anti-Intercepción**:
+    - **Diagnóstico Forense y Causa Raíz:**
+      1. *Pérdida de Jerga Profesional:* El uso de términos como "Enlace Mágico", "Magic Link" o iconos de varitas (`fa-wand-magic-sparkles`) en la UI y notificaciones disminuía la seriedad institucional requerida por compradores e inversionistas de bienes raíces de alto valor.
+      2. *Ruptura del Flujo de Conversión (Lead Huérfano):* Cuando un usuario hacía clic en "Desbloquear" en una propiedad específica y solicitaba el regalo de bienvenida freemium, el correo no preservaba el identificador del inmueble (`leadId`). Al regresar desde el correo, la sesión iniciaba pero la tarjeta seleccionada permanecía bloqueada, obligando al usuario a buscar manualmente el inmueble en el catálogo.
+      3. *Falsa Sensación de Crédito No Activado:* Al desbloquear la propiedad de cortesía, el toast informaba "Saldo restante: 0 créditos", lo cual generaba alarma y desconcierto en el usuario, interpretando erróneamente que el crédito no se había entregado o ya se había agotado antes de usarlo.
+      4. *Marcado Local Prematuro de Dispositivo:* En `modules/08-checkout.js`, el cliente llamaba a `marcarDispositivoComoReclamado()` al enviar el formulario freemium (antes de que el usuario confirmara su correo), bloqueando preventivamente el dispositivo si la verificación quedaba pendiente o fallaba.
+      5. *Falta de Sincronización Multi-Pestaña:* Si el usuario abría el enlace del correo en una nueva pestaña o navegador alterno, la pestaña original no se enteraba ni actualizaba su estado de sesión.
+    - **Solución y Mejoras Implementadas:**
+      1. *Erradicación Total de "Enlace Mágico" y Profesionalización Institucional:*
+         - En `index.html`, `modules/13-i18n.js`, `modules/01-state.js`, `lib/email-templates.js`, `lib/auth/magic-link.js` y `styles/10-checkout-plans.css`: Reemplazado sistemáticamente por "Acceso Seguro sin Contraseña", "Enlace de Activación Directa" e iconos institucionales (`fa-envelope-circle-check`, `fa-envelope-open-text`).
+      2. *Continuidad del Inmueble y Auto-Desbloqueo Reactivo:*
+         - En `lib/validation.js`: `welcomeCreditSchema` admite y sanitiza `leadId: z.string().trim().min(3).max(64).optional().nullable()`.
+         - En `lib/auth/welcome-credit.js`: Consulta el título y ubicación de la propiedad vía `obtenerLeadPorId(leadId)` y genera el enlace canónico con `&lead=${encodeURIComponent(leadId)}`.
+         - En `lib/email-templates.js`: Plantilla personalizada que destaca el título de la oportunidad y botón directo: "VER CONTACTO DEL PROPIETARIO →".
+         - En `modules/08-checkout.js`: Envía `leadId` al backend y lo almacena temporalmente en `sessionStorage`. Eliminado el marcado prematuro de hardware.
+         - En `modules/07-unlock.js` y `modules/01-state.js`: Al recibir `?welcome_token=` y `&lead=...`, se ejecuta `ejecutarDesbloqueoLeadPorId()`, revelando el contacto directo y realizando scroll automático fluido (`scrollIntoView`) hacia la tarjeta.
+      3. *Toast Positivo y Asertivo:*
+         - En `modules/07-unlock.js`: Cuando el saldo es 0 tras el desbloqueo, el toast celebra el resultado: `"🎉 ¡Contacto del propietario desbloqueado! WhatsApp y llamada listos."`.
+      4. *Sincronización Multi-Pestaña y Anti-Intercepción:*
+         - En `modules/01-state.js`: Añadido listener de `window.addEventListener('storage', ...)` para sincronizar sesiones en tiempo real entre ventanas.
+         - Token de 64 hex atómico en Firestore, quemado con `used: true` al primer uso, con TTL de 60m y purga inmediata de la URL con `history.replaceState`.
+    - **Validación Automatizada y Modularidad:**
+      - *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente $\le 500$ líneas (`01-state.js` en 496, `07-unlock.js` en 499, `08-checkout.js` en 496, `13-i18n.js` en 499, `10-checkout-plans.css` en 494).
+      - *Compilación:* `node scripts/build.js` regeneró `dist/`, `style.css` (192.8 KB), `style.min.css` (147.4 KB), `app.js` (332.6 KB), `app.min.js` (297.8 KB).
+      - *DevSecOps:* `node scripts/validate.js` aprobó las 8 fases al 100% (0 errores).
+      - *Playwright E2E:* 7/7 pruebas aprobadas al 100% en Chromium (17.3s).
+    - **Archivos Afectados:**
+      - `lib/validation.js`, `lib/auth/welcome-credit.js`, `lib/auth/magic-link.js`, `lib/email-templates.js`, `modules/01-state.js`, `modules/07-unlock.js`, `modules/08-checkout.js`, `modules/13-i18n.js`, `styles/10-checkout-plans.css`, `index.html`, `README.md`, `ARCHITECTURE.md`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 
