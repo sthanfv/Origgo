@@ -4,6 +4,22 @@
 
 ---
 
+- 95. **Consolidación Canónica Estricta 301 de Dominio en Vercel (Resolución Google Search Console: "Duplicada" www vs raíz) y Propuesta de Valor**:
+    - **Diagnóstico y Análisis Forense de Search Console:**
+      1. *Fragmentación de Indexación:* Google Search Console reportó *"Duplicada: Google ha elegido una versión canónica diferente a la del usuario"* para `https://origgo.online/`, habiendo indexado previamente la versión con subdominio `https://www.origgo.online`.
+      2. *Falta de Redirección Forzada en Borde:* Aunque `index.html` poseía `<link rel="canonical" href="https://origgo.online/">`, Vercel servía el contenido bajo ambos hosts sin forzar `HTTP 301 Moved Permanently`.
+    - **Solución Implementada:**
+      1. *Regla de Redirección 301 Permanente en `vercel.json`:*
+         - Configurado bloque `redirects` filtrando por `host: "www.origgo.online"` hacia `https://origgo.online/:path*` con `permanent: true`.
+         - Garantiza que Googlebot, crawlers y usuarios que entren por `www` sean redirigidos inmediatamente con código 301 a la URL canónica raíz.
+         - Permite que la validación iniciada en Search Console concluya con éxito, unificando el PageRank, favicon 48x48 y meta-descripción.
+      2. *Propuesta de Valor Consolidada:*
+         - «Nosotros rastreamos y filtramos el mercado por ti. Tú negocias directo con el dueño.»
+    - **Archivos Afectados:**
+      - `vercel.json`, `MEMORY.md`.
+
+---
+
 - 94. **Fase 3 Origgo v2.0: Escalabilidad Masiva de Datos (Paginación Serverless Pura, Desacoplamiento Monolítico e Indexación en Backend con Caché Edge CDN)**:
     - **Diagnóstico Forense y Causa Raíz de la Saturación con 5.000+ Propiedades:**
       1. *Descarga Monolítica Masiva en Móviles:* El frontend (`modules/03-api.js`) realizaba la descarga completa del archivo `inmobiliario.json` (15-25 MB al escalar a 5.000 propiedades). Esto agotaba los planes de datos en conexiones móviles lentas (3G/4G) y saturaba la CPU del teléfono creando 5.000 objetos en el Heap de JavaScript.
