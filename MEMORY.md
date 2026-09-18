@@ -1,6 +1,34 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-17 19:00 (GMT-5)
+Última actualización: 2026-09-17 19:35 (GMT-5)
+
+---
+
+- 89. **Fase 2 Origgo v2.0: Conversión y Reducción de Fricción (CRO & Growth) — Modelo Freemium (1 Desbloqueo Gratis de Bienvenida a $0 COP), Autenticación Sin Contraseña (Magic Link de 1 Clic con Resend API) y Animación Geométrica Fluida de Menú Móvil (Estilo Desmulta)**:
+    - **Diagnóstico y Causa Raíz de Fricción:**
+      1. *Fricción y Desconfianza Inicial de Compra:* Compradores e inversionistas se resistían a pagar de inmediato por temor a fraudes o estafas sin antes verificar que el número revelado pertenecía efectivamente a un propietario particular directo.
+      2. *Fricción Cognitiva de PIN de 4 dígitos:* Recordar un PIN numérico de 4 dígitos generaba abandonos en usuarios que cambiaban de dispositivo o borraban cookies/caché.
+      3. *Animación Rígida de Menú Móvil:* El botón de hamburguesa realizaba un salto abrupto entre `fa-bars` y `fa-xmark`, careciendo de la fluidez y elegancia observada en la versión móvil de Desmulta.
+    - **Solución y Mejoras Implementadas:**
+      1. *Modelo Freemium ("1 Desbloqueo Gratis de Bienvenida" - $0 COP):*
+         - **Lógica en Backend (`lib/auth/welcome-credit.js`, `api/auth.js`):** `claimWelcomeCredit(phone, email)` en `lib/db.js` verifica atómicamente si el usuario ya existe o si ya reclamó su crédito de cortesía (`welcomeClaimed: true`). Al primer canje, asigna 1 crédito gratuito ($0 COP), genera un PIN seguro y despacha un correo transaccional de bienvenida vía Resend API (`lib/email-templates.js`).
+         - **Experiencia en Frontend (`modules/08-checkout.js`, `styles/10-checkout-plans.css`, `index.html`):** Maquetada la tarjeta destacada `#optWelcomeFree` con ribbon dorado "🎁 1 Desbloqueo Gratis - $0 COP", requiriendo WhatsApp y Correo electrónico. Al canjear, se guarda la sesión JWT localmente y se desbloquea de inmediato en vivo el contacto directo del inmueble seleccionado en pantalla sin pasar por pasarelas de pago.
+      2. *Autenticación Sin Contraseña (Magic Link de 1 Clic con Resend API):*
+         - **Emisión Segura de Tokens (`lib/auth/magic-link.js`):** `createMagicToken(phone, email, ttlMinutes = 30)` en `lib/db.js` almacena un token criptográfico de un solo uso en la colección `magic_tokens`.
+         - **Blindaje de Reglas Firestore (`firestore.rules`):** Regla zero-trust para `/magic_tokens/{tokenId}` (`allow read, write: if false;`), permitiendo acceso exclusivo al backend serverless con Firebase Admin SDK.
+         - **Despacho Transaccional (`lib/email-templates.js`):** Plantilla HTML responsiva despachada vía Resend API con enlace directo `https://origgo.online/?magic_token=...`.
+         - **Consumo e Inicio de Sesión (`lib/auth/magic-login.js`):** `consumeMagicToken(token)` en `lib/db.js` valida atómicamente la vigencia del token, lo marca como usado y emite un JWT firmado de sesión.
+         - **Auto-Login Silencioso en Cliente (`modules/01-state.js`):** Detección reactiva de `?magic_token=` al cargar la app, POST automático a `/api/auth/magic-login`, restauración de sesión, actualización de UI y limpieza de la URL mediante `history.replaceState`. Botón "Enlace Mágico 1 Clic" (`#btnSendMagicLink`) integrado en el modal de recuperación de cuenta.
+      3. *Animación Geométrica Fluida de Menú Móvil (Estilo Desmulta):*
+         - Maquetación de 3 barras geométricas (`.hamburger-bar.bar-1`, `.bar-2`, `.bar-3`) en `#btnNavMenuBottom`.
+         - En `styles/11-mobile.css`: Animación con `transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)`. Al alternar `.is-active`, `.bar-1` rota $45^\circ$, `.bar-3` rota $-45^\circ$ y `.bar-2` hace fade-out y reducción de escala a $0.3$, transformándose fluidamente en una "X" verde esmeralda idéntica a Desmulta.
+         - En `modules/09-ui-effects.js`: Corrección forense del selector de etiqueta (`span[data-i18n="nav_menu"]`) para garantizar que el texto "Cerrar" no se superponga sobre las barras.
+    - **Validación Automatizada y Modularidad:**
+      1. *Estándar Desmulta:* Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el límite $\le 500$ líneas (`01-state.js` en 494, `08-checkout.js` en 499, `09-ui-effects.js` en 489, `10-listeners.js` en 496, `13-i18n.js` en 499, `10-checkout-plans.css` en 490, `11-mobile.css` en 471).
+      2. *Pruebas Unitarias DevSecOps:* `tests/freemium_welcome_credit.test.js` (3/3 pasados) y `tests/magic_link_auth.test.js` (3/3 pasados). Suite `scripts/validate.js` con las 8 fases aprobadas al 100% (0 errores).
+      3. *Pruebas E2E Playwright (`tests/e2e/smoke.spec.js`):* 7/7 pruebas aprobadas en Chromium (26.7s), certificando visualmente la "X" esmeralda y la tarjeta freemium ($0 COP).
+    - **Archivos Afectados:**
+      - `api/auth.js`, `firestore.rules`, `index.html`, `lib/db.js`, `lib/email-templates.js`, `lib/validation.js`, `lib/auth/magic-link.js`, `lib/auth/magic-login.js`, `lib/auth/welcome-credit.js`, `modules/01-state.js`, `modules/08-checkout.js`, `modules/09-ui-effects.js`, `modules/10-listeners.js`, `modules/13-i18n.js`, `styles/10-checkout-plans.css`, `styles/11-mobile.css`, `scripts/validate.js`, `tests/freemium_welcome_credit.test.js`, `tests/magic_link_auth.test.js`, `tests/e2e/smoke.spec.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

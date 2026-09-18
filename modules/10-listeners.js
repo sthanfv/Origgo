@@ -292,7 +292,8 @@ function configurarListeners() {
 
   // Selección visual de tarjetas de producto en el modal
   const optionCards = document.querySelectorAll(".pricing-option-card");
-  const groupCitySelect = document.getElementById("groupCitySelect");
+  const groupCitySelect = document.getElementById("groupCitySelect"), groupEmailInput = document.getElementById("groupEmailInput");
+  const btnPagar = document.getElementById("btnConfirmWompi");
   optionCards.forEach(card => {
     card.addEventListener("click", () => {
       optionCards.forEach(c => c.classList.remove("active-option"));
@@ -300,8 +301,17 @@ function configurarListeners() {
       const radio = card.querySelector('input[type="radio"]');
       if (radio) {
         radio.checked = true;
-        if (groupCitySelect) {
-          groupCitySelect.style.display = (radio.value === 'subscription_city') ? 'block' : 'none';
+        const val = radio.value, isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+        if (groupCitySelect) groupCitySelect.style.display = (val === 'subscription_city') ? 'block' : 'none';
+        if (groupEmailInput) groupEmailInput.style.display = (val === 'welcome_free') ? 'block' : 'none';
+        if (btnPagar) {
+          if (val === 'welcome_free') {
+            btnPagar.innerHTML = `<i class="fa-solid fa-gift"></i> <span>${isEn ? 'Claim 1 Free Unlock ($0 COP)' : 'Reclamar 1 Desbloqueo Gratis ($0 COP)'}</span>`;
+            btnPagar.className = 'btn-confirm-wompi btn-claim-freemium';
+          } else {
+            btnPagar.innerHTML = `<i class="fa-solid fa-lock"></i> <span>${isEn ? 'Proceed to Secure Checkout with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>`;
+            btnPagar.className = 'btn-confirm-wompi';
+          }
         }
       }
     });
@@ -316,20 +326,16 @@ function configurarListeners() {
     });
   }
 
-  // Botón Confirmar Pago Wompi
-  const btnPagar = document.getElementById("btnConfirmWompi");
-  if (btnPagar) {
-    btnPagar.addEventListener("click", ejecutarPagoWompi);
-  }
+  // Botón Confirmar Pago Wompi / Reclamar Regalo
+  if (btnPagar) btnPagar.addEventListener("click", ejecutarPagoWompi);
 
   // Sanitización y limpieza de error en tiempo real para inputs numéricos
   const inputWaReal = document.getElementById("checkoutWhatsappInput");
   if (inputWaReal) {
     inputWaReal.addEventListener("input", (e) => {
       e.target.value = e.target.value.replace(/\D/g, '');
-      const errBox = document.getElementById("checkoutPhoneError");
+      const errBox = document.getElementById("checkoutPhoneError"), wrapper = document.getElementById("checkoutInputWrapper");
       if (errBox) errBox.style.display = "none";
-      const wrapper = document.getElementById("checkoutInputWrapper");
       if (wrapper) wrapper.classList.remove("input-error-shake");
     });
   }
@@ -346,8 +352,7 @@ function configurarListeners() {
   const btnToggleRec = document.getElementById("btnToggleAutoRecovery");
   if (btnToggleRec) {
     btnToggleRec.addEventListener("click", () => {
-      const area = document.getElementById("recoveryContentArea");
-      const icon = document.getElementById("recoveryToggleIcon");
+      const area = document.getElementById("recoveryContentArea"), icon = document.getElementById("recoveryToggleIcon");
       if (area) {
         const visible = area.classList.contains("is-open") || area.style.display === "block";
         area.style.display = visible ? "none" : "block";
@@ -359,6 +364,8 @@ function configurarListeners() {
   }
   const btnExecRec = document.getElementById("btnExecuteAutoRecovery");
   if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
+  const btnMagic = document.getElementById("btnSendMagicLink");
+  if (btnMagic) btnMagic.addEventListener("click", solicitarMagicLinkPorCorreo);
   const btnLogout = document.getElementById("btnLogoutSession");
   if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
@@ -476,19 +483,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").then((reg) => {
-        reg.update().catch(() => {});
-      }).catch((err) => {
-        registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err);
-      });
+      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err));
     });
   }
 
   // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
   const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
   if (waConfig) {
-    document.querySelectorAll('a[href*="wa.me/"]').forEach((a) => {
-      a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`);
-    });
+    document.querySelectorAll('a[href*="wa.me/"]').forEach(a => { a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`); });
   }
 });

@@ -337,6 +337,20 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de resiliencia offline y autocompletado: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'freemium_welcome_credit.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de modelo Freemium (1 crédito gratis atómico) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de modelo freemium: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'magic_link_auth.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de autenticación sin contraseña (Magic Link de 1 clic) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de magic link: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS
   // ═════════════════════════════════════════════════════════════════════════

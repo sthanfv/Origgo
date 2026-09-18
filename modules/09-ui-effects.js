@@ -163,11 +163,11 @@ function inicializarEfectosPremium() {
 
   const actualizarIconoBotonMenu = (estaAbierto) => {
     if (btnNavMenuBottom) {
-      const icon = btnNavMenuBottom.querySelector('i');
-      const span = btnNavMenuBottom.querySelector('span');
-      if (icon) icon.className = estaAbierto ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      const span = btnNavMenuBottom.querySelector('span[data-i18n="nav_menu"]') || btnNavMenuBottom.querySelector(':scope > span');
       if (span) span.textContent = estaAbierto ? (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Close' : 'Cerrar') : (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Menu' : 'Menú');
       btnNavMenuBottom.classList.toggle('active', estaAbierto);
+      btnNavMenuBottom.classList.toggle('is-active', estaAbierto);
+      btnNavMenuBottom.setAttribute('aria-expanded', estaAbierto ? 'true' : 'false');
     }
     if (btnMenuTrigger) btnMenuTrigger.classList.toggle('is-active', estaAbierto);
   };

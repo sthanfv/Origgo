@@ -85,6 +85,10 @@
 | `api/auth/session.js` | POST /api/auth/session | Login con WhatsApp+PIN, reclamo de sesión post-pago |
 | `api/auth/challenge.js` | GET /api/auth/challenge | Emisión de desafíos anti-fuerza bruta PoW y Cloudflare Turnstile |
 | `api/auth/recover.js` | POST /api/auth/recover | Recuperación de PIN por correo electrónico |
+| `api/auth.js` | Enrutador Serverless | Despachador unificado para sub-rutas de autenticación en Vercel |
+| `lib/auth/welcome-credit.js` | POST /api/auth/welcome-credit | Canje de crédito gratuito de bienvenida ($0 COP) |
+| `lib/auth/magic-link.js` | POST /api/auth/magic-link | Generación y despacho de enlace mágico sin contraseña vía Resend |
+| `lib/auth/magic-login.js` | POST /api/auth/magic-login | Consumo atómico de token mágico e inicio de sesión transparente |
 | `api/leads/unlock.js` | POST /api/leads/unlock | Desbloqueo seguro de contactos con AES-256-GCM |
 | `api/user/balance.js` | GET /api/user/balance | Consulta de saldo y estado del usuario |
 | `api/media/proxy.js` | GET /api/media/proxy | Proxy de medios edge anti-SSRF y optimización de caché |
@@ -151,6 +155,8 @@
 ### Pruebas Automatizadas (tests/)
 | Archivo | Descripción |
 |---|---|
+| `tests/freemium_welcome_credit.test.js` | Suite de validación de canje freemium $0 COP y protección anti-abuso |
+| `tests/magic_link_auth.test.js` | Suite de autenticación sin contraseña con Magic Link y consumo de token |
 | `tests/anti_bruteforce.test.js` | Desafíos de seguridad anti-fuerza bruta invisible (PoW / Turnstile) |
 | `tests/crypto_rotation.test.js` | Rotación criptográfica y versionado de clave AES-256 (KID) |
 | `tests/reconciliation_cron.test.js` | Conciliación periódica Vercel Cron Fail-Safe |

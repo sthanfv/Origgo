@@ -3910,6 +3910,14 @@ main {
   text-transform: uppercase;
 }
 
+/* 🎁 Estilos Freemium & Enlace Mágico (Fase 2 CRO) */
+.pricing-option-card.freemium-option { border-color: rgba(59, 130, 246, 0.38); background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), transparent); }
+.pricing-option-card.freemium-option.active-option, .pricing-option-card.freemium-option:has(input:checked) { border-color: #3B82F6; box-shadow: 0 0 0 1px #3B82F6, 0 8px 20px -4px rgba(59, 130, 246, 0.4); }
+.freemium-ribbon { position: absolute; top: -9px; right: 12px; background: #3B82F6; color: #FFFFFF; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4); }
+.option-price-free { color: #3B82F6 !important; font-weight: 900; }
+.btn-claim-freemium { background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important; }
+.btn-magic-link { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important; }
+
 /* 📱 ADAPTABILIDAD RESPONSIVA MOBILE-FIRST DE ÉLITE (iOS & ANDROID) */
 
 /* Tablets y Pantallas Medianas (<= 1024px) */
@@ -4279,57 +4287,35 @@ main {
     transition: color 0.2s ease, transform 0.15s ease;
   }
 
-  .mobile-nav-btn:active {
-    transform: scale(0.92);
-  }
+  .mobile-nav-btn:active { transform: scale(0.92); }
+  .mobile-nav-btn.active { color: var(--accent-emerald); }
+  .mobile-nav-btn i { font-size: 1.1rem; }
 
-  .mobile-nav-btn.active {
-    color: var(--accent-emerald);
-  }
-
-  .mobile-nav-btn i {
-    font-size: 1.1rem;
-  }
+  /* 🍔 Animación Fluida Hamburguesa a X (Estilo Desmulta - 60 FPS) */
+  .animated-hamburger { position: relative; width: 20px; height: 16px; display: flex; justify-content: center; align-items: center; }
+  .hamburger-bar { position: absolute; height: 2px; width: 20px; background-color: currentColor; border-radius: 9999px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bar-1 { transform: translateY(-5.5px); }
+  .bar-2 { opacity: 1; transform: scale(1); }
+  .bar-3 { transform: translateY(5.5px); }
+  .is-active .bar-1, .mobile-nav-btn.is-active .bar-1 { transform: translateY(0) rotate(45deg); background-color: var(--accent-emerald, #10B981); }
+  .is-active .bar-2, .mobile-nav-btn.is-active .bar-2 { opacity: 0; transform: scale(0.3); }
+  .is-active .bar-3, .mobile-nav-btn.is-active .bar-3 { transform: translateY(0) rotate(-45deg); background-color: var(--accent-emerald, #10B981); }
   
   /* Botón VIP Móvil (Oro Puro y Destello) */
-  #btnNavVip {
-    position: relative;
-    overflow: hidden;
+  #btnNavVip { position: relative; overflow: hidden; }
+  #btnNavVip i, #btnNavVip span {
+    background: linear-gradient(to right, #FBBF24 0%, #F59E0B 35%, #FFFFFF 50%, #F59E0B 65%, #D97706 100%);
+    background-size: 100% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #F59E0B; z-index: 1;
   }
-
-  #btnNavVip i,
-  #btnNavVip span {
-    background: linear-gradient(
-      to right, 
-      #FBBF24 0%, 
-      #F59E0B 35%, 
-      #FFFFFF 50%, 
-      #F59E0B 65%, 
-      #D97706 100%
-    );
-    background-size: 100% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #F59E0B;
-    z-index: 1;
+  [data-theme="light"] #btnNavVip i, [data-theme="light"] #btnNavVip span {
+    background: none; -webkit-background-clip: unset; -webkit-text-fill-color: #B45309; color: #B45309;
   }
-
-  [data-theme="light"] #btnNavVip i,
-  [data-theme="light"] #btnNavVip span {
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: #B45309;
-    color: #B45309; /* Alto contraste certificado WCAG AA en fondo claro */
-  }
-
   #btnNavVip i { filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)); }
   [data-theme="light"] #btnNavVip i { filter: none; }
   #btnNavVip span { font-weight: 800; }
 
   /* 3. Espaciado final para evitar solapamiento */
-  body {
-    padding-bottom: 70px;
-  }
+  body { padding-bottom: 70px; }
 }
 
 /* ═══════════════════════════════════════════════════

@@ -75,11 +75,38 @@ function aplicarPreferenciasUsuario(usr) {
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
 async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
+  // 1. Revisar si hay un retorno de pago en la URL o token de acceso (magic / recovery)
   const urlParams = new URLSearchParams(window.location.search);
-  const recoveryToken = urlParams.get('recovery_token');
+  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
+
+  if (magicToken) {
+    try {
+      const res = await fetch('/api/auth/magic-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: magicToken })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
+      localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      aplicarPreferenciasUsuario(data.user);
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(esIngles ? 'Welcome back! Instant access verified.' : '¡Bienvenido! Sesión iniciada con Enlace Mágico.', 'success', { title: esIngles ? 'Instant Access' : 'Acceso Instantáneo', duration: 5000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    } catch (e) {
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Link' : 'Enlace no válido', duration: 7000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   if (recoveryToken) {
     try {
@@ -116,15 +143,9 @@ async function inicializarSesionUsuario() {
   if (wompiId && !paymentRef) {
     try {
       const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
-      const textVerify = await resVerify.text();
-      let dataVerify = null;
-      try { dataVerify = JSON.parse(textVerify); } catch (_) {}
-      if (resVerify.ok && dataVerify && dataVerify.ok && dataVerify.reference) {
-        paymentRef = dataVerify.reference;
-      }
-    } catch (e) {
-      registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message);
-    }
+      const dataVerify = await resVerify.json().catch(() => null);
+      if (resVerify.ok && dataVerify?.ok && dataVerify.reference) paymentRef = dataVerify.reference;
+    } catch (e) { registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message); }
   }
 
   if (paymentRef && paymentRef.startsWith('HNT-')) {
@@ -132,23 +153,18 @@ async function inicializarSesionUsuario() {
       const tokenGuardado = localStorage.getItem('hunter_pro_token');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {})
-        },
+        headers: { 'Content-Type': 'application/json', ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {}) },
         body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
       });
-      const dataText = await res.text();
-      let data = null;
-      try { data = JSON.parse(dataText); } catch (_) {}
+      const data = await res.json().catch(() => null);
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      if (data && data.requiresLogin) {
+      if (data?.requiresLogin) {
         mostrarNotificacionToast(data.message || (esIngles ? 'Payment credited. Sign in with your PIN.' : 'Pago acreditado. Inicia sesión con tu PIN.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       }
-      if (res.ok && data && data.ok && data.token) {
+      if (res.ok && data?.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
         if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
         localStorage.removeItem('origgo_pending_ref');
@@ -162,15 +178,11 @@ async function inicializarSesionUsuario() {
           ? generarMensajeBienvenidaToast(sesionUsuario)
           : { titulo: esIngles ? '🎉 Payment confirmed!' : '🎉 ¡Pago confirmado!', mensaje: esIngles ? 'Your access has been accredited.' : 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
-        if (typeof abrirModalBienvenidaVIP === 'function') {
-          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
-        }
+        if (typeof abrirModalBienvenidaVIP === 'function') abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       }
-    } catch (e) {
-      registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message);
-    }
+    } catch (e) { registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message); }
   }
 
   // 2. Revalidar sesión persistente en segundo plano desde el servidor
@@ -243,35 +255,21 @@ function actualizarBadgeVip() {
 
     if (btnHeader) btnHeader.innerHTML = htmlBadge;
     if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
+      const span = btnNavVip.querySelector('span'), icon = btnNavVip.querySelector('i');
       if (span) span.textContent = labelMovil;
-      const icon = btnNavVip.querySelector('i');
       if (icon) icon.className = (sesionUsuario.plan || Number(sesionUsuario.credits || 0) === 0) ? 'fa-solid fa-crown' : 'fa-solid fa-bolt';
     }
-    if (btnMobileChip) {
-      btnMobileChip.innerHTML = htmlChipMovil;
-      btnMobileChip.classList.remove('is-hidden');
-    }
-    if (sideUserBox) {
-      sideUserBox.innerHTML = htmlSideUser;
-      sideUserBox.classList.remove('is-hidden');
-    }
+    if (btnMobileChip) { btnMobileChip.innerHTML = htmlChipMovil; btnMobileChip.classList.remove('is-hidden'); }
+    if (sideUserBox) { sideUserBox.innerHTML = htmlSideUser; sideUserBox.classList.remove('is-hidden'); }
   } else {
     if (btnHeader) btnHeader.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">${isEn ? 'Credits / Plans' : 'Créditos / Planes'}</span>`;
     if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
+      const span = btnNavVip.querySelector('span'), icon = btnNavVip.querySelector('i');
       if (span) span.textContent = isEn ? 'Credits' : 'Créditos';
-      const icon = btnNavVip.querySelector('i');
       if (icon) icon.className = 'fa-solid fa-bolt';
     }
-    if (btnMobileChip) {
-      btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`;
-      btnMobileChip.classList.remove('is-hidden');
-    }
-    if (sideUserBox) {
-      sideUserBox.innerHTML = '';
-      sideUserBox.classList.add('is-hidden');
-    }
+    if (btnMobileChip) { btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`; btnMobileChip.classList.remove('is-hidden'); }
+    if (sideUserBox) { sideUserBox.innerHTML = ''; sideUserBox.classList.add('is-hidden'); }
   }
 }
 
@@ -279,55 +277,44 @@ function actualizarBadgeVip() {
  * Sincroniza el filtro de ubicación del Omnibox con la ciudad del Plan Pro del usuario.
  */
 function sincronizarFiltroCiudadUsuario() {
-  if (sesionUsuario && sesionUsuario.plan === 'city' && sesionUsuario.planCity) {
-    const targetCity = String(sesionUsuario.planCity).trim();
-    if (targetCity) {
-      filtroCiudadActivo = targetCity;
+  if (!sesionUsuario || sesionUsuario.plan !== 'city' || !sesionUsuario.planCity) return;
+  const targetCity = String(sesionUsuario.planCity).trim();
+  if (!targetCity) return;
+  filtroCiudadActivo = targetCity;
 
-      const dropdownLocation = document.getElementById("cmdLocationDropdown");
-      const pillLocation = document.getElementById("cmdFilterLocation");
-      const labelLocation = document.getElementById("cmdFilterLocationLabel");
+  const dropdownLocation = document.getElementById("cmdLocationDropdown");
+  const pillLocation = document.getElementById("cmdFilterLocation");
+  const labelLocation = document.getElementById("cmdFilterLocationLabel");
 
-      if (dropdownLocation) {
-        let matchItem = null;
-        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-          const itemCity = item.getAttribute("data-city") || "";
-          if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) {
-            matchItem = item;
-          }
-        });
-        if (matchItem) {
-          dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
-          matchItem.classList.add("active");
-          const spanText = matchItem.querySelector("span") ? matchItem.querySelector("span").textContent : targetCity;
-          if (labelLocation) labelLocation.textContent = spanText;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        } else if (labelLocation) {
-          labelLocation.textContent = targetCity;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        }
-      }
-      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
-      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
-      if (sideMenuSelect) {
-        let matchedVal = "";
-        for (const opt of sideMenuSelect.options) {
-          if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
-            matchedVal = opt.value;
-            break;
-          }
-        }
-        sideMenuSelect.value = matchedVal || targetCity;
-      }
-      if (sideMenuBadge) {
-        sideMenuBadge.textContent = targetCity;
-      }
-
-      if (typeof aplicarFiltrosOmnibox === 'function') {
-        aplicarFiltrosOmnibox();
-      }
+  if (dropdownLocation) {
+    let matchItem = null;
+    dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+      const itemCity = item.getAttribute("data-city") || "";
+      if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) matchItem = item;
+    });
+    if (matchItem) {
+      dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+      matchItem.classList.add("active");
+      const spanText = matchItem.querySelector("span")?.textContent || targetCity;
+      if (labelLocation) labelLocation.textContent = spanText;
+      if (pillLocation) pillLocation.classList.add("active-filter");
+    } else if (labelLocation) {
+      labelLocation.textContent = targetCity;
+      if (pillLocation) pillLocation.classList.add("active-filter");
     }
   }
+  const sideMenuSelect = document.getElementById("sideMenuCitySelect"), sideMenuBadge = document.getElementById("sideMenuCityBadge");
+  if (sideMenuSelect) {
+    let matchedVal = "";
+    for (const opt of sideMenuSelect.options) {
+      if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
+        matchedVal = opt.value; break;
+      }
+    }
+    sideMenuSelect.value = matchedVal || targetCity;
+  }
+  if (sideMenuBadge) sideMenuBadge.textContent = targetCity;
+  if (typeof aplicarFiltrosOmnibox === 'function') aplicarFiltrosOmnibox();
 }
 
 /**
@@ -374,15 +361,9 @@ async function restaurarSesionConPin() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
     });
-
     const data = await res.json();
-    if (!res.ok || !data.ok) {
-      throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
-    }
-
-    if (data.requiresLogin) {
-      throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
-    }
+    if (!res.ok || !data.ok) throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
+    if (data.requiresLogin) throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
 
     localStorage.setItem('hunter_pro_token', data.token);
     if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
@@ -398,24 +379,16 @@ async function restaurarSesionConPin() {
     if (msgBox) {
       msgBox.className = 'restore-status-msg success';
       msgBox.textContent = pinDevuelto
-        ? (isEn ? `✅ Payment verified! Your PIN is ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
-        : (isEn ? `✅ Welcome back! You have ${data.user.credits} available credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
+        ? (isEn ? `✅ Payment verified! PIN: ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
+        : (isEn ? `✅ Welcome back! Available: ${data.user.credits} credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
       msgBox.style.display = 'block';
     }
-
     setTimeout(() => { abrirModalCheckout(undefined, 'perfil'); }, 800);
   } catch (err) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = err.message;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = err.message; msgBox.style.display = 'block'; }
   } finally {
-    restauracionEnProgreso = false; // ✅ HAL-06: Siempre liberar la guardia atómica
-    if (btn) {
-      btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`;
-      btn.disabled = false;
-    }
+    restauracionEnProgreso = false;
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`; btn.disabled = false; }
   }
 }
 
@@ -436,13 +409,12 @@ function cerrarSesionUsuario() {
 }
 
 /**
- * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
+ * Autoservicio para restaurar acceso mediante PIN o Magic Link por correo electrónico.
  */
 async function recuperarPinConReferencia() {
   const inputEmail = document.getElementById('recoveryReferenceInput'), msgBox = document.getElementById('recoveryResultMsg'), btn = document.getElementById('btnExecuteAutoRecovery');
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
-
   if (!email || !email.includes('@')) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
@@ -451,12 +423,7 @@ async function recuperarPinConReferencia() {
     }
     return;
   }
-
-  if (btn) {
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending instructions...' : 'Enviando instrucciones...'}`;
-    btn.disabled = true;
-  }
-
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending...' : 'Enviando...'}`; btn.disabled = true; }
   try {
     const response = await fetch('/api/auth/recover', {
       method: 'POST',
@@ -466,21 +433,61 @@ async function recuperarPinConReferencia() {
     const result = await response.json();
     if (msgBox) {
       msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
-      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, recovery instructions will be sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, instructions were sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta de nuevo.'}`;
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
   } finally {
-    if (btn) {
-      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`;
-      btn.disabled = false;
-    }
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`; btn.disabled = false; }
   }
 }
+
+/**
+ * Solicita el envío de un Magic Link de acceso sin contraseña al correo del usuario.
+ */
+async function solicitarMagicLinkPorCorreo() {
+  const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
+  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
+  const btn = document.getElementById('btnSendMagicLink');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const email = inputEmail ? inputEmail.value.trim() : '';
+
+  if (!email || !email.includes('@')) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = isEn ? 'Please enter a valid email address.' : 'Por favor ingresa un correo electrónico válido.';
+      msgBox.style.display = 'block';
+    }
+    return;
+  }
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
+  try {
+    const res = await fetch('/api/auth/magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
+    });
+    const data = await res.json();
+    if (msgBox) {
+      msgBox.className = res.ok ? 'restore-status-msg success' : 'restore-status-msg error';
+      msgBox.textContent = data.message || (res.ok ? (isEn ? 'Magic Link sent! Check your inbox.' : '¡Enlace Mágico enviado! Revisa tu correo.') : (isEn ? 'Could not send link.' : 'No se pudo enviar el enlace.'));
+      msgBox.style.display = 'block';
+    }
+  } catch (err) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.';
+      msgBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
+  }
+}
+
+window.solicitarMagicLinkPorCorreo = solicitarMagicLinkPorCorreo;

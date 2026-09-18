@@ -140,5 +140,51 @@ test.describe('Origgo — Suite de Pruebas E2E Smoke Test', () => {
       path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_bottom_bar_glass_verified.png'
     });
   });
+
+  test('7. Animación geométrica fluida de hamburguesa a X (Estilo Desmulta) y tarjeta freemium', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+
+    const btnNavMenu = page.locator('#btnNavMenuBottom');
+    await expect(btnNavMenu).toBeVisible();
+
+    // Estado inicial: 3 barras sin clase is-active
+    await expect(btnNavMenu).not.toHaveClass(/is-active/);
+    const animatedHamburger = btnNavMenu.locator('.animated-hamburger');
+    await expect(animatedHamburger).toBeVisible();
+
+    // Pulsar botón: debe adquirir la clase is-active e iniciar animación fluida
+    await btnNavMenu.click();
+    await expect(btnNavMenu).toHaveClass(/is-active/);
+
+    // Tomar captura de la X activa en el botón de navegación móvil
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_hamburger_x_animated.png'
+    });
+
+    // Cerrar menú: debe removerse la clase is-active y volver a las 3 barras
+    await btnNavMenu.click();
+    await expect(btnNavMenu).not.toHaveClass(/is-active/);
+
+    // Abrir modal de checkout y verificar opción Freemium
+    const btnVip = page.locator('#btnNavVip');
+    await btnVip.click();
+
+    const modal = page.locator('#checkoutModal');
+    await expect(modal).toHaveClass(/active/);
+
+    const optFree = page.locator('#optWelcomeFree');
+    await expect(optFree).toBeVisible();
+
+    // Seleccionar opción freemium: debe mostrar campo de email
+    await optFree.click();
+    const groupEmail = page.locator('#groupEmailInput');
+    await expect(groupEmail).toBeVisible();
+
+    // Capturar modal con tarjeta freemium seleccionada
+    await page.screenshot({ 
+      path: 'C:/Users/Sthan/.gemini/antigravity/brain/3a81b4ce-0e78-42e6-a36c-725aff0bf3c2/mobile_checkout_freemium_verified.png'
+    });
+  });
 });
 

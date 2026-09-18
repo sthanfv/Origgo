@@ -68,39 +68,12 @@ function abrirModalCheckout(index, pestana = null) {
   if (elSummary) {
     if (leadSeleccionado) {
       elSummary.style.display = 'block';
-      const imgHtml = leadSeleccionado.imagen ? `
-        <div class="modal-lead-thumb-wrap">
-          <img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" />
-          <div class="modal-lead-thumb-gradient"></div>
-        </div>
-      ` : '';
-
+      const imgHtml = leadSeleccionado.imagen ? `<div class="modal-lead-thumb-wrap"><img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" /><div class="modal-lead-thumb-gradient"></div></div>` : '';
       const lblProp = typeof t === 'function' ? t('modal_summary_property', 'Inmueble:') : 'Inmueble:';
       const lblLoc = typeof t === 'function' ? t('modal_summary_location', 'Ubicación:') : 'Ubicación:';
       const lblPrice = typeof t === 'function' ? t('modal_summary_price', 'Precio Publicado:') : 'Precio Publicado:';
       const lblUnit = typeof t === 'function' ? t('modal_summary_unit_value', 'Valor Unitario:') : 'Valor Unitario:';
-
-      elSummary.innerHTML = `
-        ${imgHtml}
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblProp}</span>
-          <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong>
-        </div>
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblLoc}</span>
-          <span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span>
-        </div>
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblPrice}</span>
-          <strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong>
-        </div>
-        ${leadSeleccionado.precio_m2 ? `
-          <div class="modal-summary-item modal-summary-divider">
-            <span class="modal-summary-label">${lblUnit}</span>
-            <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
-          </div>
-        ` : ''}
-      `;
+      elSummary.innerHTML = `${imgHtml}<div class="modal-summary-item"><span class="modal-summary-label">${lblProp}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong></div><div class="modal-summary-item"><span class="modal-summary-label">${lblLoc}</span><span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span></div><div class="modal-summary-item"><span class="modal-summary-label">${lblPrice}</span><strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong></div>${leadSeleccionado.precio_m2 ? `<div class="modal-summary-item modal-summary-divider"><span class="modal-summary-label">${lblUnit}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong></div>` : ''}`;
     } else {
       elSummary.style.display = 'none';
     }
@@ -124,57 +97,42 @@ function abrirModalCheckout(index, pestana = null) {
     if (inputWa) inputWa.value = sesionUsuario.phone || '';
 
     if (sesionUsuario.plan === 'national') {
-      if (cardCredits) cardCredits.classList.add('vip-mode');
+      cardCredits?.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
       if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? 'National VIP Pass' : 'Plan Nacional VIP'}`;
       if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = isEn ? 'Unlimited Colombia' : 'Colombia Ilimitada';
       if (elPlan) elPlan.textContent = isEn ? 'Full unrestricted access across all Colombian cities.' : 'Acceso total sin límites a todas las ciudades y categorías.';
       if (extraWrap && extraPill) {
-        if (sesionUsuario.credits > 0) {
-          extraWrap.style.display = 'block';
-          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits (never expire)` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros (no vencen)`;
-          extraPill.title = isEn ? 'Your credits are frozen and protected. They remain available when your pass ends.' : 'Tus créditos previos están protegidos y congelados. Si tu membresía finaliza, tus créditos seguirán disponibles para ti.';
-        } else {
-          extraWrap.style.display = 'none';
-        }
+        extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
+        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) {
-        benefitsList.innerHTML = isEn
-          ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks without spending vault credits.</li><li><i class="fa-solid fa-check"></i> 0% Broker commissions or fees.</li><li><i class="fa-solid fa-shield"></i> When 30 days end, your vault credits remain intact.</li>`
-          : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados sin consumir tus créditos en bóveda.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li><li><i class="fa-solid fa-shield"></i> Al vencer los 30 días, tus créditos previos seguirán intactos.</li>`;
-      }
+      if (benefitsList) benefitsList.innerHTML = isEn
+        ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li><li><i class="fa-solid fa-shield"></i> Vault credits remain intact.</li>`
+        : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li><li><i class="fa-solid fa-shield"></i> Créditos en bóveda protegidos.</li>`;
     } else if (sesionUsuario.plan === 'city') {
-      const cNom = sesionUsuario.planCity || 'Bogotá';
-      const cNomSeguro = escaparHtml(cNom);
-      if (cardCredits) cardCredits.classList.add('vip-mode');
+      const cNom = sesionUsuario.planCity || 'Bogotá', cNomSeguro = escaparHtml(cNom);
+      cardCredits?.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
       if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? `Pro City Pass (${cNomSeguro})` : `Plan Pro Ciudad (${cNomSeguro})`}`;
       if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = isEn ? 'Unlimited Access' : 'Acceso Ilimitado';
       if (elPlan) elPlan.textContent = isEn ? `100% Direct owner unlocks in ${cNom} for 30 days.` : `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
       if (extraWrap && extraPill) {
-        if (sesionUsuario.credits > 0) {
-          extraWrap.style.display = 'block';
-          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits for other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos para otras ciudades`;
-          extraPill.title = isEn ? 'Your contacts in ' + cNom + ' are unlimited. These credits are for outside cities.' : 'Tus contactos en ' + cNom + ' son ilimitados. Estos créditos se usan para desbloquear fuera de tu ciudad o al terminar tu plan.';
-        } else {
-          extraWrap.style.display = 'none';
-        }
+        extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
+        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) {
-        benefitsList.innerHTML = isEn
-          ? `<li><i class="fa-solid fa-check"></i> Direct owners without spending credits in ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Real estate commission.</li><li><i class="fa-solid fa-shield"></i> Vault credits let you unlock in other cities.</li>`
-          : `<li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li><li><i class="fa-solid fa-shield"></i> Tus créditos de bóveda te permiten desbloquear en otras ciudades.</li>`;
-      }
+      if (benefitsList) benefitsList.innerHTML = isEn
+        ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>`
+        : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
     } else {
-      if (cardCredits) cardCredits.classList.remove('vip-mode');
+      cardCredits?.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
       if (labelCredits) labelCredits.textContent = isEn ? 'Available Balance' : 'Saldo Disponible';
       if (elCredits) elCredits.textContent = isEn ? `⚡ ${sesionUsuario.credits} Credits` : `⚡ ${sesionUsuario.credits} Créditos`;
-      if (elPlan) elPlan.textContent = isEn ? 'Standard Plan: 1 credit = 1 direct owner for life.' : 'Plan Estándar: 1 crédito = 1 propietario directo de por vida.';
+      if (elPlan) elPlan.textContent = isEn ? 'Standard Plan: 1 credit = 1 direct owner.' : 'Plan Estándar: 1 crédito = 1 propietario directo.';
       if (extraWrap) extraWrap.style.display = 'none';
       if (benefitsWrap) benefitsWrap.style.display = 'none';
     }
@@ -196,12 +154,13 @@ function abrirModalCheckout(index, pestana = null) {
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
-  // Sincronizar visibilidad del selector de ciudad según la opción seleccionada
+  // Sincronizar visibilidad de selectores según la opción seleccionada
   const radioActivo = document.querySelector('input[name="checkoutProduct"]:checked');
-  const groupCity = document.getElementById("groupCitySelect");
-  if (groupCity) {
-    groupCity.style.display = (radioActivo && radioActivo.value === 'subscription_city') ? 'block' : 'none';
-  }
+  const groupCity = document.getElementById("groupCitySelect"), groupEmail = document.getElementById("groupEmailInput");
+  const optWelcome = document.getElementById("optWelcomeFree");
+  if (optWelcome) optWelcome.style.display = (sesionUsuario && sesionUsuario.welcomeCreditClaimed) ? 'none' : 'block';
+  if (groupCity) groupCity.style.display = (radioActivo?.value === 'subscription_city') ? 'block' : 'none';
+  if (groupEmail) groupEmail.style.display = (radioActivo?.value === 'welcome_free') ? 'block' : 'none';
 
   if (modal) {
     modal.classList.add("active");
@@ -336,6 +295,55 @@ async function ejecutarPagoWompi() {
   if (errorBox) {
     errorBox.classList.add('is-hidden');
     errorBox.style.display = 'none';
+  }
+
+  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP)
+  if (productType === 'welcome_free') {
+    const inputEmail = document.getElementById('checkoutEmailInput'), emailError = document.getElementById('checkoutEmailError');
+    const emailVal = inputEmail ? inputEmail.value.trim() : '';
+    if (!emailVal || !emailVal.includes('@')) {
+      if (emailError) {
+        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email to receive access.' : 'Por favor ingresa un correo válido para enviarte el acceso.');
+        emailError.classList.remove('is-hidden'); emailError.style.display = 'block';
+      }
+      inputEmail?.focus(); return;
+    }
+    if (emailError) { emailError.classList.add('is-hidden'); emailError.style.display = 'none'; }
+    const btnPagar = document.getElementById('btnConfirmWompi'), textoOriginal = btnPagar ? btnPagar.innerHTML : '';
+    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Activating gift...' : 'Activando regalo...'}`; btnPagar.disabled = true; }
+    try {
+      const res = await fetch('/api/auth/welcome-credit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo reclamar el regalo.'));
+      localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      renderizarInterfaz(datosActuales);
+      mostrarNotificacionToast(
+        esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+        'success',
+        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0 COP)', duration: 6000 }
+      );
+      cerrarModalCheckout();
+      if (leadSeleccionado) {
+        const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
+        await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+      }
+      return;
+    } catch (errGift) {
+      if (errorBox) { errorBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${escaparHtml(errGift.message)}`; errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block'; }
+      else { mostrarNotificacionToast(`⚠️ ${errGift.message}`); }
+      return;
+    } finally {
+      if (btnPagar) { btnPagar.innerHTML = textoOriginal; btnPagar.disabled = false; }
+    }
   }
 
   // Validación estricta de ciudad para Plan Pro Ciudad

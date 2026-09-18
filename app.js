@@ -570,11 +570,38 @@ function aplicarPreferenciasUsuario(usr) {
  * Inicializa y restaura la sesión de usuario persistente (JWT / PIN / Wompi Callback).
  */
 async function inicializarSesionUsuario() {
-  // 1. Revisar si hay un retorno de pago en la URL (ej. ?payment_ref=HNT-... o ?id=WompiTransactionID)
+  // 1. Revisar si hay un retorno de pago en la URL o token de acceso (magic / recovery)
   const urlParams = new URLSearchParams(window.location.search);
-  const recoveryToken = urlParams.get('recovery_token');
+  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
   const wompiId = urlParams.get('id');
+
+  if (magicToken) {
+    try {
+      const res = await fetch('/api/auth/magic-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: magicToken })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace no es válido o expiró.');
+      localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      aplicarPreferenciasUsuario(data.user);
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(esIngles ? 'Welcome back! Instant access verified.' : '¡Bienvenido! Sesión iniciada con Enlace Mágico.', 'success', { title: esIngles ? 'Instant Access' : 'Acceso Instantáneo', duration: 5000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    } catch (e) {
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'The magic link is invalid or expired.' : 'El enlace de acceso no es válido o expiró.'), 'warning', { title: esIngles ? 'Invalid Link' : 'Enlace no válido', duration: 7000 });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   if (recoveryToken) {
     try {
@@ -611,15 +638,9 @@ async function inicializarSesionUsuario() {
   if (wompiId && !paymentRef) {
     try {
       const resVerify = await fetch(`/api/payments/verify?id=${wompiId}`);
-      const textVerify = await resVerify.text();
-      let dataVerify = null;
-      try { dataVerify = JSON.parse(textVerify); } catch (_) {}
-      if (resVerify.ok && dataVerify && dataVerify.ok && dataVerify.reference) {
-        paymentRef = dataVerify.reference;
-      }
-    } catch (e) {
-      registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message);
-    }
+      const dataVerify = await resVerify.json().catch(() => null);
+      if (resVerify.ok && dataVerify?.ok && dataVerify.reference) paymentRef = dataVerify.reference;
+    } catch (e) { registrarLogDesarrollo('warn', '[Sesión] Error al verificar Wompi ID:', e.message); }
   }
 
   if (paymentRef && paymentRef.startsWith('HNT-')) {
@@ -627,23 +648,18 @@ async function inicializarSesionUsuario() {
       const tokenGuardado = localStorage.getItem('hunter_pro_token');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {})
-        },
+        headers: { 'Content-Type': 'application/json', ...(tokenGuardado ? { Authorization: `Bearer ${tokenGuardado}` } : {}) },
         body: JSON.stringify({ action: 'claim_reference', reference: paymentRef })
       });
-      const dataText = await res.text();
-      let data = null;
-      try { data = JSON.parse(dataText); } catch (_) {}
+      const data = await res.json().catch(() => null);
       const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-      if (data && data.requiresLogin) {
+      if (data?.requiresLogin) {
         mostrarNotificacionToast(data.message || (esIngles ? 'Payment credited. Sign in with your PIN.' : 'Pago acreditado. Inicia sesión con tu PIN.'), 'warning', { title: esIngles ? 'Account Protection' : 'Protección de cuenta', duration: 7000 });
         if (typeof abrirModalCheckout === 'function') abrirModalCheckout(undefined, 'tengo-pin');
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       }
-      if (res.ok && data && data.ok && data.token) {
+      if (res.ok && data?.ok && data.token) {
         localStorage.setItem('hunter_pro_token', data.token);
         if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
         localStorage.removeItem('origgo_pending_ref');
@@ -657,15 +673,11 @@ async function inicializarSesionUsuario() {
           ? generarMensajeBienvenidaToast(sesionUsuario)
           : { titulo: esIngles ? '🎉 Payment confirmed!' : '🎉 ¡Pago confirmado!', mensaje: esIngles ? 'Your access has been accredited.' : 'Tu acceso quedó acreditado.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
-        if (typeof abrirModalBienvenidaVIP === 'function') {
-          abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
-        }
+        if (typeof abrirModalBienvenidaVIP === 'function') abrirModalBienvenidaVIP({ tipo: sesionUsuario.plan, ciudad: sesionUsuario.planCity }, { ...sesionUsuario, pin: pinNuevo });
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       }
-    } catch (e) {
-      registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message);
-    }
+    } catch (e) { registrarLogDesarrollo('warn', '[Sesión] No se pudo reclamar por referencia:', e.message); }
   }
 
   // 2. Revalidar sesión persistente en segundo plano desde el servidor
@@ -738,35 +750,21 @@ function actualizarBadgeVip() {
 
     if (btnHeader) btnHeader.innerHTML = htmlBadge;
     if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
+      const span = btnNavVip.querySelector('span'), icon = btnNavVip.querySelector('i');
       if (span) span.textContent = labelMovil;
-      const icon = btnNavVip.querySelector('i');
       if (icon) icon.className = (sesionUsuario.plan || Number(sesionUsuario.credits || 0) === 0) ? 'fa-solid fa-crown' : 'fa-solid fa-bolt';
     }
-    if (btnMobileChip) {
-      btnMobileChip.innerHTML = htmlChipMovil;
-      btnMobileChip.classList.remove('is-hidden');
-    }
-    if (sideUserBox) {
-      sideUserBox.innerHTML = htmlSideUser;
-      sideUserBox.classList.remove('is-hidden');
-    }
+    if (btnMobileChip) { btnMobileChip.innerHTML = htmlChipMovil; btnMobileChip.classList.remove('is-hidden'); }
+    if (sideUserBox) { sideUserBox.innerHTML = htmlSideUser; sideUserBox.classList.remove('is-hidden'); }
   } else {
     if (btnHeader) btnHeader.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="vip-btn-text">${isEn ? 'Credits / Plans' : 'Créditos / Planes'}</span>`;
     if (btnNavVip) {
-      const span = btnNavVip.querySelector('span');
+      const span = btnNavVip.querySelector('span'), icon = btnNavVip.querySelector('i');
       if (span) span.textContent = isEn ? 'Credits' : 'Créditos';
-      const icon = btnNavVip.querySelector('i');
       if (icon) icon.className = 'fa-solid fa-bolt';
     }
-    if (btnMobileChip) {
-      btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`;
-      btnMobileChip.classList.remove('is-hidden');
-    }
-    if (sideUserBox) {
-      sideUserBox.innerHTML = '';
-      sideUserBox.classList.add('is-hidden');
-    }
+    if (btnMobileChip) { btnMobileChip.innerHTML = `<i class="fa-solid fa-bolt"></i><span>${isEn ? 'Credits' : 'Créditos'}</span>`; btnMobileChip.classList.remove('is-hidden'); }
+    if (sideUserBox) { sideUserBox.innerHTML = ''; sideUserBox.classList.add('is-hidden'); }
   }
 }
 
@@ -774,55 +772,44 @@ function actualizarBadgeVip() {
  * Sincroniza el filtro de ubicación del Omnibox con la ciudad del Plan Pro del usuario.
  */
 function sincronizarFiltroCiudadUsuario() {
-  if (sesionUsuario && sesionUsuario.plan === 'city' && sesionUsuario.planCity) {
-    const targetCity = String(sesionUsuario.planCity).trim();
-    if (targetCity) {
-      filtroCiudadActivo = targetCity;
+  if (!sesionUsuario || sesionUsuario.plan !== 'city' || !sesionUsuario.planCity) return;
+  const targetCity = String(sesionUsuario.planCity).trim();
+  if (!targetCity) return;
+  filtroCiudadActivo = targetCity;
 
-      const dropdownLocation = document.getElementById("cmdLocationDropdown");
-      const pillLocation = document.getElementById("cmdFilterLocation");
-      const labelLocation = document.getElementById("cmdFilterLocationLabel");
+  const dropdownLocation = document.getElementById("cmdLocationDropdown");
+  const pillLocation = document.getElementById("cmdFilterLocation");
+  const labelLocation = document.getElementById("cmdFilterLocationLabel");
 
-      if (dropdownLocation) {
-        let matchItem = null;
-        dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-          const itemCity = item.getAttribute("data-city") || "";
-          if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) {
-            matchItem = item;
-          }
-        });
-        if (matchItem) {
-          dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
-          matchItem.classList.add("active");
-          const spanText = matchItem.querySelector("span") ? matchItem.querySelector("span").textContent : targetCity;
-          if (labelLocation) labelLocation.textContent = spanText;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        } else if (labelLocation) {
-          labelLocation.textContent = targetCity;
-          if (pillLocation) pillLocation.classList.add("active-filter");
-        }
-      }
-      const sideMenuSelect = document.getElementById("sideMenuCitySelect");
-      const sideMenuBadge = document.getElementById("sideMenuCityBadge");
-      if (sideMenuSelect) {
-        let matchedVal = "";
-        for (const opt of sideMenuSelect.options) {
-          if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
-            matchedVal = opt.value;
-            break;
-          }
-        }
-        sideMenuSelect.value = matchedVal || targetCity;
-      }
-      if (sideMenuBadge) {
-        sideMenuBadge.textContent = targetCity;
-      }
-
-      if (typeof aplicarFiltrosOmnibox === 'function') {
-        aplicarFiltrosOmnibox();
-      }
+  if (dropdownLocation) {
+    let matchItem = null;
+    dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
+      const itemCity = item.getAttribute("data-city") || "";
+      if (itemCity && (itemCity.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(itemCity.toLowerCase()))) matchItem = item;
+    });
+    if (matchItem) {
+      dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
+      matchItem.classList.add("active");
+      const spanText = matchItem.querySelector("span")?.textContent || targetCity;
+      if (labelLocation) labelLocation.textContent = spanText;
+      if (pillLocation) pillLocation.classList.add("active-filter");
+    } else if (labelLocation) {
+      labelLocation.textContent = targetCity;
+      if (pillLocation) pillLocation.classList.add("active-filter");
     }
   }
+  const sideMenuSelect = document.getElementById("sideMenuCitySelect"), sideMenuBadge = document.getElementById("sideMenuCityBadge");
+  if (sideMenuSelect) {
+    let matchedVal = "";
+    for (const opt of sideMenuSelect.options) {
+      if (opt.value && (opt.value.toLowerCase().includes(targetCity.toLowerCase()) || targetCity.toLowerCase().includes(opt.value.toLowerCase()))) {
+        matchedVal = opt.value; break;
+      }
+    }
+    sideMenuSelect.value = matchedVal || targetCity;
+  }
+  if (sideMenuBadge) sideMenuBadge.textContent = targetCity;
+  if (typeof aplicarFiltrosOmnibox === 'function') aplicarFiltrosOmnibox();
 }
 
 /**
@@ -869,15 +856,9 @@ async function restaurarSesionConPin() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
     });
-
     const data = await res.json();
-    if (!res.ok || !data.ok) {
-      throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
-    }
-
-    if (data.requiresLogin) {
-      throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
-    }
+    if (!res.ok || !data.ok) throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
+    if (data.requiresLogin) throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
 
     localStorage.setItem('hunter_pro_token', data.token);
     if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
@@ -893,24 +874,16 @@ async function restaurarSesionConPin() {
     if (msgBox) {
       msgBox.className = 'restore-status-msg success';
       msgBox.textContent = pinDevuelto
-        ? (isEn ? `✅ Payment verified! Your PIN is ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
-        : (isEn ? `✅ Welcome back! You have ${data.user.credits} available credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
+        ? (isEn ? `✅ Payment verified! PIN: ${pinDevuelto}. Balance: ${data.user.credits} credits.` : `✅ ¡Pago verificado! Tu PIN es ${pinDevuelto}. Saldo: ${data.user.credits} créditos.`)
+        : (isEn ? `✅ Welcome back! Available: ${data.user.credits} credits.` : `✅ ¡Bienvenido de nuevo! Tienes ${data.user.credits} créditos disponibles.`);
       msgBox.style.display = 'block';
     }
-
     setTimeout(() => { abrirModalCheckout(undefined, 'perfil'); }, 800);
   } catch (err) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg error';
-      msgBox.textContent = err.message;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg error'; msgBox.textContent = err.message; msgBox.style.display = 'block'; }
   } finally {
-    restauracionEnProgreso = false; // ✅ HAL-06: Siempre liberar la guardia atómica
-    if (btn) {
-      btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`;
-      btn.disabled = false;
-    }
+    restauracionEnProgreso = false;
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}`; btn.disabled = false; }
   }
 }
 
@@ -931,13 +904,12 @@ function cerrarSesionUsuario() {
 }
 
 /**
- * Autoservicio 100% automático para restaurar acceso mediante correo electrónico.
+ * Autoservicio para restaurar acceso mediante PIN o Magic Link por correo electrónico.
  */
 async function recuperarPinConReferencia() {
   const inputEmail = document.getElementById('recoveryReferenceInput'), msgBox = document.getElementById('recoveryResultMsg'), btn = document.getElementById('btnExecuteAutoRecovery');
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
-
   if (!email || !email.includes('@')) {
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
@@ -946,12 +918,7 @@ async function recuperarPinConReferencia() {
     }
     return;
   }
-
-  if (btn) {
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending instructions...' : 'Enviando instrucciones...'}`;
-    btn.disabled = true;
-  }
-
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending...' : 'Enviando...'}`; btn.disabled = true; }
   try {
     const response = await fetch('/api/auth/recover', {
       method: 'POST',
@@ -961,24 +928,64 @@ async function recuperarPinConReferencia() {
     const result = await response.json();
     if (msgBox) {
       msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
-      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, recovery instructions will be sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
+      msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, instructions were sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    registrarLogDesarrollo('error', '[Recuperación] Error:', error);
     if (msgBox) {
       msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta de nuevo.'}`;
+      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
       msgBox.style.display = 'block';
     }
   } finally {
-    if (btn) {
-      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`;
-      btn.disabled = false;
-    }
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`; btn.disabled = false; }
   }
 }
+
+/**
+ * Solicita el envío de un Magic Link de acceso sin contraseña al correo del usuario.
+ */
+async function solicitarMagicLinkPorCorreo() {
+  const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
+  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
+  const btn = document.getElementById('btnSendMagicLink');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const email = inputEmail ? inputEmail.value.trim() : '';
+
+  if (!email || !email.includes('@')) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = isEn ? 'Please enter a valid email address.' : 'Por favor ingresa un correo electrónico válido.';
+      msgBox.style.display = 'block';
+    }
+    return;
+  }
+  if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
+  try {
+    const res = await fetch('/api/auth/magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
+    });
+    const data = await res.json();
+    if (msgBox) {
+      msgBox.className = res.ok ? 'restore-status-msg success' : 'restore-status-msg error';
+      msgBox.textContent = data.message || (res.ok ? (isEn ? 'Magic Link sent! Check your inbox.' : '¡Enlace Mágico enviado! Revisa tu correo.') : (isEn ? 'Could not send link.' : 'No se pudo enviar el enlace.'));
+      msgBox.style.display = 'block';
+    }
+  } catch (err) {
+    if (msgBox) {
+      msgBox.className = 'restore-status-msg error';
+      msgBox.textContent = isEn ? 'Connection error. Please try again.' : 'Error de conexión. Intenta nuevamente.';
+      msgBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${isEn ? 'Send Magic Link' : 'Enviar Enlace Mágico'}`; btn.disabled = false; }
+  }
+}
+
+window.solicitarMagicLinkPorCorreo = solicitarMagicLinkPorCorreo;
 
 
 /**
@@ -3145,39 +3152,12 @@ function abrirModalCheckout(index, pestana = null) {
   if (elSummary) {
     if (leadSeleccionado) {
       elSummary.style.display = 'block';
-      const imgHtml = leadSeleccionado.imagen ? `
-        <div class="modal-lead-thumb-wrap">
-          <img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" />
-          <div class="modal-lead-thumb-gradient"></div>
-        </div>
-      ` : '';
-
+      const imgHtml = leadSeleccionado.imagen ? `<div class="modal-lead-thumb-wrap"><img src="${escaparHtml(leadSeleccionado.imagen)}" alt="${escaparHtml(leadSeleccionado.titulo)}" class="modal-lead-thumb" /><div class="modal-lead-thumb-gradient"></div></div>` : '';
       const lblProp = typeof t === 'function' ? t('modal_summary_property', 'Inmueble:') : 'Inmueble:';
       const lblLoc = typeof t === 'function' ? t('modal_summary_location', 'Ubicación:') : 'Ubicación:';
       const lblPrice = typeof t === 'function' ? t('modal_summary_price', 'Precio Publicado:') : 'Precio Publicado:';
       const lblUnit = typeof t === 'function' ? t('modal_summary_unit_value', 'Valor Unitario:') : 'Valor Unitario:';
-
-      elSummary.innerHTML = `
-        ${imgHtml}
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblProp}</span>
-          <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong>
-        </div>
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblLoc}</span>
-          <span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span>
-        </div>
-        <div class="modal-summary-item">
-          <span class="modal-summary-label">${lblPrice}</span>
-          <strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong>
-        </div>
-        ${leadSeleccionado.precio_m2 ? `
-          <div class="modal-summary-item modal-summary-divider">
-            <span class="modal-summary-label">${lblUnit}</span>
-            <strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong>
-          </div>
-        ` : ''}
-      `;
+      elSummary.innerHTML = `${imgHtml}<div class="modal-summary-item"><span class="modal-summary-label">${lblProp}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong></div><div class="modal-summary-item"><span class="modal-summary-label">${lblLoc}</span><span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span></div><div class="modal-summary-item"><span class="modal-summary-label">${lblPrice}</span><strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong></div>${leadSeleccionado.precio_m2 ? `<div class="modal-summary-item modal-summary-divider"><span class="modal-summary-label">${lblUnit}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong></div>` : ''}`;
     } else {
       elSummary.style.display = 'none';
     }
@@ -3201,57 +3181,42 @@ function abrirModalCheckout(index, pestana = null) {
     if (inputWa) inputWa.value = sesionUsuario.phone || '';
 
     if (sesionUsuario.plan === 'national') {
-      if (cardCredits) cardCredits.classList.add('vip-mode');
+      cardCredits?.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
       if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? 'National VIP Pass' : 'Plan Nacional VIP'}`;
       if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = isEn ? 'Unlimited Colombia' : 'Colombia Ilimitada';
       if (elPlan) elPlan.textContent = isEn ? 'Full unrestricted access across all Colombian cities.' : 'Acceso total sin límites a todas las ciudades y categorías.';
       if (extraWrap && extraPill) {
-        if (sesionUsuario.credits > 0) {
-          extraWrap.style.display = 'block';
-          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits (never expire)` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros (no vencen)`;
-          extraPill.title = isEn ? 'Your credits are frozen and protected. They remain available when your pass ends.' : 'Tus créditos previos están protegidos y congelados. Si tu membresía finaliza, tus créditos seguirán disponibles para ti.';
-        } else {
-          extraWrap.style.display = 'none';
-        }
+        extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
+        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) {
-        benefitsList.innerHTML = isEn
-          ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks without spending vault credits.</li><li><i class="fa-solid fa-check"></i> 0% Broker commissions or fees.</li><li><i class="fa-solid fa-shield"></i> When 30 days end, your vault credits remain intact.</li>`
-          : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados sin consumir tus créditos en bóveda.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de corretaje inmobiliario.</li><li><i class="fa-solid fa-shield"></i> Al vencer los 30 días, tus créditos previos seguirán intactos.</li>`;
-      }
+      if (benefitsList) benefitsList.innerHTML = isEn
+        ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li><li><i class="fa-solid fa-shield"></i> Vault credits remain intact.</li>`
+        : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li><li><i class="fa-solid fa-shield"></i> Créditos en bóveda protegidos.</li>`;
     } else if (sesionUsuario.plan === 'city') {
-      const cNom = sesionUsuario.planCity || 'Bogotá';
-      const cNomSeguro = escaparHtml(cNom);
-      if (cardCredits) cardCredits.classList.add('vip-mode');
+      const cNom = sesionUsuario.planCity || 'Bogotá', cNomSeguro = escaparHtml(cNom);
+      cardCredits?.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
       if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? `Pro City Pass (${cNomSeguro})` : `Plan Pro Ciudad (${cNomSeguro})`}`;
       if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
       if (elCredits) elCredits.textContent = isEn ? 'Unlimited Access' : 'Acceso Ilimitado';
       if (elPlan) elPlan.textContent = isEn ? `100% Direct owner unlocks in ${cNom} for 30 days.` : `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
       if (extraWrap && extraPill) {
-        if (sesionUsuario.credits > 0) {
-          extraWrap.style.display = 'block';
-          extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits for other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos para otras ciudades`;
-          extraPill.title = isEn ? 'Your contacts in ' + cNom + ' are unlimited. These credits are for outside cities.' : 'Tus contactos en ' + cNom + ' son ilimitados. Estos créditos se usan para desbloquear fuera de tu ciudad o al terminar tu plan.';
-        } else {
-          extraWrap.style.display = 'none';
-        }
+        extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
+        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`;
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) {
-        benefitsList.innerHTML = isEn
-          ? `<li><i class="fa-solid fa-check"></i> Direct owners without spending credits in ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Real estate commission.</li><li><i class="fa-solid fa-shield"></i> Vault credits let you unlock in other cities.</li>`
-          : `<li><i class="fa-solid fa-check"></i> Propietarios directos sin gasto de créditos en ${cNomSeguro}.</li><li><i class="fa-solid fa-check"></i> 0% Comisión de agencia e intermediarios.</li><li><i class="fa-solid fa-shield"></i> Tus créditos de bóveda te permiten desbloquear en otras ciudades.</li>`;
-      }
+      if (benefitsList) benefitsList.innerHTML = isEn
+        ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>`
+        : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
     } else {
-      if (cardCredits) cardCredits.classList.remove('vip-mode');
+      cardCredits?.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
       if (labelCredits) labelCredits.textContent = isEn ? 'Available Balance' : 'Saldo Disponible';
       if (elCredits) elCredits.textContent = isEn ? `⚡ ${sesionUsuario.credits} Credits` : `⚡ ${sesionUsuario.credits} Créditos`;
-      if (elPlan) elPlan.textContent = isEn ? 'Standard Plan: 1 credit = 1 direct owner for life.' : 'Plan Estándar: 1 crédito = 1 propietario directo de por vida.';
+      if (elPlan) elPlan.textContent = isEn ? 'Standard Plan: 1 credit = 1 direct owner.' : 'Plan Estándar: 1 crédito = 1 propietario directo.';
       if (extraWrap) extraWrap.style.display = 'none';
       if (benefitsWrap) benefitsWrap.style.display = 'none';
     }
@@ -3273,12 +3238,13 @@ function abrirModalCheckout(index, pestana = null) {
     cambiarPestanaCheckout(pestana || 'comprar');
   }
 
-  // Sincronizar visibilidad del selector de ciudad según la opción seleccionada
+  // Sincronizar visibilidad de selectores según la opción seleccionada
   const radioActivo = document.querySelector('input[name="checkoutProduct"]:checked');
-  const groupCity = document.getElementById("groupCitySelect");
-  if (groupCity) {
-    groupCity.style.display = (radioActivo && radioActivo.value === 'subscription_city') ? 'block' : 'none';
-  }
+  const groupCity = document.getElementById("groupCitySelect"), groupEmail = document.getElementById("groupEmailInput");
+  const optWelcome = document.getElementById("optWelcomeFree");
+  if (optWelcome) optWelcome.style.display = (sesionUsuario && sesionUsuario.welcomeCreditClaimed) ? 'none' : 'block';
+  if (groupCity) groupCity.style.display = (radioActivo?.value === 'subscription_city') ? 'block' : 'none';
+  if (groupEmail) groupEmail.style.display = (radioActivo?.value === 'welcome_free') ? 'block' : 'none';
 
   if (modal) {
     modal.classList.add("active");
@@ -3413,6 +3379,55 @@ async function ejecutarPagoWompi() {
   if (errorBox) {
     errorBox.classList.add('is-hidden');
     errorBox.style.display = 'none';
+  }
+
+  // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP)
+  if (productType === 'welcome_free') {
+    const inputEmail = document.getElementById('checkoutEmailInput'), emailError = document.getElementById('checkoutEmailError');
+    const emailVal = inputEmail ? inputEmail.value.trim() : '';
+    if (!emailVal || !emailVal.includes('@')) {
+      if (emailError) {
+        emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (esIngles ? 'Please enter a valid email to receive access.' : 'Por favor ingresa un correo válido para enviarte el acceso.');
+        emailError.classList.remove('is-hidden'); emailError.style.display = 'block';
+      }
+      inputEmail?.focus(); return;
+    }
+    if (emailError) { emailError.classList.add('is-hidden'); emailError.style.display = 'none'; }
+    const btnPagar = document.getElementById('btnConfirmWompi'), textoOriginal = btnPagar ? btnPagar.innerHTML : '';
+    if (btnPagar) { btnPagar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${esIngles ? 'Activating gift...' : 'Activando regalo...'}`; btnPagar.disabled = true; }
+    try {
+      const res = await fetch('/api/auth/welcome-credit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: celular, email: emailVal, lang: esIngles ? 'en' : 'es' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo reclamar el regalo.'));
+      localStorage.setItem('hunter_pro_token', data.token);
+      if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
+      sesionUsuario = { ...data.user, token: data.token };
+      delete sesionUsuario.pin;
+      actualizarBadgeVip();
+      sincronizarFiltroCiudadUsuario();
+      renderizarInterfaz(datosActuales);
+      mostrarNotificacionToast(
+        esIngles ? '🎉 Welcome! 1 Free unlock credit granted.' : '🎉 ¡Bienvenido! Tienes 1 crédito de regalo para desbloquear tu oportunidad.',
+        'success',
+        { title: esIngles ? 'Gift Activated' : 'Regalo de Bienvenida ($0 COP)', duration: 6000 }
+      );
+      cerrarModalCheckout();
+      if (leadSeleccionado) {
+        const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
+        await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
+      }
+      return;
+    } catch (errGift) {
+      if (errorBox) { errorBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${escaparHtml(errGift.message)}`; errorBox.classList.remove('is-hidden'); errorBox.style.display = 'block'; }
+      else { mostrarNotificacionToast(`⚠️ ${errGift.message}`); }
+      return;
+    } finally {
+      if (btnPagar) { btnPagar.innerHTML = textoOriginal; btnPagar.disabled = false; }
+    }
   }
 
   // Validación estricta de ciudad para Plan Pro Ciudad
@@ -3732,11 +3747,11 @@ function inicializarEfectosPremium() {
 
   const actualizarIconoBotonMenu = (estaAbierto) => {
     if (btnNavMenuBottom) {
-      const icon = btnNavMenuBottom.querySelector('i');
-      const span = btnNavMenuBottom.querySelector('span');
-      if (icon) icon.className = estaAbierto ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      const span = btnNavMenuBottom.querySelector('span[data-i18n="nav_menu"]') || btnNavMenuBottom.querySelector(':scope > span');
       if (span) span.textContent = estaAbierto ? (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Close' : 'Cerrar') : (typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en' ? 'Menu' : 'Menú');
       btnNavMenuBottom.classList.toggle('active', estaAbierto);
+      btnNavMenuBottom.classList.toggle('is-active', estaAbierto);
+      btnNavMenuBottom.setAttribute('aria-expanded', estaAbierto ? 'true' : 'false');
     }
     if (btnMenuTrigger) btnMenuTrigger.classList.toggle('is-active', estaAbierto);
   };
@@ -4351,7 +4366,8 @@ function configurarListeners() {
 
   // Selección visual de tarjetas de producto en el modal
   const optionCards = document.querySelectorAll(".pricing-option-card");
-  const groupCitySelect = document.getElementById("groupCitySelect");
+  const groupCitySelect = document.getElementById("groupCitySelect"), groupEmailInput = document.getElementById("groupEmailInput");
+  const btnPagar = document.getElementById("btnConfirmWompi");
   optionCards.forEach(card => {
     card.addEventListener("click", () => {
       optionCards.forEach(c => c.classList.remove("active-option"));
@@ -4359,8 +4375,17 @@ function configurarListeners() {
       const radio = card.querySelector('input[type="radio"]');
       if (radio) {
         radio.checked = true;
-        if (groupCitySelect) {
-          groupCitySelect.style.display = (radio.value === 'subscription_city') ? 'block' : 'none';
+        const val = radio.value, isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+        if (groupCitySelect) groupCitySelect.style.display = (val === 'subscription_city') ? 'block' : 'none';
+        if (groupEmailInput) groupEmailInput.style.display = (val === 'welcome_free') ? 'block' : 'none';
+        if (btnPagar) {
+          if (val === 'welcome_free') {
+            btnPagar.innerHTML = `<i class="fa-solid fa-gift"></i> <span>${isEn ? 'Claim 1 Free Unlock ($0 COP)' : 'Reclamar 1 Desbloqueo Gratis ($0 COP)'}</span>`;
+            btnPagar.className = 'btn-confirm-wompi btn-claim-freemium';
+          } else {
+            btnPagar.innerHTML = `<i class="fa-solid fa-lock"></i> <span>${isEn ? 'Proceed to Secure Checkout with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>`;
+            btnPagar.className = 'btn-confirm-wompi';
+          }
         }
       }
     });
@@ -4375,20 +4400,16 @@ function configurarListeners() {
     });
   }
 
-  // Botón Confirmar Pago Wompi
-  const btnPagar = document.getElementById("btnConfirmWompi");
-  if (btnPagar) {
-    btnPagar.addEventListener("click", ejecutarPagoWompi);
-  }
+  // Botón Confirmar Pago Wompi / Reclamar Regalo
+  if (btnPagar) btnPagar.addEventListener("click", ejecutarPagoWompi);
 
   // Sanitización y limpieza de error en tiempo real para inputs numéricos
   const inputWaReal = document.getElementById("checkoutWhatsappInput");
   if (inputWaReal) {
     inputWaReal.addEventListener("input", (e) => {
       e.target.value = e.target.value.replace(/\D/g, '');
-      const errBox = document.getElementById("checkoutPhoneError");
+      const errBox = document.getElementById("checkoutPhoneError"), wrapper = document.getElementById("checkoutInputWrapper");
       if (errBox) errBox.style.display = "none";
-      const wrapper = document.getElementById("checkoutInputWrapper");
       if (wrapper) wrapper.classList.remove("input-error-shake");
     });
   }
@@ -4405,8 +4426,7 @@ function configurarListeners() {
   const btnToggleRec = document.getElementById("btnToggleAutoRecovery");
   if (btnToggleRec) {
     btnToggleRec.addEventListener("click", () => {
-      const area = document.getElementById("recoveryContentArea");
-      const icon = document.getElementById("recoveryToggleIcon");
+      const area = document.getElementById("recoveryContentArea"), icon = document.getElementById("recoveryToggleIcon");
       if (area) {
         const visible = area.classList.contains("is-open") || area.style.display === "block";
         area.style.display = visible ? "none" : "block";
@@ -4418,6 +4438,8 @@ function configurarListeners() {
   }
   const btnExecRec = document.getElementById("btnExecuteAutoRecovery");
   if (btnExecRec) btnExecRec.addEventListener("click", recuperarPinConReferencia);
+  const btnMagic = document.getElementById("btnSendMagicLink");
+  if (btnMagic) btnMagic.addEventListener("click", solicitarMagicLinkPorCorreo);
   const btnLogout = document.getElementById("btnLogoutSession");
   if (btnLogout) btnLogout.addEventListener("click", cerrarSesionUsuario);
   const btnBuyMore = document.getElementById("btnBuyMoreFromProfile");
@@ -4535,20 +4557,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").then((reg) => {
-        reg.update().catch(() => {});
-      }).catch((err) => {
-        registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err);
-      });
+      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err));
     });
   }
 
   // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
   const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
   if (waConfig) {
-    document.querySelectorAll('a[href*="wa.me/"]').forEach((a) => {
-      a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`);
-    });
+    document.querySelectorAll('a[href*="wa.me/"]').forEach(a => { a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`); });
   }
 });
 
@@ -5267,7 +5283,7 @@ const DICCIONARIO_I18N = {
     slideup_unlock_btn: 'Desbloquear con Créditos',
     modal_summary_property: 'Inmueble:', modal_summary_location: 'Ubicación:', modal_summary_price: 'Precio Publicado:', modal_summary_unit_value: 'Valor Unitario:',
     checkout_badge: 'Pasarela de Pago Segura Wompi', checkout_title: 'Desbloqueo de Propietarios Directos', checkout_subtitle: 'Sin intermediarios, comisiones de agencia ni mensualidades forzosas.',
-    checkout_tab_buy: 'Comprar Planes', checkout_tab_restore: 'Restaurar Cuenta', checkout_tab_account: 'Mi Membresía',
+    checkout_tab_buy: 'Comprar Planes', checkout_tab_restore: 'Restaurar Cuenta', checkout_tab_account: 'Mi Membresía', checkout_freemium_ribbon: '🎁 BIENVENIDA ($0 COP)', checkout_opt_free_title: '1 Desbloqueo Gratis', checkout_opt_free_desc: 'Pruébalo sin pagar. 1 contacto directo de regalo ingresando tu WhatsApp y Correo.', checkout_btn_magic_link: 'Enlace Mágico 1 Clic',
     checkout_opt_single_title: 'Desbloqueo Individual', checkout_opt_single_desc: '1 Contacto verificado del propietario directo. Ideal para compra puntual.',
     checkout_opt_pack10_title: 'Bolsa 10 Contactos', checkout_opt_pack10_desc: '$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.',
     checkout_opt_city_title: 'Plan Pro Ciudad', checkout_opt_city_desc: 'Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.',
@@ -5334,7 +5350,7 @@ const DICCIONARIO_I18N = {
     slideup_unlock_btn: 'Unlock with Credits',
     modal_summary_property: 'Property:', modal_summary_location: 'Location:', modal_summary_price: 'Listed Price:', modal_summary_unit_value: 'Unit Value:',
     checkout_badge: 'Wompi Secure Payment Gateway', checkout_title: 'Direct Owner Contact Unlock', checkout_subtitle: 'No middlemen, zero broker commissions, and no recurring commitments.',
-    checkout_tab_buy: 'Buy Passes', checkout_tab_restore: 'Restore Account', checkout_tab_account: 'My Membership',
+    checkout_tab_buy: 'Buy Passes', checkout_tab_restore: 'Restore Account', checkout_tab_account: 'My Membership', checkout_freemium_ribbon: '🎁 WELCOME GIFT ($0)', checkout_opt_free_title: '1 Free Unlock', checkout_opt_free_desc: 'Try it free. 1 direct contact gift by entering your WhatsApp and Email.', checkout_btn_magic_link: '1-Click Magic Link',
     checkout_opt_single_title: 'Single Direct Unlock', checkout_opt_single_desc: '1 Verified direct owner contact. Ideal for a one-off negotiation.',
     checkout_opt_pack10_title: '10 Contacts Pro Pack', checkout_opt_pack10_desc: 'Only $3,500 each. Credits never expire and remain sealed to your secure PIN.',
     checkout_opt_city_title: 'Pro City Pass', checkout_opt_city_desc: 'Unlimited 30-day access to all direct owners in your chosen city.',

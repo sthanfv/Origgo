@@ -521,6 +521,19 @@
       <!-- PANEL 1: COMPRAR CRÉDITOS / PLANES -->
       <div class="checkout-tab-panel active" id="panelComprar">
         <div class="pricing-options-grid">
+          <!-- Opción 0: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP) -->
+          <label class="pricing-option-card freemium-option" data-product="welcome_free" id="optWelcomeFree">
+            <div class="freemium-ribbon" data-i18n="checkout_freemium_ribbon">🎁 BIENVENIDA ($0 COP)</div>
+            <input type="radio" name="checkoutProduct" value="welcome_free" class="checkout-radio">
+            <div class="option-card-inner">
+              <div class="option-header-row">
+                <span class="option-name" data-i18n="checkout_opt_free_title">1 Desbloqueo Gratis</span>
+                <span class="option-price option-price-free">$ 0 COP</span>
+              </div>
+              <p class="option-desc" data-i18n="checkout_opt_free_desc">Pruébalo sin pagar. 1 contacto directo de regalo ingresando tu WhatsApp y Correo.</p>
+            </div>
+          </label>
+
           <!-- Opción 1: Pase Individual -->
           <label class="pricing-option-card" data-product="single_lead">
             <input type="radio" name="checkoutProduct" value="single_lead" class="checkout-radio">
@@ -630,7 +643,27 @@
           <span class="checkout-input-help" data-i18n="checkout_help_whatsapp">Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.</span>
         </div>
 
-        <!-- Botón de Acción Wompi -->
+        <!-- Formulario de Correo Electrónico (para Magic Link y Confirmación) -->
+        <div class="checkout-form-group is-hidden" id="groupEmailInput">
+          <label for="checkoutEmailInput" class="checkout-form-label">
+            <i class="fa-solid fa-envelope checkout-icon-email"></i> <span data-i18n="checkout_label_email">Correo Electrónico (para Enlace Mágico sin PIN):</span>
+          </label>
+          <div class="checkout-input-wrapper" id="checkoutEmailWrapper">
+            <input 
+              type="email" 
+              id="checkoutEmailInput" 
+              class="checkout-text-input" 
+              placeholder="tu@correo.com" 
+              data-i18n-ph="checkout_ph_email"
+              maxlength="120" 
+              autocomplete="email" 
+            />
+          </div>
+          <div id="checkoutEmailError" class="checkout-inline-error is-hidden"></div>
+          <span class="checkout-input-help" data-i18n="checkout_help_email">Te enviaremos tu Enlace Mágico de acceso instantáneo sin contraseñas ni PINs difíciles.</span>
+        </div>
+
+        <!-- Botón de Acción Wompi / Reclamar Regalo -->
         <button type="button" class="btn-confirm-wompi" id="btnConfirmWompi">
           <i class="fa-solid fa-lock"></i> <span data-i18n="checkout_btn_pay">Continuar al Pago Seguro con Wompi</span>
         </button>
@@ -726,9 +759,14 @@
                   spellcheck="false" 
                 />
               </div>
-              <button type="button" class="btn-confirm-wompi btn-recovery-submit" id="btnExecuteAutoRecovery">
-                <i class="fa-solid fa-paper-plane"></i> <span data-i18n="checkout_btn_send_instructions">Enviar instrucciones</span>
-              </button>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                <button type="button" class="btn-confirm-wompi btn-recovery-submit" id="btnExecuteAutoRecovery" style="flex: 1; min-width: 140px;">
+                  <i class="fa-solid fa-key"></i> <span data-i18n="checkout_btn_send_instructions">Recuperar PIN</span>
+                </button>
+                <button type="button" class="btn-confirm-wompi btn-magic-link" id="btnSendMagicLink" style="flex: 1; min-width: 140px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="checkout_btn_magic_link">Enlace Mágico 1 Clic</span>
+                </button>
+              </div>
               <div id="recoveryResultMsg" class="restore-status-msg restore-status-recovery-result is-hidden"></div>
             </div>
           </div>
@@ -1095,8 +1133,12 @@
       <i class="fa-solid fa-bolt"></i>
       <span data-i18n="nav_credits">Créditos</span>
     </button>
-    <button class="mobile-nav-btn" id="btnNavMenuBottom" data-nav="menu">
-      <i class="fa-solid fa-bars"></i>
+    <button class="mobile-nav-btn" id="btnNavMenuBottom" data-nav="menu" aria-label="Abrir menú lateral">
+      <div class="animated-hamburger" aria-hidden="true">
+        <span class="hamburger-bar bar-1"></span>
+        <span class="hamburger-bar bar-2"></span>
+        <span class="hamburger-bar bar-3"></span>
+      </div>
       <span data-i18n="nav_menu">Menú</span>
     </button>
   </nav>

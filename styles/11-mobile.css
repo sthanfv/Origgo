@@ -367,57 +367,35 @@
     transition: color 0.2s ease, transform 0.15s ease;
   }
 
-  .mobile-nav-btn:active {
-    transform: scale(0.92);
-  }
+  .mobile-nav-btn:active { transform: scale(0.92); }
+  .mobile-nav-btn.active { color: var(--accent-emerald); }
+  .mobile-nav-btn i { font-size: 1.1rem; }
 
-  .mobile-nav-btn.active {
-    color: var(--accent-emerald);
-  }
-
-  .mobile-nav-btn i {
-    font-size: 1.1rem;
-  }
+  /* 🍔 Animación Fluida Hamburguesa a X (Estilo Desmulta - 60 FPS) */
+  .animated-hamburger { position: relative; width: 20px; height: 16px; display: flex; justify-content: center; align-items: center; }
+  .hamburger-bar { position: absolute; height: 2px; width: 20px; background-color: currentColor; border-radius: 9999px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bar-1 { transform: translateY(-5.5px); }
+  .bar-2 { opacity: 1; transform: scale(1); }
+  .bar-3 { transform: translateY(5.5px); }
+  .is-active .bar-1, .mobile-nav-btn.is-active .bar-1 { transform: translateY(0) rotate(45deg); background-color: var(--accent-emerald, #10B981); }
+  .is-active .bar-2, .mobile-nav-btn.is-active .bar-2 { opacity: 0; transform: scale(0.3); }
+  .is-active .bar-3, .mobile-nav-btn.is-active .bar-3 { transform: translateY(0) rotate(-45deg); background-color: var(--accent-emerald, #10B981); }
   
   /* Botón VIP Móvil (Oro Puro y Destello) */
-  #btnNavVip {
-    position: relative;
-    overflow: hidden;
+  #btnNavVip { position: relative; overflow: hidden; }
+  #btnNavVip i, #btnNavVip span {
+    background: linear-gradient(to right, #FBBF24 0%, #F59E0B 35%, #FFFFFF 50%, #F59E0B 65%, #D97706 100%);
+    background-size: 100% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #F59E0B; z-index: 1;
   }
-
-  #btnNavVip i,
-  #btnNavVip span {
-    background: linear-gradient(
-      to right, 
-      #FBBF24 0%, 
-      #F59E0B 35%, 
-      #FFFFFF 50%, 
-      #F59E0B 65%, 
-      #D97706 100%
-    );
-    background-size: 100% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #F59E0B;
-    z-index: 1;
+  [data-theme="light"] #btnNavVip i, [data-theme="light"] #btnNavVip span {
+    background: none; -webkit-background-clip: unset; -webkit-text-fill-color: #B45309; color: #B45309;
   }
-
-  [data-theme="light"] #btnNavVip i,
-  [data-theme="light"] #btnNavVip span {
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: #B45309;
-    color: #B45309; /* Alto contraste certificado WCAG AA en fondo claro */
-  }
-
   #btnNavVip i { filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)); }
   [data-theme="light"] #btnNavVip i { filter: none; }
   #btnNavVip span { font-weight: 800; }
 
   /* 3. Espaciado final para evitar solapamiento */
-  body {
-    padding-bottom: 70px;
-  }
+  body { padding-bottom: 70px; }
 }
 
 /* ═══════════════════════════════════════════════════
