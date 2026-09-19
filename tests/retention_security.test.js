@@ -89,7 +89,8 @@ test('🛡️ MOTOR DE RETENCIÓN, SEGMENTACIÓN Y MAGIC TOKENS ANTI-ABUSO', asy
     await db.updateUser(phone, {
       plan: 'pro_bogota',
       planCity: 'Bogotá',
-      planExpiresAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString()
+      planExpiresAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      lastRetentionImpactAt: null
     });
 
     const userSnap = await db.getUserByPhone(phone);
@@ -104,7 +105,7 @@ test('🛡️ MOTOR DE RETENCIÓN, SEGMENTACIÓN Y MAGIC TOKENS ANTI-ABUSO', asy
 
   await t.test('6. POST /api/auth (consume_retention) debe canjear token y emitir JWT', async () => {
     const phone = '3151002035';
-    await db.addCredits(phone, 1);
+    await db.updateUser(phone, { credits: 1, lastRescueCreditAt: null });
 
     const tokenData = await db.createRetentionToken(phone, {
       type: 'rescue_credits',
@@ -129,7 +130,7 @@ test('🛡️ MOTOR DE RETENCIÓN, SEGMENTACIÓN Y MAGIC TOKENS ANTI-ABUSO', asy
 
   await t.test('7. POST /api/auth (consume_retention) debe rechazar ataque de repetición con 410', async () => {
     const phone = '3151002036';
-    await db.addCredits(phone, 1);
+    await db.updateUser(phone, { credits: 1, lastRescueCreditAt: null });
 
     const tokenData = await db.createRetentionToken(phone, {
       type: 'rescue_credits',

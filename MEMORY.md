@@ -4,6 +4,24 @@
 
 ---
 
+- 116. **Hito 116: Integración del Motor Diario de Retención en el Cron de Conciliación (reconcile-cron.js)**:
+    - **Diagnóstico y Contexto:**
+      1. *Límite Estricto de Vercel Cron (Máximo 2 Crons en Hobby):* La plataforma Vercel restringe a exactamente 2 tareas cron en el plan Hobby. Ya existían `/api/payments/reconcile-cron` (04:00 UTC) y `/api/telemetry/cron` (01:00 UTC). Añadir un tercer cron violaría la configuración y rompería los despliegues.
+      2. *Optimización de Consultas a Base de Datos:* Evitar lecturas innecesarias en Firestore o escaneos indiscriminados de usuarios no elegibles.
+    - **Solución Implementada:**
+      1. *Función `getActiveUsersForRetention(limitCount=100)` en `lib/db.js`:* Filtra de forma eficiente usuarios activos con Plan Pro o saldo crítico ($\le 2$ créditos). Soporta `limit(n)` nativo tanto en Firestore como en el almacén local en memoria.
+      2. *Tarea Secundaria Diaria en `api/payments/reconcile-cron.js`:* Tras conciliar pagos de Wompi, el cron ejecuta defensivamente `procesarLoteRetencion()` sin interrumpir el flujo principal ante advertencias.
+      3. *Telemetría y Métricas en la Respuesta:* El JSON de respuesta incluye el bloque `retencion: { procesados, impactados, accionesGeneradas }`.
+      4. *Aislamiento Idempotente en Pruebas Unitarias:* `tests/retention_security.test.js` ajustado para resetear marcas temporales y créditos en usuarios de prueba, garantizando ejecuciones repetidas 100% en verde.
+    - **Validación Automatizada y Modularidad:**
+      - `node --test tests/reconciliation_cron.test.js`: **8/8 pruebas aprobadas al 100%**.
+      - `node --test tests/retention_security.test.js`: **8/8 pruebas aprobadas al 100%**.
+      - `api/payments/reconcile-cron.js`: **412 líneas** (cumple estrictamente el Estándar Desmulta $\le 500$ líneas).
+    - **Archivos Afectados:**
+      - `lib/db.js`, `api/payments/reconcile-cron.js`, `tests/retention_security.test.js`, `MEMORY.md`.
+
+---
+
 - 115. **Hito 115: Suite Automatizada de Pruebas de Retención, Antifraude y Sesión JWT (Tablero Maestro - Fase 4)**:
     - **Diagnóstico y Contexto:**
       1. *Blindaje Integral del Ciclo de Retención:* Proveer una suite de pruebas automatizadas nativa (`node --test`) para certificar el motor criptográfico de tokens, el segmentador de usuarios, la protección anti-spam de 15 días, el rescate anti-abuso de 45 días y el endpoint serverless de canje.

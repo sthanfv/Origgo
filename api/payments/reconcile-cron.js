@@ -16,6 +16,7 @@ const db = require('../../lib/db');
 const { generatePin } = require('../../lib/crypto');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
+const { procesarLoteRetencion } = require('../../lib/retention');
 
 /**
  * Valida la cabecera Authorization: Bearer <CRON_SECRET> en tiempo constante.
@@ -369,10 +370,33 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // -------------------------------------------------------------
+    // 🔄 TAREA SECUNDARIA DIARIA: MOTOR DE RETENCIÓN Y CICLO DE VIDA
+    // -------------------------------------------------------------
+    let resultadoRetencion = { procesados: 0, impactados: 0, acciones: [] };
+    try {
+      console.log('[reconcile-cron] Evaluando ciclo de retención diario...');
+      const usuariosCandidatos = typeof db.getActiveUsersForRetention === 'function'
+        ? await db.getActiveUsersForRetention(100)
+        : [];
+
+      if (usuariosCandidatos.length > 0) {
+        resultadoRetencion = await procesarLoteRetencion(usuariosCandidatos);
+        console.log(`[reconcile-cron] Retención completada: ${resultadoRetencion.impactados}/${resultadoRetencion.procesados} usuarios impactados`);
+      }
+    } catch (errRetencion) {
+      console.warn('[reconcile-cron] Aviso en ciclo de retención (no crítico):', errRetencion.message);
+    }
+
     return res.status(200).json({
       ok: true,
       ejecutadoEn: new Date().toISOString(),
       metricas,
+      retencion: {
+        procesados: resultadoRetencion.procesados || 0,
+        impactados: resultadoRetencion.impactados || 0,
+        accionesGeneradas: Array.isArray(resultadoRetencion.acciones) ? resultadoRetencion.acciones.length : 0
+      },
       detalles
     });
 
