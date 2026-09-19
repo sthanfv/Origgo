@@ -4,6 +4,25 @@
 
 ---
 
+- 114. **Hito 114: Enrutador de Consumo y Canje de Tokens de Retención con Sesión JWT (Tablero Maestro - Fase 3)**:
+    - **Diagnóstico y Contexto:**
+      1. *Activación de Beneficios desde Magic Link:* Conectar el enlace de retención recibido por el usuario (`https://origgo.online/?retention_token=...` o `POST /api/auth?action=consume_retention`) con la acreditación instantánea de saldo.
+      2. *Restauración de Sesión sin Fricción:* Emitir un token JWT firmado de sesión transitoria (24h) para que el cliente ingrese a la aplicación web autenticado y con saldo actualizado sin necesidad de escribir su PIN manualmente.
+      3. *Consolidación Serverless (<12 Funciones Vercel):* Integrar el handler dentro de `api/auth.js` sin crear archivos serverless físicos adicionales.
+    - **Solución Implementada (`api/auth.js`):**
+      1. *Acción `consume_retention` / `consume-retention`:* Soporte para POST con validación CORS, rechazo de métodos no permitidos (HTTP 405) y validación de presencia del token (HTTP 400).
+      2. *Consumo Atómico e Idempotente:* Invocación de `db.consumeRetentionToken(token)`. Si el token ya fue consumido o expiró, responde HTTP 410 Gone; si no existe, responde HTTP 400.
+      3. *Emisión de JWT Transitorio:* Firma criptográfica de sesión con `JWT_SECRET` conteniendo `{ phone, plan, planCity, planExpiresAt, type: 'retention_session' }` con expiración de 24 horas.
+      4. *Respuesta Estructurada:* Retorna `ok: true`, mensaje motivacional, tipo de campaña, créditos acreditados, token JWT y perfil público del usuario.
+    - **Validación y Modularidad:**
+      - `node --check api/auth.js`: Sintaxis 100% válida.
+      - Suite de pruebas de 4 casos (GET 405, Token Requerido 400, Canje Exitoso 200 OK y Reintento 410 Gone) aprobada al 100%.
+      - `api/auth.js` acotado a **145 líneas** (muy por debajo del límite de 500 líneas).
+    - **Archivos Afectados:**
+      - `api/auth.js`, `MEMORY.md`.
+
+---
+
 - 113. **Hito 113: Motor de Reglas, Segmentación y Ciclo de Vida de Clientes (Tablero Maestro - Fase 2)**:
     - **Diagnóstico y Contexto:**
       1. *Segmentación Automatizada de Usuarios:* Evaluar de forma no intrusiva el estado del usuario para determinar su etapa en el embudo y aplicar acciones de retención pertinentes sin intervención manual.
