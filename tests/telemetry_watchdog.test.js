@@ -8,7 +8,7 @@
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
-const telemetryHandler = require('../api/telemetry/report');
+const telemetryHandler = require('../api/telemetry').report;
 
 // Helper mock para simular req y res en endpoints serverless
 function createMockReqRes({ method = 'POST', body = {}, ip = '127.0.0.1' } = {}) {

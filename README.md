@@ -68,11 +68,11 @@ Este repositorio contiene el frontend desacoplado e independiente de Origgo, dis
 | **Despacho masivo de notificaciones** | [`api/notifications/dispatch.js`](api/notifications/dispatch.js) | POST emisión server-to-server con `x-internal-secret` |
 | **Despachador resiliente y auto-limpieza** | [`lib/push-dispatcher.js`](lib/push-dispatcher.js) | Envío por lotes, backoff exponencial y purga 410/404 |
 | **Persistencia y segmentación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido, multicriterio (ciudad/op/rebajas) y hash |
-| **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
+| **Telemetría y Perro Guardián serverless** | [`api/telemetry.js`](api/telemetry.js) | Enrutador unificado: reportes, embudo y Vercel Cron |
 | **Perro Guardián y reporte en cliente** | [`modules/00-security.js`](modules/00-security.js) | `inicializarPerroGuardian()`, `sendBeacon` |
 | **Centro de Auto-Soporte y Takedown** | [`modules/16-support.js`](modules/16-support.js) | Modal institucional, reconciliación y desindexación |
-| **Retiro de Inmuebles (Notice & Takedown)**| [`api/support/takedown.js`](api/support/takedown.js) | Desindexación legal Habeas Data y persistencia |
-| **Lista Negra pública para Scraper J7** | [`api/support/blacklist.js`](api/support/blacklist.js) | Endpoint GET de exclusión previa con caché Edge |
+| **Retiro de Inmuebles (Notice & Takedown)**| [`api/support.js`](api/support.js) | Enrutador unificado: desindexación y lista negra pública |
+| **Lista Negra pública para Scraper J7** | [`api/support.js`](api/support.js) | Endpoint GET `/api/support/blacklist` con caché Edge |
 | **Cola de reintentos y contrato de catálogo** | [`modules/03-api.js`](modules/03-api.js) | `fetchConReintentos()`, `validarContratoCatalogo()` |
 | **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
 | **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
@@ -147,19 +147,28 @@ hunter-portal-showcase/
 │   ├── push-dispatcher.js      # Despachador resiliente con backoff y auto-limpieza 410/404
 │   ├── push-subscriptions.js   # Persistencia y segmentación multicriterio de suscripciones
 │   ├── rate-limiter.js         # Middleware de limitación de tasa en memoria
-│   └── validation.js           # Esquemas de validación estricta con Zod
-├── api/                        # Funciones Serverless en Vercel
+│   ├── validation.js           # Esquemas de validación estricta con Zod
+│   ├── support/                # Módulos internos de auto-soporte y desindexación
+│   │   ├── takedown.js         # Manejador Notice & Takedown Habeas Data
+│   │   └── blacklist.js        # Manejador de consulta pública de lista negra
+│   └── telemetry/              # Módulos internos de telemetría y embudo CRO
+│       ├── report.js           # Manejador de reportes de error Perro Guardián
+│       ├── funnel.js           # Manejador de eventos y conversión CRO
+│       └── cron.js             # Manejador de cron diario a Telegram
+├── api/                        # Funciones Serverless en Vercel (11 funciones, límite Hobby <= 12)
+│   ├── auth.js                 # Sesión, recuperación, magic links y freemium
+│   ├── notifications.js        # VAPID key, suscripciones y despacho Push
+│   ├── support.js              # Enrutador consolidado de auto-soporte y lista negra
+│   ├── telemetry.js            # Enrutador consolidado de telemetría, embudo y cron
+│   ├── leads/
+│   │   ├── list.js             # Catálogo paginado con caché Edge
+│   │   └── unlock.js           # Desbloqueo de leads con deducción atómica de crédito
+│   ├── media/
+│   │   └── proxy.js            # Proxy seguro de medios y anti-SSRF
 │   ├── payments/
 │   │   ├── create-order.js     # Creación de orden y firma de integridad Wompi
+│   │   ├── reconcile-cron.js   # Conciliación periódica de órdenes Wompi
 │   │   └── webhook-wompi.js    # Receptor de eventos Wompi con validación HMAC
-│   ├── auth/
-│   │   ├── session.js          # Inicio de sesión por PIN y reconciliación Wompi
-│   │   └── recover.js          # Recuperación segura mediante enlace temporal firmado
-│   ├── leads/
-│   │   └── unlock.js           # Desbloqueo de leads con deducción atómica de crédito
-│   ├── support/
-│   │   ├── takedown.js         # Solicitud de desindexación y retiro de inmuebles (Notice & Takedown)
-│   │   └── blacklist.js        # Consulta pública de lista negra para el scraper J7
 │   └── user/
 │       └── balance.js          # Consulta de saldo, perfil y leads desbloqueados
 ├── scripts/

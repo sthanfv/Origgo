@@ -13,7 +13,7 @@ process.env.NODE_ENV = 'test';
 process.env.DISABLE_FIRESTORE_FOR_TESTS = 'true';
 require('../lib/env');
 
-const funnelHandler = require('../api/telemetry/funnel');
+const funnelHandler = require('../api/telemetry').funnel;
 const {
   ETAPAS_EMBUDO,
   registrarEventoEmbudo,

@@ -13,7 +13,7 @@ process.env.NODE_ENV = 'test';
 process.env.DISABLE_FIRESTORE_FOR_TESTS = 'true';
 require('../lib/env');
 
-const cronHandler = require('../api/telemetry/cron');
+const cronHandler = require('../api/telemetry').cron;
 
 function createMockReqRes({ method = 'GET', headers = {}, query = {} } = {}) {
   const req = {

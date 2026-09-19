@@ -1,6 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-19 06:10 (GMT-5)
+Última actualización: 2026-09-19 07:50 (GMT-5)
+
+---
+
+- 109. **Hito 109: Consolidación de Enrutadores Serverless Vercel Hobby (11 Funciones), Resiliencia de Fallback en Memoria y Neutralización de Cuelgues ADB**:
+    - **Diagnóstico y Contexto:**
+      1. *Límite Estricto Vercel Hobby (12 Funciones Serverless):* Vercel computa cada archivo individual bajo `api/` como una función serverless independiente. Con la suma de endpoints de soporte y telemetría, el proyecto alcanzó 14 funciones, provocando rechazo de despliegue.
+      2. *Error en Fallback de Memoria (`memoryStore is not defined`):* Al correr pruebas en entornos sin Firestore activo, `lib/db.js` intentaba acceder a la variable no declarada `memoryStore` dentro de las funciones de lista negra.
+      3. *Cuelgues en Ejecución ADB y Suspensión de la PC:* El script de despliegue móvil `scripts/deploy_j7.js` ejecutaba comandos ADB anidados sin timeout explícito, lo que dejaba el subshell de Android esperando entrada indefinidamente ante advertencias de comillas y llevaba a Windows a apagar la pantalla o suspender el equipo por inactividad.
+    - **Solución Implementada:**
+      1. *Consolidación de Enrutadores Serverless (`api/support.js` y `api/telemetry.js`):*
+         - Se crearon enrutadores consolidados `api/support.js` (unificando `takedown` y `blacklist`) y `api/telemetry.js` (unificando `report`, `funnel` y `cron`).
+         - La lógica modular interna se trasladó a `lib/support/` y `lib/telemetry/`.
+         - Se ajustó `vercel.json` con directivas de reescritura (`rewrites`) para `/api/support/:action` y `/api/telemetry/:action`.
+         - El conteo total de funciones serverless en `api/` quedó en **11 funciones exactas** ($\le 12$).
+      2. *Corrección Resiliente de Fallback en Memoria (`lib/db.js`):*
+         - Se añadió el método polimórfico `async get()` al almacén en memoria `createMemoryCollection` soportando `snap.docs.map(d => d.id)`.
+         - Se inicializó `blacklistedLeadsRef = createMemoryCollection('blacklisted_leads')` garantizando operatividad total con y sin Firestore.
+      3. *Eliminación de Bloqueos en Scripts ADB (`scripts/deploy_j7.js`):*
+         - Se configuró `timeout: 45000` (45 segundos) en todas las ejecuciones `child_process.execSync`.
+         - Se normalizó el llamado directo de Node.js en Termux sin subshells interactivos colgados.
+    - **Validación Automatizada y Modularidad:**
+      - `npm test`: **100% de éxito en las 8 fases DevSecOps (0 errores)**.
+      - Pruebas unitarias de soporte, telemetría y métricas CRO aprobadas al 100%.
+      - Todos los módulos de frontend estrictamente conformes con el Estándar Desmulta ($\le 500$ líneas).
+    - **Archivos Afectados:**
+      - `lib/db.js`, `api/support.js`, `api/telemetry.js`, `lib/support/takedown.js`, `lib/support/blacklist.js`, `lib/telemetry/report.js`, `lib/telemetry/funnel.js`, `lib/telemetry/cron.js`, `vercel.json`, `tests/support_blacklist.test.js`, `tests/telemetry_watchdog.test.js`, `tests/telemetry_cron.test.js`, `tests/funnel_metrics.test.js`, `MEMORY.md`.
 
 ---
 

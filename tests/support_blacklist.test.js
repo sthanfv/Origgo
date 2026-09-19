@@ -13,8 +13,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const db = require('../lib/db');
 const { signJwt } = require('../lib/crypto');
-const takedownHandler = require('../api/support/takedown');
-const blacklistHandler = require('../api/support/blacklist');
+const { takedown: takedownHandler, blacklist: blacklistHandler } = require('../api/support');
 const unlockHandler = require('../api/leads/unlock');
 
 function mockRes() {
