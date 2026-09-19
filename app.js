@@ -467,12 +467,7 @@ async function obtenerDesafioSeguridadResuelto() {
     if (turnstileToken) return { turnstileToken };
 
     const nonce = await resolverDesafioPoWNavegador(data.challenge);
-    return {
-      securityChallenge: {
-        ...data.challenge,
-        nonce
-      }
-    };
+    return { securityChallenge: { ...data.challenge, nonce } };
   } catch (e) {
     return {};
   }
@@ -480,15 +475,9 @@ async function obtenerDesafioSeguridadResuelto() {
 
 if (typeof window !== 'undefined') {
   Object.assign(window, {
-    guardarCookieSegura,
-    obtenerCookieSegura,
-    borrarCookieSegura,
-    obtenerTemaActual,
-    aplicarTema,
-    sincronizarPreferenciasEnServidor,
-    generarUUIDv4,
-    resolverDesafioPoWNavegador,
-    obtenerDesafioSeguridadResuelto
+    guardarCookieSegura, obtenerCookieSegura, borrarCookieSegura,
+    obtenerTemaActual, aplicarTema, sincronizarPreferenciasEnServidor,
+    generarUUIDv4, resolverDesafioPoWNavegador, obtenerDesafioSeguridadResuelto
   });
 }
 
@@ -901,11 +890,7 @@ async function recuperarPinConReferencia() {
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
   if (!email || !email.includes('@')) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`; msgBox.style.display = 'block'; }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending...' : 'Enviando...'}`; btn.disabled = true; }
@@ -917,17 +902,13 @@ async function recuperarPinConReferencia() {
     });
     const result = await response.json();
     if (msgBox) {
-      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;
       msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, instructions were sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`; btn.disabled = false; }
   }
@@ -938,16 +919,13 @@ async function recuperarPinConReferencia() {
  */
 async function solicitarMagicLinkPorCorreo() {
   const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
-  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnSendMagicLink'), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-  const email = inputEmail ? inputEmail.value.trim() : '';
+  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryStatusMsg');
+  const btn = document.getElementById('btnSendMagicLink');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const email = (inputEmail?.value || '').trim();
 
   if (!email || !email.includes('@')) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`; msgBox.style.display = 'block'; }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
@@ -959,17 +937,13 @@ async function solicitarMagicLinkPorCorreo() {
     });
     const result = await response.json();
     if (msgBox) {
-      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;
       msgBox.textContent = result.message || (response.ok ? (isEn ? 'Instant access link sent to your inbox.' : 'Enlace de acceso rápido enviado a tu correo.') : (isEn ? 'Could not send access link.' : 'No se pudo enviar el enlace de acceso.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${isEn ? 'Send Direct Link' : 'Enviar Enlace de Acceso'}`; btn.disabled = false; }
   }
@@ -3184,16 +3158,11 @@ async function manejarContactoWhatsapp(index) {
   const contactoSeguro = typeof sanitizarContactoCliente === 'function'
     ? sanitizarContactoCliente(contacto)
     : contacto;
-  if (contactoSeguro?.whatsappUrl) {
+  const urlDestino = contactoSeguro?.whatsappUrl || contactoSeguro?.enlace;
+  if (urlDestino) {
     manejarContactoWhatsapp._enProgreso = true;
     setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
-    window.open(contactoSeguro.whatsappUrl, '_blank', 'noopener,noreferrer');
-    return;
-  }
-  if (contactoSeguro?.enlace) {
-    manejarContactoWhatsapp._enProgreso = true;
-    setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
-    window.open(contactoSeguro.enlace, '_blank', 'noopener,noreferrer');
+    window.open(urlDestino, '_blank', 'noopener,noreferrer');
     return;
   }
 
@@ -3665,22 +3634,16 @@ async function ejecutarPagoWompi() {
         const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
-        } else if (trx?.status === 'PENDING') {
+        } else if (trx?.status === 'PENDING' || trx?.status === 'WAITING_FOR_SURCHARGE_VALIDATION') {
           localStorage.setItem('origgo_pending_ref', orderData.reference);
           mostrarNotificacionToast(
-            esIngles
-              ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.`
-              : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
-            'info',
-            { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
+            esIngles ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.` : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
+            'info', { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
           );
         } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
           mostrarNotificacionToast(
-            esIngles
-              ? 'The transaction was declined by the financial institution. Please try another payment method.'
-              : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
-            'error',
-            { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
+            esIngles ? 'The transaction was declined by the financial institution. Please try another payment method.' : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
+            'error', { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
           );
         }
       });
@@ -3710,9 +3673,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnToggle?.addEventListener("click", () => {
     acc?.classList.toggle("active");
     const active = acc?.classList.contains("active"), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-    btnToggle.innerHTML = active
-      ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios')
-      : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
+    btnToggle.innerHTML = active ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios') : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
   });
 });
 
@@ -4623,38 +4584,22 @@ function configurarListeners() {
     }
   });
 
-  if (typeof inicializarBarraOrdenamiento === 'function') inicializarBarraOrdenamiento();
-  if (typeof inicializarFiltroHoy === 'function') inicializarFiltroHoy();
-  if (typeof inicializarProteccionAntiImpresion === 'function') inicializarProteccionAntiImpresion();
-  if (typeof inicializarPerroGuardian === 'function') inicializarPerroGuardian();
+  [inicializarBarraOrdenamiento, inicializarFiltroHoy, inicializarProteccionAntiImpresion, inicializarPerroGuardian].forEach(fn => { if (typeof fn === 'function') fn(); });
 }
 
-// ═════════════════════════════════════════════════════════════════════════
-// 🚀 ARRANQUE DE LA APLICACIÓN AL CARGAR EL DOM (NON-BLOCKING STARTUP)
-// ═════════════════════════════════════════════════════════════════════════
+// 🚀 Arranque de la aplicación al cargar el DOM (Non-blocking startup)
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Inmediato (0ms): Registrar todos los event listeners de la interfaz
   configurarListeners();
-
-  // 2. Inmediato (0ms): Activar micro-interacciones (Ripple, Parallax GPU, Háptica)
   inicializarEfectosPremium();
-
-  // 3. Inmediato (0ms): Cargar catálogo inmobiliario sin esperar la red externa
   cargarDatos("./data/inmobiliario.json");
+  inicializarSesionUsuario().catch(err => registrarLogDesarrollo('warn', "[Sesión] Fallo verificación:", err.message));
 
-  // 4. Segundo plano asíncrono: Revalidar sesión persistente (JWT / PIN / Wompi)
-  inicializarSesionUsuario().catch((err) => {
-    registrarLogDesarrollo('warn', "[Sesión] Fallo en verificación de segundo plano:", err.message);
-  });
-
-  // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err));
+      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error SW:", err));
     });
   }
 
-  // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
   const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
   if (waConfig) {
     document.querySelectorAll('a[href*="wa.me/"]').forEach(a => { a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`); });

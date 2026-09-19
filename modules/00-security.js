@@ -467,12 +467,7 @@ async function obtenerDesafioSeguridadResuelto() {
     if (turnstileToken) return { turnstileToken };
 
     const nonce = await resolverDesafioPoWNavegador(data.challenge);
-    return {
-      securityChallenge: {
-        ...data.challenge,
-        nonce
-      }
-    };
+    return { securityChallenge: { ...data.challenge, nonce } };
   } catch (e) {
     return {};
   }
@@ -480,14 +475,8 @@ async function obtenerDesafioSeguridadResuelto() {
 
 if (typeof window !== 'undefined') {
   Object.assign(window, {
-    guardarCookieSegura,
-    obtenerCookieSegura,
-    borrarCookieSegura,
-    obtenerTemaActual,
-    aplicarTema,
-    sincronizarPreferenciasEnServidor,
-    generarUUIDv4,
-    resolverDesafioPoWNavegador,
-    obtenerDesafioSeguridadResuelto
+    guardarCookieSegura, obtenerCookieSegura, borrarCookieSegura,
+    obtenerTemaActual, aplicarTema, sincronizarPreferenciasEnServidor,
+    generarUUIDv4, resolverDesafioPoWNavegador, obtenerDesafioSeguridadResuelto
   });
 }

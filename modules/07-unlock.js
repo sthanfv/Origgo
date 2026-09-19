@@ -402,16 +402,11 @@ async function manejarContactoWhatsapp(index) {
   const contactoSeguro = typeof sanitizarContactoCliente === 'function'
     ? sanitizarContactoCliente(contacto)
     : contacto;
-  if (contactoSeguro?.whatsappUrl) {
+  const urlDestino = contactoSeguro?.whatsappUrl || contactoSeguro?.enlace;
+  if (urlDestino) {
     manejarContactoWhatsapp._enProgreso = true;
     setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
-    window.open(contactoSeguro.whatsappUrl, '_blank', 'noopener,noreferrer');
-    return;
-  }
-  if (contactoSeguro?.enlace) {
-    manejarContactoWhatsapp._enProgreso = true;
-    setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
-    window.open(contactoSeguro.enlace, '_blank', 'noopener,noreferrer');
+    window.open(urlDestino, '_blank', 'noopener,noreferrer');
     return;
   }
 

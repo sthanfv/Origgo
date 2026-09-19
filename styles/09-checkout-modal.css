@@ -411,32 +411,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.checkout-tab-btn.vip-tab.active {
-  color: #FBBF24;
-}
-
-.checkout-tab-panel {
-  display: none;
-  animation: fadeIn 0.25s ease forwards;
-}
-
-.checkout-tab-panel.active {
-  display: block;
-}
+.checkout-tab-btn.vip-tab.active { color: #FBBF24; }
+.checkout-tab-panel { display: none; animation: fadeIn 0.25s ease forwards; }
+.checkout-tab-panel.active { display: block; }
 
 /* Grilla de Opciones de Precios */
-.pricing-options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-}
-
-@media (max-width: 520px) {
-  .pricing-options-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.pricing-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+@media (max-width: 520px) { .pricing-options-grid { grid-template-columns: 1fr; } }
 
 .pricing-option-card {
   position: relative;
@@ -449,11 +430,7 @@
   display: block;
 }
 
-.pricing-option-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-2px);
-}
-
+.pricing-option-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
 .pricing-option-card.active-option,
 .pricing-option-card:has(input:checked) {
   border-color: var(--accent-emerald);
@@ -474,25 +451,7 @@
   text-align: left;
 }
 
-[data-theme="light"] .checkout-merchant-notice {
-  background: hsla(215, 30%, 92%, 0.7);
-  border-color: hsla(215, 20%, 75%, 0.4);
-}
-
-.checkout-merchant-notice i {
-  color: var(--accent-emerald);
-  font-size: 0.95rem;
-  margin-top: 0.15rem;
-  flex-shrink: 0;
-}
-
-.merchant-notice-text {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.merchant-notice-text strong {
-  color: var(--text-main);
-  font-weight: 700;
-}
+[data-theme="light"] .checkout-merchant-notice { background: hsla(215, 30%, 92%, 0.7); border-color: hsla(215, 20%, 75%, 0.4); }
+.checkout-merchant-notice i { color: var(--accent-emerald); font-size: 0.95rem; margin-top: 0.15rem; flex-shrink: 0; }
+.merchant-notice-text { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.merchant-notice-text strong { color: var(--text-main); font-weight: 700; }

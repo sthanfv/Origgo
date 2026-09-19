@@ -1,6 +1,36 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 22:50 (GMT-5)
+Última actualización: 2026-09-18 23:08 (GMT-5)
+
+---
+
+- 104. **Hito 104: Pulido Quirúrgico: Blindaje de Botón CTA en Pantallas Angostas (≤360px), Margen de Seguridad Preventivo en Módulos JS (<490 líneas) y CSS (<485 líneas), y Supresión de bun.lock**:
+    - **Diagnóstico y Contexto:**
+      1. *Riesgo de Quiebre de Texto en CTA de Pilar:* En pantallas compactas ($\le 360\text{px}$), el micro-botón interactivo `.trust-pillar-cta-btn` podía partir el texto en dos líneas, afectando la estética de la tarjeta del pilar en móviles.
+      2. *Margen Estrecho en Módulos CSS y JS:* Varios archivos (`09-checkout-modal.css`: 498, `00-security.js`: 494, `01-state.js`: 496, `08-checkout.js`: 490, `10-listeners.js`: 491) operaban al borde de las 500 líneas, dejando escaso margen para futuras extensiones.
+      3. *Aislamiento de bun.lock:* Verificación y exclusión definitiva de gestores alternativos de paquetes para preservar `npm` y `package-lock.json`.
+    - **Solución Implementada:**
+      1. *Blindaje de Botón CTA (`styles/06-bento-grid.css`):*
+         - Se aplicó `white-space: nowrap;`, padding `0.35rem 0.75rem`, `background: var(--accent-emerald, #059669)`, color `#ffffff`, `border-radius: 8px`, `font-size: 0.76rem`, `font-weight: 700` y hover `#047857`.
+         - Preservada la regla responsiva `@media (max-width: 360px)` compactada.
+         - `styles/06-bento-grid.css` consolidado en **480 líneas** ($< 485$).
+      2. *Optimización de Margen en Módulos CSS (< 485 líneas):*
+         - `styles/09-checkout-modal.css`: Compactadas reglas menores de pestañas y avisos mercantiles, bajando de 498 a **457 líneas** (holgura de 43 líneas).
+         - `styles/10-checkout-plans.css`: Limpiado salto final, consolidado en **441 líneas**.
+         - **19/19 módulos CSS quedaron estrictamente con menos de 485 líneas.**
+      3. *Optimización de Margen en Módulos JS (< 490 líneas):*
+         - `modules/07-unlock.js`: Compactada la redirección unificada de URL en `manejarContactoWhatsapp`, reduciéndose a **434 líneas** (¡66 líneas de holgura!).
+         - `modules/00-security.js`: Reducido a **483 líneas**.
+         - `modules/01-state.js`: Compactados bloques de respuesta en `recuperarPinPorCorreo` y `solicitarMagicLinkPorCorreo`, reduciéndose a **481 líneas**.
+         - `modules/08-checkout.js`: Compactadas notificaciones toast y listeners DOM, reduciéndose a **488 líneas**.
+         - `modules/10-listeners.js`: Compactado el arranque non-blocking, reduciéndose a **475 líneas**.
+         - **16/16 módulos JS quedaron estrictamente con menos de 490 líneas.**
+      4. *Aseguramiento de bun.lock:* Confirmada su ausencia física y su bloqueo en `.gitignore`.
+      5. *Compilación y Suite DevSecOps de 8 Fases:*
+         - `npm run build` ejecutado con éxito total (`style.min.css`: 151,685 bytes, `app.min.js`: 308,502 bytes).
+         - `node scripts/validate.js` ejecutado con **100% de éxito en las 8 fases (0 errores)**.
+    - **Archivos Afectados:**
+      - `styles/06-bento-grid.css`, `styles/09-checkout-modal.css`, `styles/10-checkout-plans.css`, `modules/07-unlock.js`, `modules/00-security.js`, `modules/01-state.js`, `modules/08-checkout.js`, `modules/10-listeners.js`, `style.css`, `style.min.css`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 

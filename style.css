@@ -2183,21 +2183,21 @@ main {
   margin-top: 0.5rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  border-radius: 999px;
-  color: var(--accent-emerald, #10b981);
-  font-size: 0.72rem;
+  gap: 0.4rem;
+  background: var(--accent-emerald, #059669);
+  color: #ffffff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.76rem;
   font-weight: 700;
-  white-space: nowrap;
+  border: none;
   cursor: pointer;
+  white-space: nowrap; /* Evita quiebre de linea en pantallas angostas */
   transition: all 0.2s ease;
 }
 
 .trust-pillar-cta-btn:hover {
-  background: var(--accent-emerald, #10b981);
+  background: #047857;
   color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
@@ -2225,15 +2225,9 @@ main {
     padding-top: 1rem;
   }
 }
-
 @media (max-width: 360px) {
-  .trust-pillar-cta-btn {
-    padding: 0.25rem 0.55rem;
-    font-size: 0.68rem;
-    gap: 0.25rem;
-  }
+  .trust-pillar-cta-btn { padding: 0.25rem 0.55rem; font-size: 0.68rem; gap: 0.25rem; }
 }
-
 
 /* ═══════════════════════════════════════════════════
    CARRUSEL MULTI-FOTO CONDICIONAL
@@ -3575,32 +3569,13 @@ main {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.checkout-tab-btn.vip-tab.active {
-  color: #FBBF24;
-}
-
-.checkout-tab-panel {
-  display: none;
-  animation: fadeIn 0.25s ease forwards;
-}
-
-.checkout-tab-panel.active {
-  display: block;
-}
+.checkout-tab-btn.vip-tab.active { color: #FBBF24; }
+.checkout-tab-panel { display: none; animation: fadeIn 0.25s ease forwards; }
+.checkout-tab-panel.active { display: block; }
 
 /* Grilla de Opciones de Precios */
-.pricing-options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-}
-
-@media (max-width: 520px) {
-  .pricing-options-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.pricing-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+@media (max-width: 520px) { .pricing-options-grid { grid-template-columns: 1fr; } }
 
 .pricing-option-card {
   position: relative;
@@ -3613,11 +3588,7 @@ main {
   display: block;
 }
 
-.pricing-option-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-2px);
-}
-
+.pricing-option-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
 .pricing-option-card.active-option,
 .pricing-option-card:has(input:checked) {
   border-color: var(--accent-emerald);
@@ -3638,28 +3609,10 @@ main {
   text-align: left;
 }
 
-[data-theme="light"] .checkout-merchant-notice {
-  background: hsla(215, 30%, 92%, 0.7);
-  border-color: hsla(215, 20%, 75%, 0.4);
-}
-
-.checkout-merchant-notice i {
-  color: var(--accent-emerald);
-  font-size: 0.95rem;
-  margin-top: 0.15rem;
-  flex-shrink: 0;
-}
-
-.merchant-notice-text {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.merchant-notice-text strong {
-  color: var(--text-main);
-  font-weight: 700;
-}
+[data-theme="light"] .checkout-merchant-notice { background: hsla(215, 30%, 92%, 0.7); border-color: hsla(215, 20%, 75%, 0.4); }
+.checkout-merchant-notice i { color: var(--accent-emerald); font-size: 0.95rem; margin-top: 0.15rem; flex-shrink: 0; }
+.merchant-notice-text { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.merchant-notice-text strong { color: var(--text-main); font-weight: 700; }
 .pricing-option-card.featured { border-color: hsla(158, 64%, 52%, 0.4); }
 
 .featured-ribbon {
@@ -4100,7 +4053,6 @@ main {
 .option-price-free { color: var(--accent-emerald) !important; font-weight: 900; }
 .btn-claim-freemium { background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important; }
 .btn-magic-link { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important; }
-
 
 /* 📱 ADAPTABILIDAD RESPONSIVA MOBILE-FIRST DE ÉLITE (iOS & ANDROID) */
 

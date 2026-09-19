@@ -451,38 +451,22 @@ function configurarListeners() {
     }
   });
 
-  if (typeof inicializarBarraOrdenamiento === 'function') inicializarBarraOrdenamiento();
-  if (typeof inicializarFiltroHoy === 'function') inicializarFiltroHoy();
-  if (typeof inicializarProteccionAntiImpresion === 'function') inicializarProteccionAntiImpresion();
-  if (typeof inicializarPerroGuardian === 'function') inicializarPerroGuardian();
+  [inicializarBarraOrdenamiento, inicializarFiltroHoy, inicializarProteccionAntiImpresion, inicializarPerroGuardian].forEach(fn => { if (typeof fn === 'function') fn(); });
 }
 
-// ═════════════════════════════════════════════════════════════════════════
-// 🚀 ARRANQUE DE LA APLICACIÓN AL CARGAR EL DOM (NON-BLOCKING STARTUP)
-// ═════════════════════════════════════════════════════════════════════════
+// 🚀 Arranque de la aplicación al cargar el DOM (Non-blocking startup)
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Inmediato (0ms): Registrar todos los event listeners de la interfaz
   configurarListeners();
-
-  // 2. Inmediato (0ms): Activar micro-interacciones (Ripple, Parallax GPU, Háptica)
   inicializarEfectosPremium();
-
-  // 3. Inmediato (0ms): Cargar catálogo inmobiliario sin esperar la red externa
   cargarDatos("./data/inmobiliario.json");
+  inicializarSesionUsuario().catch(err => registrarLogDesarrollo('warn', "[Sesión] Fallo verificación:", err.message));
 
-  // 4. Segundo plano asíncrono: Revalidar sesión persistente (JWT / PIN / Wompi)
-  inicializarSesionUsuario().catch((err) => {
-    registrarLogDesarrollo('warn', "[Sesión] Fallo en verificación de segundo plano:", err.message);
-  });
-
-  // 5. Registro de Service Worker para capacidades PWA
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error registrando Service Worker:", err));
+      navigator.serviceWorker.register("./sw.js").then(r => r.update().catch(() => {})).catch(err => registrarLogDesarrollo('warn', "[PWA] Error SW:", err));
     });
   }
 
-  // 6. Sincronizar dinámicamente enlaces de contacto con el WhatsApp de config.js
   const waConfig = window.PORTAL_CONFIG?.contacto?.whatsapp;
   if (waConfig) {
     document.querySelectorAll('a[href*="wa.me/"]').forEach(a => { a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${waConfig}`); });

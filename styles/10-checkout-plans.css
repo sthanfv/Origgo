@@ -438,4 +438,3 @@
 .option-price-free { color: var(--accent-emerald) !important; font-weight: 900; }
 .btn-claim-freemium { background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important; }
 .btn-magic-link { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #FFFFFF !important; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important; }
-

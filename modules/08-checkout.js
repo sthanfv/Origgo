@@ -443,22 +443,16 @@ async function ejecutarPagoWompi() {
         const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
-        } else if (trx?.status === 'PENDING') {
+        } else if (trx?.status === 'PENDING' || trx?.status === 'WAITING_FOR_SURCHARGE_VALIDATION') {
           localStorage.setItem('origgo_pending_ref', orderData.reference);
           mostrarNotificacionToast(
-            esIngles
-              ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.`
-              : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
-            'info',
-            { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
+            esIngles ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.` : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
+            'info', { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
           );
         } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
           mostrarNotificacionToast(
-            esIngles
-              ? 'The transaction was declined by the financial institution. Please try another payment method.'
-              : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
-            'error',
-            { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
+            esIngles ? 'The transaction was declined by the financial institution. Please try another payment method.' : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
+            'error', { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
           );
         }
       });
@@ -488,8 +482,6 @@ document.addEventListener("DOMContentLoaded", () => {
   btnToggle?.addEventListener("click", () => {
     acc?.classList.toggle("active");
     const active = acc?.classList.contains("active"), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-    btnToggle.innerHTML = active
-      ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios')
-      : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
+    btnToggle.innerHTML = active ? (isEn ? '<i class="fa-solid fa-chevron-up"></i> Hide Privileges' : '<i class="fa-solid fa-chevron-up"></i> Ocultar Privilegios') : (isEn ? '<i class="fa-solid fa-sparkles"></i> View Membership Privileges' : '<i class="fa-solid fa-sparkles"></i> Ver Privilegios de mi Membresía');
   });
 });

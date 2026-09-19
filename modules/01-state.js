@@ -406,11 +406,7 @@ async function recuperarPinConReferencia() {
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
   const email = inputEmail ? inputEmail.value.trim() : '';
   if (!email || !email.includes('@')) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`; msgBox.style.display = 'block'; }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending...' : 'Enviando...'}`; btn.disabled = true; }
@@ -422,17 +418,13 @@ async function recuperarPinConReferencia() {
     });
     const result = await response.json();
     if (msgBox) {
-      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;
       msgBox.textContent = result.message || (response.ok ? (isEn ? 'If an account exists, instructions were sent.' : 'Si existe una cuenta asociada, enviaremos instrucciones.') : (isEn ? 'Could not process request.' : 'No se pudo procesar la solicitud.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${isEn ? 'Send instructions' : 'Enviar instrucciones'}`; btn.disabled = false; }
   }
@@ -443,16 +435,13 @@ async function recuperarPinConReferencia() {
  */
 async function solicitarMagicLinkPorCorreo() {
   const inputEmail = document.getElementById('magicLinkEmailInput') || document.getElementById('recoveryReferenceInput');
-  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryResultMsg') || document.getElementById('restoreStatusMsg');
-  const btn = document.getElementById('btnSendMagicLink'), isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-  const email = inputEmail ? inputEmail.value.trim() : '';
+  const msgBox = document.getElementById('magicLinkStatusMsg') || document.getElementById('recoveryStatusMsg');
+  const btn = document.getElementById('btnSendMagicLink');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const email = (inputEmail?.value || '').trim();
 
   if (!email || !email.includes('@')) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${isEn ? 'Please enter a valid email address.' : 'Por favor, ingresa un correo electrónico válido.'}`; msgBox.style.display = 'block'; }
     return;
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
@@ -464,17 +453,13 @@ async function solicitarMagicLinkPorCorreo() {
     });
     const result = await response.json();
     if (msgBox) {
-      msgBox.className = response.ok ? 'restore-status-msg restore-status-recovery-result success' : 'restore-status-msg restore-status-recovery-result error';
+      msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;
       msgBox.textContent = result.message || (response.ok ? (isEn ? 'Instant access link sent to your inbox.' : 'Enlace de acceso rápido enviado a tu correo.') : (isEn ? 'Could not send access link.' : 'No se pudo enviar el enlace de acceso.'));
       msgBox.style.display = 'block';
       if (response.ok && inputEmail) inputEmail.value = '';
     }
   } catch (error) {
-    if (msgBox) {
-      msgBox.className = 'restore-status-msg restore-status-recovery-result error';
-      msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`;
-      msgBox.style.display = 'block';
-    }
+    if (msgBox) { msgBox.className = 'restore-status-msg restore-status-recovery-result error'; msgBox.innerHTML = `<i class="fa-solid fa-network-wired"></i> ${isEn ? 'Connection error. Try again.' : 'Error de conexión. Intenta de nuevo.'}`; msgBox.style.display = 'block'; }
   } finally {
     if (btn) { btn.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> ${isEn ? 'Send Direct Link' : 'Enviar Enlace de Acceso'}`; btn.disabled = false; }
   }
