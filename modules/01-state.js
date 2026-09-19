@@ -54,12 +54,7 @@ let cacheContactosDesbloqueados = {};
 // ✅ HAL-06: Flag atómico anti-race-condition para la restauración de sesión por PIN.
 let restauracionEnProgreso = false;
 // Variables de estado reactivo del Omnibox y filtros
-let filtroCiudadActivo = "";
-let filtroOperacionActivo = ""; // "" = todas, "venta", "arriendo"
-let filtroTratoDirectoActivo = false;
-let filtroHoyActivo = false;
-let textoBusquedaActivo = "";
-let criterioOrdenActivo = "recientes";
+let filtroCiudadActivo = "", filtroOperacionActivo = "", filtroTratoDirectoActivo = false, filtroHoyActivo = false, textoBusquedaActivo = "", criterioOrdenActivo = "recientes";
 
 function aplicarPreferenciasUsuario(usr) {
   if (!usr) return;
@@ -87,7 +82,15 @@ function establecerSesionDesdeToken(data, { msgEs, msgEn, titleEs, titleEn, isWe
 async function inicializarSesionUsuario() {
   const urlParams = new URLSearchParams(window.location.search);
   const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token'), welcomeToken = urlParams.get('welcome_token');
-  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref') || localStorage.getItem('origgo_pending_ref');
+  let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
+  if (!paymentRef) {
+    try {
+      const refs = JSON.parse(localStorage.getItem('origgo_pending_refs') || '[]');
+      paymentRef = refs.length > 0 ? refs[refs.length - 1] : localStorage.getItem('origgo_pending_ref');
+    } catch (_) {
+      paymentRef = localStorage.getItem('origgo_pending_ref');
+    }
+  }
   const wompiId = urlParams.get('id');
 
   // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo) con auto-desbloqueo de propiedad

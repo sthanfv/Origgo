@@ -87,33 +87,21 @@ function abrirModalCheckout(index, pestana = null) {
     if (elPin) elPin.textContent = sesionUsuario.pin ? `PIN: ${sesionUsuario.pin}` : (isEn ? 'Protected PIN' : 'PIN protegido');
     if (inputWa) inputWa.value = sesionUsuario.phone || '';
 
-    if (sesionUsuario.plan === 'national') {
-      cardCredits?.classList.add('vip-mode');
-      if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? 'National VIP Pass' : 'Plan Nacional VIP'}`;
-      if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
-      if (elCredits) elCredits.textContent = isEn ? 'Unlimited Colombia' : 'Colombia Ilimitada';
-      if (elPlan) elPlan.textContent = isEn ? 'Full unrestricted access across all Colombian cities.' : 'Acceso total sin límites a todas las ciudades y categorías.';
-      if (extraWrap && extraPill) {
-        extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
-        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`;
-      }
-      if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li>` : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li>`;
-    } else if (sesionUsuario.plan === 'city') {
+    const isVipNational = sesionUsuario.plan === 'national', isVipCity = sesionUsuario.plan === 'city';
+    if (isVipNational || isVipCity) {
       const cNom = sesionUsuario.planCity || 'Bogotá', cNomSeguro = escaparHtml(cNom);
       cardCredits?.classList.add('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'block';
-      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isEn ? `Pro City Pass (${cNomSeguro})` : `Plan Pro Ciudad (${cNomSeguro})`}`;
+      if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${isVipNational ? (isEn ? 'National VIP Pass' : 'Plan Nacional VIP') : (isEn ? `Pro City Pass (${cNomSeguro})` : `Plan Pro Ciudad (${cNomSeguro})`)}`;
       if (labelCredits) labelCredits.textContent = isEn ? 'Coverage Status' : 'Estado de Cobertura';
-      if (elCredits) elCredits.textContent = isEn ? 'Unlimited Access' : 'Acceso Ilimitado';
-      if (elPlan) elPlan.textContent = isEn ? `100% Direct owner unlocks in ${cNom} for 30 days.` : `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`;
+      if (elCredits) elCredits.textContent = isVipNational ? (isEn ? 'Unlimited Colombia' : 'Colombia Ilimitada') : (isEn ? 'Unlimited Access' : 'Acceso Ilimitado');
+      if (elPlan) elPlan.textContent = isVipNational ? (isEn ? 'Full unrestricted access across all Colombian cities.' : 'Acceso total sin límites a todas las ciudades y categorías.') : (isEn ? `100% Direct owner unlocks in ${cNom} for 30 days.` : `Desbloqueo de propietarios al 100% en ${cNom} por 30 días.`);
       if (extraWrap && extraPill) {
         extraWrap.style.display = sesionUsuario.credits > 0 ? 'block' : 'none';
-        if (sesionUsuario.credits > 0) extraPill.textContent = isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`;
+        if (sesionUsuario.credits > 0) extraPill.textContent = isVipNational ? (isEn ? `⚡ Vault: ${sesionUsuario.credits} Safe Credits` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos seguros`) : (isEn ? `⚡ Vault: ${sesionUsuario.credits} Credits other cities` : `⚡ Bóveda: ${sesionUsuario.credits} Créditos otras ciudades`);
       }
       if (benefitsWrap) benefitsWrap.style.display = 'block';
-      if (benefitsList) benefitsList.innerHTML = isEn ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>` : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`;
+      if (benefitsList) benefitsList.innerHTML = isVipNational ? (isEn ? `<li><i class="fa-solid fa-check"></i> Unlimited unlocks.</li>` : `<li><i class="fa-solid fa-check"></i> Desbloqueos ilimitados.</li>`) : (isEn ? `<li><i class="fa-solid fa-check"></i> Direct owners in ${cNomSeguro}.</li>` : `<li><i class="fa-solid fa-check"></i> Propietarios directos en ${cNomSeguro}.</li>`);
     } else {
       cardCredits?.classList.remove('vip-mode');
       if (badgeWrap) badgeWrap.style.display = 'none';
@@ -131,11 +119,7 @@ function abrirModalCheckout(index, pestana = null) {
         : `Has desbloqueado ${cant} ${cant === 1 ? 'propiedad' : 'propiedades'} directamente.`;
     }
 
-    if (pestana === 'comprar') {
-      cambiarPestanaCheckout('comprar');
-    } else {
-      cambiarPestanaCheckout('mi-cuenta');
-    }
+    cambiarPestanaCheckout(pestana === 'comprar' ? 'comprar' : 'mi-cuenta');
   } else {
     if (tabMiCuenta) tabMiCuenta.style.display = 'none';
     cambiarPestanaCheckout(pestana || 'comprar');
@@ -166,10 +150,7 @@ function abrirModalCheckout(index, pestana = null) {
   if (groupCity) groupCity.style.display = (radioActivo?.value === 'subscription_city') ? 'block' : 'none';
   if (groupEmail) groupEmail.style.display = (radioActivo?.value === 'welcome_free') ? 'block' : 'none';
 
-  if (modal) {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-  }
+  if (modal) { modal.classList.add("active"); document.body.style.overflow = "hidden"; }
 }
 
 /**
@@ -178,6 +159,18 @@ function abrirModalCheckout(index, pestana = null) {
 function cerrarModalCheckout() {
   document.getElementById("checkoutModal")?.classList.remove("active");
   document.body.style.overflow = "";
+}
+
+function registrarReferenciaPendiente(ref) {
+  try {
+    const refs = JSON.parse(localStorage.getItem('origgo_pending_refs') || '[]');
+    if (!refs.includes(ref)) {
+      refs.push(ref);
+      localStorage.setItem('origgo_pending_refs', JSON.stringify(refs.slice(-5)));
+    }
+  } catch (_) {
+    localStorage.setItem('origgo_pending_ref', ref);
+  }
 }
 
 /**
@@ -211,6 +204,10 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
         localStorage.setItem('hunter_pro_token', claimData.token);
         if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', claimData.token, 30);
         localStorage.removeItem('origgo_pending_ref');
+        try {
+          const rList = JSON.parse(localStorage.getItem('origgo_pending_refs') || '[]').filter(r => r !== orderData?.reference);
+          localStorage.setItem('origgo_pending_refs', JSON.stringify(rList));
+        } catch (_) {}
         const pinNuevo = claimData.user?.pin || null;
         sesionUsuario = { ...claimData.user, token: claimData.token };
         delete sesionUsuario.pin;
@@ -250,7 +247,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
     }
   }
 
-  localStorage.setItem('origgo_pending_ref', orderData.reference);
+  registrarReferenciaPendiente(orderData.reference);
   mostrarNotificacionToast(
     esIngles
       ? `Payment received (Ref: ${orderData.reference}). Your bank is finalizing processing. If not reflected, tap Restore Account.`
@@ -270,12 +267,9 @@ async function ejecutarPagoWompi() {
 
   const radio = document.querySelector('input[name="checkoutProduct"]:checked');
   const productType = radio ? radio.value : 'pack_10_leads';
-  const inputWa = document.getElementById('checkoutWhatsappInput');
-  const errorBox = document.getElementById('checkoutPhoneError');
-  const inputWrapper = document.getElementById('checkoutInputWrapper');
+  const inputWa = document.getElementById('checkoutWhatsappInput'), errorBox = document.getElementById('checkoutPhoneError'), inputWrapper = document.getElementById('checkoutInputWrapper');
   const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-  const whatsappRaw = inputWa ? inputWa.value.trim() : '';
-  const celularLimpio = whatsappRaw.replace(/\D/g, '');
+  const whatsappRaw = inputWa ? inputWa.value.trim() : '', celularLimpio = whatsappRaw.replace(/\D/g, '');
   const celular = celularLimpio.startsWith('57') && celularLimpio.length === 12 ? celularLimpio.substring(2) : celularLimpio;
 
   if (!celular || celular.length < 10) {
@@ -285,10 +279,7 @@ async function ejecutarPagoWompi() {
     return;
   }
 
-  if (errorBox) {
-    errorBox.classList.add('is-hidden');
-    errorBox.style.display = 'none';
-  }
+  if (errorBox) { errorBox.classList.add('is-hidden'); errorBox.style.display = 'none'; }
 
   // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP) con Doble Opt-In
   if (productType === 'welcome_free') {
@@ -320,7 +311,14 @@ async function ejecutarPagoWompi() {
         body: JSON.stringify({ celular, phone: celular, email: emailVal, deviceId, leadId: pendingLeadId, lang: esIngles ? 'en' : 'es' })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+      if (!res.ok) {
+        if (res.status === 409 || data.alreadyClaimed || data.error === 'REGALO_YA_RECLAMADO' || data.error === 'CREDITO_YA_RECLAMADO') {
+          if (typeof marcarDispositivoComoReclamado === 'function') {
+            marcarDispositivoComoReclamado(deviceId || 'server_denied');
+          }
+        }
+        throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+      }
 
       if (data.pendingVerification) {
         cerrarModalCheckout();
@@ -444,7 +442,7 @@ async function ejecutarPagoWompi() {
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
         } else if (trx?.status === 'PENDING' || trx?.status === 'WAITING_FOR_SURCHARGE_VALIDATION') {
-          localStorage.setItem('origgo_pending_ref', orderData.reference);
+          registrarReferenciaPendiente(orderData.reference);
           mostrarNotificacionToast(
             esIngles ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.` : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
             'info', { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }

@@ -397,7 +397,13 @@ function traducirSlideupDrawer() {
     const isUnlocked = card?.classList.contains('card-unlocked');
     const cTitle = card?.querySelector('.card-title')?.textContent;
     const sTitle = overlay.querySelector('.slideup-title');
-    if (sTitle) sTitle.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${isUnlocked && cTitle ? escaparHtml(cTitle) : dict.slideup_title}`;
+    if (sTitle) {
+      sTitle.textContent = '';
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-circle-info';
+      sTitle.appendChild(icon);
+      sTitle.appendChild(document.createTextNode(' ' + (isUnlocked && cTitle ? cTitle : (dict.slideup_title || ''))));
+    }
   });
   document.querySelectorAll('.trust-badge').forEach(b => { b.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${dict.slideup_trust_badge}`; });
   document.querySelectorAll('.trust-desc').forEach(d => { d.textContent = dict.slideup_trust_desc; });
@@ -421,14 +427,10 @@ function traducirSlideupDrawer() {
     note.innerHTML = `<i class="fa-solid fa-check-double"></i> ${isEn ? 'Contact and direct link unlocked for your account' : 'Contacto y enlace directo desbloqueados para tu cuenta'}`;
   });
   const specKeyMap = [
-    { match: /estrato|stratum|tier/i, icon: 'fa-layer-group', es: 'Estrato', en: 'Stratum' },
-    { match: /área|area|superficie/i, icon: 'fa-ruler-combined', es: 'Área', en: 'Built Area' },
-    { match: /hab|alcoba|bed/i, icon: 'fa-bed', es: 'Habitaciones', en: 'Bedrooms' },
-    { match: /baño|bath/i, icon: 'fa-bath', es: 'Baños', en: 'Bathrooms' },
-    { match: /parqueadero|garaje|parking/i, icon: 'fa-square-parking', es: 'Parqueaderos', en: 'Parking' },
-    { match: /contacto|contact/i, icon: 'fa-user-shield', es: 'Contacto', en: 'Contact' },
-    { match: /tipo|type/i, icon: 'fa-building', es: 'Tipo', en: 'Property Type' },
-    { match: /ubicación|location/i, icon: 'fa-location-dot', es: 'Ubicación', en: 'Location' },
+    { match: /estrato|stratum|tier/i, icon: 'fa-layer-group', es: 'Estrato', en: 'Stratum' }, { match: /área|area|superficie/i, icon: 'fa-ruler-combined', es: 'Área', en: 'Built Area' },
+    { match: /hab|alcoba|bed/i, icon: 'fa-bed', es: 'Habitaciones', en: 'Bedrooms' }, { match: /baño|bath/i, icon: 'fa-bath', es: 'Baños', en: 'Bathrooms' },
+    { match: /parqueadero|garaje|parking/i, icon: 'fa-square-parking', es: 'Parqueaderos', en: 'Parking' }, { match: /contacto|contact/i, icon: 'fa-user-shield', es: 'Contacto', en: 'Contact' },
+    { match: /tipo|type/i, icon: 'fa-building', es: 'Tipo', en: 'Property Type' }, { match: /ubicación|location/i, icon: 'fa-location-dot', es: 'Ubicación', en: 'Location' },
     { match: /operación|deal/i, icon: 'fa-handshake', es: 'Operación', en: 'Deal Type' }
   ];
   document.querySelectorAll('.slideup-spec-card').forEach(card => {
@@ -442,11 +444,7 @@ function traducirSlideupDrawer() {
     if (/contacto|contact/i.test(txtKey) || /propietario|owner|verificado|verified/i.test(txtVal)) {
       valEl.innerHTML = `<span class="verified-badge-wrap"><i class="fa-solid fa-circle-check verified-badge-icon"></i> ${isEn ? 'Verified Owner' : 'Propietario Verificado'}</span>`;
     } else if (isEn) {
-      valEl.textContent = valEl.textContent
-        .replace(/(\d+)\s*Residencial/gi, '$1 Residential')
-        .replace(/\b1\s*alcobas?\b/gi, '1 Bedroom').replace(/(\d+)\s*alcobas?\b/gi, '$1 Bedrooms')
-        .replace(/\b1\s*completos?\b/gi, '1 Full Bath').replace(/(\d+)\s*completos?\b/gi, '$1 Full Baths')
-        .replace(/\b1\s*espacios?\b/gi, '1 Space').replace(/(\d+)\s*espacios?\b/gi, '$1 Spaces');
+      valEl.textContent = valEl.textContent.replace(/(\d+)\s*Residencial/gi, '$1 Residential').replace(/\b1\s*alcobas?\b/gi, '1 Bedroom').replace(/(\d+)\s*alcobas?\b/gi, '$1 Bedrooms').replace(/\b1\s*completos?\b/gi, '1 Full Bath').replace(/(\d+)\s*completos?\b/gi, '$1 Full Baths').replace(/\b1\s*espacios?\b/gi, '1 Space').replace(/(\d+)\s*espacios?\b/gi, '$1 Spaces');
     }
   });
 }

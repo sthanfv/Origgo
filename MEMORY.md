@@ -1,6 +1,32 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 23:43 (GMT-5)
+Última actualización: 2026-09-19 04:36 (GMT-5)
+
+---
+
+- 106. **Hito 106: Blindaje de Seguridad Integral: Sellado Freemium Zombie, Erradicación Total de XSS, Cola de Pagos Concurrentes y Endurecimiento de CSP**:
+    - **Diagnóstico y Solución a los 4 Hallazgos de Pentesting:**
+      1. *Hallazgo 1: Sellado Automático de Dispositivo ante Bloqueo del Servidor (Freemium Bypass):*
+         - En `modules/08-checkout.js` (`reclamarRegaloBienvenida`), si el backend responde con HTTP 409 o bandera `alreadyClaimed` / `REGALO_YA_RECLAMADO` / `CREDITO_YA_RECLAMADO`, el cliente invoca de inmediato `marcarDispositivoComoReclamado(deviceId || 'server_denied')`, sellando el almacenamiento local y neutralizando reintentos continuos o trampas de navegación privada.
+      2. *Hallazgo 2: Erradicación Total de XSS en Títulos y Especificaciones Inyectadas:*
+         - En `modules/13-i18n.js` (`traducirSlideupDrawer`), se reemplazó la inyección por `innerHTML` en títulos por manipulación segura del DOM mediante `textContent`, `document.createElement('i')` y `document.createTextNode()`.
+         - En `modules/06-cards.js` (especificaciones del slideup drawer), se forzó el escape estricto con `escaparHtml(v)` para cualquier valor no clasificado como badge confiable de contacto verificado.
+      3. *Hallazgo 3: Cola de Referencias Concurrentes de Pago (`origgo_pending_refs`):*
+         - En `modules/08-checkout.js` y `modules/01-state.js`, se implementó un arreglo JSON `origgo_pending_refs` (FIFO de las últimas 5 referencias) gestionado por `registrarReferenciaPendiente()`. Esto soporta transacciones simultáneas en múltiples pestañas del navegador sin sobreescrituras ni colisiones de acreditación.
+         - Al confirmarse y acreditarse un pago, la referencia correspondiente se purga limpiamente de la cola.
+      4. *Hallazgo 4: Endurecimiento de la Cabecera Content-Security-Policy (CSP):*
+         - En `vercel.json`, se restringió la directiva `connect-src` estrictamente al origen propio (`'self'`), los dominios de la pasarela Wompi (`https://checkout.wompi.co`, `https://*.wompi.co`) y el bucket Cloudflare R2 (`https://pub-040118b18ae247d7b4643d22289744b6.r2.dev`, `https://*.r2.dev`), eliminando orígenes innecesarios y bloqueando exfiltraciones no autorizadas.
+    - **Modularidad y Estándar Desmulta (< 490 líneas JS, < 485 líneas CSS, < 500 líneas absoluto):**
+      - `modules/08-checkout.js`: 486 líneas (holgura de 14 líneas bajo 500).
+      - `modules/13-i18n.js`: 485 líneas (holgura de 15 líneas bajo 500).
+      - `modules/01-state.js`: 484 líneas (holgura de 16 líneas bajo 500).
+      - `modules/06-cards.js`: 483 líneas (holgura de 17 líneas bajo 500).
+      - Los 16 submódulos JS están estrictamente $\le 486$ líneas y los 19 submódulos CSS $\le 482$ líneas.
+    - **Validación Automatizada y DevSecOps:**
+      - `npm run build`: Bundles generados con éxito (`style.min.css`: 151,878 bytes, `app.min.js`: 309,595 bytes).
+      - `node scripts/validate.js`: **100% de éxito en las 8 fases (0 errores)**.
+    - **Archivos Afectados:**
+      - `modules/08-checkout.js`, `modules/13-i18n.js`, `modules/01-state.js`, `modules/06-cards.js`, `vercel.json`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
 
 ---
 

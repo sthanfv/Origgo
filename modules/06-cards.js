@@ -370,7 +370,7 @@ function renderizarInterfaz(dataset) {
                 const kLow = k.toLowerCase();
                 const iconClass = (kLow.includes('estrato') || kLow.includes('stratum')) ? 'fa-layer-group' : (kLow.includes('área') || kLow.includes('built area') || kLow.includes('superficie')) ? 'fa-ruler-combined' : (kLow.includes('hab') || kLow.includes('bedroom')) ? 'fa-bed' : (kLow.includes('baño') || kLow.includes('bath')) ? 'fa-bath' : (kLow.includes('garaje') || kLow.includes('parqueadero') || kLow.includes('parking')) ? 'fa-square-parking' : (kLow.includes('contacto') || kLow.includes('contact')) ? 'fa-user-shield' : 'fa-circle-info';
                 const esBadgeConfiable = kLow.includes('contacto') || kLow.includes('contact');
-                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${esBadgeConfiable ? v : v}</span></div>`;
+                return `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid ${iconClass}"></i> ${escaparHtml(k)}</span><span class="slideup-spec-val">${esBadgeConfiable ? v : escaparHtml(v)}</span></div>`;
               }).join('')}
             </div>
 
