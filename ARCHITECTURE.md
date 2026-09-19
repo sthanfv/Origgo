@@ -205,16 +205,37 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
 - **Sincronización Multi-Pestaña:** Escucha el evento `storage` en `window` para actualizar de inmediato cualquier otra pestaña abierta si el usuario confirma su enlace en otra ventana o WebView de correo.
 - **Notificación Positiva y Asertiva:** Sustitución de mensajes confusos ("0 créditos restantes") por confirmaciones asertivas de contacto del propietario desbloqueado listo para llamada y WhatsApp.
 
+### 4.9 Franja Editorial de Propuesta de Valor (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`)
+- **Ubicación Estratégica:** Insertada entre el buscador/hero y la cuadrícula Bento Grid, orientando al visitante en sus primeros 3 segundos en vitrina.
+- **Claridad de Mensaje:** *"DIRECTO AL PUNTO: Nosotros rastreamos y filtramos el mercado por ti. Tú negocias directo con el dueño real."*
+- **3 Pilares Fundamentales:**
+  1. ⚡ **Rastreo 24/7:** Monitoreo automatizado continuo de portales en terminal dedicada (Samsung J7).
+  2. 🤝 **Cero Comisiones:** Negociación directa de tú a tú sin intermediarios ni comisión de agencia (0%).
+  3. 🎁 **1er Contacto Gratis:** Modelo Freemium sin tarjeta para verificar la autenticidad del dueño sin riesgo.
+- **Arquitectura Visual y Responsive:** Badge contrastante de alto impacto, tipografía editorial equilibrada y distribución adaptativa (3 columnas en escritorio, 1 columna fluida en móvil sin desplazamiento excesivo del catálogo). Soporte bilingüe completo con atributos `data-i18n`.
+
+### 4.10 Pipeline de Telemetría Comercial y Embudo CRO a Costo $0 (`lib/funnel.js`, `api/telemetry/funnel.js`, `scripts/report-funnel.js`)
+- **Arquitectura Zero-Cost ($0):** Agregación atómica en Google Cloud Firestore dentro de la colección `funnel_daily_metrics/{YYYY-MM-DD}` utilizando `FieldValue.increment()`. Ocupa un único documento diario, consumiendo menos del 0.1% de la cuota gratuita de Firestore.
+- **Medición de los 4 Pasos del Embudo:**
+  1. 👥 **Visita Vitrina (`visita_landing`):** Registro de visita única por sesión de navegador, blindado con `sessionStorage` para no inflar con recargas F5.
+  2. 🎯 **Interés Activo (`interes_inmueble`):** Disparado al tocar "Ver Contacto Directo", "Desbloquear" o abrir el drawer de detalles, registrando `leadId` y `ciudad`.
+  3. ✍️ **Intención de Registro/Pago (`intento_conversion`):** Envío del formulario de regalo freemium o solicitud de orden de pago en pasarela Wompi.
+  4. 🏆 **Conversión Final Ganada (`conversion_exitosa`):** Activación confirmada del crédito de bienvenida (Doble Opt-In por correo) o transacción bancaria aprobada (capturada en cliente y en webhook de backend).
+- **Diagnóstico Automatizado de Fugas:** Cálculo algorítmico en tiempo real de los porcentajes de abandono entre fases (*Vitrina $\rightarrow$ Interés*, *Interés $\rightarrow$ Modal*, *Modal $\rightarrow$ Pago*) para señalar exactamente dónde optimizar el copy, las imágenes o los llamados a la acción.
+- **Reporte Ejecutivo para Telegram y Consola:** Generación de resúmenes en Markdown enriquecido con emojis, KPIs, zonas de mayor demanda y top inmuebles con mayor tracción. Despacho automatizado al canal del fundador vía Telegram Bot API sin necesidad de operar dashboards pesados.
+- **Herramienta Local de Gestión (`scripts/report-funnel.js`):** Script CLI compatible con parámetros `--dias=N`, `--send-telegram`, `--export-csv` y `--json` para exportar a hojas de cálculo o automatizaciones.
+- **Privacidad por Diseño (Cero PII):** Cumplimiento estricto de la Ley 1581 / Habeas Data y PCI-DSS: ningún evento almacena nombres, números celulares, correos electrónicos ni direcciones IP.
+
 ---
 
 ## 5. Suite de Validación DevSecOps (8 Fases)
 
 Respaldada por `npm test` antes de cada commit:
-1. Sintaxis estricta con `node --check` en 23 archivos JS y lambdas serverless.
-2. Integridad de estilos CSS, balance de llaves y presencia de selectores críticos.
+1. Sintaxis estricta con `node --check` en módulos JS, librerías y lambdas serverless.
+2. Integridad de estilos CSS, balance de llaves (1122 bloques) y presencia de selectores críticos.
 3. Marcado HTML y cabeceras de seguridad globales OWASP en `vercel.json`.
-4. Contratos de datos JSON y firmas criptográficas AES-256-GCM.
-5. Suite automatizada de pasarela Wompi y ledger (12/12 pruebas al 100%).
-6. Auditoría antifraude: prueba de inyección de referencia falsa rechazada con 403.
+4. Contratos de datos JSON (150 oportunidades) y firmas criptográficas AES-256-GCM.
+5. Suite automatizada de pasarela Wompi, Ledger, Zod, Redis, SSRF, Web Push, R2, PoW, paginación, resiliencia offline, freemium, magic link y telemetría de embudo CRO (100% de pruebas aprobadas).
+6. Auditoría antifraude: prueba de inyección de referencia falsa rechazada con 404/403.
 7. Auditoría de autenticación: verificación de que el bypass de PIN esté 100% erradicado.
-8. Auditoría de modularidad: confirmación de que ningún módulo exceda las 500 líneas.
+8. Auditoría de modularidad: confirmación de que ningún módulo exceda las 500 líneas (Estándar Desmulta).

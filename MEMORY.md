@@ -1,6 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 05:35 (GMT-5)
+Última actualización: 2026-09-18 20:15 (GMT-5)
+
+---
+
+- 97. **Franja de Propuesta de Valor en Hero, Telemetría Comercial CRO a Costo $0 (Funnel de 4 Etapas) y Reporte Ejecutivo Automatizado para Telegram**:
+    - **Diagnóstico y Contexto:**
+      1. *Falta de Orientación Inmediata en Vitrina:* Los visitantes que llegaban a la landing necesitaban entender en menos de 3 segundos qué es Origgo y por qué les conviene frente a portales inmobiliarios tradicionales.
+      2. *Ceguera Comercial y Fricción de Conversión (CRO):* No existía telemetría para monitorear el flujo comercial de usuarios (cuántos visitan, cuántos tocan un inmueble, cuántos abren el checkout y cuántos convierten a freemium o pago), haciendo imposible detectar dónde se producían las fugas de clientes.
+      3. *Requisito de Simplicidad Operativa:* El fundador no requería crear ni operar un panel/dashboard web complejo; la información debía consolidarse a costo $0 y notificarse de forma concisa y ejecutiva por Telegram o consultarse por consola/CSV.
+    - **Solución Implementada:**
+      1. *Franja Editorial de Propuesta de Valor (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`):*
+         - Insertado bloque sutil y de alta gama debajo del hero y antes del Bento Grid (`#trustValueStrip`).
+         - Mensaje contundente: *"DIRECTO AL PUNTO: Nosotros rastreamos y filtramos el mercado por ti. Tú negocias directo con el dueño real."*
+         - 3 pilares con micro-badges y traducción bilingüe completa: *Rastreo 24/7*, *Cero Comisiones*, *1er Contacto Gratis*.
+         - Diseño responsivo adaptativo (3 columnas en desktop, 1 columna fluida en móvil sin empujar excesivamente el catálogo).
+      2. *Pipeline de Telemetría Comercial y Embudo CRO a Costo $0 (`lib/funnel.js`, `api/telemetry/funnel.js`):*
+         - Medición precisa de los 4 pasos: *Visita $\rightarrow$ Interés $\rightarrow$ Intento $\rightarrow$ Conversión Ganada*.
+         - Agregación atómica en Firestore en `funnel_daily_metrics/{YYYY-MM-DD}` con `FieldValue.increment()`. Ocupa un único documento diario ($0 de costo adicional).
+         - Fallback en memoria volátil para serverless y testing unitario aislado.
+         - Sensores no bloqueantes en cliente (`modules/03-api.js`, `modules/07-unlock.js`, `modules/08-checkout.js`) usando `navigator.sendBeacon` y `fetch keepalive`.
+         - Registro certero de conversiones en backend (`lib/auth/welcome-verify.js` y `api/payments/webhook-wompi.js`).
+         - Algoritmo de diagnóstico automático de fugas (*Vitrina $\rightarrow$ Interés*, *Interés $\rightarrow$ Modal*, *Modal $\rightarrow$ Pago*).
+         - Cero PII: estricto cumplimiento de privacidad y protección de datos personales.
+      3. *Reporte Ejecutivo para Telegram y Script CLI (`scripts/report-funnel.js`):*
+         - Generador de reportes en Markdown listo para el bot de Telegram.
+         - Script de terminal con soporte para `--dias=N`, `--send-telegram`, `--export-csv` y `--json`.
+      4. *Suite de Pruebas Unitarias (`tests/funnel_metrics.test.js`) y Validación DevSecOps:*
+         - 11 pruebas unitarias creadas para el embudo y el endpoint serverless (100% aprobadas en 1.2s).
+         - Suite DevSecOps de 8 fases (`scripts/validate.js`) aprobada al 100% con 0 errores.
+         - Estándar Desmulta cumplido: todos los 16 módulos JS y 19 módulos CSS $\le 500$ líneas.
+    - **Archivos Afectados:**
+      - `index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`, `modules/03-api.js`, `modules/07-unlock.js`, `modules/08-checkout.js`, `lib/db.js`, `lib/validation.js`, `lib/funnel.js`, `api/telemetry/funnel.js`, `lib/auth/welcome-verify.js`, `api/payments/webhook-wompi.js`, `scripts/report-funnel.js`, `tests/funnel_metrics.test.js`, `scripts/validate.js`, `scripts/build.js`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 

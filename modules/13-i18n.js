@@ -73,7 +73,12 @@ const DICCIONARIO_I18N = {
     toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
     toast_radar_active: '🔔 ¡Radar activado! Te avisaremos en tu teléfono cuando se capte un nuevo inmueble directo.',
     toast_radar_unsupported: 'Tu navegador no soporta notificaciones push nativas.', toast_radar_denied: 'Permiso de notificaciones rechazado o bloqueado.',
-    stat_leads_total: 'Propietarios Directos', stat_ciudades: 'Ciudades Activas', stat_sectores: 'Sectores Monitoreados', catalog_freshness: 'Actualizado hace un momento'
+    stat_leads_total: 'Propietarios Directos', stat_ciudades: 'Ciudades Activas', stat_sectores: 'Sectores Monitoreados', catalog_freshness: 'Actualizado hace un momento',
+    trust_badge: 'DIRECTO AL PUNTO', trust_headline: 'Nosotros rastreamos y filtramos el mercado por ti. <br class="trust-br" /><span>Tú negocias directo con el dueño real.</span>',
+    trust_subtext: 'Buscar vivienda no debería ser perder semanas llamando a intermediarios ni navegando en un mar de anuncios repetidos. Escaneamos Colombia las 24 horas, descartamos comisiones del 3%–4% y te entregamos solo oportunidades reales y verificadas.',
+    trust_p1_title: 'Rastreo 24/7', trust_p1_desc: 'Escaneamos cientos de fuentes continuas. No tienes que revisar portales todos los días.',
+    trust_p2_title: 'Cero Comisiones', trust_p2_desc: 'Filtramos intermediarios para que compres o arriendes de persona a persona.',
+    trust_p3_title: '1er Contacto Gratis', trust_p3_desc: 'Prueba el servicio sin costo: desbloquea un propietario real con tu WhatsApp.'
   },
   en: {
     vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
@@ -138,30 +143,22 @@ const DICCIONARIO_I18N = {
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
     footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
     toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
-    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.', toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.', stat_leads_total: 'Direct Owners', stat_ciudades: 'Active Cities', stat_sectores: 'Sectors Monitored', catalog_freshness: 'Updated moments ago'
+    toast_radar_active: '🔔 Radar activated! We will notify your phone when a new direct property is captured.', toast_radar_unsupported: 'Your browser does not support native push notifications.', toast_radar_denied: 'Notification permission was denied or blocked.', stat_leads_total: 'Direct Owners', stat_ciudades: 'Active Cities', stat_sectores: 'Sectors Monitored', catalog_freshness: 'Updated moments ago',
+    trust_badge: 'STRAIGHT TO THE POINT', trust_headline: 'We track and filter the market for you. <br class="trust-br" /><span>You deal directly with the real owner.</span>',
+    trust_subtext: "House hunting shouldn't mean wasting weeks calling middlemen or sorting through duplicate listings. We monitor Colombia 24/7, cut out 3-4% agency fees, and deliver only verified opportunities.",
+    trust_p1_title: '24/7 Market Scan', trust_p1_desc: "We scan multiple sources non-stop so you don't have to check portals daily.",
+    trust_p2_title: 'Zero Agency Fees', trust_p2_desc: 'We filter out middlemen so you buy or rent person-to-person.',
+    trust_p3_title: '1st Contact Free', trust_p3_desc: 'Test the service for free: unlock a real direct owner with your WhatsApp.'
   }
 };
 
 const TEXTOS_LEGALES_ORIGGO_EN = {
-  terminos: {
-    titulo: 'How Origgo Works', subtitulo: 'Clear, transparent information for buyers and owners', badge: 'Transparency & Trust', icono: 'fa-solid fa-scale-balanced',
-    html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Direct Owner Connection</div><p>We connect buyers directly with property owners. Zero agency commissions or brokerage fees.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bullseye"></i> 2. Fresh Direct Opportunities</div><p>Direct opportunities and urgent price cuts detected daily in Colombia before reaching agencies.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-shield"></i> 3. Personal & Commercial Use</div><p>Access to contacts is for your direct use. We safeguard data against spam.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Secure Payments with Wompi</div><p>Payments are securely processed via Wompi (regulated by SFC). Origgo never stores card or bank details.</p></div>'
-  }, exoneracion: {
-    titulo: 'Security & Direct Deals', subtitulo: 'Important recommendations for a safe, transparent transaction', badge: 'Security', icono: 'fa-solid fa-shield-halved',
-    html: '<div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Zero Brokerage Fees</div><p>Origgo <strong>is not a real estate agency and charges no commissions</strong>. You negotiate directly one-on-one with the property owner.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-magnifying-glass"></i> 2. Inspect Before Paying</div><p>We recommend visiting the property in person, meeting the owner, and requesting an official Title Certificate before transferring funds.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-comments"></i> 3. Direct Agreements</div><p>Listings are sourced from open public listings. Any final agreement or sale deed is strictly between you and the owner.</p></div>'
-  }, privacidad: {
-    titulo: 'Privacy & Your Data', subtitulo: 'Data protection under Law 1581 of 2012 and GDPR', badge: 'Protected Data', icono: 'fa-solid fa-user-shield',
-    html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 1. How We Use Phone & Email</div><p>Your WhatsApp and email are only used to deliver access codes, store credits and send receipts. <strong>Zero data selling and zero spam</strong>.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Cataloged Listings</div><p>Information is indexed from open listings published by owners across the web.</p></div><div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Owner Listing Delisting</div><p>If you are the owner of a published property and wish to remove it, message our WhatsApp support and we delist it immediately for free.</p></div>'
-  }, reembolsos: {
-    titulo: 'Balance Guarantee & Support', subtitulo: 'Your money and unlocked access are always protected', badge: 'Balance Guarantee', icono: 'fa-solid fa-rotate-left',
-    html: '<div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 1. Your Balance Never Expires</div><p>If you change devices or clear your browser, your credits remain safe. Restore them anytime via <strong>"Restore Account"</strong> with your WhatsApp.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Instant Lead Reveal</div><p>Every time you unlock a lead, verified owner details appear immediately on your screen.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Priority Direct Support</div><p>If you had any issue with a payment or the system, contact us directly on WhatsApp for immediate credit resolution.</p></div>'
-  }
+  terminos: { titulo: 'How Origgo Works', subtitulo: 'Clear, transparent information for buyers and owners', badge: 'Transparency & Trust', icono: 'fa-solid fa-scale-balanced', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Direct Owner Connection</div><p>We connect buyers directly with property owners. Zero agency commissions or brokerage fees.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bullseye"></i> 2. Fresh Direct Opportunities</div><p>Direct opportunities and urgent price cuts detected daily in Colombia before reaching agencies.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-shield"></i> 3. Personal & Commercial Use</div><p>Access to contacts is for your direct use. We safeguard data against spam.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Secure Payments with Wompi</div><p>Payments are securely processed via Wompi (regulated by SFC). Origgo never stores card or bank details.</p></div>' },
+  exoneracion: { titulo: 'Security & Direct Deals', subtitulo: 'Important recommendations for a safe, transparent transaction', badge: 'Security', icono: 'fa-solid fa-shield-halved', html: '<div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Zero Brokerage Fees</div><p>Origgo <strong>is not a real estate agency and charges no commissions</strong>. You negotiate directly one-on-one with the property owner.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-magnifying-glass"></i> 2. Inspect Before Paying</div><p>We recommend visiting the property in person, meeting the owner, and requesting an official Title Certificate before transferring funds.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-comments"></i> 3. Direct Agreements</div><p>Listings are sourced from open public listings. Any final agreement or sale deed is strictly between you and the owner.</p></div>' },
+  privacidad: { titulo: 'Privacy & Your Data', subtitulo: 'Data protection under Law 1581 of 2012 and GDPR', badge: 'Protected Data', icono: 'fa-solid fa-user-shield', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 1. How We Use Phone & Email</div><p>Your WhatsApp and email are only used to deliver access codes, store credits and send receipts. <strong>Zero data selling and zero spam</strong>.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Cataloged Listings</div><p>Information is indexed from open listings published by owners across the web.</p></div><div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Owner Listing Delisting</div><p>If you are the owner of a published property and wish to remove it, message our WhatsApp support and we delist it immediately for free.</p></div>' },
+  reembolsos: { titulo: 'Balance Guarantee & Support', subtitulo: 'Your money and unlocked access are always protected', badge: 'Balance Guarantee', icono: 'fa-solid fa-rotate-left', html: '<div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 1. Your Balance Never Expires</div><p>If you change devices or clear your browser, your credits remain safe. Restore them anytime via <strong>"Restore Account"</strong> with your WhatsApp.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Instant Lead Reveal</div><p>Every time you unlock a lead, verified owner details appear immediately on your screen.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Priority Direct Support</div><p>If you had any issue with a payment or the system, contact us directly on WhatsApp for immediate credit resolution.</p></div>' }
 };
 
-/**
- * Retorna el idioma actualmente seleccionado ('es' o 'en').
- * @returns {'es'|'en'}
- */
 function obtenerIdiomaActual() {
   try {
     const almacenado = localStorage.getItem('origgo_lang');
@@ -175,36 +172,20 @@ function obtenerIdiomaActual() {
       if (p.lang === 'es' || p.lang === 'en') return p.lang;
     } catch (_) {}
   }
-  if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) return 'en';
-  return 'es';
+  return (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) ? 'en' : 'es';
 }
 
-/**
- * Traduce una clave del diccionario con fallback seguro.
- * @param {string} clave
- * @param {string} [fallback]
- * @returns {string}
- */
 function t(clave, fallback = '') {
-  const lang = obtenerIdiomaActual();
-  const dict = DICCIONARIO_I18N[lang] || DICCIONARIO_I18N.es;
+  const lang = obtenerIdiomaActual(), dict = DICCIONARIO_I18N[lang] || DICCIONARIO_I18N.es;
   return dict[clave] !== undefined ? dict[clave] : (fallback || clave);
 }
 
-/**
- * Convierte un monto en COP a valor aproximado en USD de forma elegante.
- * @param {string|number} precioStr
- * @returns {string} Ej: "≈ $109,750 USD"
- */
 function calcularReferenciaUSD(precioStr) {
   if (!precioStr) return '';
-  const limpio = String(precioStr).replace(/[^0-9]/g, '');
-  const valorCop = Number(limpio);
+  const limpio = String(precioStr).replace(/[^0-9]/g, ''), valorCop = Number(limpio);
   if (isNaN(valorCop) || valorCop <= 0) return '';
-  const usd = Math.round(valorCop / TASA_CAMBIO_USD_COP);
-  const usdFormateado = usd.toLocaleString('en-US');
-  const lang = obtenerIdiomaActual();
-  return lang === 'en' ? `≈ $${usdFormateado} USD` : `~$${usdFormateado} USD`;
+  const usd = Math.round(valorCop / TASA_CAMBIO_USD_COP), usdFormateado = usd.toLocaleString('en-US');
+  return obtenerIdiomaActual() === 'en' ? `≈ $${usdFormateado} USD` : `~$${usdFormateado} USD`;
 }
 
 /**
@@ -254,7 +235,7 @@ function aplicarTraduccionesAlDOM() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (dict[key]) {
-      if (key === 'hero_title') {
+      if (key === 'hero_title' || key === 'trust_headline') {
         el.innerHTML = dict[key];
       } else {
         el.textContent = dict[key];

@@ -254,6 +254,18 @@ module.exports = async function handler(req, res) {
   const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
   console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
 
+  // Registro atómico en el embudo de conversión
+  try {
+    const { registrarEventoEmbudo, ETAPAS_EMBUDO } = require('../../lib/funnel');
+    await registrarEventoEmbudo({
+      etapa: ETAPAS_EMBUDO.CONVERSION,
+      tipo: 'pago',
+      montoCop: montoPagado > 0 ? montoPagado / 100 : 0,
+      plan: pendingOrder?.productType || null,
+      ciudad: pendingOrder?.city || null
+    });
+  } catch (_) {}
+
   // Sincronizar preferencia de idioma en el perfil si viene en la orden
   if (pendingOrder?.lang && (pendingOrder.lang === 'es' || pendingOrder.lang === 'en')) {
     await db.updateUserPreferences(celular, { preferredLang: pendingOrder.lang });

@@ -21,6 +21,13 @@ async function manejarClicDesbloquear(index, opciones = {}) {
     leadSeleccionado._fichaIndex = index;
   }
 
+  if (typeof registrarEventoEmbudoCliente === 'function' && lead) {
+    registrarEventoEmbudoCliente('interes_inmueble', {
+      leadId: lead.id,
+      ciudad: lead.ciudad || lead.ubicacion || null
+    });
+  }
+
   const yaEstaDesbloqueado = sesionUsuario && Array.isArray(sesionUsuario.unlockedLeads) && sesionUsuario.unlockedLeads.includes(lead.id);
   const tienePlanActivo = sesionUsuario?.plan === 'national' || sesionUsuario?.plan === 'city';
   const tieneCreditos = sesionUsuario && Number(sesionUsuario.credits || 0) >= 1;
@@ -169,15 +176,9 @@ function actualizarTarjetaEnElDOM(leadId, contacto, index, datosRevelados, sigui
       ? siguientesPasos
       : (contacto?._siguientesPasos && Array.isArray(contacto._siguientesPasos)
         ? contacto._siguientesPasos
-        : (isEn ? [
-            { paso: 1, titulo: 'Contact:', accion: 'Send pre-formatted WhatsApp message or place direct phone call.' },
-            { paso: 2, titulo: 'Tour:', accion: 'Ask for additional media and arrange property walkthrough.' },
-            { paso: 3, titulo: 'Deal:', accion: 'Verify title certificate and negotiate with zero agency fees.' }
-          ] : [
-            { paso: 1, titulo: 'Contacto:', accion: 'Envía el mensaje de WhatsApp preparado o realiza llamada directa.' },
-            { paso: 2, titulo: 'Visita:', accion: 'Pide fotos adicionales y agenda visita presencial al inmueble.' },
-            { paso: 3, titulo: 'Acuerdo:', accion: 'Verifica el certificado de tradición y acuerda sin pagar comisión.' }
-          ]));
+        : (isEn
+            ? [{ paso: 1, titulo: 'Contact:', accion: 'Send WhatsApp message or direct call.' }, { paso: 2, titulo: 'Tour:', accion: 'Ask for media and arrange property walkthrough.' }, { paso: 3, titulo: 'Deal:', accion: 'Verify title certificate and negotiate with zero agency fees.' }]
+            : [{ paso: 1, titulo: 'Contacto:', accion: 'Envía el WhatsApp preparado o realiza llamada directa.' }, { paso: 2, titulo: 'Visita:', accion: 'Pide fotos adicionales y agenda visita presencial.' }, { paso: 3, titulo: 'Acuerdo:', accion: 'Verifica el certificado de tradición y acuerda sin comisión.' }]));
 
     const pasosHtml = pasosRender.map(p => `
       <li class="next-step-item"><span class="next-step-num">${p.paso}</span><span><strong>${escaparHtml(p.titulo || (p.clave ? p.clave + ':' : ''))}</strong> ${escaparHtml(p.accion || p.descripcion || '')}</span></li>
@@ -430,20 +431,12 @@ function abrirDossierImprimible(leadId) {
   const html = `<!DOCTYPE html><html lang="${isEn ? 'en' : 'es'}"><head><meta charset="utf-8"><title>${lead.titulo || 'Origgo Dossier'}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; color: #0A110E; background: #FFF; }
-    .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 18px; }
-    .logo { font-size: 28px; font-weight: 800; color: #047857; margin: 0; }
-    .tag { font-size: 10px; color: #059669; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
-    .box { border: 1px solid #CBDAD0; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
-    .metric { background: #F2F7F4; border-radius: 8px; padding: 10px; text-align: center; }
-    .metric-k { font-size: 10px; color: #4B6358; font-weight: 800; text-transform: uppercase; }
-    .metric-v { font-size: 15px; font-weight: 800; color: #0A110E; margin-top: 4px; }
-    .contact { background: #ECFDF5; border: 2px solid #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0; }
-    .phone { font-size: 24px; font-weight: 800; color: #064E3B; font-family: monospace; letter-spacing: 2px; }
-    .btn { display: inline-block; background: #059669; color: #FFF; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; margin: 6px 4px; cursor: pointer; border: none; }
-    .wa-btn { background: #25D366; }
-    .notice { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 12px; color: #991B1B; line-height: 1.4; margin-top: 16px; }
-    @media print { .no-print { display: none !important; } }
+    .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 18px; } .logo { font-size: 28px; font-weight: 800; color: #047857; margin: 0; } .tag { font-size: 10px; color: #059669; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+    .box { border: 1px solid #CBDAD0; border-radius: 12px; padding: 18px; margin-bottom: 16px; } .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+    .metric { background: #F2F7F4; border-radius: 8px; padding: 10px; text-align: center; } .metric-k { font-size: 10px; color: #4B6358; font-weight: 800; text-transform: uppercase; } .metric-v { font-size: 15px; font-weight: 800; color: #0A110E; margin-top: 4px; }
+    .contact { background: #ECFDF5; border: 2px solid #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0; } .phone { font-size: 24px; font-weight: 800; color: #064E3B; font-family: monospace; letter-spacing: 2px; }
+    .btn { display: inline-block; background: #059669; color: #FFF; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; margin: 6px 4px; cursor: pointer; border: none; } .wa-btn { background: #25D366; }
+    .notice { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 12px; color: #991B1B; line-height: 1.4; margin-top: 16px; } @media print { .no-print { display: none !important; } }
   </style></head><body>
     <div class="header"><h1 class="logo">Origgo</h1><div class="tag">${isEn ? 'CONFIDENTIAL PROPERTY DOSSIER · DIRECT OWNER' : 'DOSSIER CONFIDENCIAL DE PROPIEDAD · TRATO DIRECTO'}</div></div>
     <div class="box">

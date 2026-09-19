@@ -61,7 +61,10 @@ async function ejecutarValidacionCompleta() {
     'api/user/balance.js',
     'api/media/proxy.js',
     'api/notifications.js',
-    'api/telemetry/report.js'
+    'api/telemetry/report.js',
+    'lib/funnel.js',
+    'api/telemetry/funnel.js',
+    'scripts/report-funnel.js'
   ];
 
   // Añadir también los módulos individuales de modules/
@@ -349,6 +352,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas unitarias de autenticación sin contraseña (Magic Link de 1 clic) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test de magic link: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'funnel_metrics.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de telemetría, embudo CRO y reporte Telegram pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de embudo CRO: ${e.message}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════

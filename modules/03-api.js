@@ -232,7 +232,71 @@ async function cargarDatos(rutaJson) {
   return await cargarDatosLocalFallback(rutaJson);
 }
 
+/**
+ * Registra un evento en el embudo comercial CRO de forma asíncrona y no bloqueante.
+ * Utiliza navigator.sendBeacon con fallback a fetch keepalive.
+ * @param {string} etapa - Etapa del embudo (visita_landing, interes_inmueble, intento_conversion, conversion_exitosa)
+ * @param {object} [datos] - Metadatos auxiliares (sin PII)
+ */
+function registrarEventoEmbudoCliente(etapa, datos = {}) {
+  try {
+    if (!etapa || typeof etapa !== 'string') return;
+    const payload = JSON.stringify({
+      etapa: etapa.trim().toLowerCase(),
+      leadId: datos.leadId || null,
+      ciudad: datos.ciudad || null,
+      tipo: datos.tipo || null,
+      plan: datos.plan || null,
+      montoCop: Number(datos.montoCop) > 0 ? Number(datos.montoCop) : null,
+      origen: datos.origen || null
+    });
+
+    // Enviar con navigator.sendBeacon si está disponible
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([payload], { type: 'application/json' });
+      if (navigator.sendBeacon('/api/telemetry/funnel', blob)) return;
+    }
+
+    // Fallback a fetch keepalive
+    if (typeof fetch === 'function') {
+      fetch('/api/telemetry/funnel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    }
+  } catch (_) {
+    // Principio Zero-Crash: telemetría silenciosa
+  }
+}
+
+/**
+ * Registra de forma única la visita a la vitrina por sesión del navegador.
+ */
+function registrarVisitaLandingInicial() {
+  try {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return;
+    if (!sessionStorage.getItem('origgo_visita_registrada')) {
+      sessionStorage.setItem('origgo_visita_registrada', '1');
+      const ref = document.referrer || '';
+      const origen = ref ? (ref.includes(window.location.hostname) ? 'interno' : 'referido') : 'directo';
+      registrarEventoEmbudoCliente('visita_landing', { origen });
+    }
+  } catch (_) {}
+}
+
+// Disparar sensor de visita única
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', registrarVisitaLandingInicial);
+  } else {
+    registrarVisitaLandingInicial();
+  }
+}
+
 if (typeof window !== 'undefined') {
   window.consultarCatalogoPaginado = consultarCatalogoPaginado;
   window.cargarDatos = cargarDatos;
+  window.registrarEventoEmbudoCliente = registrarEventoEmbudoCliente;
 }

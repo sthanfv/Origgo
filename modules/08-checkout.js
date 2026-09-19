@@ -78,13 +78,9 @@ function abrirModalCheckout(index, pestana = null) {
   if (sesionUsuario) {
     if (tabMiCuenta) tabMiCuenta.style.display = 'flex';
 
-    const elPhone = document.getElementById('userActivePhone'), elPin = document.getElementById('userActivePin');
-    const elCredits = document.getElementById('userActiveCredits'), elPlan = document.getElementById('userActivePlan');
-    const elCount = document.getElementById('userActiveUnlockedCount'), inputWa = document.getElementById('checkoutWhatsappInput');
-    const cardCredits = document.getElementById('userCreditsCard'), badgeWrap = document.getElementById('userMembershipBadgeWrap');
-    const badgeEl = document.getElementById('userMembershipBadge'), labelCredits = document.getElementById('userCreditsLabel');
-    const extraWrap = document.getElementById('userExtraCreditsWrap'), extraPill = document.getElementById('userExtraCreditsPill');
-    const benefitsWrap = document.getElementById('userBenefitsToggleWrap'), benefitsList = document.getElementById('userBenefitsList');
+    const elPhone = document.getElementById('userActivePhone'), elPin = document.getElementById('userActivePin'), elCredits = document.getElementById('userActiveCredits'), elPlan = document.getElementById('userActivePlan');
+    const elCount = document.getElementById('userActiveUnlockedCount'), inputWa = document.getElementById('checkoutWhatsappInput'), cardCredits = document.getElementById('userCreditsCard'), badgeWrap = document.getElementById('userMembershipBadgeWrap');
+    const badgeEl = document.getElementById('userMembershipBadge'), labelCredits = document.getElementById('userCreditsLabel'), extraWrap = document.getElementById('userExtraCreditsWrap'), extraPill = document.getElementById('userExtraCreditsPill'), benefitsWrap = document.getElementById('userBenefitsToggleWrap'), benefitsList = document.getElementById('userBenefitsList');
 
     const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
     if (elPhone) elPhone.textContent = sesionUsuario.phone ? `+57 ${sesionUsuario.phone}` : (isEn ? 'Active Account' : 'Cuenta Activa');
@@ -236,6 +232,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
         if (typeof abrirModalBienvenidaVIP === 'function') {
           abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
         }
+        if (typeof registrarEventoEmbudoCliente === 'function') registrarEventoEmbudoCliente('conversion_exitosa', { tipo: 'pago', plan: productType, ciudad });
         if (leadSeleccionado) {
           const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
           await ejecutarDesbloqueoLead(leadSeleccionado, idxLead);
@@ -295,6 +292,7 @@ async function ejecutarPagoWompi() {
 
   // Flujo Freemium: 🎁 1 Desbloqueo Gratis de Bienvenida ($0 COP) con Doble Opt-In
   if (productType === 'welcome_free') {
+    if (typeof registrarEventoEmbudoCliente === 'function') registrarEventoEmbudoCliente('intento_conversion', { tipo: 'freemium', plan: 'welcome_free' });
     const inputEmail = document.getElementById('checkoutEmailInput'), emailError = document.getElementById('checkoutEmailError');
     const emailVal = inputEmail ? inputEmail.value.trim() : '';
     if (!emailVal || !emailVal.includes('@')) {
@@ -335,6 +333,7 @@ async function ejecutarPagoWompi() {
       }
 
       if (data.token) {
+        if (typeof registrarEventoEmbudoCliente === 'function') registrarEventoEmbudoCliente('conversion_exitosa', { tipo: 'freemium', plan: 'welcome_free' });
         localStorage.setItem('hunter_pro_token', data.token);
         if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', data.token, 30);
         if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId);
@@ -400,6 +399,7 @@ async function ejecutarPagoWompi() {
     if (!res.ok || !orderData.ok) {
       throw new Error(orderData.message || orderData.error || (esIngles ? 'Could not generate payment order' : 'No se pudo generar la orden de pago'));
     }
+    if (typeof registrarEventoEmbudoCliente === 'function') registrarEventoEmbudoCliente('intento_conversion', { tipo: 'pago', plan: productType, montoCop: orderData.amountInCents ? orderData.amountInCents / 100 : 0, ciudad });
 
     if (typeof WidgetCheckout === 'undefined') {
       await new Promise((resolve) => {
