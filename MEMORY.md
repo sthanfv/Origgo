@@ -4,6 +4,31 @@
 
 ---
 
+- 110. **Hito 110: Saneamiento Defensivo de Takedown, Anti-Doble Clic en Soporte y Suite Metódica Fases A-B-C**:
+    - **Diagnóstico y Contexto:**
+      1. *Entradas Sucias y Riesgo de Contaminación de Lista Negra:* En el formulario de Auto-Soporte y desindexación (`Notice & Takedown`), los usuarios pegan URLs completas (`https://origgo.online/#lead-modal?id=123`), enlaces de portales o textos libres (`"Hola por favor bajen mi casa..."`). Si el backend no filtraba defensivamente, textos arbitrarios podían persistirse como identificadores de lista negra, ensuciando la base de datos o provocando falsos positivos.
+      2. *Doble Clic Impaciente en Botones Táctiles Móviles:* En conexiones móviles lentas, pulsaciones repetidas sobre "Consultar y Resolver" o "Solicitar Retiro de Anuncio" disparaban peticiones concurrentes innecesarias, consumiendo la cuota de rate limiting del usuario (10 req/15 min).
+    - **Solución Implementada:**
+      1. *Saneamiento y Extracción Defensiva (`lib/support/takedown.js`):*
+         - Se implementó la función pura `extraerIdentificadorInmueble(input)` que extrae identificadores de parámetros (`lead=`, `id=`, `leadId=`), URLs directas de FincaRaíz, Metrocuadrado y Origgo, códigos de anuncio (5 a 12 dígitos, `lead-inm-XXX`, `mcXXX`, `fr_XXX`), y rechaza con `HTTP 400 LEAD_ID_INVALIDO` cualquier texto libre que carezca de código reconocible.
+         - Se diferenció limpiamente `LEAD_ID_REQUERIDO` (cuando no se envía ningún input) de `LEAD_ID_INVALIDO` (cuando se envía texto sin identificador identificable).
+         - Saneamiento y truncado estricto de motivos de retiro (`rawReason` a 300 caracteres, remoción de `<>{}`) y teléfonos de contacto (`rawPhone` a 30 caracteres) para prevenir desbordamientos de memoria o inyecciones.
+      2. *Prevención de Doble Clic Táctil (`modules/16-support.js` y `styles/20-support-modal.css`):*
+         - Se integró `btn.disabled = true;` y clase visual `.loading` en `ejecutarSyncPagoSoporte()` y `ejecutarTakedownSoporte()`, con restauración obligatoria en bloque `finally`.
+         - Se definieron estilos `:disabled` y `.loading` con `opacity: 0.6; pointer-events: none; cursor: not-allowed;` en `styles/20-support-modal.css` (222 líneas, $< 500$).
+      3. *Suite de Pruebas Fases A-B-C:*
+         - **Fase A (Local Mocks):** Ampliación de `tests/support_blacklist.test.js` a 9 pruebas unitarias automatizadas cubriendo textos libres sucios, URLs complejas con hash/parámetros, URLs de portales externos y truncado defensivo de textos de más de 500 palabras. Pasadas al 100%.
+         - **Fase B (Samsung Galaxy J7 Prime Aislado):** Ejecución de 10 iteraciones de `scripts/benchmark_blacklist.js` en hardware móvil físico: tiempo de respuesta promedio de 634.4 ms, memoria RSS estable en ~49-50 MB (delta de solo 3.53 MB) y cero fugas de memoria.
+         - **Fase C (Integración Scraper):** Scraper en producción (PID 19606) online y filtrando en vivo inmuebles desindexados antes de auditar y persistir en SQLite.
+    - **Validación DevSecOps y Modularidad:**
+      - `npm run build`: Bundles minificados generados exitosamente (`style.min.css`: 156,663 bytes, `app.min.js`: 323,728 bytes).
+      - `npm test`: **100% de éxito en las 8 fases DevSecOps (0 errores)**.
+      - Todos los 17 módulos JS y 20 módulos CSS estrictamente conformes con el Estándar Desmulta ($\le 500$ líneas).
+    - **Archivos Afectados:**
+      - `lib/support/takedown.js`, `modules/16-support.js`, `styles/20-support-modal.css`, `tests/support_blacklist.test.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `MEMORY.md`.
+
+---
+
 - 109. **Hito 109: Consolidación de Enrutadores Serverless Vercel Hobby (11 Funciones), Resiliencia de Fallback en Memoria y Neutralización de Cuelgues ADB**:
     - **Diagnóstico y Contexto:**
       1. *Límite Estricto Vercel Hobby (12 Funciones Serverless):* Vercel computa cada archivo individual bajo `api/` como una función serverless independiente. Con la suma de endpoints de soporte y telemetría, el proyecto alcanzó 14 funciones, provocando rechazo de despliegue.

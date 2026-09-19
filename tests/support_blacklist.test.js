@@ -122,4 +122,77 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     assert.equal(res.getData()?.ok, false);
     assert.equal(res.getData()?.error, 'INMUEBLE_DESINDEXADO');
   });
+
+  it('6. POST /api/support/takedown debe rechazar texto libre sin identificador con LEAD_ID_INVALIDO', async () => {
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '186.84.10.15' },
+      body: { leadId: 'Hola por favor bajen mi casa de la calle 45 no quiero que la publiquen mas', phone: '3159998877' }
+    };
+    const res = mockRes();
+
+    await takedownHandler(req, res);
+
+    assert.equal(res.getStatusCode(), 400);
+    assert.equal(res.getData()?.ok, false);
+    assert.equal(res.getData()?.error, 'LEAD_ID_INVALIDO');
+  });
+
+  it('7. POST /api/support/takedown debe extraer leadId desde URL con hash y parámetro', async () => {
+    const targetLeadId = `lead-inm-hash-${Date.now()}`;
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '186.84.10.15' },
+      body: { leadId: `https://origgo.online/#lead-modal?id=${targetLeadId}`, phone: '3001234567' }
+    };
+    const res = mockRes();
+
+    await takedownHandler(req, res);
+
+    assert.equal(res.getStatusCode(), 200);
+    assert.equal(res.getData()?.ok, true);
+    assert.equal(res.getData()?.leadId, targetLeadId);
+
+    const isBlocked = await db.isLeadBlacklisted(targetLeadId);
+    assert.equal(isBlocked, true);
+  });
+
+  it('8. POST /api/support/takedown debe extraer ID numérico desde URL de portal inmobiliario', async () => {
+    const portalNum = '194209999';
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '186.84.10.15' },
+      body: { leadId: `https://www.fincaraiz.com.co/inmueble/${portalNum}`, phone: '3001234567' }
+    };
+    const res = mockRes();
+
+    await takedownHandler(req, res);
+
+    assert.equal(res.getStatusCode(), 200);
+    assert.equal(res.getData()?.ok, true);
+    assert.equal(res.getData()?.leadId, portalNum);
+
+    const isBlocked = await db.isLeadBlacklisted(portalNum);
+    assert.equal(isBlocked, true);
+  });
+
+  it('9. POST /api/support/takedown debe truncar defensivamente razones de más de 500 palabras sin error', async () => {
+    const targetLeadId = `lead-truncado-${Date.now()}`;
+    const textoLargo = 'Texto de prueba '.repeat(100); // > 1500 caracteres
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '186.84.10.15' },
+      body: { leadId: targetLeadId, phone: '3001234567', reason: textoLargo }
+    };
+    const res = mockRes();
+
+    await takedownHandler(req, res);
+
+    assert.equal(res.getStatusCode(), 200);
+    assert.equal(res.getData()?.ok, true);
+    assert.equal(res.getData()?.leadId, targetLeadId);
+
+    const isBlocked = await db.isLeadBlacklisted(targetLeadId);
+    assert.equal(isBlocked, true);
+  });
 });

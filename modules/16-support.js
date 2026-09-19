@@ -125,6 +125,12 @@ async function ejecutarSyncPagoSoporte() {
     feedback.textContent = isEn ? 'Checking Wompi gateway records...' : 'Consultando transacción oficial con Wompi...';
   }
 
+  const btn = document.getElementById('btnSubmitSoportePago');
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+  }
+
   try {
     if (typeof reclamarSesionPostPago === 'function') {
       await reclamarSesionPostPago({ reference: ref });
@@ -153,6 +159,11 @@ async function ejecutarSyncPagoSoporte() {
     if (feedback) {
       feedback.className = 'soporte-feedback-msg error';
       feedback.textContent = err.message || (isEn ? 'Could not sync reference. Contact WhatsApp support.' : 'No se pudo sincronizar la referencia. Contacta a soporte por WhatsApp.');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('loading');
     }
   }
 }
@@ -184,6 +195,12 @@ async function ejecutarTakedownSoporte() {
     feedback.textContent = isEn ? 'Processing delisting request...' : 'Procesando desindexación del inmueble...';
   }
 
+  const btn = document.getElementById('btnSubmitSoporteTakedown');
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+  }
+
   try {
     const res = await fetch('/api/support/takedown', {
       method: 'POST',
@@ -205,6 +222,11 @@ async function ejecutarTakedownSoporte() {
     if (feedback) {
       feedback.className = 'soporte-feedback-msg error';
       feedback.textContent = err.message;
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('loading');
     }
   }
 }

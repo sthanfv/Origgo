@@ -146,9 +146,17 @@
   transition: all 0.18s ease;
 }
 
-.btn-soporte-submit:hover {
+.btn-soporte-submit:hover:not(:disabled) {
   background: #047857;
   transform: translateY(-1px);
+}
+
+.btn-soporte-submit:disabled,
+.btn-soporte-submit.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
 }
 
 .btn-soporte-takedown {
@@ -156,7 +164,7 @@
   width: 100%;
 }
 
-.btn-soporte-takedown:hover {
+.btn-soporte-takedown:hover:not(:disabled) {
   background: #b91c1c;
 }
 
