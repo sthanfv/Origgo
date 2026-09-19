@@ -4,6 +4,17 @@
 
 ---
 
+- 111. **Hito 111: Simulacro Integral End-to-End en Caliente (Smoke Test Producción)**:
+    - **Diagnóstico y Validación de Circuito Completo:**
+      1. *Takedown en Producción:* Se ejecutó una solicitud real `POST /api/support/takedown` en `https://origgo.online` con el identificador `simulacro-smoke-live-4585`.
+      2. *Propagación Inmediata en CDN/Edge:* El endpoint `GET /api/support/blacklist` incrementó el conteo de 81 a **82 identificadores**, reflejando instantáneamente el nuevo ID desindexado.
+      3. *Guarda de Seguridad y Bloqueo de Cobro (HTTP 410 Gone):* La solicitud `POST /api/leads/unlock` sobre el inmueble desindexado devolvió `HTTP 410 Gone` (`error: INMUEBLE_DESINDEXADO`), garantizando cero cobro o deducción de créditos a usuarios autenticados.
+      4. *Sincronización en Hardware Móvil (Samsung J7 Prime):* La consulta del scraper en Termux descargó automáticamente la lista de 82 identificadores y generó el archivo de respaldo local sin caídas ni errores.
+    - **Archivos Afectados:**
+      - `scripts/simulacro_e2e.js`, `MEMORY.md`.
+
+---
+
 - 110. **Hito 110: Saneamiento Defensivo de Takedown, Anti-Doble Clic en Soporte y Suite Metódica Fases A-B-C**:
     - **Diagnóstico y Contexto:**
       1. *Entradas Sucias y Riesgo de Contaminación de Lista Negra:* En el formulario de Auto-Soporte y desindexación (`Notice & Takedown`), los usuarios pegan URLs completas (`https://origgo.online/#lead-modal?id=123`), enlaces de portales o textos libres (`"Hola por favor bajen mi casa..."`). Si el backend no filtraba defensivamente, textos arbitrarios podían persistirse como identificadores de lista negra, ensuciando la base de datos o provocando falsos positivos.
