@@ -223,8 +223,23 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
   4. 🏆 **Conversión Final Ganada (`conversion_exitosa`):** Activación confirmada del crédito de bienvenida (Doble Opt-In por correo) o transacción bancaria aprobada (capturada en cliente y en webhook de backend).
 - **Diagnóstico Automatizado de Fugas:** Cálculo algorítmico en tiempo real de los porcentajes de abandono entre fases (*Vitrina $\rightarrow$ Interés*, *Interés $\rightarrow$ Modal*, *Modal $\rightarrow$ Pago*) para señalar exactamente dónde optimizar el copy, las imágenes o los llamados a la acción.
 - **Reporte Ejecutivo para Telegram y Consola:** Generación de resúmenes en Markdown enriquecido con emojis, KPIs, zonas de mayor demanda y top inmuebles con mayor tracción. Despacho automatizado al canal del fundador vía Telegram Bot API sin necesidad de operar dashboards pesados.
-- **Herramienta Local de Gestión (`scripts/report-funnel.js`):** Script CLI compatible con parámetros `--dias=N`, `--send-telegram`, `--export-csv` y `--json` para exportar a hojas de cálculo o automatizaciones.
-- **Privacidad por Diseño (Cero PII):** Cumplimiento estricto de la Ley 1581 / Habeas Data y PCI-DSS: ningún evento almacena nombres, números celulares, correos electrónicos ni direcciones IP.
+### 4.11 Vercel Cron de Despacho Ejecutivo a Telegram (`api/telemetry/cron.js` & `vercel.json`)
+- **Aprovechamiento de Cuota Gratuita (Vercel Hobby):** Configuración del segundo cron permitido (`/api/telemetry/cron`) con horario diario programado a las `01:00 UTC` (equivalente a las 8:00 PM hora de Colombia / UTC-5).
+- **Seguridad Criptográfica en Borde:** Validación en tiempo constante (`crypto.timingSafeEqual`) de la cabecera `Authorization: Bearer <CRON_SECRET>` emitida automáticamente por la infraestructura de Vercel.
+- **Desacoplamiento de Hardware:** El teléfono Samsung J7 queda liberado de tareas de cron o despacho de analítica, concentrando su capacidad exclusivamente en la ejecución continua del scraper y el centinela.
+
+### 4.12 Marco Jurídico Institucional, Habeas Data (Ley 1581) y Estatuto del Consumidor (Ley 1480)
+- **Régimen de Protección de Datos Personales (Ley 1581 de 2012 y Dec. 1377 de 2013):**
+  - **Finalidades Declaradas:** Custodia de créditos de desbloqueo, emisión de comprobantes, despacho de Magic Links y soporte. Prohibición tajante de cesión, comercialización de bases de datos o spam telefónico/publicitario.
+  - **Canal ARCO Oficial:** Vía directa para que los titulares ejerzan sus derechos de acceso, actualización, rectificación y supresión (`privacidad@origgo.online` o WhatsApp).
+  - **Notice & Takedown para Propietarios:** Canal expedito y gratuito para solicitar la desindexación de cualquier propiedad indexada desde fuentes públicas en menos de 24 horas hábiles.
+  - **Seguridad Técnica:** Cifrado militar AES-256-GCM para todos los números de teléfono en reposo y tránsito.
+- **Estatuto del Consumidor (Ley 1480 de 2011) y Lineamientos Wompi / SIC:**
+  - **Naturaleza del Servicio:** Declaración expresa de que Origgo es una plataforma tecnológica de búsqueda y facilitación de contacto directo entre particulares; no actúa como agencia inmobiliaria, no es corredora ni comisionista, ni percibe porcentajes sobre el precio pactado ni interviene en arras o promesas.
+  - **Derecho de Retracto y Excepción Digital (Art. 47 num. 1):** Derecho de retracto dentro de los 5 días hábiles para créditos no consumidos. Al consumir un crédito para ver el contacto, la prestación se ejecuta instantáneamente conforme a la ley.
+  - **Reversión del Pago (Dec. 587 de 2016) y PQR:** Plazo máximo de 15 días hábiles para atender quejas o solicitudes de reversión por fallas de pasarela o cobros no reconocidos (`soporte@origgo.online`).
+  - **Enlace Obligatorio a la SIC:** Acceso institucional directo y visible en el pie de página hacia la Superintendencia de Industria y Comercio (`https://www.sic.gov.co`).
+  - **Consentimiento Informado en Checkout:** Aceptación obligatoria de términos y política de privacidad antes de procesar órdenes en la pasarela oficial Wompi (regulada por la SFC).
 
 ---
 

@@ -361,6 +361,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de embudo CRO: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'telemetry_cron.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de Vercel Cron de telemetría pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de Vercel Cron de telemetría: ${e.message}`);
+  }
+
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS
   // ═════════════════════════════════════════════════════════════════════════

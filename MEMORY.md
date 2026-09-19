@@ -1,6 +1,38 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 20:15 (GMT-5)
+Última actualización: 2026-09-18 20:48 (GMT-5)
+
+---
+
+- 98. **Corrección y Despacho Verificado a Telegram, Segundo Vercel Cron de Métricas Diarias y Blindaje Legal Integral (Opción B: Ley 1581 Habeas Data, Ley 1480 SIC y Requisitos Wompi)**:
+    - **Diagnóstico y Contexto:**
+      1. *Falla de Despacho a Telegram en Entorno Local:* Al invocar `node scripts/report-funnel.js --send-telegram`, faltaban las variables de entorno de Telegram en `hunter-portal-showcase/.env`, alojadas previamente en el scraper `ofertas-hunter-pro`.
+      2. *Aislamiento del Hardware Móvil:* El usuario instruyó no delegar la tarea programada de reporte en el teléfono Samsung J7, sino aprovechar el cupo disponible en Vercel Cron para que todo corra en la nube serverless.
+      3. *Blindaje Legal Integral (Opción B):* Como plataforma web independiente que procesa correos y teléfonos (datos personales) y facilita pagos digitales, era imperativo blindar el sitio bajo el marco legal de Colombia:
+         - Ley 1581 de 2012 y Decreto 1377 de 2013 (Régimen General de Protección de Datos Personales / Habeas Data): Finalidades explícitas, derechos ARCO, canal de atención y consentimiento informado.
+         - Ley 1480 de 2011 (Estatuto del Consumidor): Enlace visible obligatorio a la Superintendencia de Industria y Comercio (SIC), delimitación del servicio como plataforma tecnológica sin comisión inmobiliaria, derecho de retracto y su excepción legal para bienes/servicios digitales de ejecución instantánea (Art. 47 num. 1).
+         - Requisitos de Pasarela Wompi / Bancolombia: Aceptación informada previa al pago y política de reembolsos/PQR en un plazo máximo de 15 días hábiles.
+         - Procedimiento "Notice and Takedown": Canal inmediato y gratuito para que cualquier propietario solicite el retiro de su anuncio público indexado en < 24 horas.
+    - **Solución Implementada:**
+      1. *Sincronización Segura y Despacho Real a Telegram:*
+         - Transferidas las credenciales de Telegram desde `ofertas-hunter-pro/.env` a `hunter-portal-showcase/.env`.
+         - Sincronizado `lib/funnel.js` y `api/telemetry/report.js` con fallback múltiple (`TELEGRAM_CHAT_ID`, `TELEGRAM_CHAT_PRIVADO`, `TELEGRAM_CANAL_ID`).
+         - Ejecutada prueba con entrega confirmada: *"¡Reporte enviado con éxito al canal de Telegram!"*.
+      2. *Segundo Cron en Vercel (`api/telemetry/cron.js` & `vercel.json`):*
+         - Creado endpoint serverless dedicado con autenticación criptográfica `Bearer CRON_SECRET` en tiempo constante (`timingSafeEqual`).
+         - Configurada tarea programada en `vercel.json` con `"schedule": "0 1 * * *"` (01:00 UTC = 8:00 PM hora de Colombia).
+         - Creada suite de pruebas unitarias en `tests/telemetry_cron.test.js` (100% aprobada).
+      3. *Blindaje Legal y Cumplimiento Normativo (Opción B):*
+         - `index.html`: Enlace obligatorio a la Superintendencia de Industria y Comercio (`https://www.sic.gov.co`) en el footer institucional.
+         - `index.html` & `styles/16-utilities.css`: Bloque de consentimiento informado antes del botón de pago/registro Wompi con enlaces accesibles a Términos y Privacidad.
+         - `modules/09-ui-effects.js`: Textos legales ampliados y formalizados con 4 secciones (`terminos`, `exoneracion`, `privacidad`, `reembolsos`) citando Ley 1581, Ley 1480, canales ARCO (`privacidad@origgo.online`), PQR (15 días) y desindexación para propietarios.
+         - `modules/13-i18n.js`: Traducción bilingüe completa en inglés (`TEXTOS_LEGALES_ORIGGO_EN` y claves en diccionarios `es` y `en`).
+         - `modules/10-listeners.js`: Listeners `bindLegal` para interactuar con los términos directamente desde el checkout sin perder el estado de la compra.
+      4. *Modularidad y DevSecOps:*
+         - Los 16 módulos JS y 19 módulos CSS cumplen estrictamente el estándar Desmulta ($\le 500$ líneas por archivo).
+         - 8 fases DevSecOps ejecutadas con éxito al 100% (0 errores).
+    - **Archivos Afectados:**
+      - `api/telemetry/cron.js`, `vercel.json`, `index.html`, `styles/16-utilities.css`, `modules/09-ui-effects.js`, `modules/13-i18n.js`, `modules/10-listeners.js`, `tests/telemetry_cron.test.js`, `scripts/validate.js`, `scripts/build.js`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 

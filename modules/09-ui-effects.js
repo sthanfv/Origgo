@@ -266,86 +266,90 @@ function inicializarEfectosPremium() {
  */
 const TEXTOS_LEGALES_ORIGGO = {
   terminos: {
-    titulo: 'Cómo Funciona Origgo',
-    subtitulo: 'Conexión directa entre compradores y propietarios',
-    badge: 'Transparencia',
+    titulo: 'Términos y Condiciones de Uso',
+    subtitulo: 'Plataforma tecnológica independiente de descubrimiento y contacto directo',
+    badge: 'Estatuto Consumidor (Ley 1480)',
     icono: 'fa-solid fa-file-contract',
     html: `
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Trato Directo sin Intermediarios</div>
-        <p>Origgo recopila y organiza anuncios publicados directamente por propietarios en internet. No somos una inmobiliaria ni cobramos comisión sobre la venta o arriendo. El trato lo haces tú directamente con el dueño.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Trato Directo y Naturaleza del Servicio</div>
+        <p>Origgo es una plataforma tecnológica independiente que organiza ofertas públicas compartidas por propietarios en Colombia. <strong>No somos agencia inmobiliaria, ni corredores ni comisionistas</strong>. No cobramos comisión sobre la negociación ni intervenimos en arras o contratos de compraventa/arrendamiento.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Créditos de Desbloqueo</div>
-        <p>Cada crédito te permite ver el WhatsApp real del dueño para contactarlo de inmediato. Tus créditos no vencen y quedan protegidos con tu número de teléfono.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Créditos de Desbloqueo y Ejecución Instantánea</div>
+        <p>Cada crédito revela el WhatsApp y contacto directo verificado del propietario. Conforme al Art. 47 numeral 1 de la Ley 1480 de 2011, al consumir un crédito la información se revela inmediatamente, constituyendo un servicio digital de ejecución instantánea.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 3. Uso Personal y Protección</div>
-        <p>El acceso a los contactos es para tu uso personal o comercial directo. Protegemos los datos para evitar llamadas masivas o molestias a los propietarios.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-tag"></i> 3. Precios Claros en Pesos Colombianos (COP)</div>
+        <p>Todos los precios están expresados en pesos colombianos e incluyen los conceptos aplicables. No existen cargos ocultos ni renovaciones automáticas forzadas en los paquetes de créditos.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Pagos Seguros con Wompi</div>
-        <p>Tus pagos se procesan de forma segura a través de la pasarela oficial Wompi (vigilada por la Superintendencia Financiera de Colombia). Origgo no guarda tus tarjetas ni claves bancarias.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Pasarela Oficial de Pagos Wompi</div>
+        <p>Tus pagos se procesan de forma cifrada a través de Wompi (entidad vigilada por la Superintendencia Financiera de Colombia). Origgo jamás almacena ni tiene acceso a tus números de tarjeta o claves bancarias.</p>
       </div>
     `
   },
   exoneracion: {
-    titulo: 'Seguridad y Trato Directo',
-    subtitulo: 'Recomendaciones importantes para comprar con tranquilidad',
-    badge: 'Seguridad',
+    titulo: 'Seguridad, Diligencia y Exoneración',
+    subtitulo: 'Recomendaciones esenciales para compradores y arrendatarios',
+    badge: 'Diligencia Debida',
     icono: 'fa-solid fa-shield-halved',
     html: `
       <div class="legal-section legal-section-warning">
-        <div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Sin Comisión ni Intermediación</div>
-        <p>Origgo <strong>no es una inmobiliaria ni cobra comisiones</strong>. No fijamos precios, no recibimos arras ni intervenimos en las promesas de compraventa. Negocias de tú a tú con el propietario.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Verificación Física y Tradición del Inmueble</div>
+        <p>Aconsejamos visitar siempre el inmueble en persona, constatar la identidad del vendedor y solicitar un <strong>Certificado de Tradición y Libertad reciente</strong> ante la Oficina de Registro (SNR) antes de entregar dineros o firmar acuerdos.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-magnifying-glass"></i> 2. Revisa la propiedad antes de pagar</div>
-        <p>Te aconsejamos visitar el inmueble en persona, conocer al propietario y solicitar un Certificado de Tradición y Libertad reciente en la oficina de registro antes de entregar dinero o firmar acuerdos.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-scale-balanced"></i> 2. Acuerdos Exclusivos entre Particulares</div>
+        <p>Los anuncios se indexan de publicaciones abiertas en la web. Origgo no responde por vicios ocultos, modificaciones de precio o pactos privados acordados entre comprador y propietario.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-comments"></i> 3. Acuerdos entre Particulares</div>
-        <p>Los anuncios se toman de publicaciones abiertas en internet. Cualquier acuerdo, precio o promesa de compraventa es responsabilidad mutua entre tú y el dueño del inmueble.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-user-lock"></i> 3. Uso Prohibido y Protección Anti-Spam</div>
+        <p>El contacto obtenido es para uso personal o comercial directo. Queda prohibida la extracción masiva de datos (scraping), la reventa de números y el envío de spam o acoso a los propietarios.</p>
       </div>
     `
   },
   privacidad: {
-    titulo: 'Privacidad y Tus Datos',
-    subtitulo: 'Protección de tu información según la Ley 1581 de 2012',
-    badge: 'Tus Datos Seguros',
+    titulo: 'Política de Tratamiento de Datos Personales',
+    subtitulo: 'Régimen de Habeas Data — Ley 1581 de 2012 y Decreto 1377 de 2013',
+    badge: 'Habeas Data (SIC)',
     icono: 'fa-solid fa-user-shield',
     html: `
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 1. Cómo Usamos tu Teléfono y Correo</div>
-        <p>Tu número de WhatsApp y correo solo se usan para entregarte tu código de acceso, guardar tus créditos y enviarte confirmación de compra. <strong>Cero venta de datos y cero spam</strong>.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-database"></i> 1. Finalidad Exclusiva del Tratamiento</div>
+        <p>Los datos suministrados (WhatsApp y correo) se recolectan únicamente para: <strong>(i)</strong> vincular y custodiar tus créditos, <strong>(ii)</strong> emitir comprobantes y enlaces de acceso seguro (Magic Link), y <strong>(iii)</strong> soporte técnico. <strong>Cero venta de datos y cero spam publicitario</strong>.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-globe"></i> 2. Inmuebles Catalogados</div>
-        <p>La información proviene de anuncios que los propietarios han compartido de manera pública y abierta en internet.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Cifrado Militar AES-256</div>
+        <p>Los teléfonos de propietarios se custodian cifrados mediante estándar AES-256-GCM. La navegación se encuentra protegida con HTTPS/TLS y cabeceras de seguridad OWASP.</p>
+      </div>
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Derechos del Titular (Derechos ARCO)</div>
+        <p>Conforme a la Ley 1581 de 2012, puedes conocer, actualizar, rectificar o solicitar la supresión de tus datos escribiendo a <strong>privacidad@origgo.online</strong> o a nuestro canal oficial de WhatsApp.</p>
       </div>
       <div class="legal-section legal-section-highlight">
-        <div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. ¿Eres dueño y deseas retirar tu anuncio?</div>
-        <p>Si eres el propietario de un inmueble aquí publicado y prefieres que no aparezca, escríbenos a nuestro WhatsApp de soporte y lo retiramos de inmediato sin ningún costo.</p>
+        <div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 4. Canal de Retiro para Propietarios (Notice & Takedown)</div>
+        <p>Si eres dueño de un inmueble indexado y deseas retirarlo, escríbenos a soporte y lo desindexaremos de inmediato y sin ningún costo en menos de 24 horas.</p>
       </div>
     `
   },
   reembolsos: {
-    titulo: 'Garantía de Saldo y Respaldo',
-    subtitulo: 'Tu dinero y tus créditos siempre protegidos',
-    badge: 'Garantía de Saldo',
+    titulo: 'Garantía de Saldo, Retracto y PQR',
+    subtitulo: 'Protección al consumidor según la Ley 1480 de 2011',
+    badge: 'Garantía y Reversión',
     icono: 'fa-solid fa-rotate-left',
     html: `
-      <div class="legal-section legal-section-highlight">
-        <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 1. Tu Saldo Nunca se Pierde</div>
-        <p>Si cambias de celular o borras el navegador, tus créditos siguen a salvo. Puedes recuperarlos en segundos desde <strong>"Restaurar Cuenta"</strong> con tu número de WhatsApp.</p>
+      <div class="legal-section">
+        <div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 1. Tu Saldo Nunca se Pierde</div>
+        <p>Los créditos adquiridos no caducan. Si limpias el navegador o cambias de dispositivo, puedes recuperarlos en segundos desde <strong>"Restaurar Cuenta"</strong> con tu número de WhatsApp.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Desbloqueo al Instante</div>
-        <p>Cada vez que usas un crédito para ver el contacto de un propietario, la información se revela de inmediato en tu pantalla.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-arrow-rotate-left"></i> 2. Derecho de Retracto y Reversión del Pago</div>
+        <p>Para paquetes con créditos sin consumir, puedes ejercer derecho de retracto dentro de los 5 días hábiles siguientes al pago (Art. 47 Ley 1480). Ante cobros duplicados o fallas técnicas, aplica reversión del pago conforme al Decreto 587 de 2016.</p>
       </div>
       <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 3. Soporte y Solución de Inconvenientes</div>
-        <p>Si tuviste algún inconveniente con un pago en Wompi o una falla en el sistema, escríbenos directamente a nuestro WhatsApp de soporte y te repondremos tus créditos o daremos solución prioritaria.</p>
+        <div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Peticiones, Quejas y Reclamos (PQR)</div>
+        <p>Para soporte o reclamaciones, escríbenos a WhatsApp o a <strong>soporte@origgo.online</strong>. Recibirás respuesta formal en un plazo máximo de 15 días hábiles conforme a la ley colombiana.</p>
       </div>
     `
   }

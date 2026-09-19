@@ -386,19 +386,15 @@ function configurarListeners() {
     btnMobileStatusChip.addEventListener("click", () => abrirModalCheckout());
   }
 
-  // MODAL LEGAL Y POLÍTICAS (LEY 1581)
-  const btnTerminos = document.getElementById("btnOpenTerminos");
-  const btnPrivacidad = document.getElementById("btnOpenPrivacidad");
-  if (btnTerminos) {
-    btnTerminos.addEventListener("click", () => {
-      if (typeof abrirModalLegal === 'function') abrirModalLegal('terminos');
-    });
-  }
-  if (btnPrivacidad) {
-    btnPrivacidad.addEventListener("click", () => {
-      if (typeof abrirModalLegal === 'function') abrirModalLegal('privacidad');
-    });
-  }
+  // MODAL LEGAL Y POLÍTICAS (LEY 1581 / SIC)
+  const bindLegal = (id, tab) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", (e) => { e.preventDefault(); if (typeof abrirModalLegal === 'function') abrirModalLegal(tab); });
+  };
+  bindLegal("btnOpenTerminos", "terminos");
+  bindLegal("btnOpenPrivacidad", "privacidad");
+  bindLegal("linkCheckoutTerms", "terminos");
+  bindLegal("linkCheckoutPrivacy", "privacidad");
 
   // Conmutador Atómico y Persistencia de Modo Claro / Modo Oscuro AMOLED
   const btnTheme = document.getElementById("btnThemeToggle");
