@@ -4,6 +4,25 @@
 
 ---
 
+- 113. **Hito 113: Motor de Reglas, Segmentación y Ciclo de Vida de Clientes (Tablero Maestro - Fase 2)**:
+    - **Diagnóstico y Contexto:**
+      1. *Segmentación Automatizada de Usuarios:* Evaluar de forma no intrusiva el estado del usuario para determinar su etapa en el embudo y aplicar acciones de retención pertinentes sin intervención manual.
+      2. *Prevención de Fatiga y Spam:* Blindar la frecuencia de impacto para que ningún usuario reciba más de una comunicación en una ventana móvil de 15 días (`lastRetentionImpactAt`).
+    - **Solución Implementada (`lib/retention.js`):**
+      1. *Segmento A (Paquete Agotándose - `low_balance_upsell`):* Usuarios con saldo $\le 2$ créditos que han desbloqueado al menos 5 oportunidades directas. Invita al upgrade a Plan Pro con 0 créditos adicionales.
+      2. *Segmento B (Plan Pro por Vencer - `plan_expiring_soon`):* Usuarios con Plan Pro activo cuya fecha de expiración se sitúa en las próximas 72 horas (3 días). Recordatorio de renovación inmediata en 1 clic.
+      3. *Segmento C (Plan Pro Recién Vencido - `plan_expired_rescue`):* Usuarios cuyo plan venció hace 1 a 4 días (96 horas). Otorga token seguro de rescate con 2 créditos de cortesía si no han usado rescate en los últimos 45 días.
+      4. *Filtro Anti-Spam (15 días):* Descarte automático de usuarios cuyo `lastRetentionImpactAt` sea inferior a 15 días.
+      5. *Orquestador por Lotes (`procesarLoteRetencion`):* Emisión atómica de tokens en `db.createRetentionToken()` y estampado de estampa de tiempo en `db.updateUserPreferences()`.
+    - **Validación Rápida y Modularidad:**
+      - `node --check lib/retention.js`: Sintaxis 100% válida.
+      - Verificación unitaria de reglas de segmentación y anti-spam aprobada.
+      - Archivo en **153 líneas** (holgura máxima bajo el límite de 500 líneas).
+    - **Archivos Afectados:**
+      - `lib/retention.js`, `MEMORY.md`.
+
+---
+
 - 112. **Hito 112: Motor Criptográfico de Tokens de Retención y Persistencia Atómica (Tablero Maestro - Fase 1)**:
     - **Diagnóstico y Contexto:**
       1. *Estrategia de Retención y Rescate:* Proveer al sistema de un mecanismo seguro, criptográfico e idempotente para emitir enlaces de reactivación/rescate de créditos a usuarios inactivos o con saldo cero, mitigando el churn sin riesgos de desfalco ni duplicación de créditos.
