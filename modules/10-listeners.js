@@ -39,18 +39,18 @@ function configurarListeners() {
   let timeoutBusqueda;
 
   if (omnibox) {
+    omnibox.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        clearTimeout(timeoutBusqueda);
+        omnibox.blur();
+        aplicarFiltrosOmnibox();
+      }
+    });
     omnibox.addEventListener("input", (e) => {
       clearTimeout(timeoutBusqueda);
       textoBusquedaActivo = e.target.value;
-      
-      if (btnSearchClear) {
-        btnSearchClear.classList.toggle("visible", textoBusquedaActivo.trim().length > 0);
-      }
-      
-      // Retrasa la ejecución 300ms hasta que el usuario deje de teclear
-      timeoutBusqueda = setTimeout(() => {
-        aplicarFiltrosOmnibox();
-      }, 300);
+      if (btnSearchClear) btnSearchClear.classList.toggle("visible", textoBusquedaActivo.trim().length > 0);
+      timeoutBusqueda = setTimeout(() => aplicarFiltrosOmnibox(), 300);
     });
   }
 
@@ -100,6 +100,15 @@ function configurarListeners() {
       } else if (action === "contactar-whatsapp") {
         e.stopPropagation();
         manejarContactoWhatsapp(idx);
+      }
+
+      // 🛡️ Debounce y protección contra doble clic ciego en WhatsApp
+      const waLink = e.target.closest('.btn-whatsapp-direct, a[href*="wa.me"]');
+      if (waLink) {
+        if (waLink.dataset.isRedirecting === 'true') { e.preventDefault(); e.stopPropagation(); return; }
+        waLink.dataset.isRedirecting = 'true';
+        waLink.classList.add('is-redirecting');
+        setTimeout(() => { delete waLink.dataset.isRedirecting; waLink.classList.remove('is-redirecting'); }, 2500);
       }
 
       const contactLink = e.target.closest('a[href*="wa.me"], a[href^="tel:"]');
@@ -177,6 +186,8 @@ function configurarListeners() {
       e.stopPropagation();
       const cityValue = item.getAttribute("data-city") || "";
       filtroCiudadActivo = cityValue;
+      if (omnibox) omnibox.blur();
+      if (document.activeElement?.blur) document.activeElement.blur();
 
       dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(i => i.classList.remove("active"));
       item.classList.add("active");
@@ -184,7 +195,6 @@ function configurarListeners() {
       const spanText = item.querySelector("span") ? item.querySelector("span").textContent : "Colombia (Todas)";
       if (labelLocation) labelLocation.textContent = spanText;
 
-      // Sincronizar con el selector del menú móvil si existe
       const sideMenuSelect = document.getElementById("sideMenuCitySelect");
       const sideMenuBadge = document.getElementById("sideMenuCityBadge");
       if (sideMenuSelect) sideMenuSelect.value = cityValue;
@@ -198,7 +208,6 @@ function configurarListeners() {
         pillLocation.classList.remove("open");
         pillLocation.setAttribute("aria-expanded", "false");
       }
-
       aplicarFiltrosOmnibox();
     });
   }
@@ -210,28 +219,18 @@ function configurarListeners() {
     sideMenuCitySelect.addEventListener("change", (e) => {
       const cityVal = e.target.value || "";
       filtroCiudadActivo = cityVal;
-
-      if (sideMenuCityBadge) {
-        sideMenuCityBadge.textContent = cityVal || "Todas";
-      }
-
-      // Sincronizar con la barra superior de comandos
-      if (labelLocation) {
-        labelLocation.textContent = cityVal ? (sideMenuCitySelect.options[sideMenuCitySelect.selectedIndex]?.text || cityVal) : "Todas las Ciudades";
-      }
-      if (pillLocation) {
-        pillLocation.classList.toggle("active-filter", cityVal !== "");
-      }
+      sideMenuCitySelect.blur();
+      if (omnibox) omnibox.blur();
+      if (sideMenuCityBadge) sideMenuCityBadge.textContent = cityVal || "Todas";
+      if (labelLocation) labelLocation.textContent = cityVal ? (sideMenuCitySelect.options[sideMenuCitySelect.selectedIndex]?.text || cityVal) : "Todas las Ciudades";
+      if (pillLocation) pillLocation.classList.toggle("active-filter", cityVal !== "");
       if (dropdownLocation) {
         dropdownLocation.querySelectorAll(".cmd-dropdown-item").forEach(item => {
-          const itemCity = item.getAttribute("data-city") || "";
-          item.classList.toggle("active", itemCity === cityVal);
+          item.classList.toggle("active", (item.getAttribute("data-city") || "") === cityVal);
         });
       }
-
       aplicarFiltrosOmnibox();
 
-      // Cerrar el menú lateral para mostrar de inmediato la grilla filtrada
       const sideMenu = document.getElementById('sideMenu');
       const menuOverlay = document.getElementById('sideMenuOverlay') || document.getElementById('menuOverlay');
       if (sideMenu && menuOverlay) {

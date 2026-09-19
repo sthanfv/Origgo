@@ -371,11 +371,15 @@
 }
 
 .trust-subtext {
-  color: var(--text-secondary, #78716c);
+  color: #44403c;
   font-size: 0.95rem;
   line-height: 1.55;
   margin: 0;
   max-width: 820px;
+}
+
+[data-theme="dark"] .trust-subtext {
+  color: var(--text-muted, #9eb1a8);
 }
 
 .trust-pillars-row {
@@ -415,9 +419,13 @@
 
 .trust-pillar-body p {
   font-size: 0.82rem;
-  color: var(--text-secondary, #78716c);
+  color: #44403c;
   line-height: 1.4;
   margin: 0;
+}
+
+[data-theme="dark"] .trust-pillar-body p {
+  color: var(--text-muted, #9eb1a8);
 }
 
 .trust-pillar-cta-btn {

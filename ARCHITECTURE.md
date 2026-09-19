@@ -205,15 +205,17 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
 - **Sincronización Multi-Pestaña:** Escucha el evento `storage` en `window` para actualizar de inmediato cualquier otra pestaña abierta si el usuario confirma su enlace en otra ventana o WebView de correo.
 - **Notificación Positiva y Asertiva:** Sustitución de mensajes confusos ("0 créditos restantes") por confirmaciones asertivas de contacto del propietario desbloqueado listo para llamada y WhatsApp.
 
-### 4.9 Franja Editorial de Propuesta de Valor y Conversión CRO (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`, `modules/10-listeners.js`)
+### 4.9 Franja Editorial de Propuesta de Valor, Conversión CRO y UX Exterior (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`, `modules/10-listeners.js`, `modules/07-unlock.js`, `modules/15-autocomplete.js`)
 - **Ubicación Estratégica:** Insertada entre el buscador/hero y la cuadrícula Bento Grid, orientando al visitante en sus primeros 3 segundos en vitrina.
 - **Claridad de Mensaje:** *"DIRECTO AL PUNTO: Nosotros rastreamos y filtramos el mercado por ti. Tú negocias directo con el dueño real."*
 - **3 Pilares Fundamentales Optimizados para Conversión:**
   1. ⚡ **Rastreo 24/7:** Monitoreo automatizado continuo de portales en terminal dedicada (Samsung J7).
-  2. 🤝 **Cero Comisiones (Ahorro Cuantificado):** Negociación directa de tú a tú. Texto monetizado: *"Ahorra entre $10M y $30M en comisiones de corretaje negociando de tú a tú"* para elevar el impacto psicológico del ahorro.
+  2. 🤝 **Cero Comisiones / Zero Brokerage Commissions (Ahorro Cuantificado):** Negociación directa de tú a tú. Texto monetizado: *"Ahorra entre $10M y $30M en comisiones de corretaje negociando de tú a tú"* (en inglés: *"Save $2,500 to $8,000+ USD in brokerage fees by negotiating person-to-person."*), con terminología inmobiliaria de precisión internacional (*Zero Brokerage Commissions*).
   3. 🎁 **1er Contacto Gratis con CTA Interactivo:** Micro-botón integrado (`#btnTrustPillarCta`) con scroll suave (`scrollIntoView`) hacia el catálogo, convirtiendo la promesa de valor en un llamado a la acción inmediato.
 - **Contador Estático de Catálogo de Fábrica:** El marcado HTML inicial muestra `"150+ oportunidades directas"` para proyectar abundancia inmediata desde el primer milisegundo de renderizado antes de que hidrate el script cliente.
-- **Arquitectura Visual y Responsive:** Badge contrastante de alto impacto, tipografía editorial equilibrada y distribución adaptativa (3 columnas en escritorio, 1 columna fluida en móvil sin desplazamiento excesivo del catálogo). Soporte bilingüe completo con atributos `data-i18n`.
+- **Legibilidad Solar en Exteriores (WCAG AAA):** Color `#44403c` en el texto de apoyo (`.trust-subtext` y `.trust-pillar-body p`), garantizando máxima nitidez bajo la luz solar directa en celulares.
+- **Blindaje Anti Doble-Clic y Debounce en WhatsApp:** Prevención de clics compulsivos en `.btn-whatsapp-direct` con debounce temporal de 2.5s (`_enProgreso` y `data-is-redirecting`), evitando aperturas múltiples de pestañas en blanco y registros inflados de telemetría comercial.
+- **Repliegue Automático de Teclado Virtual Móvil:** Invocación automática de `input.blur()` al presionar Enter en el Omnibox de búsqueda, al seleccionar una ciudad o al tocar una sugerencia de autocompletado, evitando pantallas congeladas detrás del teclado de Android.
 
 ### 4.10 Pipeline de Telemetría Comercial y Embudo CRO a Costo $0 (`lib/funnel.js`, `api/telemetry/funnel.js`, `scripts/report-funnel.js`)
 - **Arquitectura Zero-Cost ($0):** Agregación atómica en Google Cloud Firestore dentro de la colección `funnel_daily_metrics/{YYYY-MM-DD}` utilizando `FieldValue.increment()`. Ocupa un único documento diario, consumiendo menos del 0.1% de la cuota gratuita de Firestore.

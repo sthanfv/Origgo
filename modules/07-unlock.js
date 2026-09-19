@@ -394,6 +394,7 @@ async function ejecutarDesbloqueoLead(lead, index) {
  * @param {number} index
  */
 async function manejarContactoWhatsapp(index) {
+  if (manejarContactoWhatsapp._enProgreso) return;
   if (!datosActuales?.leads || !datosActuales.leads[index]) return;
   const lead = datosActuales.leads[index];
 
@@ -402,10 +403,14 @@ async function manejarContactoWhatsapp(index) {
     ? sanitizarContactoCliente(contacto)
     : contacto;
   if (contactoSeguro?.whatsappUrl) {
+    manejarContactoWhatsapp._enProgreso = true;
+    setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
     window.open(contactoSeguro.whatsappUrl, '_blank', 'noopener,noreferrer');
     return;
   }
   if (contactoSeguro?.enlace) {
+    manejarContactoWhatsapp._enProgreso = true;
+    setTimeout(() => { manejarContactoWhatsapp._enProgreso = false; }, 2500);
     window.open(contactoSeguro.enlace, '_blank', 'noopener,noreferrer');
     return;
   }

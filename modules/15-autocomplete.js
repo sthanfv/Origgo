@@ -237,6 +237,7 @@ function seleccionarSugerencia(sugerencia) {
     input.value = sugerencia.filtro || sugerencia.texto;
     if (btnClear) btnClear.classList.add('visible');
     textoBusquedaActivo = input.value;
+    input.blur();
   }
 
   cerrarMenuAutocomplete();

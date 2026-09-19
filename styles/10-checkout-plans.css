@@ -465,6 +465,7 @@
 }
 
 .btn-whatsapp-direct:hover { background: #16A34A; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45); }
+.btn-whatsapp-direct.is-redirecting { pointer-events: none !important; opacity: 0.65; cursor: wait !important; }
 
 .card-unlocked-badge {
   display: inline-flex;

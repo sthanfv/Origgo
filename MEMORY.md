@@ -1,6 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 21:28 (GMT-5)
+Última actualización: 2026-09-18 21:42 (GMT-5)
+
+---
+
+- 100. **Hito 100: Blindaje Anti Doble-Clic en WhatsApp (CRO), Legibilidad Solar Exterior (#44403c), Cierre Automático de Teclado Móvil (blur) y Nomenclatura Global ("Zero Brokerage Commissions")**:
+    - **Diagnóstico y Contexto:**
+      1. *Fuga en el Embudo por Doble Clic Ciego en WhatsApp:* Al desbloquear un lead, usuarios en navegadores móviles (Brave, Chrome, Samsung Internet) hacían 2 o 3 clics rápidos en "Contactar por WhatsApp" mientras el navegador abría la app, registrando múltiples eventos espurios de conversión ganada y abriendo pestañas en blanco.
+      2. *Poco Contraste en Exteriores bajo Sol Intenso:* El color `--text-secondary` (`#78716c`) en la franja de valor perdía legibilidad en la calle en Bogotá/Medellín con brillo móvil medio, provocando que los usuarios ignoraran la propuesta de valor.
+      3. *Fuga de Enfoque por Teclado Virtual en Móvil:* Al buscar o seleccionar ciudad, el teclado de Android permanecía desplegado tapando la vitrina e inmuebles, dando la falsa sensación de pantalla congelada.
+      4. *Ambigüedad de Traducción en Inglés:* "Zero Agency Fees" podía interpretarse como costo de la plataforma en vez de la comisión tradicional de corretaje inmobiliario.
+    - **Solución Implementada:**
+      1. *Protección Anti Doble-Clic y Debounce de 2.5s (`modules/07-unlock.js`, `modules/10-listeners.js`, `styles/10-checkout-plans.css`):*
+         - En `modules/07-unlock.js`: Bandera `manejarContactoWhatsapp._enProgreso = true` con temporizador de liberación a los 2500ms antes de ejecutar `window.open()`.
+         - En `modules/10-listeners.js`: Interceptor de eventos en `.btn-whatsapp-direct, a[href*="wa.me"]` con atributo `dataset.isRedirecting` y bloqueo de propagación ante toques repetidos.
+         - En `styles/10-checkout-plans.css`: Estado visual `.btn-whatsapp-direct.is-redirecting` con `pointer-events: none`, opacidad atenuada (0.65) y cursor de espera.
+      2. *Legibilidad Solar de Alto Contraste (`styles/06-bento-grid.css`):*
+         - Actualizado el color de `.trust-subtext` y `.trust-pillar-body p` a `#44403c` (WCAG AAA) en tema claro, con soporte para tema oscuro (`var(--text-muted, #9eb1a8)`).
+      3. *Repliegue Inmediato del Teclado Virtual de Android (`modules/10-listeners.js`, `modules/15-autocomplete.js`):*
+         - Al presionar `Enter` en `#omniboxSearch`, se invoca `omnibox.blur()` para bajar el teclado antes de filtrar.
+         - Al seleccionar una ciudad en el dropdown desktop o selector móvil, se ejecuta `omnibox.blur()` y `document.activeElement.blur()`.
+         - Al tocar una sugerencia de autocompletado en `modules/15-autocomplete.js`, se dispara `input.blur()`.
+      4. *Coherencia Terminológica Internacional (`modules/13-i18n.js`):*
+         - En el diccionario en inglés (`en`), `trust_p2_title` actualizado a `'Zero Brokerage Commissions'` y `trust_subtext` con `'cut out 3-4% broker commissions'`.
+      5. *Estándar Desmulta y Validación DevSecOps:*
+         - Todos los 16 submódulos JS y 19 submódulos CSS validados estrictamente en $\le 500$ líneas (`07-unlock.js`: 497, `10-listeners.js`: 491, `15-autocomplete.js`: 387, `06-bento-grid.css`: 477, `10-checkout-plans.css`: 495).
+         - Las 8 fases de `scripts/validate.js` aprobadas al 100% (0 errores).
+    - **Archivos Afectados:**
+      - `modules/07-unlock.js`, `modules/10-listeners.js`, `modules/15-autocomplete.js`, `modules/13-i18n.js`, `styles/06-bento-grid.css`, `styles/10-checkout-plans.css`, `scripts/build.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 
