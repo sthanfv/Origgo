@@ -3961,9 +3961,18 @@ function inicializarEfectosPremium() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// VERSIÓN LEGAL VINCULANTE (Incrementar si se alteran cláusulas)
+// HISTORIAL INMUTABLE DE TÉRMINOS Y CONDICIONES (CHANGELOG LEGAL)
 // ══════════════════════════════════════════════════════════════
-const VERSION_LEGAL_VIGENTE = 'v1.0 (Septiembre 2026)';
+const HISTORIAL_TERMINOS = [
+  {
+    version: 'v1.0',
+    fecha: '2026-09-18',
+    titulo: 'Versión Inicial Vinculante',
+    cambios: 'Lanzamiento oficial, agregación de fuentes públicas abiertas, política de privacidad Habeas Data (Ley 1581) y régimen comercial.'
+  }
+];
+
+const VERSION_LEGAL_VIGENTE = `${HISTORIAL_TERMINOS[HISTORIAL_TERMINOS.length - 1].version} (Septiembre 2026)`;
 
 /**
  * Textos claros y transparentes para usuarios y propietarios.
@@ -3979,6 +3988,7 @@ const TEXTOS_LEGALES_ORIGGO = {
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-network-wired"></i> 2. Indexación de Fuentes Públicas y Ausencia de Exclusividad</div><p>Los datos, enlaces e información mostrados provienen de fuentes abiertas y públicas de libre acceso en internet, recopilados mediante algoritmos de indexación referencial. Origgo no reclama exclusividad, mandato comercial ni titularidad jurídica sobre los inmuebles ni sobre las imágenes públicas referenciadas.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 3. Créditos de Consulta Analítica y Ejecución Instantánea</div><p>Cada crédito adquirido habilita la consulta analítica y visualización directa del contacto y canal verificado del anunciante. Conforme al Art. 47 numeral 1 de la Ley 1480 de 2011, al consultar un contacto el servicio digital se ejecuta de forma instantánea y definitiva.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Precios Claros y Pasarela Oficial Wompi</div><p>Todos los precios están expresados en pesos colombianos (COP). Los pagos se procesan de forma cifrada a través de Wompi Bancolombia (entidad vigilada por la SFC), sin cargos ocultos ni renovaciones automáticas forzadas.</p></div>
+      <div class="legal-section legal-history-box"><div class="legal-section-badge"><i class="fa-solid fa-clock-rotate-left"></i> 5. Historial de Versiones y Auditoría Jurídica</div><p>Para plena validez probatoria conforme a la Ley 527 de 1999 de comercio electrónico, cada versión de estos términos es inmutable. Versión vigente: <strong>${HISTORIAL_TERMINOS[HISTORIAL_TERMINOS.length - 1].version}</strong>.</p><div class="legal-changelog-table"><div class="legal-changelog-row"><span class="legal-tag-v">v1.0</span><span class="legal-date-v">2026-09-18</span><span class="legal-desc-v">Lanzamiento oficial vinculante y consagración como Terminal de Agregación Pública.</span></div></div></div>
     `
   },
   exoneracion: {
@@ -4144,6 +4154,7 @@ function inicializarModalLegal() {
 }
 
 // Exposición global
+window.HISTORIAL_TERMINOS = HISTORIAL_TERMINOS;
 window.abrirModalLegal = abrirModalLegal;
 window.cerrarModalLegal = cerrarModalLegal;
 window.inicializarModalLegal = inicializarModalLegal;
@@ -5377,7 +5388,7 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'Cómo Funciona', legal_tab_security: 'Seguridad', legal_tab_privacy: 'Tus Datos', legal_tab_guarantee: 'Garantía de Saldo', legal_btn_accept: 'Entendido',
     footer_bio: 'Plataforma de conexión directa con propietarios de inmuebles en Colombia. Sin intermediarios, sin comisiones de agencia y con oportunidades verificadas en tiempo real.',
     footer_tagline: 'Monitoreo continuo en principales ciudades y polos de inversión inmobiliaria.', footer_telegram: 'Canal de Telegram',
-    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto', footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp',
+    footer_col_info: 'Información y Seguridad', footer_col_support: 'Soporte y Contacto', footer_no_agency: 'Sin comisiones ni intermediación', footer_wa_support: 'Atención directa por WhatsApp', footer_auto_support: 'Centro de Auto-Soporte', menu_autosoporte: 'Centro de Auto-Soporte',
     footer_theme_label: 'Modo Visual', footer_copy: '© 2026 Origgo. Conexión directa entre compradores y propietarios sin intermediarios.',
     footer_disclaimer_title: 'Aviso de Confianza:', footer_disclaimer: 'Origgo es una herramienta para conectar compradores directamente con propietarios. No cobramos comisiones ni participamos en las negociaciones. Te recomendamos siempre revisar la documentación del inmueble antes de hacer acuerdos.',
     toast_default_title: 'Notificación Origgo', toast_action_required: 'Acción Requerida', toast_attention: 'Atención', toast_info: 'Información',
@@ -5450,7 +5461,7 @@ const DICCIONARIO_I18N = {
     legal_tab_how: 'How It Works', legal_tab_security: 'Security', legal_tab_privacy: 'Your Data', legal_tab_guarantee: 'Balance Guarantee', legal_btn_accept: 'Understood',
     footer_bio: 'Direct connection platform with property owners in Colombia. Zero middleman, zero agency commissions, and real-time verified opportunities.',
     footer_tagline: 'Continuous monitoring across Colombia’s major investment hubs.', footer_telegram: 'Telegram Channel',
-    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact', footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support',
+    footer_col_info: 'Information & Security', footer_col_support: 'Support & Contact', footer_no_agency: 'Zero agency fees and zero broker commissions', footer_wa_support: 'Direct WhatsApp support', footer_auto_support: 'Self-Service Support', menu_autosoporte: 'Self-Service Support',
     footer_theme_label: 'Visual Theme', footer_copy: '© 2026 Origgo. Direct connection between buyers and owners with no intermediaries.',
     footer_disclaimer_title: 'Trust Notice:', footer_disclaimer: 'Origgo is a tool to connect buyers directly with property owners. We do not charge broker commissions nor take part in negotiations. We always recommend reviewing property title and documentation before agreements.',
     toast_default_title: 'Origgo Notification', toast_action_required: 'Action Required', toast_attention: 'Attention', toast_info: 'Information',
@@ -5470,7 +5481,7 @@ const DICCIONARIO_I18N = {
 };
 
 const TEXTOS_LEGALES_ORIGGO_EN = {
-  terminos: { titulo: 'Terms and Conditions of Use', subtitulo: 'Public Aggregation & Market Intelligence Terminal — Version v1.0 (September 2026)', badge: 'Intelligence & Aggregation Terminal', icono: 'fa-solid fa-file-contract', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-server"></i> 1. Software Nature: Intelligence & Aggregation Terminal</div><p>Origgo is algorithmic market monitoring, classification, and real estate intelligence software in Colombia. <strong>Origgo is not a real estate agency, broker, or exclusive listing repository</strong>. We do not represent buyers or sellers, hold keys, set prices, or participate in property walkthroughs, earnest deposits, or sales/rental deeds; our technological function is structuring open public data and connecting buyers directly with advertisers for direct deals.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-network-wired"></i> 2. Public Data Indexing & No Exclusivity</div><p>Displayed listings and links originate from open public sources on the internet, aggregated via referential search algorithms. Origgo claims no exclusivity, commercial mandate, or legal ownership over referenced properties or public imagery.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 3. Analytical Query Credits & Instant Execution</div><p>Each purchased credit enables analytical query and direct viewing of the advertiser\'s verified contact channel. Under Art. 47.1 of Colombian Consumer Law 1480/2011, accessing a contact constitutes an instantly and definitively executed digital service.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Clear Pricing in Colombian Pesos (COP) & Wompi</div><p>All prices in COP. Encrypted bank-level payments via Wompi Bancolombia (SFC regulated), with zero hidden fees or forced recurring charges.</p></div>' },
+  terminos: { titulo: 'Terms and Conditions of Use', subtitulo: 'Public Aggregation & Market Intelligence Terminal — Version v1.0 (September 2026)', badge: 'Intelligence & Aggregation Terminal', icono: 'fa-solid fa-file-contract', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-server"></i> 1. Software Nature: Intelligence & Aggregation Terminal</div><p>Origgo is algorithmic market monitoring, classification, and real estate intelligence software in Colombia. <strong>Origgo is not a real estate agency, broker, or exclusive listing repository</strong>. We do not represent buyers or sellers, hold keys, set prices, or participate in property walkthroughs, earnest deposits, or sales/rental deeds; our technological function is structuring open public data and connecting buyers directly with advertisers for direct deals.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-network-wired"></i> 2. Public Data Indexing & No Exclusivity</div><p>Displayed listings and links originate from open public sources on the internet, aggregated via referential search algorithms. Origgo claims no exclusivity, commercial mandate, or legal ownership over referenced properties or public imagery.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 3. Analytical Query Credits & Instant Execution</div><p>Each purchased credit enables analytical query and direct viewing of the advertiser\'s verified contact channel. Under Art. 47.1 of Colombian Consumer Law 1480/2011, accessing a contact constitutes an instantly and definitively executed digital service.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Clear Pricing in Colombian Pesos (COP) & Wompi</div><p>All prices in COP. Encrypted bank-level payments via Wompi Bancolombia (SFC regulated), with zero hidden fees or forced recurring charges.</p></div><div class="legal-section legal-history-box"><div class="legal-section-badge"><i class="fa-solid fa-clock-rotate-left"></i> 5. Version History & Legal Audit</div><p>For evidentiary validity under Electronic Commerce regulations (Law 527/1999), terms are immutable. Active version: <strong>v1.0</strong>.</p><div class="legal-changelog-table"><div class="legal-changelog-row"><span class="legal-tag-v">v1.0</span><span class="legal-date-v">2026-09-18</span><span class="legal-desc-v">Official binding launch and designation as Public Aggregation Terminal.</span></div></div></div>' },
   exoneracion: { titulo: 'Due Diligence & Disclaimer', subtitulo: 'Essential recommendations for buyers and advertisers — Version v1.0 (September 2026)', badge: 'Due Diligence', icono: 'fa-solid fa-shield-halved', html: '<div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Physical Inspection & Title Verification</div><p>Always inspect the property in person, verify the owner identity, and obtain an official Title Certificate (Certificado de Tradición y Libertad) before transferring funds or signing agreements.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-scale-balanced"></i> 2. Neutral Software & Agreements Between Private Parties</div><p>As neutral search and intelligence software, Origgo is not liable for latent defects, unilateral price changes, physical property condition, or private agreements between parties.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-copyright"></i> 3. Third-Party Trademarks & Intellectual Property</div><p>Trademarks, names, or brand signs appearing incidentally on public source images belong to their respective owners. Origgo has no affiliation, partnership, or sponsorship with external portals or competitors.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-lock"></i> 4. Anti-Spam & Fair Use</div><p>Access is strictly for legitimate personal or commercial direct-deal purposes. Automated mass data extraction (scraping), data resale, and spam/harassment to owners are strictly prohibited.</p></div>' },
   privacidad: { titulo: 'Personal Data Processing Policy', subtitulo: 'Habeas Data Compliance (Law 1581/2012) — Version v1.0 (September 2026)', badge: 'Data Privacy (SIC)', icono: 'fa-solid fa-user-shield', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-database"></i> 1. Purpose of Data Processing</div><p>User phone and email are collected solely to: <strong>(i)</strong> safeguard unlock credits, <strong>(ii)</strong> issue purchase receipts and secure access links (Magic Link), and <strong>(iii)</strong> provide support. <strong>Zero data selling and zero spam</strong>.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. AES-256 Military-Grade Encryption</div><p>Owner phone numbers are stored encrypted with AES-256-GCM. Browsing is protected with HTTPS/TLS and OWASP headers.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Rights of Data Subjects (Habeas Data)</div><p>Under Law 1581 of 2012, data subjects may request the update or removal of public contact details directly via platform self-service channels or official WhatsApp.</p></div><div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-shield-cat"></i> 4. Automated Delisting for Owners</div><p>Origgo operates as an open public source search and indexing engine. If an owner has already closed their deal or wishes to remove their listing from the index, they can request immediate removal with the property reference.</p></div>' },
   reembolsos: { titulo: 'Credit Balance Guarantee & PQR', subtitulo: 'Commercial & Consumer Protection Framework — Version v1.0 (September 2026)', badge: 'Guarantee & Reversal', icono: 'fa-solid fa-rotate-left', html: '<div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 1. Your Balance Never Expires</div><p>Purchased credits do not expire. If you switch devices or clear cookies, restore them anytime using <strong>"Restore Account"</strong> with your WhatsApp.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-arrow-rotate-left"></i> 2. Right of Withdrawal & Payment Reversal</div><p>For unconsumed credit packs, users may exercise withdrawal within 5 business days of purchase (Art. 47 Law 1480). For system errors or duplicate charges, payment reversal applies under Decree 587/2016.</p></div><div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Petitions & Inquiries (PQR)</div><p>For inquiries regarding balance transactions or Wompi payments, contact Origgo official WhatsApp with your payment reference. Business-day support under Colombian commercial regulations.</p></div>' }
@@ -6517,5 +6528,268 @@ if (typeof module !== 'undefined' && module.exports) {
     calcularSugerencias,
     cerrarMenuAutocomplete,
     seleccionarSugerencia
+  };
+}
+
+
+/**
+ * 🎧 MÓDULO DE AUTO-SOPORTE INTELIGENTE (modules/16-support.js)
+ * Centro de resolución autónoma para sincronización de pagos Wompi,
+ * desindexación automatizada para propietarios (Notice & Takedown)
+ * y restauración inmediata de cuenta sin fricción.
+ * Estándar Ecosistema Desmulta (< 500 líneas).
+ */
+
+/**
+ * Abre el modal del Centro de Auto-Soporte con la pestaña indicada.
+ * @param {'pago'|'takedown'|'cuenta'} opcionPorDefecto
+ */
+function abrirModalAutoSoporte(opcionPorDefecto = 'pago') {
+  const modal = document.getElementById('modalAutoSoporteOverlay');
+  if (!modal) return;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  seleccionarOpcionAutoSoporte(opcionPorDefecto);
+}
+
+/**
+ * Cierra el modal de auto-soporte y restablece los mensajes.
+ */
+function cerrarModalAutoSoporte() {
+  const modal = document.getElementById('modalAutoSoporteOverlay');
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+  const feedback = document.getElementById('soporteFeedbackMsg');
+  if (feedback) feedback.className = 'soporte-feedback-msg is-hidden';
+}
+
+/**
+ * Cambia la pestaña activa del centro de auto-soporte y renderiza el formulario dinámico.
+ * @param {'pago'|'takedown'|'cuenta'} tipo
+ */
+function seleccionarOpcionAutoSoporte(tipo) {
+  const modal = document.getElementById('modalAutoSoporteOverlay');
+  if (!modal) return;
+  modal.querySelectorAll('.soporte-option-btn').forEach(btn => {
+    const isTarget = btn.getAttribute('data-soporte-tipo') === tipo;
+    btn.classList.toggle('active', isTarget);
+    btn.setAttribute('aria-pressed', isTarget ? 'true' : 'false');
+  });
+
+  const formBox = document.getElementById('soporteFormContainer');
+  if (!formBox) return;
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
+  if (tipo === 'pago') {
+    formBox.innerHTML = `
+      <div class="soporte-form-pane">
+        <label for="soporteInputReferencia" class="soporte-form-label">
+          <i class="fa-solid fa-receipt"></i> ${isEn ? 'Wompi Reference or Transaction ID:' : 'Referencia de Pago Wompi o ID Bancario:'}
+        </label>
+        <div class="soporte-input-group">
+          <input type="text" id="soporteInputReferencia" class="soporte-input-field" placeholder="${isEn ? 'E.g., wompi_123456 or reference' : 'Ej. wompi_123456 o ref. numérica'}" autocomplete="off" />
+          <button type="button" class="btn-soporte-submit" id="btnSubmitSoportePago">
+            <i class="fa-solid fa-rotate"></i> ${isEn ? 'Sync Payment' : 'Sincronizar Pago'}
+          </button>
+        </div>
+        <span class="soporte-form-help">
+          <i class="fa-solid fa-shield-halved"></i> ${isEn ? 'If your payment was approved in Wompi / PSE / Nequi, this will instantly credit your account.' : 'Si tu pago fue aprobado en Wompi, PSE o Nequi, esto acreditará tu saldo de inmediato.'}
+        </span>
+      </div>`;
+    const btnSubmit = document.getElementById('btnSubmitSoportePago');
+    if (btnSubmit) btnSubmit.addEventListener('click', () => ejecutarSyncPagoSoporte());
+  } else if (tipo === 'takedown') {
+    formBox.innerHTML = `
+      <div class="soporte-form-pane">
+        <label for="soporteInputLeadId" class="soporte-form-label">
+          <i class="fa-solid fa-house-chimney-crack"></i> ${isEn ? 'Listing ID or URL:' : 'Identificador o Enlace del Inmueble:'}
+        </label>
+        <input type="text" id="soporteInputLeadId" class="soporte-input-field" placeholder="${isEn ? 'E.g., fincaraiz-12345 or listing URL' : 'Ej. fincaraiz-12345 o enlace del anuncio'}" />
+        <label for="soporteInputPhone" class="soporte-form-label" style="margin-top:0.6rem;">
+          <i class="fa-solid fa-phone"></i> ${isEn ? 'Owner Phone Number:' : 'Teléfono del Propietario:'}
+        </label>
+        <input type="tel" id="soporteInputPhone" class="soporte-input-field" placeholder="${isEn ? 'E.g., 300 123 4567' : 'Ej. 300 123 4567'}" />
+        <label for="soporteSelectRazon" class="soporte-form-label" style="margin-top:0.6rem;">
+          <i class="fa-solid fa-clipboard-question"></i> ${isEn ? 'Reason for Delisting:' : 'Motivo de Retiro:'}
+        </label>
+        <select id="soporteSelectRazon" class="soporte-input-field">
+          <option value="ya_vendido">${isEn ? 'Property Already Sold / Rented' : 'Inmueble ya vendido o arrendado'}</option>
+          <option value="desistimiento">${isEn ? 'No longer marketing property' : 'Ya no deseo vender ni arrendar'}</option>
+          <option value="datos_erroneos">${isEn ? 'Incorrect listing details' : 'Datos o precio incorrectos en portal origen'}</option>
+          <option value="privacidad">${isEn ? 'Habeas Data Privacy Request' : 'Solicitud de privacidad y protección de datos'}</option>
+        </select>
+        <button type="button" class="btn-soporte-submit btn-soporte-takedown" id="btnSubmitSoporteTakedown" style="margin-top:0.85rem;">
+          <i class="fa-solid fa-shield-xmark"></i> ${isEn ? 'Request Instant Delisting' : 'Retirar Inmueble del Índice'}
+        </button>
+      </div>`;
+    const btnSubmit = document.getElementById('btnSubmitSoporteTakedown');
+    if (btnSubmit) btnSubmit.addEventListener('click', () => ejecutarTakedownSoporte());
+  } else if (tipo === 'cuenta') {
+    cerrarModalAutoSoporte();
+    if (typeof abrirModalCheckout === 'function') {
+      abrirModalCheckout(0);
+      setTimeout(() => {
+        const tabPin = document.getElementById('tabBtnTengoPin');
+        if (tabPin) tabPin.click();
+      }, 50);
+    }
+  }
+}
+
+/**
+ * Ejecuta la verificación y reconciliación server-to-server de una referencia bancaria.
+ */
+async function ejecutarSyncPagoSoporte() {
+  const input = document.getElementById('soporteInputReferencia');
+  const ref = input ? input.value.trim() : '';
+  const feedback = document.getElementById('soporteFeedbackMsg');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
+  if (!ref) {
+    if (feedback) {
+      feedback.className = 'soporte-feedback-msg error';
+      feedback.textContent = isEn ? 'Please enter a valid payment reference.' : 'Por favor ingresa una referencia de pago válida.';
+    }
+    return;
+  }
+
+  if (feedback) {
+    feedback.className = 'soporte-feedback-msg loading';
+    feedback.textContent = isEn ? 'Checking Wompi gateway records...' : 'Consultando transacción oficial con Wompi...';
+  }
+
+  try {
+    if (typeof reclamarSesionPostPago === 'function') {
+      await reclamarSesionPostPago({ reference: ref });
+      if (feedback) {
+        feedback.className = 'soporte-feedback-msg success';
+        feedback.textContent = isEn ? '✓ Payment verified! Your credits are ready.' : '✓ ¡Pago verificado! Tus créditos están activos en tu cuenta.';
+      }
+    } else {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'claim_reference', reference: ref })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        if (feedback) {
+          feedback.className = 'soporte-feedback-msg success';
+          feedback.textContent = isEn ? '✓ Payment verified and credited!' : '✓ ¡Pago verificado y saldo acreditado!';
+        }
+        if (typeof inicializarSesionUsuario === 'function') inicializarSesionUsuario();
+      } else {
+        throw new Error(data.message || (isEn ? 'Payment not yet confirmed by bank.' : 'El pago aún no ha sido confirmado por la pasarela.'));
+      }
+    }
+  } catch (err) {
+    if (feedback) {
+      feedback.className = 'soporte-feedback-msg error';
+      feedback.textContent = err.message || (isEn ? 'Could not sync reference. Contact WhatsApp support.' : 'No se pudo sincronizar la referencia. Contacta a soporte por WhatsApp.');
+    }
+  }
+}
+
+/**
+ * Ejecuta la solicitud de retiro de inmueble (Notice & Takedown) hacia el endpoint serverless.
+ */
+async function ejecutarTakedownSoporte() {
+  const inputLead = document.getElementById('soporteInputLeadId');
+  const inputPhone = document.getElementById('soporteInputPhone');
+  const selectRazon = document.getElementById('soporteSelectRazon');
+  const feedback = document.getElementById('soporteFeedbackMsg');
+  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
+  const leadId = inputLead ? inputLead.value.trim() : '';
+  const phone = inputPhone ? inputPhone.value.trim() : '';
+  const reason = selectRazon ? selectRazon.value : 'solicitud_propietario';
+
+  if (!leadId) {
+    if (feedback) {
+      feedback.className = 'soporte-feedback-msg error';
+      feedback.textContent = isEn ? 'Please enter listing identifier or link.' : 'Por favor ingresa la referencia o enlace del inmueble.';
+    }
+    return;
+  }
+
+  if (feedback) {
+    feedback.className = 'soporte-feedback-msg loading';
+    feedback.textContent = isEn ? 'Processing delisting request...' : 'Procesando desindexación del inmueble...';
+  }
+
+  try {
+    const res = await fetch('/api/support/takedown', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leadId, phone, reason })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      if (feedback) {
+        feedback.className = 'soporte-feedback-msg success';
+        feedback.textContent = data.message || (isEn ? '✓ Listing delisted from search index.' : '✓ Inmueble retirado exitosamente del índice.');
+      }
+      if (inputLead) inputLead.value = '';
+      if (inputPhone) inputPhone.value = '';
+    } else {
+      throw new Error(data.message || (isEn ? 'Could not complete delisting.' : 'No se pudo retirar el inmueble.'));
+    }
+  } catch (err) {
+    if (feedback) {
+      feedback.className = 'soporte-feedback-msg error';
+      feedback.textContent = err.message;
+    }
+  }
+}
+
+/**
+ * Inicializa todos los eventos táctiles y escuchadores del modal de Auto-Soporte.
+ */
+function inicializarModalAutoSoporte() {
+  const modal = document.getElementById('modalAutoSoporteOverlay');
+  const btnClose = document.getElementById('btnAutoSoporteCloseIcon');
+  const btnFooter = document.getElementById('btnOpenAutoSoporte');
+  const btnSide = document.getElementById('sideMenuLinkSupport');
+
+  if (btnClose) btnClose.addEventListener('click', (e) => { e.preventDefault(); cerrarModalAutoSoporte(); });
+  if (btnFooter) btnFooter.addEventListener('click', (e) => { e.preventDefault(); abrirModalAutoSoporte('pago'); });
+  if (btnSide) btnSide.addEventListener('click', (e) => { e.preventDefault(); if (typeof cerrarSideMenu === 'function') cerrarSideMenu(); abrirModalAutoSoporte('pago'); });
+
+  if (modal) {
+    modal.addEventListener('click', (e) => { if (e.target === modal) cerrarModalAutoSoporte(); });
+    modal.querySelectorAll('.soporte-option-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tipo = btn.getAttribute('data-soporte-tipo');
+        if (tipo) seleccionarOpcionAutoSoporte(tipo);
+      });
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) cerrarModalAutoSoporte();
+  });
+}
+
+// Exposición global
+window.abrirModalAutoSoporte = abrirModalAutoSoporte;
+window.cerrarModalAutoSoporte = cerrarModalAutoSoporte;
+window.seleccionarOpcionAutoSoporte = seleccionarOpcionAutoSoporte;
+window.inicializarModalAutoSoporte = inicializarModalAutoSoporte;
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicializarModalAutoSoporte);
+  else inicializarModalAutoSoporte();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    abrirModalAutoSoporte,
+    cerrarModalAutoSoporte,
+    seleccionarOpcionAutoSoporte,
+    ejecutarSyncPagoSoporte,
+    ejecutarTakedownSoporte,
+    inicializarModalAutoSoporte
   };
 }

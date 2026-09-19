@@ -262,9 +262,18 @@ function inicializarEfectosPremium() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// VERSIÓN LEGAL VINCULANTE (Incrementar si se alteran cláusulas)
+// HISTORIAL INMUTABLE DE TÉRMINOS Y CONDICIONES (CHANGELOG LEGAL)
 // ══════════════════════════════════════════════════════════════
-const VERSION_LEGAL_VIGENTE = 'v1.0 (Septiembre 2026)';
+const HISTORIAL_TERMINOS = [
+  {
+    version: 'v1.0',
+    fecha: '2026-09-18',
+    titulo: 'Versión Inicial Vinculante',
+    cambios: 'Lanzamiento oficial, agregación de fuentes públicas abiertas, política de privacidad Habeas Data (Ley 1581) y régimen comercial.'
+  }
+];
+
+const VERSION_LEGAL_VIGENTE = `${HISTORIAL_TERMINOS[HISTORIAL_TERMINOS.length - 1].version} (Septiembre 2026)`;
 
 /**
  * Textos claros y transparentes para usuarios y propietarios.
@@ -280,6 +289,7 @@ const TEXTOS_LEGALES_ORIGGO = {
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-network-wired"></i> 2. Indexación de Fuentes Públicas y Ausencia de Exclusividad</div><p>Los datos, enlaces e información mostrados provienen de fuentes abiertas y públicas de libre acceso en internet, recopilados mediante algoritmos de indexación referencial. Origgo no reclama exclusividad, mandato comercial ni titularidad jurídica sobre los inmuebles ni sobre las imágenes públicas referenciadas.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 3. Créditos de Consulta Analítica y Ejecución Instantánea</div><p>Cada crédito adquirido habilita la consulta analítica y visualización directa del contacto y canal verificado del anunciante. Conforme al Art. 47 numeral 1 de la Ley 1480 de 2011, al consultar un contacto el servicio digital se ejecuta de forma instantánea y definitiva.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Precios Claros y Pasarela Oficial Wompi</div><p>Todos los precios están expresados en pesos colombianos (COP). Los pagos se procesan de forma cifrada a través de Wompi Bancolombia (entidad vigilada por la SFC), sin cargos ocultos ni renovaciones automáticas forzadas.</p></div>
+      <div class="legal-section legal-history-box"><div class="legal-section-badge"><i class="fa-solid fa-clock-rotate-left"></i> 5. Historial de Versiones y Auditoría Jurídica</div><p>Para plena validez probatoria conforme a la Ley 527 de 1999 de comercio electrónico, cada versión de estos términos es inmutable. Versión vigente: <strong>${HISTORIAL_TERMINOS[HISTORIAL_TERMINOS.length - 1].version}</strong>.</p><div class="legal-changelog-table"><div class="legal-changelog-row"><span class="legal-tag-v">v1.0</span><span class="legal-date-v">2026-09-18</span><span class="legal-desc-v">Lanzamiento oficial vinculante y consagración como Terminal de Agregación Pública.</span></div></div></div>
     `
   },
   exoneracion: {
@@ -445,6 +455,7 @@ function inicializarModalLegal() {
 }
 
 // Exposición global
+window.HISTORIAL_TERMINOS = HISTORIAL_TERMINOS;
 window.abrirModalLegal = abrirModalLegal;
 window.cerrarModalLegal = cerrarModalLegal;
 window.inicializarModalLegal = inicializarModalLegal;

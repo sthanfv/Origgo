@@ -70,6 +70,9 @@ Este repositorio contiene el frontend desacoplado e independiente de Origgo, dis
 | **Persistencia y segmentación Push** | [`lib/push-subscriptions.js`](lib/push-subscriptions.js) | Almacén híbrido, multicriterio (ciudad/op/rebajas) y hash |
 | **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
 | **Perro Guardián y reporte en cliente** | [`modules/00-security.js`](modules/00-security.js) | `inicializarPerroGuardian()`, `sendBeacon` |
+| **Centro de Auto-Soporte y Takedown** | [`modules/16-support.js`](modules/16-support.js) | Modal institucional, reconciliación y desindexación |
+| **Retiro de Inmuebles (Notice & Takedown)**| [`api/support/takedown.js`](api/support/takedown.js) | Desindexación legal Habeas Data y persistencia |
+| **Lista Negra pública para Scraper J7** | [`api/support/blacklist.js`](api/support/blacklist.js) | Endpoint GET de exclusión previa con caché Edge |
 | **Cola de reintentos y contrato de catálogo** | [`modules/03-api.js`](modules/03-api.js) | `fetchConReintentos()`, `validarContratoCatalogo()` |
 | **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
 | **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
@@ -110,7 +113,10 @@ hunter-portal-showcase/
 │   ├── 10-listeners.js         # Event listeners del DOM, atajos de teclado y arranque
 │   ├── 11-welcome.js           # Modal de bienvenida y experiencia inicial
 │   ├── 12-push.js              # Manejo en cliente de notificaciones Web Push y permisos
-│   └── 13-i18n.js              # Sistema bilingüe sin parpadeo (ES/EN) y conversión USD
+│   ├── 13-i18n.js              # Sistema bilingüe sin parpadeo (ES/EN) y conversión USD
+│   ├── 14-offline.js           # Manejo de contingencia offline y caché local
+│   ├── 15-autocomplete.js      # Sugerencias y autocompletado inteligente de búsqueda
+│   └── 16-support.js           # Centro de auto-soporte, conciliación y desindexación
 ├── styles/                     # Módulos CSS especializados (< 500 líneas)
 │   ├── 01-tokens.css           # Fuentes y tokens de diseño HSL
 │   ├── 02-base.css             # Reseteo, tipografía y branding con cinemática de prestigio
@@ -127,13 +133,15 @@ hunter-portal-showcase/
 │   ├── 13-footer.css           # Footer institucional y legal
 │   ├── 14-toast.css            # Notificaciones toast con ambient glow
 │   ├── 15-welcome-modal.css    # Modal inicial de bienvenida
-│   ├── 16-utilities.css        # Transiciones View Transitions y anti-print
+│   ├── 16-utilities.css        # Transiciones View Transitions, anti-print y changelog legal
 │   ├── 17-push-modal.css       # Modal sugestivo de radar push en tiempo real
-│   └── 18-i18n.css             # Selector de idiomas de cristal y precio referencial USD
+│   ├── 18-i18n.css             # Selector de idiomas de cristal y precio referencial USD
+│   ├── 19-offline-autocomplete.css # Estilos de skeletons offline y autocompletado
+│   └── 20-support-modal.css    # Modal de auto-soporte inteligente y desindexación
 ├── lib/                        # Librerías privadas compartidas por funciones serverless
 │   ├── cors.js                 # CORS estricto para API e idempotencia
 │   ├── crypto.js               # Cifrado AES-256-GCM, tokens JWT y comparación constante
-│   ├── db.js                   # Ledger de usuarios, créditos y reintentos exponenciales
+│   ├── db.js                   # Ledger de usuarios, créditos, reintentos y blacklist
 │   ├── env.js                  # Variables obligatorias y rechazo de secretos de prueba
 │   ├── leads.js                # Índice server-side de leads oficiales
 │   ├── push-dispatcher.js      # Despachador resiliente con backoff y auto-limpieza 410/404
@@ -149,6 +157,9 @@ hunter-portal-showcase/
 │   │   └── recover.js          # Recuperación segura mediante enlace temporal firmado
 │   ├── leads/
 │   │   └── unlock.js           # Desbloqueo de leads con deducción atómica de crédito
+│   ├── support/
+│   │   ├── takedown.js         # Solicitud de desindexación y retiro de inmuebles (Notice & Takedown)
+│   │   └── blacklist.js        # Consulta pública de lista negra para el scraper J7
 │   └── user/
 │       └── balance.js          # Consulta de saldo, perfil y leads desbloqueados
 ├── scripts/
@@ -156,6 +167,8 @@ hunter-portal-showcase/
 │   ├── validate.js             # Suite de validación DevSecOps en 8 fases
 │   ├── test_ledger_wompi.js    # Suite de pruebas unitarias de ledger y pagos
 │   └── test_validation_ratelimit.js # Pruebas unitarias de validación Zod y rate limit
+├── tests/
+│   └── support_blacklist.test.js # Pruebas unitarias de auto-soporte y lista negra
 └── data/
     ├── inmobiliario.json       # Feed de oportunidades de bienes raíces selladas y cifradas
     └── vehiculos.json          # Feed de oportunidades automotrices (Flipping)

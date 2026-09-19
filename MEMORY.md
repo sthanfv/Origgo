@@ -1,6 +1,41 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-19 04:52 (GMT-5)
+Última actualización: 2026-09-19 06:10 (GMT-5)
+
+---
+
+- 108. **Hito 108: Centro de Auto-Soporte Inteligente, Changelog Legal Inmutable y Desindexación Automatizada (Notice & Takedown)**:
+    - **Diagnóstico y Contexto:**
+      1. *Autonomía Operativa de Soporte:* Resolver fricciones de clientes (reclamo de pagos manuales, reactivación de sesión) y propietarios (retiro de publicaciones) de forma 100% automatizada sin necesidad de atención manual.
+      2. *Cumplimiento Legal Habeas Data (Ley 1581 de 2012):* Brindar a los propietarios de inmuebles un procedimiento expedito y transparente para retirar sus ofertas del índice (Notice & Takedown) de forma atómica y permanente.
+      3. *Auditoría Jurídica y Changelog Inmutable:* Versionar y transparentar la evolución de los Términos y Condiciones conforme a la Ley 527 de 1999 de comercio electrónico, exponiendo un historial de versiones inmutable en la interfaz.
+      4. *Protección Integral en Desbloqueo y Scraper J7:* Prevenir consumo de saldo en inmuebles desindexados y permitir que el scraper del celular Samsung Galaxy J7 consulte la lista negra antes de compilar y sincronizar `inmobiliario.json` a Cloudflare R2.
+    - **Solución Implementada:**
+      1. *Persistencia de Lista Negra en Ledger (`lib/db.js`):*
+         - Implementada la colección `blacklisted_leads` en Google Cloud Firestore y en el motor local en memoria/disco con reintentos exponenciales (`withRetry`).
+         - Métodos expuestos: `addBlacklistedLead(leadId, data)`, `getBlacklistedLeadIds()` e `isLeadBlacklisted(leadId)` en $O(1)$.
+      2. *Endpoints Serverless de Auto-Soporte y Takedown:*
+         - `api/support/takedown.js`: Endpoint POST con rate limiting (10 req/15 min), normalización/sanitización de URL o ID, y registro atómico en la lista negra.
+         - `api/support/blacklist.js`: Endpoint GET con caché Edge CDN (`Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=600`) para consulta del scraper J7.
+      3. *Guarda de Seguridad en Desbloqueo (`api/leads/unlock.js`):*
+         - Verificación previa de `isLeadBlacklisted(leadId)`. Si el lead fue desindexado, se responde de inmediato con HTTP 410 (`INMUEBLE_DESINDEXADO`), impidiendo el consumo de créditos.
+      4. *Changelog Legal Inmutable y Auditoría Jurídica:*
+         - En `modules/09-ui-effects.js`: Declaración del arreglo `HISTORIAL_TERMINOS`, cálculo dinámico de `VERSION_LEGAL_VIGENTE` e incorporación de la sección 5 con tabla de changelog histórico en los Términos y Condiciones. Archivo en 468 líneas ($< 490$).
+         - En `modules/13-i18n.js`: Textos bilingües y cláusulas en inglés de historial de versiones y desindexación. Archivo en 485 líneas ($< 490$).
+      5. *Módulo Frontend de Auto-Soporte (`modules/16-support.js`):*
+         - Creación del submódulo desacoplado de auto-soporte con manejo de 3 pestañas: conciliación de pagos Wompi, desindexación de anuncios y gestión de cuenta/PIN. Archivo en 262 líneas ($\le 500$).
+      6. *Maquetación en `index.html` y Estilos Desacoplados:*
+         - Inyección del modal institucional `#modalAutoSoporteOverlay`, botón en footer y enlace en menú lateral.
+         - `styles/16-utilities.css` (421 líneas): Estilos de tabla de changelog legal y botón de soporte.
+         - `styles/20-support-modal.css` (214 líneas): Estilos visuales del modal de auto-soporte, tabs táctiles y feedback.
+    - **Validación Automatizada y DevSecOps:**
+      - Creado `tests/support_blacklist.test.js` con 5 pruebas unitarias aprobadas al 100%.
+      - Integrado en `scripts/validate.js` (488 líneas, $< 490$).
+      - `npm run build`: Bundles generados con éxito (`style.min.css`: 156,510 bytes, `app.min.js`: 323,242 bytes).
+      - `node scripts/validate.js`: **100% de éxito en las 8 fases DevSecOps (0 errores)**.
+      - Todos los 17 módulos JS $\le 488$ líneas y 20 módulos CSS $\le 482$ líneas.
+    - **Archivos Afectados:**
+      - `lib/db.js`, `api/leads/unlock.js`, `api/support/takedown.js`, `api/support/blacklist.js`, `modules/09-ui-effects.js`, `modules/13-i18n.js`, `modules/16-support.js`, `styles/16-utilities.css`, `styles/20-support-modal.css`, `index.html`, `tests/support_blacklist.test.js`, `scripts/validate.js`, `README.md`, `MEMORY.md`.
 
 ---
 

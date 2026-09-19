@@ -62,6 +62,8 @@ async function ejecutarValidacionCompleta() {
     'api/media/proxy.js',
     'api/notifications.js',
     'api/telemetry/report.js',
+    'api/support/takedown.js',
+    'api/support/blacklist.js',
     'lib/funnel.js',
     'api/telemetry/funnel.js',
     'scripts/report-funnel.js'
@@ -343,30 +345,27 @@ async function ejecutarValidacionCompleta() {
   try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'freemium_welcome_credit.test.js')}"`, { stdio: 'pipe' });
     assert(true, 'Pruebas unitarias de modelo Freemium (1 crédito gratis atómico) pasadas al 100%');
-  } catch (e) {
-    assert(false, `Fallo en test de modelo freemium: ${e.message}`);
-  }
+  } catch (e) { assert(false, `Fallo en test de modelo freemium: ${e.message}`); }
 
   try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'magic_link_auth.test.js')}"`, { stdio: 'pipe' });
     assert(true, 'Pruebas unitarias de autenticación sin contraseña (Magic Link de 1 clic) pasadas al 100%');
-  } catch (e) {
-    assert(false, `Fallo en test de magic link: ${e.message}`);
-  }
+  } catch (e) { assert(false, `Fallo en test de magic link: ${e.message}`); }
 
   try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'funnel_metrics.test.js')}"`, { stdio: 'pipe' });
     assert(true, 'Pruebas unitarias de telemetría, embudo CRO y reporte Telegram pasadas al 100%');
-  } catch (e) {
-    assert(false, `Fallo en test de embudo CRO: ${e.message}`);
-  }
+  } catch (e) { assert(false, `Fallo en test de embudo CRO: ${e.message}`); }
 
   try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'telemetry_cron.test.js')}"`, { stdio: 'pipe' });
     assert(true, 'Pruebas unitarias de Vercel Cron de telemetría pasadas al 100%');
-  } catch (e) {
-    assert(false, `Fallo en test de Vercel Cron de telemetría: ${e.message}`);
-  }
+  } catch (e) { assert(false, `Fallo en test de Vercel Cron de telemetría: ${e.message}`); }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'support_blacklist.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas unitarias de Centro de Auto-Soporte y desindexación (Notice & Takedown) pasadas al 100%');
+  } catch (e) { assert(false, `Fallo en test de auto-soporte y desindexación: ${e.message}`); }
 
   // ═════════════════════════════════════════════════════════════════════════
   // 6. AUDITORÍA ANTIFRAUDE Y RECONCILIACIÓN SERVERLESS

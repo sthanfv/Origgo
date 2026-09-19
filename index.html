@@ -516,6 +516,11 @@
         <h4 class="footer-heading" data-i18n="footer_col_support">Soporte y Contacto</h4>
         <ul class="footer-link-list">
           <li>
+            <button type="button" class="footer-text-link footer-auto-support-btn" id="btnOpenAutoSoporte">
+              <i class="fa-solid fa-headset footer-icon-support" style="color: var(--accent-emerald);"></i> <span data-i18n="footer_auto_support">Centro de Auto-Soporte</span>
+            </button>
+          </li>
+          <li>
             <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="footer-text-link">
               <i class="fa-brands fa-whatsapp footer-icon-wa"></i> <span data-i18n="menu_support">Soporte por WhatsApp</span>
             </a>
@@ -1069,6 +1074,63 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════
+       MODAL CENTRO DE AUTO-SOPORTE INTELIGENTE
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="modalAutoSoporteOverlay" role="dialog" aria-modal="true" aria-labelledby="autoSoporteTitle">
+    <div class="modal-card auto-soporte-card" id="autoSoporteCard">
+      <button type="button" class="btn-modal-close" id="btnAutoSoporteCloseIcon" aria-label="Cerrar ventana de soporte">&times;</button>
+      
+      <div class="auto-soporte-aura"></div>
+
+      <div class="modal-header-tag">
+        <i class="fa-solid fa-headset"></i> <span data-i18n="autosoporte_tag">Resolución en Segundos</span>
+      </div>
+      <h2 class="modal-title" id="autoSoporteTitle" data-i18n="autosoporte_title">Centro de Auto-Soporte Inteligente</h2>
+      <p class="modal-subtitle" data-i18n="autosoporte_subtitle">Resuelve consultas de pago, desindexación de propietarios y recuperación de cuenta sin esperar respuesta humana.</p>
+
+      <!-- Selector de 3 Opciones Directas -->
+      <div class="soporte-options-grid" role="tablist">
+        <button type="button" class="soporte-option-btn active" data-soporte-tipo="pago" role="tab" aria-selected="true">
+          <div class="soporte-option-icon"><i class="fa-solid fa-receipt"></i></div>
+          <div class="soporte-option-text">
+            <strong>Sincronizar Pago</strong>
+            <span>Acreditar saldo Wompi / PSE</span>
+          </div>
+        </button>
+
+        <button type="button" class="soporte-option-btn" data-soporte-tipo="takedown" role="tab" aria-selected="false">
+          <div class="soporte-option-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="soporte-option-text">
+            <strong>Retirar Mi Inmueble</strong>
+            <span>Desindexación para propietarios</span>
+          </div>
+        </button>
+
+        <button type="button" class="soporte-option-btn" data-soporte-tipo="cuenta" role="tab" aria-selected="false">
+          <div class="soporte-option-icon"><i class="fa-solid fa-key"></i></div>
+          <div class="soporte-option-text">
+            <strong>Restaurar Cuenta</strong>
+            <span>Recuperar PIN y saldo</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Contenedor Dinámico del Formulario Activo -->
+      <div class="soporte-form-box" id="soporteFormContainer">
+        <!-- Inyectado por modules/16-support.js -->
+      </div>
+
+      <!-- Alerta de Respuesta / Feedback -->
+      <div class="soporte-feedback-msg is-hidden" id="soporteFeedbackMsg" role="alert"></div>
+
+      <div class="soporte-footer-note">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>¿Necesitas asistencia de nuestro equipo? <a href="https://wa.me/573001234567?text=Hola%2C%20necesito%20soporte%20personalizado%20en%20Origgo" target="_blank" rel="noopener noreferrer" class="soporte-wa-link">Escríbenos al WhatsApp oficial</a>.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
        MODAL SUGESTIVO DE NOTIFICACIONES PUSH (RADAR EN VIVO)
        ═══════════════════════════════════════════════════ -->
   <div class="modal-backdrop" id="modalPushPromptOverlay" role="dialog" aria-modal="true" aria-labelledby="pushPromptTitle">
@@ -1269,6 +1331,7 @@
       <a href="#" class="side-menu-link" id="sideMenuLinkPush" data-side="push"><i class="fa-solid fa-bell" style="color: var(--accent-emerald);"></i> <span data-i18n="menu_push">Activar Alertas en Vivo</span></a>
       <a href="#" class="side-menu-link" id="sideMenuThemeToggle" data-side="theme"><i class="fa-solid fa-circle-half-stroke"></i> <span data-i18n="menu_theme">Modo Claro / Oscuro</span></a>
       <a href="#" class="side-menu-link" data-side="vip"><i class="fa-solid fa-crown side-menu-icon-vip"></i> <span data-i18n="menu_vip">Desbloqueo VIP</span></a>
+      <a href="#" class="side-menu-link" id="sideMenuLinkSupport" data-side="autosoporte"><i class="fa-solid fa-headset" style="color: var(--accent-emerald);"></i> <span data-i18n="menu_autosoporte">Centro de Auto-Soporte</span></a>
       <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="side-menu-link"><i class="fa-brands fa-whatsapp side-menu-icon-whatsapp"></i> <span data-i18n="menu_support">Soporte VIP WhatsApp</span></a>
       <a href="#" class="side-menu-link" data-side="terminos"><i class="fa-solid fa-scale-balanced"></i> <span data-i18n="menu_terms">Términos & Exoneración</span></a>
       <a href="#" class="side-menu-link side-menu-logout is-hidden" id="sideMenuLogoutBtn" data-side="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="menu_logout">Cerrar Sesión</span></a>
