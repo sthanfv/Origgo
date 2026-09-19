@@ -407,6 +407,7 @@ function renderizarInterfaz(dataset) {
               ` : `
                 <button class="slideup-cta-btn" data-action="slideup-cta" data-index="${index}"><i class="fa-solid fa-unlock-keyhole"></i> ${isEn ? 'Unlock Owner Contact' : 'Desbloquear Contacto del Dueño'}</button>
                 <span class="slideup-cta-note"><i class="fa-solid fa-bolt"></i> ${isEn ? 'Instant access • Zero broker commissions' : 'Acceso al instante • Sin pagar comisiones'}</span>
+                <p class="unlock-legal-microtext"><i class="fa-solid fa-shield-halved"></i> ${isEn ? 'By continuing, you accept Terms of Service & Data Policy (v1.0).' : 'Al continuar, aceptas los Términos de Servicio y Tratamiento de Datos (v1.0).'}</p>
               `}
             </div>
           </div>

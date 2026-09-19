@@ -261,13 +261,18 @@ function inicializarEfectosPremium() {
   inicializarModalLegal();
 }
 
+// ══════════════════════════════════════════════════════════════
+// VERSIÓN LEGAL VINCULANTE (Incrementar si se alteran cláusulas)
+// ══════════════════════════════════════════════════════════════
+const VERSION_LEGAL_VIGENTE = 'v1.0 (Septiembre 2026)';
+
 /**
  * Textos claros y transparentes para usuarios y propietarios.
  */
 const TEXTOS_LEGALES_ORIGGO = {
   terminos: {
     titulo: 'Términos y Condiciones de Uso',
-    subtitulo: 'Terminal de inteligencia de mercado, búsqueda y agregación de fuentes públicas',
+    subtitulo: `Terminal de agregación de fuentes públicas — Versión ${VERSION_LEGAL_VIGENTE}`,
     badge: 'Terminal de Inteligencia y Agregación',
     icono: 'fa-solid fa-file-contract',
     html: `
@@ -279,7 +284,7 @@ const TEXTOS_LEGALES_ORIGGO = {
   },
   exoneracion: {
     titulo: 'Seguridad, Diligencia y Exoneración',
-    subtitulo: 'Recomendaciones esenciales para compradores y anunciantes',
+    subtitulo: `Recomendaciones esenciales — Versión ${VERSION_LEGAL_VIGENTE}`,
     badge: 'Diligencia Debida',
     icono: 'fa-solid fa-shield-halved',
     html: `
@@ -291,25 +296,25 @@ const TEXTOS_LEGALES_ORIGGO = {
   },
   privacidad: {
     titulo: 'Política de Tratamiento de Datos Personales',
-    subtitulo: 'Régimen de Habeas Data — Ley 1581 de 2012 y Decreto 1377 de 2013',
+    subtitulo: `Régimen de Habeas Data (Ley 1581 de 2012) — Versión ${VERSION_LEGAL_VIGENTE}`,
     badge: 'Habeas Data (SIC)',
     icono: 'fa-solid fa-user-shield',
     html: `
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-database"></i> 1. Finalidad Exclusiva del Tratamiento</div><p>Los datos suministrados (WhatsApp y correo) se recolectan únicamente para: <strong>(i)</strong> vincular y custodiar tus créditos, <strong>(ii)</strong> emitir comprobantes y enlaces de acceso seguro (Magic Link), y <strong>(iii)</strong> soporte técnico. <strong>Cero venta de datos y cero spam publicitario</strong>.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Cifrado Militar AES-256</div><p>Los teléfonos de propietarios se custodian cifrados mediante estándar AES-256-GCM. La navegación se encuentra protegida con HTTPS/TLS y cabeceras de seguridad OWASP.</p></div>
-      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Derechos del Titular (Derechos ARCO)</div><p>Conforme a la Ley 1581 de 2012, puedes conocer, actualizar, rectificar o solicitar la supresión de tus datos escribiendo a <strong>privacidad@origgo.online</strong> o a nuestro canal oficial de WhatsApp.</p></div>
-      <div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 4. Canal de Retiro Expedito para Titulares (Notice & Takedown)</div><p>Si eres dueño de un inmueble o titular de derechos sobre contenido indexado y deseas retirarlo, escríbenos a soporte y lo desindexaremos de inmediato y sin costo en menos de 24 horas.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Derechos del Titular (Habeas Data)</div><p>Conforme a la Ley 1581 de 2012, los titulares pueden solicitar la actualización o supresión de sus datos de contacto públicos directamente a través de los canales de autogestión de la plataforma o vía WhatsApp oficial.</p></div>
+      <div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-solid fa-shield-cat"></i> 4. Desindexación Automatizada para Titulares</div><p>Origgo opera como motor de búsqueda e indexación tecnológica de fuentes públicas abiertas. Si un propietario ya vendió su inmueble o desea retirar su anuncio del índice, puede solicitar el retiro inmediato indicando la referencia del inmueble.</p></div>
     `
   },
   reembolsos: {
     titulo: 'Garantía de Saldo, Retracto y PQR',
-    subtitulo: 'Protección al consumidor según la Ley 1480 de 2011',
+    subtitulo: `Régimen Comercial y Tecnológico Colombiano — Versión ${VERSION_LEGAL_VIGENTE}`,
     badge: 'Garantía y Reversión',
     icono: 'fa-solid fa-rotate-left',
     html: `
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 1. Tu Saldo Nunca se Pierde</div><p>Los créditos adquiridos no caducan. Si limpias el navegador o cambias de dispositivo, puedes recuperarlos en segundos desde <strong>"Restaurar Cuenta"</strong> con tu número de WhatsApp.</p></div>
       <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-arrow-rotate-left"></i> 2. Derecho de Retracto y Reversión del Pago</div><p>Para paquetes con créditos sin consumir, puedes ejercer derecho de retracto dentro de los 5 días hábiles siguientes al pago (Art. 47 Ley 1480). Ante cobros duplicados o fallas técnicas, aplica reversión del pago conforme al Decreto 587 de 2016.</p></div>
-      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Peticiones, Quejas y Reclamos (PQR)</div><p>Para soporte o reclamaciones, escríbenos a WhatsApp o a <strong>soporte@origgo.online</strong>. Recibirás respuesta formal en un plazo máximo de 15 días hábiles conforme a la ley colombiana.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Peticiones y Consultas (PQR)</div><p>Para consultas sobre transacciones de saldo o pagos Wompi, comunícate con la referencia de pago al canal oficial de WhatsApp de Origgo. Atención en días hábiles conforme al régimen comercial colombiano.</p></div>
     `
   }
 };

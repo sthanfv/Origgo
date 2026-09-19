@@ -1,6 +1,31 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 23:08 (GMT-5)
+Última actualización: 2026-09-18 23:43 (GMT-5)
+
+---
+
+- 105. **Hito 105: Pulido Legal Quirúrgico: Erradicación de Correos Fantasmas, Versionado Vinculante v1.0 y Micro-Consentimiento en Desbloqueo**:
+    - **Diagnóstico y Contexto:**
+      1. *Riesgo Operativo por Promesas Ficticias de Soporte:* Las cláusulas legales mencionaban correos no atendidos (`privacidad@origgo.online`, `soporte@origgo.online`) y trámites manuales de retiro, generando falsas expectativas y riesgo regulatorio ante la SIC.
+      2. *Falta de Versionado Legal Explícito:* Se requería declarar formalmente la versión jurídica vigente (`v1.0 (Septiembre 2026)`) en el código y en los modales para amparar transacciones conforme a la Ley 527 de 1999 de comercio electrónico.
+      3. *Fricción Cero en Consentimiento de Desbloqueo:* Se requería extender el consentimiento informado al flujo de desbloqueo sin forzar checkboxes que traben la conversión, cubriendo legalmente el acceso al contacto directo.
+    - **Solución Implementada:**
+      1. *Declaración de Versión Legal Vinculante (`modules/09-ui-effects.js`, `modules/13-i18n.js`):*
+         - Declarada la constante `VERSION_LEGAL_VIGENTE = 'v1.0 (Septiembre 2026)'` vinculada dinámicamente a los subtítulos del modal institucional en español e inglés.
+      2. *Erradicación de Correos Fantasmas y Autogestión Transparente:*
+         - En `privacidad`: Se reescribieron las secciones 3 (Habeas Data) y 4 (Desindexación Automatizada para Titulares) canalizando solicitudes a autogestión de plataforma y canal oficial de WhatsApp.
+         - En `reembolsos`: Sección 3 (PQR) ajustada para tramitar peticiones vía WhatsApp con referencia de pago y atención en días hábiles según el régimen comercial colombiano.
+         - Textos en inglés sincronizados en `modules/13-i18n.js`.
+      3. *Micro-Consentimiento Legal Implícito en Desbloqueo (`modules/06-cards.js`, `styles/07-cards.css`, `index.html`):*
+         - Incorporado micro-texto `.unlock-legal-microtext` en el drawer de la propiedad: `<i class="fa-solid fa-shield-halved"></i> Al continuar, aceptas los Términos de Servicio y Tratamiento de Datos (v1.0)`.
+         - Estilizado en `styles/07-cards.css` con tipografía sutil de 0.68rem, centrado y gap óptimo.
+         - Enlace en checkout actualizado con `(v1.0)`.
+      4. *Compilación y Suite DevSecOps de 8 Fases:*
+         - `npm run build` ejecutado (`style.min.css`: 151,878 bytes, `app.min.js`: 308,988 bytes).
+         - `node scripts/validate.js` ejecutado con **100% de éxito en las 8 fases (0 errores)**.
+         - Todos los 16 módulos JS con $< 490$ líneas y todos los 19 módulos CSS con $< 485$ líneas.
+    - **Archivos Afectados:**
+      - `modules/09-ui-effects.js`, `modules/13-i18n.js`, `modules/06-cards.js`, `styles/07-cards.css`, `index.html`, `style.css`, `style.min.css`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 

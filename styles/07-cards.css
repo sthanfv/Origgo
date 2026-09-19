@@ -442,3 +442,14 @@
 [data-theme="light"] .btn-view-ad-direct { background: #FFFFFF; border-color: #059669; color: #059669 !important; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15); }
 [data-theme="light"] .btn-view-ad-direct:hover { background: #059669; color: #FFFFFF !important; }
 
+.unlock-legal-microtext {
+  font-size: 0.68rem;
+  color: var(--text-muted, #78716c);
+  text-align: center;
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
