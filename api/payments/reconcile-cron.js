@@ -138,18 +138,10 @@ module.exports = async function handler(req, res) {
     const ordenesPendientes = await db.getPendingOrders(25);
     metricas.totalRevisadas = ordenesPendientes.length;
 
-    if (ordenesPendientes.length === 0) {
-      return res.status(200).json({
-        ok: true,
-        mensaje: 'No hay órdenes pendientes para conciliar.',
-        metricas,
-        detalles
-      });
-    }
-
-    const ahora = Date.now();
-    const DOS_MINUTOS_MS = 2 * 60 * 1000;
-    const VEINTICUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
+    if (ordenesPendientes.length > 0) {
+      const ahora = Date.now();
+      const DOS_MINUTOS_MS = 2 * 60 * 1000;
+      const VEINTICUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
 
     const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
     const wompiApiBase = isProd ? 'https://production.wompi.co/v1' : 'https://sandbox.wompi.co/v1';
@@ -369,34 +361,44 @@ module.exports = async function handler(req, res) {
         detalles.push({ reference: ref, accion: 'ERROR_PROCESAMIENTO', error: errLoop.message });
       }
     }
+  }
 
     // -------------------------------------------------------------
     // 🔄 TAREA SECUNDARIA DIARIA: MOTOR DE RETENCIÓN Y CICLO DE VIDA
     // -------------------------------------------------------------
     let resultadoRetencion = { procesados: 0, impactados: 0, acciones: [] };
     try {
-      console.log('[reconcile-cron] Evaluando ciclo de retención diario...');
-      const usuariosCandidatos = typeof db.getActiveUsersForRetention === 'function'
-        ? await db.getActiveUsersForRetention(100)
+      console.log('[Cron Diario] Iniciando evaluación de retención de clientes...');
+      const candidatos = typeof db.getActiveUsersForRetention === 'function'
+        ? await db.getActiveUsersForRetention(150)
         : [];
 
-      if (usuariosCandidatos.length > 0) {
-        resultadoRetencion = await procesarLoteRetencion(usuariosCandidatos);
-        console.log(`[reconcile-cron] Retención completada: ${resultadoRetencion.impactados}/${resultadoRetencion.procesados} usuarios impactados`);
+      if (candidatos.length > 0) {
+        resultadoRetencion = await procesarLoteRetencion(candidatos);
+        console.log(`[Cron Diario] Retención ejecutada: ${resultadoRetencion.impactados} usuarios impactados de ${resultadoRetencion.procesados} evaluados.`);
+      } else {
+        console.log('[Cron Diario] Cero candidatos pendientes de retención hoy.');
       }
     } catch (errRetencion) {
-      console.warn('[reconcile-cron] Aviso en ciclo de retención (no crítico):', errRetencion.message);
+      console.warn('[Cron Diario] Aviso no fatal en motor de retención:', errRetencion.message);
     }
 
     return res.status(200).json({
       ok: true,
+      mensaje: 'Cron de conciliación y retención ejecutado exitosamente.',
       ejecutadoEn: new Date().toISOString(),
-      metricas,
-      retencion: {
-        procesados: resultadoRetencion.procesados || 0,
-        impactados: resultadoRetencion.impactados || 0,
-        accionesGeneradas: Array.isArray(resultadoRetencion.acciones) ? resultadoRetencion.acciones.length : 0
+      timestamp: new Date().toISOString(),
+      conciliacion: {
+        totalPendientes: ordenesPendientes ? ordenesPendientes.length : 0,
+        actualizadas: metricas.aprobadas + metricas.rechazadas + metricas.expiradas,
+        ignoradas: metricas.omitidasPorRecientes + metricas.pendientes
       },
+      retencion: {
+        evaluados: resultadoRetencion.procesados || 0,
+        impactados: resultadoRetencion.impactados || 0,
+        accionesGeneradas: resultadoRetencion.acciones?.length || 0
+      },
+      metricas,
       detalles
     });
 
