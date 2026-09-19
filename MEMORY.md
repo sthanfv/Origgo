@@ -1,6 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 21:42 (GMT-5)
+Última actualización: 2026-09-18 22:10 (GMT-5)
+
+---
+
+- 101. **Hito 101: Ampliación de Colchón de Seguridad en Módulos Críticos (Estándar Desmulta), Responsividad en Pantallas Compactas (≤ 360px) y Bloqueo Estricto de bun.lock**:
+    - **Diagnóstico y Contexto:**
+      1. *Margen de Líneas Peligrosamente Estrecho:* `modules/07-unlock.js` (497 líneas) y `styles/10-checkout-plans.css` (495 líneas) estaban a menos de 5 líneas de violar el Estándar Desmulta (límite estricto ≤ 500 líneas), dejando nulo margen para extensiones o fixes.
+      2. *Micro-Botón CTA en Pantallas Compactas (≤ 360px):* En dispositivos con pantallas angostas o con fuentes ampliadas por accesibilidad de Android, el botón interactivo `#btnTrustPillarCta` ("Probar 1er Desbloqueo") podía sufrir quiebres de línea visualmente toscos.
+      3. *Riesgo de Deriva de Paquetes:* Prevenir la inclusión inadvertida de locks de gestores alternativos (`bun.lock`, `bun.lockb`, `yarn.lock`, `pnpm-lock.yaml`), consolidando `package-lock.json` como estándar único.
+    - **Solución Implementada:**
+      1. *Desacoplamiento Funcional de Dossier Imprimible (`modules/07-unlock.js`, `modules/05-carousel.js`):*
+         - Se trasladó la función utilitaria `abrirDossierImprimible(leadId)` a `modules/05-carousel.js` (encargado del detalle y drawers de inmuebles).
+         - `modules/07-unlock.js` se redujo de 497 a **439 líneas** (¡**61 líneas de colchón de seguridad**!).
+         - `modules/05-carousel.js` se consolidó en **217 líneas** (con 283 líneas de holgura).
+      2. *Consolidación de Selectores CSS (`styles/10-checkout-plans.css`):*
+         - Se fusionaron selectores y reglas de estado de radio buttons y cards de planes sin alterar ningún comportamiento visual.
+         - `styles/10-checkout-plans.css` se redujo de 495 a **442 líneas** (¡**58 líneas de colchón de seguridad**!).
+      3. *Blindaje Responsivo del Micro-Botón CTA (`styles/06-bento-grid.css`):*
+         - Se agregó `white-space: nowrap;` a `.trust-pillar-cta-btn`.
+         - Se añadió regla `@media (max-width: 360px)` con `padding: 0.25rem 0.55rem; font-size: 0.68rem; gap: 0.25rem;` asegurando que el botón conserve su estructura estilizada tipo pill en una sola línea.
+         - `styles/06-bento-grid.css` finalizó en 486 líneas (cumpliendo el límite).
+      4. *Blindaje de Dependencias (`.gitignore`):*
+         - Se añadieron `bun.lock`, `bun.lockb`, `yarn.lock` y `pnpm-lock.yaml` al archivo `.gitignore`.
+      5. *Compilación y Suite DevSecOps de 8 Fases:*
+         - `scripts/build.js` ejecutado con éxito total (`style.min.css` y `app.min.js` actualizados).
+         - `scripts/validate.js` ejecutado con 100% de éxito en las 8 fases (0 errores).
+    - **Archivos Afectados:**
+      - `modules/07-unlock.js`, `modules/05-carousel.js`, `styles/10-checkout-plans.css`, `styles/06-bento-grid.css`, `.gitignore`, `scripts/build.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 

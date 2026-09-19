@@ -16,3 +16,7 @@ data/*.sig
 dist/
 test-results/
 playwright-report/
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml

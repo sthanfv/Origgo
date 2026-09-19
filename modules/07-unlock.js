@@ -419,64 +419,6 @@ async function manejarContactoWhatsapp(index) {
 }
 
 /**
- * Abre una ventana emergente optimizada para impresión con el dossier completo de la propiedad.
- * @param {string} leadId
- */
-function abrirDossierImprimible(leadId) {
-  const dataset = window._origgoDatasetCompleto || (window.datosLeadsCache ? { leads: window.datosLeadsCache } : null);
-  const lead = dataset?.leads?.find(l => String(l.id) === String(leadId)) || (typeof leadSeleccionado !== 'undefined' ? leadSeleccionado : null);
-  if (!lead) return;
-  const contacto = (typeof cacheContactosDesbloqueados !== 'undefined' ? cacheContactosDesbloqueados[leadId] : null) || lead.contacto;
-  const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
-  const w = window.open('', '_blank', 'width=800,height=900');
-  if (!w) return;
-  const tel = contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'Direct in listing' : 'Directo en anuncio');
-  const wa = contacto?.whatsappUrl || '';
-  const web = contacto?.enlace || '';
-  const html = `<!DOCTYPE html><html lang="${isEn ? 'en' : 'es'}"><head><meta charset="utf-8"><title>${lead.titulo || 'Origgo Dossier'}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; color: #0A110E; background: #FFF; }
-    .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 18px; } .logo { font-size: 28px; font-weight: 800; color: #047857; margin: 0; } .tag { font-size: 10px; color: #059669; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
-    .box { border: 1px solid #CBDAD0; border-radius: 12px; padding: 18px; margin-bottom: 16px; } .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
-    .metric { background: #F2F7F4; border-radius: 8px; padding: 10px; text-align: center; } .metric-k { font-size: 10px; color: #4B6358; font-weight: 800; text-transform: uppercase; } .metric-v { font-size: 15px; font-weight: 800; color: #0A110E; margin-top: 4px; }
-    .contact { background: #ECFDF5; border: 2px solid #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0; } .phone { font-size: 24px; font-weight: 800; color: #064E3B; font-family: monospace; letter-spacing: 2px; }
-    .btn { display: inline-block; background: #059669; color: #FFF; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; margin: 6px 4px; cursor: pointer; border: none; } .wa-btn { background: #25D366; }
-    .notice { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 12px; color: #991B1B; line-height: 1.4; margin-top: 16px; } @media print { .no-print { display: none !important; } }
-  </style></head><body>
-    <div class="header"><h1 class="logo">Origgo</h1><div class="tag">${isEn ? 'CONFIDENTIAL PROPERTY DOSSIER · DIRECT OWNER' : 'DOSSIER CONFIDENCIAL DE PROPIEDAD · TRATO DIRECTO'}</div></div>
-    <div class="box">
-      <h2 style="margin:0 0 6px;">${lead.titulo || ''}</h2>
-      <p style="color:#4B6358;margin:0 0 14px;font-size:13px;">📍 ${lead.ubicacion || 'Colombia'} · <em>${contacto?.portal || lead.portal || 'Finca Raíz'}</em></p>
-      <div class="grid">
-        <div class="metric"><div class="metric-k">${isEn ? 'Price' : 'Precio'}</div><div class="metric-v" style="color:#047857;">${lead.precio || 'Consultar'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Area' : 'Área'}</div><div class="metric-v">${lead.detalles?.['Área'] || lead.dato_1 || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Value / m²' : 'Valor / m²'}</div><div class="metric-v">${lead.precio_m2 || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Rooms' : 'Habitaciones'}</div><div class="metric-v">${lead.detalles?.['Habitaciones'] || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Baths' : 'Baños'}</div><div class="metric-v">${lead.detalles?.['Baños'] || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Stratum' : 'Estrato'}</div><div class="metric-v">${lead.detalles?.['Estrato'] || 'N/A'}</div></div>
-      </div>
-    </div>
-    <div class="contact">
-      <div style="font-size:11px;font-weight:800;color:#047857;letter-spacing:1px;margin-bottom:6px;">${isEn ? 'VERIFIED DIRECT OWNER CONTACT' : 'CONTACTO DIRECTO VERIFICADO'}</div>
-      <div class="phone">${tel}</div>
-      <div style="margin-top:12px;">
-        ${wa ? `<a href="${wa}" target="_blank" class="btn wa-btn">💬 WhatsApp</a>` : ''}
-        ${web ? `<a href="${web}" target="_blank" class="btn">🔗 ${isEn ? 'View Ad' : 'Ver Anuncio'}</a>` : ''}
-      </div>
-    </div>
-    <div class="notice">
-      <strong>🛡️ ${isEn ? 'Direct Closing Protocol:' : 'Protocolo de Cierre Directo:'}</strong>
-      ${isEn ? 'Verify Title Certificate before sending down payment. Negotiate directly with 0% broker fees.' : 'Verifica el Certificado de Tradición y Libertad antes de transferir anticipos. Negocia sin comisiones de agencia.'}
-    </div>
-    <div style="text-align:center;margin-top:24px;" class="no-print">
-      <button onclick="window.print()" class="btn" style="font-size:14px;padding:12px 28px;">🖨️ ${isEn ? 'Print / Save as PDF' : 'Imprimir / Guardar como PDF'}</button>
-    </div>
-  </body></html>`;
-  w.document.write(html); w.document.close();
-}
-window.abrirDossierImprimible = abrirDossierImprimible;
-
-/**
  * Desbloquea automáticamente un lead por su ID, enfocando la tarjeta en pantalla.
  * @param {string} leadId
  */

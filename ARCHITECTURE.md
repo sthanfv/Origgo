@@ -146,19 +146,19 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | `00-security.js` | Escape HTML, sanitización de URL, teléfono, contacto cliente y registro de consola solo en desarrollo. | 494 |
 | `01-state.js` | Estado global reactivo, JWT mínimo en `localStorage`, purga 404, sincronización multi-pestaña, detección ?welcome_token= y secreto comercial. | 496 |
 | `02-toast.js` | Notificaciones flotantes con contenido escapado, micro-barra y deslizamiento. | 299 |
-| `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 177 |
+| `03-api.js` | Cliente HTTP centralizado, carga reactiva, deduplicación preventiva y fail-safe R2/local. | 303 |
 | `04-filters.js` | Búsqueda fonética inteligente, deduplicación triple-key, omnibox y cierre unificado de dropdowns. | 484 |
-| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento y drawer slide-up de detalles. | 159 |
-| `06-cards.js` | Renderizado Bento Grid, re-desbloqueo de contactos $0, skeletons y precios. | 496 |
-| `07-unlock.js` | Desbloqueo atómico de propietarios, auto-desbloqueo por ID, actualización DOM y revelación de datos. | 499 |
+| `05-carousel.js`| Carruseles fotográficos táctiles, deslizamiento, drawer slide-up de detalles y dossier imprimible. | 217 |
+| `06-cards.js` | Renderizado Bento Grid, re-desbloqueo de contactos $0, skeletons y precios. | 482 |
+| `07-unlock.js` | Desbloqueo atómico de propietarios, auto-desbloqueo por ID, actualización DOM y revelación de datos (con amplio colchón de seguridad). | 439 |
 | `08-checkout.js`| Modal de compra Wompi, selector de planes, freemium $0 anti-sybil, idempotencia y widget checkout. | 496 |
-| `09-ui-effects.js`| Menú móvil animado de hamburguesa a X (estilo Desmulta), háptica y temas. | 489 |
-| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado, logout y orquestación. | 497 |
+| `09-ui-effects.js`| Menú móvil animado de hamburguesa a X (estilo Desmulta), háptica y temas. | 493 |
+| `10-listeners.js`| Vinculación de eventos DOM, atajos de teclado, logout y orquestación. | 491 |
 | `11-welcome.js`| Modal de bienvenida y experiencia inicial. | 263 |
 | `12-push.js`   | Alertas Web Push nativas PWA en memoria, registro de Service Worker y CERO variables expuestas. | 412 |
-| `13-i18n.js`   | Motor bilingüe ES/EN reactivo, diccionario de UI y persistencia de idioma. | 499 |
+| `13-i18n.js`   | Motor bilingüe ES/EN reactivo, diccionario de UI y persistencia de idioma. | 487 |
 | `14-offline.js`| Resiliencia offline, Device Fingerprint SHA-256 de hardware y persistencia Zombie multicapa. | 338 |
-| `15-autocomplete.js`| Sugerencias multicapa de autocompletado en búsqueda con accesibilidad W3C ARIA. | 386 |
+| `15-autocomplete.js`| Sugerencias multicapa de autocompletado en búsqueda con accesibilidad W3C ARIA. | 387 |
 
 ### 4.2 Módulos CSS (`styles/`):
 Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocomplete.css`), todos inferiores a 500 líneas, que se compilan deterministamente mediante `scripts/build.js` generando `style.min.css`.
