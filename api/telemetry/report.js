@@ -37,8 +37,12 @@ const alertaReciente = new Map();
  * @param {Object} reporte
  */
 async function despacharAlertaExternaConReintentos(reporte) {
+  if (process.env.NODE_ENV === 'test' && !process.env.ENABLE_TELEGRAM_IN_TESTS) {
+    return; // En entorno de pruebas unitarias no disparar alertas reales
+  }
+
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = process.env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_PRIVADO || process.env.TELEGRAM_CANAL_ID;
   const webhookUrl = process.env.ALERT_WEBHOOK_URL;
 
   if (!webhookUrl && (!botToken || !chatId)) {

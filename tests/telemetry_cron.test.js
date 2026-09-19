@@ -86,4 +86,17 @@ describe('⚡ Vercel Cron de Telemetría Comercial (/api/telemetry/cron)', () =>
     assert.strictEqual(typeof getData().telegramEnviado, 'boolean');
     assert.strictEqual(typeof getData().totalVisitas, 'number');
   });
+
+  it('Aplica por defecto una ventana consolidada semanal de 7 días sin parámetro query', async () => {
+    const { req, res, getStatus, getData } = createMockReqRes({
+      method: 'GET',
+      headers: { authorization: `Bearer ${SECRET_TEST}` }
+    });
+    await cronHandler(req, res);
+    assert.strictEqual(getStatus(), 200);
+    assert.strictEqual(getData().ok, true);
+    assert.strictEqual(getData().dias, 7);
+    assert.strictEqual(typeof getData().telegramEnviado, 'boolean');
+    assert.strictEqual(typeof getData().totalVisitas, 'number');
+  });
 });

@@ -111,16 +111,15 @@ function configurarListeners() {
     });
   }
 
-  // Desplazamiento suave al catálogo desde el botón principal del hero
+  // Desplazamiento suave al catálogo desde el botón hero y el pilar de 1er desbloqueo
+  const scrollToCatalog = () => {
+    const catalogHeader = document.getElementById("catalogHeaderRow");
+    if (catalogHeader) catalogHeader.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const btnHeroCta = document.getElementById("btnHeroCta");
-  if (btnHeroCta) {
-    btnHeroCta.addEventListener("click", () => {
-      const catalogHeader = document.getElementById("catalogHeaderRow");
-      if (catalogHeader) {
-        catalogHeader.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  }
+  if (btnHeroCta) btnHeroCta.addEventListener("click", scrollToCatalog);
+  const btnTrustPillarCta = document.getElementById("btnTrustPillarCta");
+  if (btnTrustPillarCta) btnTrustPillarCta.addEventListener("click", scrollToCatalog);
 
   // Navegación Inferior Nativa (Solo Móvil)
   const mobileNavBtns = document.querySelectorAll(".mobile-nav-btn");

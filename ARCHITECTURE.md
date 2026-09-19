@@ -205,13 +205,14 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
 - **Sincronización Multi-Pestaña:** Escucha el evento `storage` en `window` para actualizar de inmediato cualquier otra pestaña abierta si el usuario confirma su enlace en otra ventana o WebView de correo.
 - **Notificación Positiva y Asertiva:** Sustitución de mensajes confusos ("0 créditos restantes") por confirmaciones asertivas de contacto del propietario desbloqueado listo para llamada y WhatsApp.
 
-### 4.9 Franja Editorial de Propuesta de Valor (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`)
+### 4.9 Franja Editorial de Propuesta de Valor y Conversión CRO (`index.html`, `styles/06-bento-grid.css`, `modules/13-i18n.js`, `modules/10-listeners.js`)
 - **Ubicación Estratégica:** Insertada entre el buscador/hero y la cuadrícula Bento Grid, orientando al visitante en sus primeros 3 segundos en vitrina.
 - **Claridad de Mensaje:** *"DIRECTO AL PUNTO: Nosotros rastreamos y filtramos el mercado por ti. Tú negocias directo con el dueño real."*
-- **3 Pilares Fundamentales:**
+- **3 Pilares Fundamentales Optimizados para Conversión:**
   1. ⚡ **Rastreo 24/7:** Monitoreo automatizado continuo de portales en terminal dedicada (Samsung J7).
-  2. 🤝 **Cero Comisiones:** Negociación directa de tú a tú sin intermediarios ni comisión de agencia (0%).
-  3. 🎁 **1er Contacto Gratis:** Modelo Freemium sin tarjeta para verificar la autenticidad del dueño sin riesgo.
+  2. 🤝 **Cero Comisiones (Ahorro Cuantificado):** Negociación directa de tú a tú. Texto monetizado: *"Ahorra entre $10M y $30M en comisiones de corretaje negociando de tú a tú"* para elevar el impacto psicológico del ahorro.
+  3. 🎁 **1er Contacto Gratis con CTA Interactivo:** Micro-botón integrado (`#btnTrustPillarCta`) con scroll suave (`scrollIntoView`) hacia el catálogo, convirtiendo la promesa de valor en un llamado a la acción inmediato.
+- **Contador Estático de Catálogo de Fábrica:** El marcado HTML inicial muestra `"150+ oportunidades directas"` para proyectar abundancia inmediata desde el primer milisegundo de renderizado antes de que hidrate el script cliente.
 - **Arquitectura Visual y Responsive:** Badge contrastante de alto impacto, tipografía editorial equilibrada y distribución adaptativa (3 columnas en escritorio, 1 columna fluida en móvil sin desplazamiento excesivo del catálogo). Soporte bilingüe completo con atributos `data-i18n`.
 
 ### 4.10 Pipeline de Telemetría Comercial y Embudo CRO a Costo $0 (`lib/funnel.js`, `api/telemetry/funnel.js`, `scripts/report-funnel.js`)
@@ -223,10 +224,12 @@ Divididos en 19 submódulos semánticos (`01-tokens.css` a `19-offline-autocompl
   4. 🏆 **Conversión Final Ganada (`conversion_exitosa`):** Activación confirmada del crédito de bienvenida (Doble Opt-In por correo) o transacción bancaria aprobada (capturada en cliente y en webhook de backend).
 - **Diagnóstico Automatizado de Fugas:** Cálculo algorítmico en tiempo real de los porcentajes de abandono entre fases (*Vitrina $\rightarrow$ Interés*, *Interés $\rightarrow$ Modal*, *Modal $\rightarrow$ Pago*) para señalar exactamente dónde optimizar el copy, las imágenes o los llamados a la acción.
 - **Reporte Ejecutivo para Telegram y Consola:** Generación de resúmenes en Markdown enriquecido con emojis, KPIs, zonas de mayor demanda y top inmuebles con mayor tracción. Despacho automatizado al canal del fundador vía Telegram Bot API sin necesidad de operar dashboards pesados.
-### 4.11 Vercel Cron de Despacho Ejecutivo a Telegram (`api/telemetry/cron.js` & `vercel.json`)
+### 4.11 Vercel Cron de Despacho Ejecutivo a Telegram y Ventana Semanal (`api/telemetry/cron.js` & `vercel.json`)
 - **Aprovechamiento de Cuota Gratuita (Vercel Hobby):** Configuración del segundo cron permitido (`/api/telemetry/cron`) con horario diario programado a las `01:00 UTC` (equivalente a las 8:00 PM hora de Colombia / UTC-5).
+- **Ventana Móvil Semanal Consolidada:** Por defecto consolida los últimos 7 días móviles (`dias = 7`), ofreciendo una métrica representativa de la tasa de conversión semanal sin la volatilidad estadística de días individuales con bajo tráfico. Soporte para parámetro dinámico `?dias=N`.
 - **Seguridad Criptográfica en Borde:** Validación en tiempo constante (`crypto.timingSafeEqual`) de la cabecera `Authorization: Bearer <CRON_SECRET>` emitida automáticamente por la infraestructura de Vercel.
 - **Desacoplamiento de Hardware:** El teléfono Samsung J7 queda liberado de tareas de cron o despacho de analítica, concentrando su capacidad exclusivamente en la ejecución continua del scraper y el centinela.
+- **Aislamiento Seguro en Pruebas Unitarias:** Protección estricta con `process.env.NODE_ENV === 'test'` en el despachador de alertas de telemetría y perro guardián para garantizar que ninguna ejecución de testing local o CI/CD despache notificaciones sintéticas o alarmas al canal real de Telegram.
 
 ### 4.12 Marco Jurídico Institucional, Habeas Data (Ley 1581) y Estatuto del Consumidor (Ley 1480)
 - **Régimen de Protección de Datos Personales (Ley 1581 de 2012 y Dec. 1377 de 2013):**

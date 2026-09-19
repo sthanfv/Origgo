@@ -1,6 +1,35 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 20:48 (GMT-5)
+Última actualización: 2026-09-18 21:28 (GMT-5)
+
+---
+
+- 99. **Diagnóstico Forense de Alertas de Perro Guardián, 3 Mejoras Comerciales CRO y Ventana Semanal de Telemetría**:
+    - **Diagnóstico y Contexto:**
+      1. *Alertas Falsas de Perro Guardián en Telegram:* Justo antes de enviar el reporte de métricas comerciales, el usuario recibió 2 alertas de error en su canal de Telegram (`FETCH_REINTENTOS_AGOTADOS` y `SECURITY_INCIDENT`). El análisis forense reveló que al haber agregado las credenciales reales de Telegram a `.env`, la ejecución automatizada de la suite de validación `tests/telemetry_watchdog.test.js` invocó `telemetryHandler(req, res)` con incidentes simulados de prueba. Como el handler no verificaba si el entorno era `test`, despachó las alertas de prueba reales a Telegram.
+      2. *Oportunidad de Conversión en Vitrina (CRO):*
+         - Pilar 3 ("1er Contacto Gratis") carecía de un llamado a la acción interactivo que canalizara la curiosidad del usuario hacia una acción concreta inmediata.
+         - Contador estático de propiedades en `index.html`: Mostraba en el HTML base `"6 oportunidades directas"`, creando durante los primeros milisegundos de carga una sensación de escasez artificial antes de hidratar el catálogo.
+         - Pilar 2 ("Cero Comisiones"): Usaba un texto genérico de comisiones sin traducir el valor a números tangibles de ahorro para el cliente.
+      3. *Ventana de Conversión Semanal:* La conversión de un portal inmobiliario requiere acumular datos suficientes para estabilizar los porcentajes y no ser vulnerable a la baja afluencia de días puntuales.
+    - **Solución Implementada:**
+      1. *Neutralización de Alertas en Entorno de Pruebas (`api/telemetry/report.js`):*
+         - Se añadió la guarda estricta: `if (process.env.NODE_ENV === 'test' && !process.env.ENABLE_TELEGRAM_IN_TESTS) return;`.
+         - Soporte adicional para `TELEGRAM_CHAT_PRIVADO` y `TELEGRAM_CANAL_ID`.
+         - Ahora los tests unitarios y validaciones pre-push pueden ejecutarse localmente tantas veces como sea necesario sin disparar ruido a Telegram.
+      2. *Tres Mejoras Comerciales de Alto Impacto (CRO):*
+         - **Mejora 1 (CTA en Franja de Valor):** Insertado micro-botón interactivo `<button class="trust-pillar-cta-btn" id="btnTrustPillarCta" data-i18n="trust_p3_cta"><span>Probar 1er Desbloqueo</span> <i class="fa-solid fa-arrow-down"></i></button>` en `index.html`. Diseñado con estilo pill en `styles/06-bento-grid.css` y vinculado a scroll suave hacia `#catalogHeaderRow` en `modules/10-listeners.js`.
+         - **Mejora 2 (Abundancia desde el Render Inicial):** Actualizado el HTML base en `index.html` a `"150+ oportunidades directas"` (`#catalogCountText`), proyectando volumen y tracción inmediata desde el primer fotograma.
+         - **Mejora 3 (Monetización del Ahorro en Pilar 2):** Texto modificado a: *"Ahorra entre $10M y $30M en comisiones de corretaje negociando de tú a tú"* (y en inglés: *"Save $2,500 to $8,000+ USD in brokerage fees by negotiating person-to-person."*), multiplicando la percepción de retorno de inversión para el usuario.
+         - Traducciones bilingües añadidas y sincronizadas en `modules/13-i18n.js` (`trust_p2_desc`, `trust_p3_cta`).
+      3. *Ventana Semanal en Vercel Cron (`api/telemetry/cron.js` & `tests/telemetry_cron.test.js`):*
+         - Fijada ventana consolidada por defecto de 7 días móviles (`dias = 7`), permitiendo a Vercel Cron calcular una tasa de conversión semanal representativa y robusta.
+         - Añadida prueba unitaria específica en `tests/telemetry_cron.test.js` para certificar el fallback a 7 días.
+      4. *Modularidad y Calidad DevSecOps:*
+         - Los 16 submódulos JS y 19 submódulos CSS se mantienen estrictamente dentro del Estándar Desmulta ($\le 500$ líneas).
+         - Las 8 fases de la suite `scripts/validate.js` pasaron al 100% con 0 errores.
+    - **Archivos Afectados:**
+      - `api/telemetry/report.js`, `index.html`, `styles/06-bento-grid.css`, `modules/10-listeners.js`, `modules/13-i18n.js`, `api/telemetry/cron.js`, `tests/telemetry_cron.test.js`, `scripts/build.js`, `app.js`, `app.min.js`, `style.css`, `style.min.css`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 

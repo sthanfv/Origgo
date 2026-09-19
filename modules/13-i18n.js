@@ -77,8 +77,9 @@ const DICCIONARIO_I18N = {
     trust_badge: 'DIRECTO AL PUNTO', trust_headline: 'Nosotros rastreamos y filtramos el mercado por ti. <br class="trust-br" /><span>Tú negocias directo con el dueño real.</span>',
     trust_subtext: 'Buscar vivienda no debería ser perder semanas llamando a intermediarios ni navegando en un mar de anuncios repetidos. Escaneamos Colombia las 24 horas, descartamos comisiones del 3%–4% y te entregamos solo oportunidades reales y verificadas.',
     trust_p1_title: 'Rastreo 24/7', trust_p1_desc: 'Escaneamos cientos de fuentes continuas. No tienes que revisar portales todos los días.',
-    trust_p2_title: 'Cero Comisiones', trust_p2_desc: 'Filtramos intermediarios para que compres o arriendes de persona a persona.',
-    trust_p3_title: '1er Contacto Gratis', trust_p3_desc: 'Prueba el servicio sin costo: desbloquea un propietario real con tu WhatsApp.'
+    trust_p2_title: 'Cero Comisiones', trust_p2_desc: 'Ahorra entre $10M y $30M en comisiones de corretaje negociando de tú a tú.',
+    trust_p3_title: '1er Contacto Gratis', trust_p3_desc: 'Prueba el servicio sin costo: desbloquea un propietario real con tu WhatsApp.',
+    trust_p3_cta: 'Probar 1er Desbloqueo'
   },
   en: {
     vip_btn_default: 'Credits / Plans', vip_btn_title: 'View Credits & Plans', lang_btn_label: 'Change language', search_placeholder: 'Search by neighborhood, city or keyword...', search_clear: 'Clear search',
@@ -147,8 +148,9 @@ const DICCIONARIO_I18N = {
     trust_badge: 'STRAIGHT TO THE POINT', trust_headline: 'We track and filter the market for you. <br class="trust-br" /><span>You deal directly with the real owner.</span>',
     trust_subtext: "House hunting shouldn't mean wasting weeks calling middlemen or sorting through duplicate listings. We monitor Colombia 24/7, cut out 3-4% agency fees, and deliver only verified opportunities.",
     trust_p1_title: '24/7 Market Scan', trust_p1_desc: "We scan multiple sources non-stop so you don't have to check portals daily.",
-    trust_p2_title: 'Zero Agency Fees', trust_p2_desc: 'We filter out middlemen so you buy or rent person-to-person.',
+    trust_p2_title: 'Zero Agency Fees', trust_p2_desc: 'Save $2,500 to $8,000+ USD in brokerage fees by negotiating person-to-person.',
     trust_p3_title: '1st Contact Free', trust_p3_desc: 'Test the service for free: unlock a real direct owner with your WhatsApp.',
+    trust_p3_cta: 'Try 1st Unlock Free',
     footer_sic: 'Superintendency of Industry and Commerce (SIC)',
     checkout_legal_consent: 'By continuing, you authorize data processing (Law 1581) and accept our',
     legal_link_terms: 'Terms of Service',

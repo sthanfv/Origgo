@@ -68,16 +68,16 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Consultar métricas agregadas de las últimas 24 horas (dias: 1) o ventana de 7 días
+    // Consultar métricas agregadas de los últimos 7 días móviles (semanal) o parámetro especificado
     const diasParam = parseInt(req.query?.dias, 10);
-    const dias = (!isNaN(diasParam) && diasParam >= 1 && diasParam <= 30) ? diasParam : 1;
+    const dias = (!isNaN(diasParam) && diasParam >= 1 && diasParam <= 30) ? diasParam : 7;
 
     const metricas = await obtenerMetricasEmbudo({ dias });
     const telegramEnviado = await despacharReporteTelegram(metricas);
 
     return res.status(200).json({
       ok: true,
-      mensaje: 'Reporte diario de embudo procesado.',
+      mensaje: `Reporte de embudo (${dias} días) procesado.`,
       dias,
       telegramEnviado,
       totalVisitas: metricas.visitas,
