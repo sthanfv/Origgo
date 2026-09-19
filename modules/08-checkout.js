@@ -313,11 +313,13 @@ async function ejecutarPagoWompi() {
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 409 || data.alreadyClaimed || data.error === 'REGALO_YA_RECLAMADO' || data.error === 'CREDITO_YA_RECLAMADO') {
-          if (typeof marcarDispositivoComoReclamado === 'function') {
-            marcarDispositivoComoReclamado(deviceId || 'server_denied');
-          }
+          if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId || 'server_flagged');
+          const optW = document.getElementById('optWelcomeFree');
+          if (optW) { optW.classList.add('is-claimed'); const rib = optW.querySelector('.freemium-ribbon'); if (rib) rib.textContent = esIngles ? '✓ CLAIMED' : '✓ YA CANJEADO'; }
+          const rSingle = document.getElementById('optSingleLead')?.querySelector('input[type="radio"]');
+          if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change', { bubbles: true })); }
         }
-        throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+        throw new Error(data.message || (esIngles ? 'Welcome gift already claimed for this phone/device.' : 'El regalo ya fue utilizado por este número o dispositivo.'));
       }
 
       if (data.pendingVerification) {

@@ -4,8 +4,10 @@
  * Estándar Ecosistema Desmulta UI/UX.
  */
 
+let ultimoGiroCarruselMs = 0;
+
 /**
- * Desplaza las diapositivas del carrusel fotográfico.
+ * Desplaza las diapositivas del carrusel fotográfico con guarda de debounce anti-ráfagas táctiles.
  * @param {number} cardIndex
  * @param {number} delta
  * @param {number} totalFotos
@@ -13,6 +15,10 @@
  */
 function moverCarrusel(cardIndex, delta, totalFotos, event) {
   if (event) event.stopPropagation();
+  const ahora = Date.now();
+  if (ahora - ultimoGiroCarruselMs < 220) return;
+  ultimoGiroCarruselMs = ahora;
+
   if (typeof carruselIndices[cardIndex] !== 'number') carruselIndices[cardIndex] = 0;
 
   const actual = carruselIndices[cardIndex];
@@ -20,6 +26,13 @@ function moverCarrusel(cardIndex, delta, totalFotos, event) {
   carruselIndices[cardIndex] = nuevo;
 
   actualizarVistaCarrusel(cardIndex, nuevo);
+}
+
+/**
+ * Despachador de navegación de diapositivas con debounce táctil (Mobile Rapid Tapping).
+ */
+function avanzarCarruselSeguro(idx, totalFotos = 1, delta = 1) {
+  moverCarrusel(idx, delta, totalFotos);
 }
 
 /**
@@ -213,4 +226,6 @@ function abrirDossierImprimible(leadId) {
   w.document.write(html); w.document.close();
 }
 window.abrirDossierImprimible = abrirDossierImprimible;
+window.avanzarCarruselSeguro = avanzarCarruselSeguro;
+window.moverCarrusel = moverCarrusel;
 

@@ -2062,8 +2062,10 @@ if (typeof module !== 'undefined' && module.exports) {
  * Estándar Ecosistema Desmulta UI/UX.
  */
 
+let ultimoGiroCarruselMs = 0;
+
 /**
- * Desplaza las diapositivas del carrusel fotográfico.
+ * Desplaza las diapositivas del carrusel fotográfico con guarda de debounce anti-ráfagas táctiles.
  * @param {number} cardIndex
  * @param {number} delta
  * @param {number} totalFotos
@@ -2071,6 +2073,10 @@ if (typeof module !== 'undefined' && module.exports) {
  */
 function moverCarrusel(cardIndex, delta, totalFotos, event) {
   if (event) event.stopPropagation();
+  const ahora = Date.now();
+  if (ahora - ultimoGiroCarruselMs < 220) return;
+  ultimoGiroCarruselMs = ahora;
+
   if (typeof carruselIndices[cardIndex] !== 'number') carruselIndices[cardIndex] = 0;
 
   const actual = carruselIndices[cardIndex];
@@ -2078,6 +2084,13 @@ function moverCarrusel(cardIndex, delta, totalFotos, event) {
   carruselIndices[cardIndex] = nuevo;
 
   actualizarVistaCarrusel(cardIndex, nuevo);
+}
+
+/**
+ * Despachador de navegación de diapositivas con debounce táctil (Mobile Rapid Tapping).
+ */
+function avanzarCarruselSeguro(idx, totalFotos = 1, delta = 1) {
+  moverCarrusel(idx, delta, totalFotos);
 }
 
 /**
@@ -2271,6 +2284,8 @@ function abrirDossierImprimible(leadId) {
   w.document.write(html); w.document.close();
 }
 window.abrirDossierImprimible = abrirDossierImprimible;
+window.avanzarCarruselSeguro = avanzarCarruselSeguro;
+window.moverCarrusel = moverCarrusel;
 
 
 
@@ -3508,11 +3523,13 @@ async function ejecutarPagoWompi() {
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 409 || data.alreadyClaimed || data.error === 'REGALO_YA_RECLAMADO' || data.error === 'CREDITO_YA_RECLAMADO') {
-          if (typeof marcarDispositivoComoReclamado === 'function') {
-            marcarDispositivoComoReclamado(deviceId || 'server_denied');
-          }
+          if (typeof marcarDispositivoComoReclamado === 'function') marcarDispositivoComoReclamado(deviceId || 'server_flagged');
+          const optW = document.getElementById('optWelcomeFree');
+          if (optW) { optW.classList.add('is-claimed'); const rib = optW.querySelector('.freemium-ribbon'); if (rib) rib.textContent = esIngles ? '✓ CLAIMED' : '✓ YA CANJEADO'; }
+          const rSingle = document.getElementById('optSingleLead')?.querySelector('input[type="radio"]');
+          if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change', { bubbles: true })); }
         }
-        throw new Error(data.message || (esIngles ? 'Could not claim gift.' : 'No se pudo activar el regalo.'));
+        throw new Error(data.message || (esIngles ? 'Welcome gift already claimed for this phone/device.' : 'El regalo ya fue utilizado por este número o dispositivo.'));
       }
 
       if (data.pendingVerification) {

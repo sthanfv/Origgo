@@ -1,6 +1,25 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-19 04:36 (GMT-5)
+Última actualización: 2026-09-19 04:52 (GMT-5)
+
+---
+
+- 107. **Hito 107: Optimización de UX Táctil Móvil (Debounce de Carrusel) y Alternancia Automática Visual al Plan de Pago ante Conflicto Freemium**:
+    - **Diagnóstico y Contexto:**
+      1. *Ráfagas Táctiles en Móviles (Rapid Tapping):* Toques rápidos consecutivos (< 200 ms) en los controles o swipes de carrusel podían provocar desincronizaciones de transición visual antes de culminar el evento `transitionend`.
+      2. *Fricción ante Rechazo 409 Freemium:* Si un usuario con almacenamiento limpio reintentaba reclamar el crédito gratuito y recibía un 409 del servidor, requería alternar automáticamente el foco visual al primer plan pago (`optSingleLead`) y auto-sellar la interfaz para orientar claramente la conversión.
+    - **Solución Implementada:**
+      1. *Guarda de Debounce Táctil en Carrusel (`modules/05-carousel.js`):*
+         - Se implementó la guarda de tiempo `ultimoGiroCarruselMs`: cualquier intento de avance o retroceso que ocurra en menos de 220 ms es descartado limpiamente, garantizando transiciones suaves y estables.
+         - Se expuso la función `avanzarCarruselSeguro(idx, totalFotos, delta)` y `moverCarrusel` en el objeto global `window`. Archivo en 232 líneas ($\le 500$).
+      2. *Transición Automática Visual a Planes Pagos (`modules/08-checkout.js`):*
+         - Al detectar rechazo 409 o bandera `alreadyClaimed` en `reclamarRegaloBienvenida()`, el cliente marca la tarjeta freemium como `is-claimed`, actualiza el ribbon a `✓ YA CANJEADO`, activa el radio del plan individual (`optSingleLead`) disparando el evento de cambio y presenta una alerta explicativa amigable. Archivo en 488 líneas ($< 490$ y $\le 500$).
+    - **Validación Automatizada y Modularidad:**
+      - `npm run build`: Bundles generados con éxito (`style.min.css`: 151,878 bytes, `app.min.js`: 310,433 bytes).
+      - `node scripts/validate.js`: **100% de éxito en las 8 fases DevSecOps (0 errores)**.
+      - Todos los módulos JS $\le 488$ líneas y módulos CSS $\le 482$ líneas.
+    - **Archivos Afectados:**
+      - `modules/05-carousel.js`, `modules/08-checkout.js`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 
