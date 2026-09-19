@@ -4,6 +4,29 @@
 
 ---
 
+- 112. **Hito 112: Motor Criptográfico de Tokens de Retención y Persistencia Atómica (Tablero Maestro - Fase 1)**:
+    - **Diagnóstico y Contexto:**
+      1. *Estrategia de Retención y Rescate:* Proveer al sistema de un mecanismo seguro, criptográfico e idempotente para emitir enlaces de reactivación/rescate de créditos a usuarios inactivos o con saldo cero, mitigando el churn sin riesgos de desfalco ni duplicación de créditos.
+      2. *Prevención de Fraude y Doble Gasto Concurrentes:* Los tokens deben canjearse bajo transacciones atómicas (`runTransaction`) con invalidación instantánea (`used: true`) y validar que un usuario no abuse del beneficio de rescate en un período de 45 días (`lastRescueCreditAt`).
+    - **Solución Implementada:**
+      1. *Gestión de la Colección `retention_tokens` en `lib/db.js`:*
+         - Referencia `retentionTokensRef` integrada en la cabecera e inicializada tanto en Firebase Admin SDK Firestore como en el almacén híbrido local (`memoryStore` / `createMemoryCollection`).
+         - Persistencia serializada y deserializada en `cargarAlmacenLocal()` y `guardarAlmacenLocal()`.
+      2. *Emisión Criptográfica (`createRetentionToken`):*
+         - Generación de token opaco de 64 caracteres hex con entropía de 256 bits (`crypto.randomBytes(32)`).
+         - Configuración flexible de TTL (72 horas por defecto), créditos a otorgar, tipo (`rescue_credits`, `renewal_prompt`, `low_balance`) y metadatos de campaña.
+      3. *Consumo Transaccional y Anti-Abuso (`consumeRetentionToken`):*
+         - Ejecución atómica mediante `db.runTransaction` con validación de existencia, estado de uso previo y expiración temporal.
+         - Control anti-abuso de 45 días sobre `user.lastRescueCreditAt` para tokens de tipo `rescue_credits`.
+         - Actualización atómica de saldo del usuario y sellado del token.
+    - **Validación Automatizada y DevSecOps:**
+      - Verificación unitaria de flujos: emisión, canje exitoso, bloqueo de doble gasto y rechazo por ventana de 45 días.
+      - `npm test`: **100% de éxito en las 8 fases DevSecOps (0 errores)**.
+    - **Archivos Afectados:**
+      - `lib/db.js`, `MEMORY.md`.
+
+---
+
 - 111. **Hito 111: Simulacro Integral End-to-End en Caliente (Smoke Test Producción)**:
     - **Diagnóstico y Validación de Circuito Completo:**
       1. *Takedown en Producción:* Se ejecutó una solicitud real `POST /api/support/takedown` en `https://origgo.online` con el identificador `simulacro-smoke-live-4585`.
