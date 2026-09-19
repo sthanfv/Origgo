@@ -4,6 +4,26 @@
 
 ---
 
+- 115. **Hito 115: Suite Automatizada de Pruebas de Retención, Antifraude y Sesión JWT (Tablero Maestro - Fase 4)**:
+    - **Diagnóstico y Contexto:**
+      1. *Blindaje Integral del Ciclo de Retención:* Proveer una suite de pruebas automatizadas nativa (`node --test`) para certificar el motor criptográfico de tokens, el segmentador de usuarios, la protección anti-spam de 15 días, el rescate anti-abuso de 45 días y el endpoint serverless de canje.
+      2. *Prevención de Regresiones en Producción:* Proteger el sistema contra ataques de repetición de tokens (replay attacks) y llamadas concurrentes.
+    - **Solución Implementada (`tests/retention_security.test.js`):**
+      1. *Segmento B (Por vencer en 48h):* Certificación de cálculo de horas y cero créditos de cortesía.
+      2. *Segmento C (Vencido hace 24h):* Asignación de 2 créditos de rescate al vencer.
+      3. *Blindaje Anti-Abuso (45 días):* Bloqueo estricto de créditos si el usuario ya recibió un bono en ventana inferior a 45 días.
+      4. *Filtro Anti-Spam (15 días):* Descarte automático de usuarios contactados recientemente.
+      5. *Lote con Estampado Atómico:* Procesamiento de cola con generación de token e inyección de `lastRetentionImpactAt` mediante `db.updateUser`.
+      6. *Canje Legítimo en Endpoint:* `POST /api/auth?action=consume_retention` con acreditación de saldo, respuesta estructurada y emisión de JWT de sesión de 24 horas.
+      7. *Ataque de Replay Rechazado:* Reuso de token rechazado con HTTP 410 Gone (`TOKEN_YA_USADO`).
+    - **Validación Automatizada y Modularidad:**
+      - `node --test tests/retention_security.test.js`: **8/8 pruebas aprobadas al 100% (0 fallos, 0 errores)**.
+      - Archivo en **148 líneas** (holgura máxima bajo el límite Estándar Desmulta de 500 líneas).
+    - **Archivos Afectados:**
+      - `tests/retention_security.test.js`, `MEMORY.md`.
+
+---
+
 - 114. **Hito 114: Enrutador de Consumo y Canje de Tokens de Retención con Sesión JWT (Tablero Maestro - Fase 3)**:
     - **Diagnóstico y Contexto:**
       1. *Activación de Beneficios desde Magic Link:* Conectar el enlace de retención recibido por el usuario (`https://origgo.online/?retention_token=...` o `POST /api/auth?action=consume_retention`) con la acreditación instantánea de saldo.
