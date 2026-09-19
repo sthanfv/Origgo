@@ -1,7 +1,7 @@
-# 🏛️ Hunter Pro Intelligence — Portal Showcase ($0 Cost)
-## Fachada Web de Alta Gama con Renderizador Agnóstico, Pasarela Wompi y Ledger Criptográfico
+# 🏛️ Origgo — Terminal de Inteligencia y Agregación Inmobiliaria ($0 Cost)
+## Software de Búsqueda, Monitoreo de Mercado y Conexión Directa de Fuentes Públicas
 
-Este repositorio contiene la interfaz pública desacoplada e independiente diseñada para mostrar oportunidades directas y arbitraje a clientes finales (agentes inmobiliarios top e inversionistas).
+Este repositorio contiene el frontend desacoplado e independiente de Origgo, diseñado como una **Terminal de Inteligencia y Agregación de Datos Públicos** para que inversionistas y compradores identifiquen oportunidades directas (FSBO) en Colombia sin intermediación inmobiliaria ni cobro de comisiones.
 
 ---
 

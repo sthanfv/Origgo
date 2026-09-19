@@ -1,6 +1,29 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 22:17 (GMT-5)
+Última actualización: 2026-09-18 22:50 (GMT-5)
+
+---
+
+- 103. **Hito 103: Consagración de Origgo como Terminal de Inteligencia y Agregación de Fuentes Públicas, Términos y Condiciones y Traducción Internacional Sincronizada**:
+    - **Diagnóstico y Contexto:**
+      1. *Riesgo de Ambigüedad Legal en el Rol del Portal:* Para evitar cualquier interpretación errónea que califique a Origgo como inmobiliaria, corretaje tradicional o repositorio exclusivo con derechos marcarios sobre inmuebles ajenos, era indispensable blindar jurídicamente la plataforma como una **Terminal de Software de Inteligencia de Mercado, Clasificación y Agregación de Fuentes Públicas Abiertas**.
+      2. *Armonización de Términos y Condiciones con Normativa Colombiana e Internacional:* Se requería explicitar en los Términos de Servicio y Exoneración de Responsabilidad que Origgo no intermedia contratos ni visitas ni fija precios, sino que indexa datos públicos para conectar de forma directa a compradores con propietarios, ofreciendo un canal ágil de *Notice & Takedown* (< 24 horas) para titulares de derechos.
+      3. *Preservación del Estándar Desmulta (≤ 500 líneas):* La incorporación de estas cláusulas en los textos legales bilingües debía mantenerse estrictamente por debajo del umbral de 500 líneas en `modules/09-ui-effects.js` y `modules/13-i18n.js`.
+    - **Solución Implementada:**
+      1. *Blindaje en Términos y Condiciones (`modules/09-ui-effects.js`):*
+         - Se actualizaron las cuatro secciones legales (`terminos`, `exoneracion`, `privacidad`, `reembolsos`) en `TEXTOS_LEGALES_ORIGGO`.
+         - Se formalizó la figura jurídica de *Terminal de Inteligencia y Agregación de Fuentes Públicas*, neutralidad tecnológica, ausencia de exclusividad, cumplimiento estricto de Habeas Data (Ley 1581 de 2012) y procedimiento expedito de *Notice & Takedown*.
+         - `modules/09-ui-effects.js` se consolidó en **452 líneas** (holgura de 48 líneas bajo el límite de 500).
+      2. *Sincronización Terminológica Bilingüe (`modules/13-i18n.js`):*
+         - Se actualizó `TEXTOS_LEGALES_ORIGGO_EN` reflejando la terminología internacional (*"Market intelligence, search and public aggregation software terminal"*).
+         - `modules/13-i18n.js` finalizó en **487 líneas** ($\le 500$).
+      3. *Sincronización de Documentación de Arquitectura y Readme:*
+         - En `ARCHITECTURE.md`: Sección 1 formalizada con la naturaleza tecnológica y jurídica de Terminal de Inteligencia y Agregación.
+         - En `README.md`: Actualizada la visión y principios rectores del software.
+      4. *Compilación y Suite DevSecOps de 8 Fases:*
+         - `scripts/build.js` y `scripts/validate.js` ejecutados con 100% de éxito en las 8 fases (0 errores).
+    - **Archivos Afectados:**
+      - `modules/09-ui-effects.js`, `modules/13-i18n.js`, `ARCHITECTURE.md`, `README.md`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 

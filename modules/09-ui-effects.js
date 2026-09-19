@@ -267,46 +267,26 @@ function inicializarEfectosPremium() {
 const TEXTOS_LEGALES_ORIGGO = {
   terminos: {
     titulo: 'Términos y Condiciones de Uso',
-    subtitulo: 'Plataforma tecnológica independiente de descubrimiento y contacto directo',
-    badge: 'Estatuto Consumidor (Ley 1480)',
+    subtitulo: 'Terminal de inteligencia de mercado, búsqueda y agregación de fuentes públicas',
+    badge: 'Terminal de Inteligencia y Agregación',
     icono: 'fa-solid fa-file-contract',
     html: `
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-handshake"></i> 1. Trato Directo y Naturaleza del Servicio</div>
-        <p>Origgo es una plataforma tecnológica independiente que organiza ofertas públicas compartidas por propietarios en Colombia. <strong>No somos agencia inmobiliaria, ni corredores ni comisionistas</strong>. No cobramos comisión sobre la negociación ni intervenimos en arras o contratos de compraventa/arrendamiento.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 2. Créditos de Desbloqueo y Ejecución Instantánea</div>
-        <p>Cada crédito revela el WhatsApp y contacto directo verificado del propietario. Conforme al Art. 47 numeral 1 de la Ley 1480 de 2011, al consumir un crédito la información se revela inmediatamente, constituyendo un servicio digital de ejecución instantánea.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-tag"></i> 3. Precios Claros en Pesos Colombianos (COP)</div>
-        <p>Todos los precios están expresados en pesos colombianos e incluyen los conceptos aplicables. No existen cargos ocultos ni renovaciones automáticas forzadas en los paquetes de créditos.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Pasarela Oficial de Pagos Wompi</div>
-        <p>Tus pagos se procesan de forma cifrada a través de Wompi (entidad vigilada por la Superintendencia Financiera de Colombia). Origgo jamás almacena ni tiene acceso a tus números de tarjeta o claves bancarias.</p>
-      </div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-server"></i> 1. Naturaleza del Software: Terminal de Inteligencia y Agregación</div><p>Origgo es un software de monitoreo algorítmico, clasificación analítica y terminal de inteligencia de mercado en Colombia. <strong>Origgo no es una agencia inmobiliaria, ni corredores, comisionistas ni un repositorio exclusivo de inmuebles</strong>. No representamos a compradores ni vendedores, no custodiamos llaves, no fijamos precios ni intervenimos en visitas, arras o contratos de compraventa/arrendamiento. Nuestra función tecnológica consiste en estructurar datos públicos abiertos y conectar directamente a compradores con anunciantes para posibilitar el trato directo.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-network-wired"></i> 2. Indexación de Fuentes Públicas y Ausencia de Exclusividad</div><p>Los datos, enlaces e información mostrados provienen de fuentes abiertas y públicas de libre acceso en internet, recopilados mediante algoritmos de indexación referencial. Origgo no reclama exclusividad, mandato comercial ni titularidad jurídica sobre los inmuebles ni sobre las imágenes públicas referenciadas.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-bolt"></i> 3. Créditos de Consulta Analítica y Ejecución Instantánea</div><p>Cada crédito adquirido habilita la consulta analítica y visualización directa del contacto y canal verificado del anunciante. Conforme al Art. 47 numeral 1 de la Ley 1480 de 2011, al consultar un contacto el servicio digital se ejecuta de forma instantánea y definitiva.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-lock"></i> 4. Precios Claros y Pasarela Oficial Wompi</div><p>Todos los precios están expresados en pesos colombianos (COP). Los pagos se procesan de forma cifrada a través de Wompi Bancolombia (entidad vigilada por la SFC), sin cargos ocultos ni renovaciones automáticas forzadas.</p></div>
     `
   },
   exoneracion: {
     titulo: 'Seguridad, Diligencia y Exoneración',
-    subtitulo: 'Recomendaciones esenciales para compradores y arrendatarios',
+    subtitulo: 'Recomendaciones esenciales para compradores y anunciantes',
     badge: 'Diligencia Debida',
     icono: 'fa-solid fa-shield-halved',
     html: `
-      <div class="legal-section legal-section-warning">
-        <div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Verificación Física y Tradición del Inmueble</div>
-        <p>Aconsejamos visitar siempre el inmueble en persona, constatar la identidad del vendedor y solicitar un <strong>Certificado de Tradición y Libertad reciente</strong> ante la Oficina de Registro (SNR) antes de entregar dineros o firmar acuerdos.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-scale-balanced"></i> 2. Acuerdos Exclusivos entre Particulares</div>
-        <p>Los anuncios se indexan de publicaciones abiertas en la web. Origgo no responde por vicios ocultos, modificaciones de precio o pactos privados acordados entre comprador y propietario.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-user-lock"></i> 3. Uso Prohibido y Protección Anti-Spam</div>
-        <p>El contacto obtenido es para uso personal o comercial directo. Queda prohibida la extracción masiva de datos (scraping), la reventa de números y el envío de spam o acoso a los propietarios.</p>
-      </div>
+      <div class="legal-section legal-section-warning"><div class="legal-section-badge"><i class="fa-solid fa-circle-exclamation"></i> 1. Verificación Física y Tradición del Inmueble</div><p>Aconsejamos visitar siempre el inmueble en persona, constatar la identidad del vendedor y solicitar un <strong>Certificado de Tradición y Libertad reciente</strong> ante la Oficina de Registro (SNR) antes de entregar dineros o firmar acuerdos.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-scale-balanced"></i> 2. Software Neutral y Acuerdos entre Particulares</div><p>Como software neutral de búsqueda e inteligencia, Origgo no responde por vicios ocultos, modificaciones unilaterales de precio, estado del predio o acuerdos privados celebrados entre las partes.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-copyright"></i> 3. Marcas de Terceros y Propiedad Intelectual</div><p>Las marcas, nombres o signos distintivos que aparezcan incidentalmente en imágenes de fuentes públicas pertenecen a sus respectivos titulares. Origgo no tiene vinculación, alianza ni patrocinio con portales o competidores externos.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-user-lock"></i> 4. Uso Prohibido y Protección Anti-Spam</div><p>El acceso es para uso personal o comercial legítimo de trato directo. Queda prohibida la extracción masiva automatizada (scraping), la reventa de datos y el envío de spam o acoso a los propietarios.</p></div>
     `
   },
   privacidad: {
@@ -315,22 +295,10 @@ const TEXTOS_LEGALES_ORIGGO = {
     badge: 'Habeas Data (SIC)',
     icono: 'fa-solid fa-user-shield',
     html: `
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-database"></i> 1. Finalidad Exclusiva del Tratamiento</div>
-        <p>Los datos suministrados (WhatsApp y correo) se recolectan únicamente para: <strong>(i)</strong> vincular y custodiar tus créditos, <strong>(ii)</strong> emitir comprobantes y enlaces de acceso seguro (Magic Link), y <strong>(iii)</strong> soporte técnico. <strong>Cero venta de datos y cero spam publicitario</strong>.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Cifrado Militar AES-256</div>
-        <p>Los teléfonos de propietarios se custodian cifrados mediante estándar AES-256-GCM. La navegación se encuentra protegida con HTTPS/TLS y cabeceras de seguridad OWASP.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Derechos del Titular (Derechos ARCO)</div>
-        <p>Conforme a la Ley 1581 de 2012, puedes conocer, actualizar, rectificar o solicitar la supresión de tus datos escribiendo a <strong>privacidad@origgo.online</strong> o a nuestro canal oficial de WhatsApp.</p>
-      </div>
-      <div class="legal-section legal-section-highlight">
-        <div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 4. Canal de Retiro para Propietarios (Notice & Takedown)</div>
-        <p>Si eres dueño de un inmueble indexado y deseas retirarlo, escríbenos a soporte y lo desindexaremos de inmediato y sin ningún costo en menos de 24 horas.</p>
-      </div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-database"></i> 1. Finalidad Exclusiva del Tratamiento</div><p>Los datos suministrados (WhatsApp y correo) se recolectan únicamente para: <strong>(i)</strong> vincular y custodiar tus créditos, <strong>(ii)</strong> emitir comprobantes y enlaces de acceso seguro (Magic Link), y <strong>(iii)</strong> soporte técnico. <strong>Cero venta de datos y cero spam publicitario</strong>.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-key"></i> 2. Cifrado Militar AES-256</div><p>Los teléfonos de propietarios se custodian cifrados mediante estándar AES-256-GCM. La navegación se encuentra protegida con HTTPS/TLS y cabeceras de seguridad OWASP.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-id-card"></i> 3. Derechos del Titular (Derechos ARCO)</div><p>Conforme a la Ley 1581 de 2012, puedes conocer, actualizar, rectificar o solicitar la supresión de tus datos escribiendo a <strong>privacidad@origgo.online</strong> o a nuestro canal oficial de WhatsApp.</p></div>
+      <div class="legal-section legal-section-highlight"><div class="legal-section-badge"><i class="fa-brands fa-whatsapp"></i> 4. Canal de Retiro Expedito para Titulares (Notice & Takedown)</div><p>Si eres dueño de un inmueble o titular de derechos sobre contenido indexado y deseas retirarlo, escríbenos a soporte y lo desindexaremos de inmediato y sin costo en menos de 24 horas.</p></div>
     `
   },
   reembolsos: {
@@ -339,18 +307,9 @@ const TEXTOS_LEGALES_ORIGGO = {
     badge: 'Garantía y Reversión',
     icono: 'fa-solid fa-rotate-left',
     html: `
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 1. Tu Saldo Nunca se Pierde</div>
-        <p>Los créditos adquiridos no caducan. Si limpias el navegador o cambias de dispositivo, puedes recuperarlos en segundos desde <strong>"Restaurar Cuenta"</strong> con tu número de WhatsApp.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-arrow-rotate-left"></i> 2. Derecho de Retracto y Reversión del Pago</div>
-        <p>Para paquetes con créditos sin consumir, puedes ejercer derecho de retracto dentro de los 5 días hábiles siguientes al pago (Art. 47 Ley 1480). Ante cobros duplicados o fallas técnicas, aplica reversión del pago conforme al Decreto 587 de 2016.</p>
-      </div>
-      <div class="legal-section">
-        <div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Peticiones, Quejas y Reclamos (PQR)</div>
-        <p>Para soporte o reclamaciones, escríbenos a WhatsApp o a <strong>soporte@origgo.online</strong>. Recibirás respuesta formal en un plazo máximo de 15 días hábiles conforme a la ley colombiana.</p>
-      </div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-shield-halved"></i> 1. Tu Saldo Nunca se Pierde</div><p>Los créditos adquiridos no caducan. Si limpias el navegador o cambias de dispositivo, puedes recuperarlos en segundos desde <strong>"Restaurar Cuenta"</strong> con tu número de WhatsApp.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-arrow-rotate-left"></i> 2. Derecho de Retracto y Reversión del Pago</div><p>Para paquetes con créditos sin consumir, puedes ejercer derecho de retracto dentro de los 5 días hábiles siguientes al pago (Art. 47 Ley 1480). Ante cobros duplicados o fallas técnicas, aplica reversión del pago conforme al Decreto 587 de 2016.</p></div>
+      <div class="legal-section"><div class="legal-section-badge"><i class="fa-solid fa-headset"></i> 3. Peticiones, Quejas y Reclamos (PQR)</div><p>Para soporte o reclamaciones, escríbenos a WhatsApp o a <strong>soporte@origgo.online</strong>. Recibirás respuesta formal en un plazo máximo de 15 días hábiles conforme a la ley colombiana.</p></div>
     `
   }
 };

@@ -3,9 +3,14 @@
 
 ---
 
-## 1. Visión General y Filosofía de Diseño
+## 1. Visión General y Filosofía de Diseño: Terminal de Inteligencia y Agregación
 
-El portal comercial `hunter-portal-showcase` es la fachada pública decoupled y de coste $0 diseñada para que inversionistas y agentes inmobiliarios capturen oportunidades directas de propietarios (FSBO) y vehículos en Colombia con margen de arbitraje comercial.
+El sistema `hunter-portal-showcase` (Origgo) opera técnica y jurídicamente como una **Terminal de Inteligencia de Mercado, Clasificación y Agregación de Datos Públicos Abiertos** en Colombia.
+
+**Naturaleza Tecnológica:**
+- **No es una inmobiliaria, ni corredora, comisionista ni un repositorio exclusivo de inmuebles:** Origgo no representa a compradores ni propietarios, no custodia llaves, no fija precios ni interviene en visitas, arras o contratos de compraventa y arrendamiento.
+- **Terminal de indexación algorítmica:** Su función tecnológica radica en rastrear, clasificar y estructurar información pública de libre acceso en internet, reduciendo la asimetría de información y conectando directamente a compradores e inversionistas con los anunciantes de trato directo.
+- **Ausencia de exclusividad y neutralidad:** Los inmuebles e imágenes corresponden a información pública abierta procesada con propósitos de análisis referencial de mercado.
 
 A diferencia de las aplicaciones web tradicionales monolíticas, este sistema está concebido para **operar con éxito en un "mundo caótico"** caracterizado por:
 - Cortes intermitentes de red y micro-desconexiones en conexiones móviles.
