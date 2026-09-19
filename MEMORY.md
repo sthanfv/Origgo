@@ -13,13 +13,13 @@
       2. *Segmento B (Plan Pro por Vencer - `plan_expiring_soon`):* Usuarios con Plan Pro activo cuya fecha de expiración se sitúa en las próximas 72 horas (3 días). Recordatorio de renovación inmediata en 1 clic.
       3. *Segmento C (Plan Pro Recién Vencido - `plan_expired_rescue`):* Usuarios cuyo plan venció hace 1 a 4 días (96 horas). Otorga token seguro de rescate con 2 créditos de cortesía si no han usado rescate en los últimos 45 días.
       4. *Filtro Anti-Spam (15 días):* Descarte automático de usuarios cuyo `lastRetentionImpactAt` sea inferior a 15 días.
-      5. *Orquestador por Lotes (`procesarLoteRetencion`):* Emisión atómica de tokens en `db.createRetentionToken()` y estampado de estampa de tiempo en `db.updateUserPreferences()`.
+      5. *Orquestador por Lotes (`procesarLoteRetencion`):* Emisión atómica de tokens en `db.createRetentionToken()`. Incorporación de `db.updateUser()` en `lib/db.js` para persistencia universal con merge seguro de metadatos del usuario y estampado de estampa de tiempo `lastRetentionImpactAt` (resolviendo la limitación de `updateUserPreferences`).
     - **Validación Rápida y Modularidad:**
-      - `node --check lib/retention.js`: Sintaxis 100% válida.
-      - Verificación unitaria de reglas de segmentación y anti-spam aprobada.
-      - Archivo en **153 líneas** (holgura máxima bajo el límite de 500 líneas).
+      - `node --check lib/db.js && node --check lib/retention.js`: Sintaxis 100% válida.
+      - Verificación unitaria de reglas de segmentación, anti-spam y persistencia de `lastRetentionImpactAt` con `updateUser` aprobada al 100%.
+      - Archivo `lib/retention.js` en **164 líneas** (holgura máxima bajo el límite de 500 líneas).
     - **Archivos Afectados:**
-      - `lib/retention.js`, `MEMORY.md`.
+      - `lib/db.js`, `lib/retention.js`, `MEMORY.md`.
 
 ---
 
