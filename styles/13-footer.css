@@ -140,6 +140,15 @@
   animation: legalModalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.legal-modal-card .btn-modal-close {
+  position: absolute;
+  top: 1.15rem;
+  right: 1.15rem;
+  float: none;
+  margin: 0;
+  z-index: 60;
+}
+
 @keyframes legalModalEnter {
   from { transform: translateY(16px) scale(0.97); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
@@ -328,6 +337,10 @@
   .legal-modal-card {
     padding: 1.25rem 1rem 1rem;
     max-height: 92vh;
+  }
+  .legal-modal-card .btn-modal-close {
+    top: 0.85rem;
+    right: 0.85rem;
   }
   .legal-modal-actions {
     flex-direction: column-reverse;

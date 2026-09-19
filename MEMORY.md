@@ -1,6 +1,30 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-18 22:10 (GMT-5)
+Última actualización: 2026-09-18 22:17 (GMT-5)
+
+---
+
+- 102. **Hito 102: Corrección de Ubicación de Botón de Cierre en Modal Legal, Icono Satelital Libre Font Awesome y Erradicación de Color Marrón en Modo Oscuro**:
+    - **Diagnóstico y Contexto:**
+      1. *Botón de Cierre (X) Superpuesto en Modal Legal:* En `#modalLegalOverlay` / `.legal-modal-card`, `.btn-modal-close` utilizaba `float: right; margin-bottom: -38px;`. Al ser `.legal-modal-card` un flex container (`display: flex; flex-direction: column;`), la propiedad `float` era ignorada, ubicando la X arriba a la izquierda y montándola directamente sobre las letras iniciales de "Garantía de Saldo, Retracto y PQR" por el margen negativo.
+      2. *Icono Faltante en Pilar 1 de Rastreo:* En `index.html`, el elemento `<i class="fa-solid fa-radar"></i>` invocaba un glifo exclusivo de Font Awesome Pro, produciendo un recuadro verde vacío sin gráfico.
+      3. *Tinte Marrón Sucio en Tema Oscuro en Franja de Valor:* `.trust-headline` y `.trust-pillar-body strong` tenían asignado `color: var(--text-primary, #1c1917);`. Como la variable `--text-primary` no existía en `01-tokens.css`, el navegador recurría al fallback `#1c1917` (Stone-900 / café tierra), resultando en un marrón oscuro casi invisible sobre el fondo noche esmeralda.
+    - **Solución Implementada:**
+      1. *Posicionamiento Absoluto Limpio en Esquina Superior Derecha (`styles/13-footer.css`):*
+         - Definido `.legal-modal-card .btn-modal-close` con `position: absolute; top: 1.15rem; right: 1.15rem; float: none; margin: 0; z-index: 60;`.
+         - Ajuste responsivo en `@media (max-width: 640px)` a `top: 0.85rem; right: 0.85rem;`.
+         - `styles/13-footer.css` consolidado en **387 líneas** (holgura de 113 líneas bajo el límite de 500).
+      2. *Icono Satelital Nativo Font Awesome Free 6 (`index.html`):*
+         - Reemplazado `fa-radar` por `<i class="fa-solid fa-satellite-dish"></i>` (antena parabólica de rastreo continuo 24/7, libre y nítida).
+      3. *Normalización Canónica de Tokens de Texto y Bordes (`styles/06-bento-grid.css`):*
+         - `.trust-headline` y `.trust-pillar-body strong` vinculados a `color: var(--text-main);` (`#1C1917` carbón en tema claro y `#FFFFFF` blanco puro en tema oscuro, erradicando de raíz el color marrón).
+         - Borde perimetral y divisor de pilares migrados a `border: 1px solid var(--border-subtle);`.
+         - Fondo de contenedor de iconos ajustado a `var(--accent-emerald-bg, rgba(16, 185, 129, 0.08))`.
+         - `styles/06-bento-grid.css` consolidado en **486 líneas** ($\le 500$).
+      4. *Compilación y Suite DevSecOps de 8 Fases:*
+         - `scripts/build.js` y `scripts/validate.js` ejecutados con 100% de éxito en las 8 fases (0 errores).
+    - **Archivos Afectados:**
+      - `index.html`, `styles/13-footer.css`, `styles/06-bento-grid.css`, `style.css`, `style.min.css`, `ARCHITECTURE.md`, `MEMORY.md`.
 
 ---
 
