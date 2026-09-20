@@ -11,6 +11,15 @@ export const AboutModal: React.FC<AboutModalProps> = ({
   onClose,
   onOpenLegal,
 }) => {
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -23,7 +32,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
     >
       <div 
         className="modal-card" 
-        style={{ maxWidth: 620, width: '92%', maxHeight: '88vh', overflowY: 'auto' }}
+        style={{ maxWidth: 620, width: '92%', maxHeight: '88vh', overflowY: 'auto', position: 'relative' }}
         onClick={e => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -42,10 +51,15 @@ export const AboutModal: React.FC<AboutModalProps> = ({
           </div>
           <button 
             type="button" 
-            onClick={onClose} 
-            style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)' }}
+            className="btn-modal-close"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }} 
+            aria-label="Cerrar modal"
+            style={{ position: 'relative', top: 'auto', right: 'auto' }}
           >
-            <i className="fa-solid fa-xmark"></i>
+            <i className="fa-solid fa-xmark" style={{ pointerEvents: 'none' }}></i>
           </button>
         </div>
 

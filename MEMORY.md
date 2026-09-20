@@ -1,6 +1,58 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 13:43 (GMT-5)
+Última actualización: 2026-09-20 14:20 (GMT-5)
+
+---
+
+-83. **Saneamiento Frontend Integral: Blindaje CSP de Google Translate, Protección Inmune del Logo, Erradicación de Spanglish, Reparación de la 'X' en Modales, Flujo de Desbloqueo Gratis y Cobertura 100% de Modo Visual**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Distorsión del Nombre y Logo por Traductor Automático:* En el encabezado, el nombre aparecía corrupto como "rigramogramoo" o traducido a "abrigo". Esto ocurría porque `SiteHeader.tsx` carecía del atributo `translate="no"` y de la clase `notranslate` en los spans de letras individuales, y `src/i18n/index.tsx` forzaba `en` automáticamente al detectar `navigator.language` en inglés, disparando el traductor de Chrome.
+      2. *Errores Bloqueantes de Consola (CSP Google Translate):* La cabecera `Content-Security-Policy` en `vercel.json` bloqueaba `https://www.gstatic.com`, `https://translate.google.com` y `https://translate.googleapis.com` en `style-src`, `script-src` y `connect-src`, arrojando errores en consola y rompiendo el renderizado.
+      3. *Spanglish en Tarjetas Bento:* Al conmutar erróneamente a inglés por el sistema operativo, las tarjetas mostraban "Apartment for Rent", "1 Bed • 1 Bath • 1 Parking" y estados en inglés para usuarios hispanohablantes.
+      4. *Falla en el Botón 'X' de Cierre en Modales:* En `CheckoutModal`, `SupportModal`, `LegalModal` y `AboutModal`, los botones de cierre no respondían adecuadamente debido a eventos de propagación, falta de listener para la tecla `Escape` y pérdida de target en el icono.
+      5. *Falla en Flujo "Desbloquear Gratis" y Desbloqueo Directo:* En `CheckoutModal`, la tarjeta de bienvenida prometía erróneamente "ingresando tu WhatsApp y Correo" cuando solo pedía celular, `handleUnlockGratisBienvenida` asignaba `credits: 0` y generaba un bucle recursivo al reabrir el checkout en lugar de desbloquear el lead, y faltaba un botón para retroceder al catálogo.
+      6. *Falta de Cobertura en Modo Visual (Tema Claro):* Varios componentes (cabecera, hero, fondo global, modales, menús de filtros, slideup) conservaban fondos oscuros o contrastes deficientes al activar `data-theme="light"`.
+    - **Solución Implementada:**
+      1. **Blindaje de CSP en `vercel.json`:**
+         - Incorporación de `https://www.gstatic.com` y `https://translate.googleapis.com` en `style-src` y `font-src`.
+         - Incorporación de `https://translate.google.com` y `https://translate.googleapis.com` en `script-src` y `connect-src`.
+      2. **Inmunidad del Logo e Identidad de Marca:**
+         - En `SiteHeader.tsx`: adición de `translate="no"` y clase `notranslate` al isotipo `brand-badge`, `brand-title` y cada uno de los spans `brand-letter`.
+         - En `src/i18n/index.tsx`: idioma predeterminado fijado estrictamente en español (`'es'`), respetando inglés únicamente si el usuario lo seleccionó expresamente en `localStorage`.
+      3. **Erradicación de Spanglish en `BentoCard.tsx`:**
+         - Normalización de especificaciones (`Hab`, `Baños`, `Garajes`) en español cuando no está en modo inglés.
+         - Priorización absoluta de `item.titulo`, `item.tipo_inmueble` y estado de urgencia en español.
+      4. **Reparación Integral de Botones de Cierre ('X') y Tecla Escape:**
+         - Soporte universal de cierre mediante tecla `Escape` con listeners `useEffect` en `CheckoutModal.tsx`, `SupportModal.tsx`, `LegalModal.tsx` y `AboutModal.tsx`.
+         - Botones de cierre blindados con `e.stopPropagation()`, `pointer-events: none` en iconos interiores e interacciones de backdrop seguras.
+      5. **Flujo de Desbloqueo Gratis y Navegación Atrás:**
+         - Redacción corregida: "Pruébalo sin costo. 1 contacto directo verificado de bienvenida ingresando tu número de WhatsApp."
+         - En `CheckoutModal.tsx` y `App.tsx`: erradicación del bucle infinito; `handleUnlockGratisBienvenida` asegura saldo y `handleConfirmUnlock` desbloquea inmediatamente el contacto en pantalla actualizando `unlockedMap`.
+         - Adición del botón interactivo `← Volver al Catálogo` debajo del botón de acción.
+      6. **Cobertura 100% de Modo Visual en `src/index.css`:**
+         - Estilos adaptados para `[data-theme="light"]`: fondo global `#F8F9FA`, cabecera, omnibox, tarjetas Bento, drawer slideup de ficha técnica, modales legal/soporte/acerca y cinta marquee.
+      7. **Centro de Auto-Soporte (`SupportModal.tsx`):**
+         - Conexión del formulario de desindexación por Habeas Data (Ley 1581) a `/api/support?action=takedown`.
+         - Feedback visual inmediato y cierre seguro.
+      8. **Validación DevSecOps y Testing:**
+         - `npm run lint` (`tsc --noEmit`): 0 errores.
+         - `npm run build`: Compilación de producción con Vite 6 en 2.98s.
+         - `npm test`: 100% de las 8 fases DevSecOps aprobadas (0 errores).
+    - **Archivos Afectados:**
+      - `vercel.json`
+      - `src/i18n/index.tsx`
+      - `src/components/SiteHeader.tsx`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/AboutModal.tsx`
+      - `src/components/SupportModal.tsx`
+      - `src/components/LegalModal.tsx`
+      - `src/components/BentoCard.tsx`
+      - `src/App.tsx`
+      - `src/index.css`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Frontend 100% reparado, inmune a distorsiones de traducción y con navegación libre de bloqueos.
+      - Suite DevSecOps en verde (8/8 fases).
 
 ---
 

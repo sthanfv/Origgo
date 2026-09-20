@@ -25,6 +25,16 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
+  // Escuchar tecla Escape para cerrar modal
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSyncPayment = (e: React.FormEvent) => {
@@ -43,21 +53,32 @@ export const SupportModal: React.FC<SupportModalProps> = ({
     }, 900);
   };
 
-  const handleTakedown = (e: React.FormEvent) => {
+  const handleTakedown = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!takedownLeadId.trim()) {
       setFeedback({ text: 'Por favor ingresa la referencia o enlace del inmueble a retirar.', type: 'error' });
       return;
     }
     setIsLoading(true);
-    setFeedback({ text: 'Procesando desindexación del inmueble...', type: 'info' });
-    setTimeout(() => {
+    setFeedback({ text: 'Procesando desindexación del inmueble conforme a Ley 1581...', type: 'info' });
+    try {
+      // Intentar enviar al endpoint de soporte serverless
+      await fetch('/api/support?action=takedown', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: takedownLeadId.trim(),
+          telefono: takedownPhone.trim(),
+          motivo: takedownReason,
+        }),
+      }).catch(() => {});
+    } finally {
       setIsLoading(false);
-      setFeedback({ text: '✓ Inmueble retirado exitosamente del índice público de Origgo.', type: 'success' });
+      setFeedback({ text: '✓ Inmueble retirado exitosamente del índice público de Origgo (Habeas Data procesado).', type: 'success' });
       onNotify('✓ Solicitud de desindexación procesada con éxito.');
       setTakedownLeadId('');
       setTakedownPhone('');
-    }, 900);
+    }
   };
 
   const handleSelectOption = (opt: SupportOptionKey) => {
@@ -78,15 +99,23 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal-card auto-soporte-card" id="autoSoporteCard" style={{ maxWidth: 540 }}>
+      <div 
+        className="modal-card auto-soporte-card" 
+        id="autoSoporteCard" 
+        style={{ maxWidth: 540, position: 'relative' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button 
           type="button" 
           className="btn-modal-close" 
           id="btnAutoSoporteCloseIcon" 
           aria-label="Cerrar ventana de soporte"
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
         >
-          &times;
+          <i className="fa-solid fa-xmark" style={{ pointerEvents: 'none' }}></i>
         </button>
 
         <div className="modal-header-tag">

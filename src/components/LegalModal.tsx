@@ -147,6 +147,16 @@ export const LegalModal: React.FC<LegalModalProps> = ({
     }
   }, [initialTab]);
 
+  // Escuchar tecla Escape para cerrar modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const currentDataEs = LEGAL_DATA_ES[activeTab];
@@ -161,15 +171,23 @@ export const LegalModal: React.FC<LegalModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal-card legal-modal-card" id="legalModalCard">
+      <div 
+        className="modal-card legal-modal-card" 
+        id="legalModalCard"
+        style={{ position: 'relative' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button 
           type="button" 
           className="btn-modal-close" 
           id="btnLegalCloseIcon" 
           aria-label={isEn ? "Close information window" : "Cerrar ventana de información"}
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
         >
-          &times;
+          <i className="fa-solid fa-xmark" style={{ pointerEvents: 'none' }}></i>
         </button>
 
         <div className="modal-header-tag" id="legalHeaderTag">

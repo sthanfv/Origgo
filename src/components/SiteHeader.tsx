@@ -54,8 +54,9 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
         {/* Centro: Isotipo y Logotipo Oficial de Origgo con animación cinemática */}
         <div 
-          className="brand-badge" 
+          className="brand-badge notranslate" 
           id="brandBadge" 
+          translate="no"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           role="button"
           tabIndex={0}
@@ -66,9 +67,9 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             }
           }}
         >
-          <div className="brand-text-block">
-            <h1 className="brand-title" aria-label="Origgo">
-              <span className="brand-initial-o-wrap" aria-hidden="true">
+          <div className="brand-text-block notranslate" translate="no">
+            <h1 className="brand-title notranslate" aria-label="Origgo" translate="no">
+              <span className="brand-initial-o-wrap notranslate" aria-hidden="true" translate="no">
                 <img 
                   src="/assets/img/origgo-icon.svg" 
                   alt="" 
@@ -77,12 +78,12 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                   height="44" 
                 />
               </span>
-              <span className="brand-letters-riggo" aria-hidden="true">
-                <span className="brand-letter brand-letter-1">r</span>
-                <span className="brand-letter brand-letter-2">i</span>
-                <span className="brand-letter brand-letter-3">g</span>
-                <span className="brand-letter brand-letter-4">g</span>
-                <span className="brand-letter brand-letter-5">o</span>
+              <span className="brand-letters-riggo notranslate" aria-hidden="true" translate="no">
+                <span className="brand-letter brand-letter-1 notranslate" translate="no">r</span>
+                <span className="brand-letter brand-letter-2 notranslate" translate="no">i</span>
+                <span className="brand-letter brand-letter-3 notranslate" translate="no">g</span>
+                <span className="brand-letter brand-letter-4 notranslate" translate="no">g</span>
+                <span className="brand-letter brand-letter-5 notranslate" translate="no">o</span>
               </span>
             </h1>
           </div>

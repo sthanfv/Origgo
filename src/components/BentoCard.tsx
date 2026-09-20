@@ -30,7 +30,13 @@ function formatearFechaRelativa(fecha?: string, isEn?: boolean): string {
 }
 
 function formatearDatoSpecs(dato?: string, isEn?: boolean): string {
-  if (!dato || !isEn) return dato || '';
+  if (!dato) return '';
+  if (!isEn) {
+    return dato
+      .replace(/(\d+)\s*Beds?/gi, '$1 Hab')
+      .replace(/(\d+)\s*Baths?/gi, '$1 Baños')
+      .replace(/(\d+)\s*Parkings?/gi, '$1 Garajes');
+  }
   return dato
     .replace(/(\d+)\s*Hab/gi, '$1 Beds')
     .replace('1 Beds', '1 Bed')

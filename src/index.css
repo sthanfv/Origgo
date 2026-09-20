@@ -500,6 +500,245 @@ body,
   color: #6B7280 !important;
 }
 
+/* Base y fondo global */
+[data-theme="light"] body,
+[data-theme="light"] .origgo-app-root {
+  background-color: #F8F9FA !important;
+  color: #1C1917 !important;
+}
+
+/* Cabecera oficial */
+[data-theme="light"] .site-header {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 1px solid #E7E5E4 !important;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .btn-theme-toggle {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .btn-push-subscribe {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .lang-switch {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+}
+
+[data-theme="light"] .lang-btn {
+  color: #6B7280 !important;
+}
+
+[data-theme="light"] .lang-btn.active {
+  background: #FFFFFF !important;
+  color: #047857 !important;
+}
+
+[data-theme="light"] .btn-vip-header {
+  background: #FEF3C7 !important;
+  border-color: #FCD34D !important;
+  color: #92400E !important;
+}
+
+/* Tarjetas Bento Grid */
+[data-theme="light"] .bento-card {
+  background-color: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 4px 10px -2px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .card-body {
+  background-color: #FFFFFF !important;
+}
+
+[data-theme="light"] .card-media-gradient {
+  background: linear-gradient(to top, #FFFFFF 0%, rgba(255, 255, 255, 0.6) 20%, transparent 55%) !important;
+}
+
+[data-theme="light"] .btn-specs-pill {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .btn-specs-pill:hover {
+  border-color: #047857 !important;
+  color: #047857 !important;
+}
+
+/* Barra de Comandos y Omnibox */
+[data-theme="light"] .command-bar-container {
+  background: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .cmd-filter-dropdown {
+  background: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+  color: #1C1917 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .cmd-dropdown-item {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .cmd-dropdown-item:hover {
+  background: #F3F4F6 !important;
+  color: #047857 !important;
+}
+
+/* Hero Principal */
+[data-theme="light"] .hero-macro-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%) !important;
+  border-color: #E7E5E4 !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .hero-title {
+  color: #111827 !important;
+}
+
+[data-theme="light"] .hero-badge-pill {
+  background: #ECFDF5 !important;
+  border-color: #A7F3D0 !important;
+  color: #047857 !important;
+}
+
+[data-theme="light"] .hero-stat-box {
+  background: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+}
+
+[data-theme="light"] .stat-number {
+  color: #047857 !important;
+}
+
+[data-theme="light"] .stat-label {
+  color: #6B7280 !important;
+}
+
+/* Cinta Marquee */
+[data-theme="light"] .marquee-container {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+}
+
+[data-theme="light"] .marquee-item {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .marquee-item strong {
+  color: #111827 !important;
+}
+
+/* Drawer y Ficha Técnica Slideup */
+[data-theme="light"] .card-slideup-overlay {
+  background: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+  color: #1C1917 !important;
+}
+
+[data-theme="light"] .slideup-header {
+  border-bottom-color: #E7E5E4 !important;
+}
+
+[data-theme="light"] .slideup-title {
+  color: #111827 !important;
+}
+
+[data-theme="light"] .btn-slideup-close {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .slideup-spec-card {
+  background: #F9FAFB !important;
+  border-color: #E5E7EB !important;
+}
+
+[data-theme="light"] .slideup-spec-key {
+  color: #6B7280 !important;
+}
+
+[data-theme="light"] .slideup-spec-val {
+  color: #111827 !important;
+}
+
+/* Modales en Modo Claro */
+[data-theme="light"] .modal-card {
+  background-color: #FFFFFF !important;
+  border-color: #E7E5E4 !important;
+  color: #1C1917 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"] .modal-title {
+  color: #111827 !important;
+}
+
+[data-theme="light"] .modal-subtitle {
+  color: #6B7280 !important;
+}
+
+[data-theme="light"] .legal-content-box {
+  background: #F9FAFB !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .legal-section {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+[data-theme="light"] .legal-section p {
+  color: #4B5563 !important;
+}
+
+[data-theme="light"] .legal-tabs-bar {
+  background: #F3F4F6 !important;
+  border-color: #E5E7EB !important;
+}
+
+[data-theme="light"] .legal-tab-btn {
+  color: #6B7280 !important;
+}
+
+[data-theme="light"] .legal-tab-btn.active {
+  background: #FFFFFF !important;
+  color: #047857 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .soporte-options-grid button {
+  background: #F9FAFB !important;
+  border-color: #E5E7EB !important;
+  color: #1F2937 !important;
+}
+
+[data-theme="light"] .soporte-options-grid button.active {
+  background: #ECFDF5 !important;
+  border-color: #059669 !important;
+  color: #047857 !important;
+}
+
+[data-theme="light"] .auto-soporte-card input,
+[data-theme="light"] .auto-soporte-card select {
+  background: #F9FAFB !important;
+  border-color: #D1D5DB !important;
+  color: #111827 !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    8. VISIBILIDAD DE MENÚ DE NAVEGACIÓN (DESKTOP VS ANDROID/MÓVIL)
    ═══════════════════════════════════════════════════════════════ */

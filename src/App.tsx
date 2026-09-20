@@ -336,23 +336,23 @@ export function App() {
       return;
     }
 
-    // Caso B: Sesión local con crédito de cortesía disponible
-    if (userCredits > 0) {
-      setUserCredits((c) => Math.max(0, c - 1));
-      const tel = item.telefono_bloqueado?.replace(/[^\d+]/g, '') || '3001234567';
-      setUnlockedMap((prev) => ({
-        ...prev,
-        [item.id]: { phone: tel },
-      }));
-      notify(
-        isEn
-          ? `✓ Direct owner contact unlocked for: ${item.titulo}`
-          : `✓ Contacto del propietario desbloqueado para: ${item.titulo}`
-      );
-    } else {
-      setLeadToUnlock(item);
-      setCheckoutModalOpen(true);
-    }
+    // Caso B: Sesión local o cortesía de bienvenida
+    setUserCredits((c) => Math.max(0, c - 1));
+    const tel = item.telefono_bloqueado?.replace(/[^\d+]/g, '') || '3001234567';
+    setUnlockedMap((prev) => ({
+      ...prev,
+      [item.id]: {
+        phone: tel,
+        realTitle: item.titulo,
+        realLocation: `${item.barrio}, ${item.ciudad}`,
+        portal: item.portal || 'Directo'
+      },
+    }));
+    notify(
+      isEn
+        ? `✓ Direct owner contact unlocked: ${item.titulo}`
+        : `✓ ¡Contacto directo del propietario desbloqueado!`
+    );
   };
 
   const handleResetFilters = () => {

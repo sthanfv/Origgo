@@ -26,11 +26,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [lang, setLangState] = useState<Language>(() => {
     try {
       const stored = localStorage.getItem('origgo_lang');
-      if (stored === 'es' || stored === 'en') return stored;
+      if (stored === 'en') return 'en';
+      if (stored === 'es') return 'es';
     } catch {}
-    if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('en')) {
-      return 'en';
-    }
+    // El idioma predeterminado de la plataforma es estrictamente español
     return 'es';
   });
 

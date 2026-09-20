@@ -31,13 +31,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [activeTab, setActiveTab] = useState<'comprar' | 'tengo-pin' | 'cuenta'>(
     userSession ? 'cuenta' : 'comprar'
   );
-  const [selectedPlan, setSelectedPlan] = useState<ModalPlanOption>('pack_10_leads');
+  const [selectedPlan, setSelectedPlan] = useState<ModalPlanOption>('welcome_free');
   const [selectedCityCoverage, setSelectedCityCoverage] = useState(selectedLead?.ciudad || 'Bogotá');
   const [phoneInput, setPhoneInput] = useState(userSession?.phone || '');
   const [pinInput, setPinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Escuchar tecla Escape para cerrar el modal
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -109,19 +119,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     setIsLoading(true);
     try {
-      // Guardar el teléfono para recordar al usuario localmente
-      if (!userSession) {
-        onSessionUpdate({
-          phone: cleanPhone,
-          credits: 0,
-          verified: true,
-        });
-      }
+      // Guardar el teléfono y garantizar al menos 1 crédito de cortesía
+      const nuevosCreditos = Math.max(1, userCredits);
+      onSessionUpdate({
+        phone: cleanPhone,
+        credits: nuevosCreditos,
+        verified: true,
+      });
 
       setSuccessMessage(
         isEn
-          ? '✓ Welcome gift activated! Unlocking contact...'
-          : '✓ ¡Regalo de bienvenida activado! Revelando contacto...'
+          ? '✓ Welcome unlock activated! Revealing direct owner...'
+          : '✓ ¡Desbloqueo de bienvenida activado! Revelando propietario directo...'
       );
 
       setTimeout(() => {
@@ -129,7 +138,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           onConfirmUnlock(selectedLead);
         }
         onClose();
-      }, 800);
+      }, 700);
     } finally {
       setIsLoading(false);
     }
@@ -216,10 +225,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <button
           type="button"
           className="btn-modal-close"
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           aria-label={isEn ? 'Close modal' : 'Cerrar modal'}
         >
-          &times;
+          <i className="fa-solid fa-xmark" style={{ pointerEvents: 'none' }}></i>
         </button>
 
         {/* Cabecera del Modal */}
@@ -375,8 +387,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <p className="option-desc">
                   {isEn
-                    ? 'Try it free. 1 direct contact as a welcome gift by entering your active WhatsApp.'
-                    : 'Pruébalo sin pagar. 1 contacto directo de regalo ingresando tu WhatsApp y Correo.'}
+                    ? 'Try it at zero cost. 1 verified direct contact as a welcome gift by entering your WhatsApp.'
+                    : 'Pruébalo sin costo. 1 contacto directo verificado de bienvenida ingresando tu número de WhatsApp.'}
                 </p>
               </label>
 
@@ -545,6 +557,34 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <span>{isEn ? 'Continue to Secure Payment with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>
                 </>
               )}
+            </button>
+
+            {/* Botón para volver atrás o cancelar sin trabas */}
+            <button
+              type="button"
+              className="btn-modal-back"
+              onClick={onClose}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.15))',
+                color: 'var(--text-muted, rgba(255, 255, 255, 0.8))',
+                borderRadius: '0.85rem',
+                padding: '0.75rem 1.25rem',
+                fontSize: '0.88rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                marginTop: -4,
+                marginBottom: '1rem',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+              <span>{isEn ? 'Back to Catalog' : '← Volver al Catálogo'}</span>
             </button>
 
             {/* Leyenda Legal y Sellos Oficiales */}
