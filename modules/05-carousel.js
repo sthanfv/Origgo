@@ -171,48 +171,75 @@ function habilitarSwipeTactilCarrusel(trackEl, cardIndex, totalFotos) {
 
 /**
  * Abre una ventana emergente optimizada para impresión con el dossier completo de la propiedad.
+ * Sanitizado estrictamente contra inyecciones XSS en el DOM y validación de URLs seguras.
  * @param {string} leadId
  */
 function abrirDossierImprimible(leadId) {
   const dataset = window._origgoDatasetCompleto || (window.datosLeadsCache ? { leads: window.datosLeadsCache } : null);
   const lead = dataset?.leads?.find(l => String(l.id) === String(leadId)) || (typeof leadSeleccionado !== 'undefined' ? leadSeleccionado : null);
   if (!lead) return;
+
   const contacto = (typeof cacheContactosDesbloqueados !== 'undefined' ? cacheContactosDesbloqueados[leadId] : null) || lead.contacto;
   const isEn = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+
   const w = window.open('', '_blank', 'width=800,height=900');
   if (!w) return;
-  const tel = contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'Direct in listing' : 'Directo en anuncio');
-  const wa = contacto?.whatsappUrl || '';
-  const web = contacto?.enlace || '';
-  const html = `<!DOCTYPE html><html lang="${isEn ? 'en' : 'es'}"><head><meta charset="utf-8"><title>${lead.titulo || 'Origgo Dossier'}</title>
+
+  const escape = typeof escaparHtml === 'function' ? escaparHtml : (s) => String(s || '').replace(/[&<>"']/g, '');
+  const sanitizarUrl = typeof sanitizarUrlCliente === 'function' ? sanitizarUrlCliente : (u) => (String(u).startsWith('https://') ? escape(u) : '');
+
+  const tituloSeguro = escape(lead.titulo || 'Origgo Dossier');
+  const ubicacionSegura = escape(lead.ubicacion || 'Colombia');
+  const portalSeguro = escape(contacto?.portal || lead.portal || 'Finca Raíz');
+  const precioSeguro = escape(lead.precio || 'Consultar');
+  const precioM2Seguro = escape(lead.precio_m2_formateado || lead.precio_m2 || 'N/A');
+  const areaSegura = escape(lead.detalles?.['Área'] || lead.dato_1 || 'N/A');
+  const habSegura = escape(lead.detalles?.['Habitaciones'] || 'N/A');
+  const banosSegura = escape(lead.detalles?.['Baños'] || 'N/A');
+  const estratoSeguro = escape(lead.detalles?.['Estrato'] || 'N/A');
+  const telDisplaySeguro = escape(contacto?.telefonoDisplay || contacto?.telefono || (isEn ? 'Direct in listing' : 'Directo en anuncio'));
+
+  const waUrlSeguro = sanitizarUrl(contacto?.whatsappUrl, ['wa.me', 'api.whatsapp.com']);
+  const webUrlSeguro = sanitizarUrl(contacto?.enlace, ['fincaraiz.com.co', 'metrocuadrado.com', 'mercadolibre.com.co']);
+
+  const html = `<!DOCTYPE html><html lang="${isEn ? 'en' : 'es'}"><head><meta charset="utf-8">
+  <title>${tituloSeguro}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; color: #0A110E; background: #FFF; }
-    .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 18px; } .logo { font-size: 28px; font-weight: 800; color: #047857; margin: 0; } .tag { font-size: 10px; color: #059669; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
-    .box { border: 1px solid #CBDAD0; border-radius: 12px; padding: 18px; margin-bottom: 16px; } .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
-    .metric { background: #F2F7F4; border-radius: 8px; padding: 10px; text-align: center; } .metric-k { font-size: 10px; color: #4B6358; font-weight: 800; text-transform: uppercase; } .metric-v { font-size: 15px; font-weight: 800; color: #0A110E; margin-top: 4px; }
-    .contact { background: #ECFDF5; border: 2px solid #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0; } .phone { font-size: 24px; font-weight: 800; color: #064E3B; font-family: monospace; letter-spacing: 2px; }
-    .btn { display: inline-block; background: #059669; color: #FFF; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; margin: 6px 4px; cursor: pointer; border: none; } .wa-btn { background: #25D366; }
-    .notice { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 12px; color: #991B1B; line-height: 1.4; margin-top: 16px; } @media print { .no-print { display: none !important; } }
+    .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 18px; }
+    .logo { font-size: 28px; font-weight: 800; color: #047857; margin: 0; }
+    .tag { font-size: 10px; color: #059669; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+    .box { border: 1px solid #CBDAD0; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+    .metric { background: #F2F7F4; border-radius: 8px; padding: 10px; text-align: center; }
+    .metric-k { font-size: 10px; color: #4B6358; font-weight: 800; text-transform: uppercase; }
+    .metric-v { font-size: 15px; font-weight: 800; color: #0A110E; margin-top: 4px; }
+    .contact { background: #ECFDF5; border: 2px solid #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0; }
+    .phone { font-size: 24px; font-weight: 800; color: #064E3B; font-family: monospace; letter-spacing: 2px; }
+    .btn { display: inline-block; background: #059669; color: #FFF; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; margin: 6px 4px; cursor: pointer; border: none; }
+    .wa-btn { background: #25D366; }
+    .notice { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 12px; color: #991B1B; line-height: 1.4; margin-top: 16px; }
+    @media print { .no-print { display: none !important; } }
   </style></head><body>
     <div class="header"><h1 class="logo">Origgo</h1><div class="tag">${isEn ? 'CONFIDENTIAL PROPERTY DOSSIER · DIRECT OWNER' : 'DOSSIER CONFIDENCIAL DE PROPIEDAD · TRATO DIRECTO'}</div></div>
     <div class="box">
-      <h2 style="margin:0 0 6px;">${lead.titulo || ''}</h2>
-      <p style="color:#4B6358;margin:0 0 14px;font-size:13px;">📍 ${lead.ubicacion || 'Colombia'} · <em>${contacto?.portal || lead.portal || 'Finca Raíz'}</em></p>
+      <h2 style="margin:0 0 6px;">${tituloSeguro}</h2>
+      <p style="color:#4B6358;margin:0 0 14px;font-size:13px;">📍 ${ubicacionSegura} · <em>${portalSeguro}</em></p>
       <div class="grid">
-        <div class="metric"><div class="metric-k">${isEn ? 'Price' : 'Precio'}</div><div class="metric-v" style="color:#047857;">${lead.precio || 'Consultar'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Area' : 'Área'}</div><div class="metric-v">${lead.detalles?.['Área'] || lead.dato_1 || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Value / m²' : 'Valor / m²'}</div><div class="metric-v">${lead.precio_m2 || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Rooms' : 'Habitaciones'}</div><div class="metric-v">${lead.detalles?.['Habitaciones'] || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Baths' : 'Baños'}</div><div class="metric-v">${lead.detalles?.['Baños'] || 'N/A'}</div></div>
-        <div class="metric"><div class="metric-k">${isEn ? 'Stratum' : 'Estrato'}</div><div class="metric-v">${lead.detalles?.['Estrato'] || 'N/A'}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Price' : 'Precio'}</div><div class="metric-v" style="color:#047857;">${precioSeguro}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Area' : 'Área'}</div><div class="metric-v">${areaSegura}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Value / m²' : 'Valor / m²'}</div><div class="metric-v">${precioM2Seguro}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Rooms' : 'Habitaciones'}</div><div class="metric-v">${habSegura}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Baths' : 'Baños'}</div><div class="metric-v">${banosSegura}</div></div>
+        <div class="metric"><div class="metric-k">${isEn ? 'Stratum' : 'Estrato'}</div><div class="metric-v">${estratoSeguro}</div></div>
       </div>
     </div>
     <div class="contact">
       <div style="font-size:11px;font-weight:800;color:#047857;letter-spacing:1px;margin-bottom:6px;">${isEn ? 'VERIFIED DIRECT OWNER CONTACT' : 'CONTACTO DIRECTO VERIFICADO'}</div>
-      <div class="phone">${tel}</div>
+      <div class="phone">${telDisplaySeguro}</div>
       <div style="margin-top:12px;">
-        ${wa ? `<a href="${wa}" target="_blank" class="btn wa-btn">💬 WhatsApp</a>` : ''}
-        ${web ? `<a href="${web}" target="_blank" class="btn">🔗 ${isEn ? 'View Ad' : 'Ver Anuncio'}</a>` : ''}
+        ${waUrlSeguro ? `<a href="${waUrlSeguro}" target="_blank" rel="noopener noreferrer" class="btn wa-btn">💬 WhatsApp</a>` : ''}
+        ${webUrlSeguro ? `<a href="${webUrlSeguro}" target="_blank" rel="noopener noreferrer" class="btn">🔗 ${isEn ? 'View Ad' : 'Ver Anuncio'}</a>` : ''}
       </div>
     </div>
     <div class="notice">
@@ -223,9 +250,14 @@ function abrirDossierImprimible(leadId) {
       <button onclick="window.print()" class="btn" style="font-size:14px;padding:12px 28px;">🖨️ ${isEn ? 'Print / Save as PDF' : 'Imprimir / Guardar como PDF'}</button>
     </div>
   </body></html>`;
-  w.document.write(html); w.document.close();
+
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
 }
+
 window.abrirDossierImprimible = abrirDossierImprimible;
 window.avanzarCarruselSeguro = avanzarCarruselSeguro;
 window.moverCarrusel = moverCarrusel;
+
 

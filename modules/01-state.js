@@ -81,7 +81,7 @@ function establecerSesionDesdeToken(data, { msgEs, msgEn, titleEs, titleEn, isWe
  */
 async function inicializarSesionUsuario() {
   const urlParams = new URLSearchParams(window.location.search);
-  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token'), welcomeToken = urlParams.get('welcome_token');
+  const recoveryToken = urlParams.get('recovery_token'), magicToken = urlParams.get('magic_token'), welcomeToken = urlParams.get('welcome_token'), retentionToken = urlParams.get('retention_token');
   let paymentRef = urlParams.get('payment_ref') || urlParams.get('ref');
   if (!paymentRef) {
     try {
@@ -92,6 +92,25 @@ async function inicializarSesionUsuario() {
     }
   }
   const wompiId = urlParams.get('id');
+
+  // 🎁 Canje de Enlace Seguro de Retención y Fidelización (Magic Link de Rescate)
+  if (retentionToken) {
+    try {
+      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'consume_retention', token: retentionToken }) });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.token) throw new Error(data.message || 'El enlace de beneficio ya fue utilizado o expiró.');
+      establecerSesionDesdeToken(data, {
+        msgEs: data.message || '🎉 ¡Beneficio activado! Saldo acreditado en tu cuenta.',
+        msgEn: '🎉 Welcome back! Courtesy credits added to your balance.',
+        titleEs: 'Beneficio Activado', titleEn: 'Retention Offer'
+      });
+      return;
+    } catch (e) {
+      const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+      mostrarNotificacionToast(e.message || (esIngles ? 'Retention link expired or invalid.' : 'El enlace de beneficio ya no es válido o expiró.'), 'warning');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   // 🎁 Activación de Regalo Freemium (Doble Opt-In por correo) con auto-desbloqueo de propiedad
   if (welcomeToken) {
@@ -195,15 +214,11 @@ async function inicializarSesionUsuario() {
   const tokenGuardado = (sesionUsuario && sesionUsuario.token) || localStorage.getItem('hunter_pro_token') || (typeof obtenerCookieSegura === 'function' ? obtenerCookieSegura('origgo_token') : null);
   if (tokenGuardado) {
     try {
-      const res = await fetch('/api/user/balance', {
-        headers: { 'Authorization': `Bearer ${tokenGuardado}` }
-      });
+      const res = await fetch('/api/user/balance', { headers: { 'Authorization': `Bearer ${tokenGuardado}` } });
       if (res.ok) {
         const data = await res.json();
         sesionUsuario = { ...data, token: tokenGuardado };
-        if (typeof guardarCookieSegura === 'function') {
-          guardarCookieSegura('origgo_token', tokenGuardado, 30);
-        }
+        if (typeof guardarCookieSegura === 'function') guardarCookieSegura('origgo_token', tokenGuardado, 30);
         aplicarPreferenciasUsuario(data);
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
@@ -346,11 +361,7 @@ async function restaurarSesionConPin() {
   const requestBody = esReferencia ? { action: 'claim_reference', reference: pin, lang: isEn ? 'en' : 'es' } : { celular, pin, lang: isEn ? 'en' : 'es', ...securityData };
 
   try {
-    const res = await fetch('/api/auth/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
+    const res = await fetch('/api/auth/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
     const data = await res.json();
     if (!res.ok || !data.ok) throw new Error(data.message || data.error || (isEn ? 'Incorrect credentials or reference' : 'Credenciales o referencia incorrectas'));
     if (data.requiresLogin) throw new Error(data.message || (isEn ? 'Payment credited. Enter your PIN to continue.' : 'Pago acreditado. Ingresa tu PIN para continuar.'));
@@ -414,11 +425,7 @@ async function recuperarPinConReferencia() {
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending...' : 'Enviando...'}`; btn.disabled = true; }
   try {
-    const response = await fetch('/api/auth/recover', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' })
-    });
+    const response = await fetch('/api/auth/recover', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: isEn ? 'en' : 'es' }) });
     const result = await response.json();
     if (msgBox) {
       msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;
@@ -449,11 +456,7 @@ async function solicitarMagicLinkPorCorreo() {
   }
   if (btn) { btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isEn ? 'Sending link...' : 'Enviando enlace...'}`; btn.disabled = true; }
   try {
-    const response = await fetch('/api/auth/magic-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier: email, lang: isEn ? 'en' : 'es' })
-    });
+    const response = await fetch('/api/auth/magic-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identifier: email, lang: isEn ? 'en' : 'es' }) });
     const result = await response.json();
     if (msgBox) {
       msgBox.className = `restore-status-msg restore-status-recovery-result ${response.ok ? 'success' : 'error'}`;

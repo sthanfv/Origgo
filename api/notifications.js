@@ -8,17 +8,15 @@
  * - /api/notifications/dispatch -> lib/notifications/dispatch.js (Despacho seguro de alertas)
  */
 
+const { aplicarCorsSeguro } = require('../lib/cors');
+
 let subscribeHandler = null;
 let dispatchHandler = null;
 
 async function handler(req, res) {
-  // Manejo inmediato de CORS Preflight
+  // Manejo de CORS Institucional
+  aplicarCorsSeguro(req, res);
   if (req.method === 'OPTIONS') {
-    if (typeof res.setHeader === 'function') {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-internal-secret');
-    }
     return res.status(200).end();
   }
 

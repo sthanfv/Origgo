@@ -362,7 +362,7 @@ function renderizarInterfaz(dataset) {
 
           <div class="slideup-body">
             <div class="slideup-specs-grid">
-              ${item.precio_m2 ? `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid fa-calculator"></i> ${isEn ? 'Rate per m²' : 'Valor por m²'}</span><span class="slideup-spec-val">${escaparHtml(item.precio_m2)}</span></div>` : ''}
+              ${(item.precio_m2 || item.precio_m2_formateado) ? `<div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid fa-calculator"></i> ${isEn ? 'Rate per m²' : 'Valor por m²'}</span><span class="slideup-spec-val">${escaparHtml(item.precio_m2_formateado || item.precio_m2)}</span></div>` : ''}
               ${item.descuento_arbitraje > 0 ? `<div class="slideup-spec-card highlight-arbitrage"><span class="slideup-spec-key"><i class="fa-solid fa-chart-line"></i> ${isEn ? 'Arbitrage Opportunity' : 'Margen Arbitraje'}</span><span class="slideup-spec-val">-${item.descuento_arbitraje}% vs ${isEn ? 'Median' : 'Mediana'}</span></div>` : ''}
               ${item.ahorro_spread ? `<div class="slideup-spec-card highlight-spread"><span class="slideup-spec-key"><i class="fa-solid fa-tags"></i> ${isEn ? 'Spread Discount' : 'Rebaja Inter-Portal'}</span><span class="slideup-spec-val">-${escaparHtml(item.ahorro_spread)}</span></div>` : ''}
               <div class="slideup-spec-card"><span class="slideup-spec-key"><i class="fa-solid fa-building-flag"></i> ${isEn ? 'Source Portal' : 'Portal de Origen'}</span><span class="slideup-spec-val">${escaparHtml(portalNombre)}</span></div>

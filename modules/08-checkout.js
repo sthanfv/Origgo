@@ -8,6 +8,22 @@
 let pagoWompiEnProgreso = false;
 
 /**
+ * Restablece el bloqueo de seguridad de la pasarela y restaura el estado del botón.
+ */
+function restablecerBloqueoPago() {
+  pagoWompiEnProgreso = false;
+  const btnPagar = document.getElementById('btnConfirmWompi');
+  if (!btnPagar) return;
+  btnPagar.disabled = false;
+  const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+  const radio = document.querySelector('input[name="checkoutProduct"]:checked');
+  const isFree = radio && radio.value === 'welcome_free';
+  btnPagar.innerHTML = isFree
+    ? `<i class="fa-solid fa-gift"></i> <span>${esIngles ? 'Claim 1 Free Unlock ($0)' : 'Reclamar 1 Desbloqueo Gratis ($0)'}</span>`
+    : `<i class="fa-solid fa-lock"></i> <span>${esIngles ? 'Proceed to Secure Checkout with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>`;
+}
+
+/**
  * Carga de forma asíncrona y segura el script oficial del widget de Wompi.
  */
 function cargarScriptWompi() {
@@ -68,7 +84,7 @@ function abrirModalCheckout(index, pestana = null) {
       const lblLoc = typeof t === 'function' ? t('modal_summary_location', 'Ubicación:') : 'Ubicación:';
       const lblPrice = typeof t === 'function' ? t('modal_summary_price', 'Precio Publicado:') : 'Precio Publicado:';
       const lblUnit = typeof t === 'function' ? t('modal_summary_unit_value', 'Valor Unitario:') : 'Valor Unitario:';
-      elSummary.innerHTML = `${imgHtml}<div class="modal-summary-item"><span class="modal-summary-label">${lblProp}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong></div><div class="modal-summary-item"><span class="modal-summary-label">${lblLoc}</span><span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span></div><div class="modal-summary-item"><span class="modal-summary-label">${lblPrice}</span><strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong></div>${leadSeleccionado.precio_m2 ? `<div class="modal-summary-item modal-summary-divider"><span class="modal-summary-label">${lblUnit}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2)}</strong></div>` : ''}`;
+      elSummary.innerHTML = `${imgHtml}<div class="modal-summary-item"><span class="modal-summary-label">${lblProp}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.titulo)}</strong></div><div class="modal-summary-item"><span class="modal-summary-label">${lblLoc}</span><span class="modal-summary-label">${escaparHtml(leadSeleccionado.ubicacion)}</span></div><div class="modal-summary-item"><span class="modal-summary-label">${lblPrice}</span><strong class="modal-summary-price">${escaparHtml(leadSeleccionado.precio)}</strong></div>${(leadSeleccionado.precio_m2 || leadSeleccionado.precio_m2_formateado) ? `<div class="modal-summary-item modal-summary-divider"><span class="modal-summary-label">${lblUnit}</span><strong class="modal-summary-value">${escaparHtml(leadSeleccionado.precio_m2_formateado || leadSeleccionado.precio_m2)}</strong></div>` : ''}`;
     } else {
       elSummary.style.display = 'none';
     }
@@ -157,8 +173,10 @@ function abrirModalCheckout(index, pestana = null) {
  * Cierra el modal de checkout.
  */
 function cerrarModalCheckout() {
-  document.getElementById("checkoutModal")?.classList.remove("active");
+  const modal = document.getElementById("checkoutModal");
+  if (modal) { modal.classList.remove("active"); modal.style.display = "none"; }
   document.body.style.overflow = "";
+  restablecerBloqueoPago();
 }
 
 function registrarReferenciaPendiente(ref) {
@@ -185,11 +203,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
 
   for (let intento = 1; intento <= 3; intento++) {
     try {
-      const claimRes = await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: headersClaim,
-        body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference, lang: esIngles ? 'en' : 'es' })
-      });
+      const claimRes = await fetch('/api/auth/session', { method: 'POST', headers: headersClaim, body: JSON.stringify({ action: 'claim_reference', reference: orderData.reference, lang: esIngles ? 'en' : 'es' }) });
       const claimText = await claimRes.text();
       let claimData = null;
       try { claimData = JSON.parse(claimText); } catch (_) {}
@@ -211,12 +225,8 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
         const pinNuevo = claimData.user?.pin || null;
         sesionUsuario = { ...claimData.user, token: claimData.token };
         delete sesionUsuario.pin;
-        if (claimData.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && claimData.user.preferredLang !== obtenerIdiomaActual()) {
-          cambiarIdioma(claimData.user.preferredLang);
-        }
-        if (claimData.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && claimData.user.preferredTheme !== obtenerTemaActual()) {
-          aplicarTema(claimData.user.preferredTheme);
-        }
+        if (claimData.user?.preferredLang && typeof cambiarIdioma === 'function' && typeof obtenerIdiomaActual === 'function' && claimData.user.preferredLang !== obtenerIdiomaActual()) cambiarIdioma(claimData.user.preferredLang);
+        if (claimData.user?.preferredTheme && typeof aplicarTema === 'function' && typeof obtenerTemaActual === 'function' && claimData.user.preferredTheme !== obtenerTemaActual()) aplicarTema(claimData.user.preferredTheme);
         actualizarBadgeVip();
         sincronizarFiltroCiudadUsuario();
         renderizarInterfaz(datosActuales);
@@ -226,9 +236,7 @@ async function reclamarSesionPostPago(orderData, productType, ciudad) {
           : { titulo: esIngles ? '🎉 Payment Successful!' : '🎉 ¡Pago Exitoso!', mensaje: esIngles ? 'Your access has been secured.' : 'Tu acceso quedó acreditado de forma segura.', tipo: 'success' };
         mostrarNotificacionToast(notif.mensaje, notif.tipo, { title: notif.titulo, duration: 6000 });
 
-        if (typeof abrirModalBienvenidaVIP === 'function') {
-          abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
-        }
+        if (typeof abrirModalBienvenidaVIP === 'function') abrirModalBienvenidaVIP({ tipo: productType, ciudad }, { ...sesionUsuario, pin: pinNuevo });
         if (typeof registrarEventoEmbudoCliente === 'function') registrarEventoEmbudoCliente('conversion_exitosa', { tipo: 'pago', plan: productType, ciudad });
         if (leadSeleccionado) {
           const idxLead = typeof leadSeleccionado._fichaIndex === 'number' ? leadSeleccionado._fichaIndex : (datosActuales?.leads ? datosActuales.leads.findIndex(l => l.id === leadSeleccionado.id) : undefined);
@@ -426,34 +434,25 @@ async function ejecutarPagoWompi() {
 
     if (typeof WidgetCheckout !== 'undefined') {
       const checkout = new WidgetCheckout({
-        currency: 'COP',
-        amountInCents: orderData.amountInCents,
-        reference: orderData.reference,
-        publicKey: orderData.publicKey,
-        signature: {
-          integrity: orderData.signature
-        },
+        currency: 'COP', amountInCents: orderData.amountInCents, reference: orderData.reference,
+        publicKey: orderData.publicKey, signature: { integrity: orderData.signature },
         redirectUrl: `${window.location.origin}?ref=${encodeURIComponent(orderData.reference)}`
       });
 
       cerrarModalCheckout();
+      // 🛡️ Restablecer bloqueo cuando el usuario regrese a la ventana
+      window.addEventListener('focus', () => setTimeout(restablecerBloqueoPago, 1000), { once: true });
 
       checkout.open(async (result) => {
-        const trx = result?.transaction;
-        const esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
+        restablecerBloqueoPago();
+        const trx = result?.transaction, esIngles = typeof obtenerIdiomaActual === 'function' && obtenerIdiomaActual() === 'en';
         if (trx?.status === 'APPROVED') {
           await reclamarSesionPostPago(orderData, productType, ciudad);
         } else if (trx?.status === 'PENDING' || trx?.status === 'WAITING_FOR_SURCHARGE_VALIDATION') {
           registrarReferenciaPendiente(orderData.reference);
-          mostrarNotificacionToast(
-            esIngles ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.` : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`,
-            'info', { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 }
-          );
+          mostrarNotificacionToast(esIngles ? `Your payment (Ref: ${orderData.reference}) is pending validation by your bank. It will auto-credit once confirmed.` : `Tu pago (Ref: ${orderData.reference}) está en validación por tu banco. Se acreditará automáticamente al confirmarse.`, 'info', { title: esIngles ? 'Payment in Validation' : 'Pago en Validación (PSE / Nequi)', duration: 8500 });
         } else if (trx && (trx.status === 'DECLINED' || trx.status === 'ERROR')) {
-          mostrarNotificacionToast(
-            esIngles ? 'The transaction was declined by the financial institution. Please try another payment method.' : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.',
-            'error', { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 }
-          );
+          mostrarNotificacionToast(esIngles ? 'The transaction was declined by the financial institution. Please try another payment method.' : 'La transacción no fue aprobada por la entidad financiera. Intenta con otro medio de pago.', 'error', { title: esIngles ? 'Payment Declined' : 'Pago Rechazado', duration: 7500 });
         }
       });
       return;

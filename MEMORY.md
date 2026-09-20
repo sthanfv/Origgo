@@ -1,6 +1,28 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-19 07:50 (GMT-5)
+Última actualización: 2026-09-19 19:35 (GMT-5)
+
+---
+
+- 117. **Hito 117: Mitigación Forense de Vulnerabilidades XSS, Race Condition, Canje de Retención y Endurecimiento CORS**:
+    - **Diagnóstico y Contexto:**
+      1. *Vulnerabilidad XSS en Dossier Imprimible (`modules/05-carousel.js`):* Al generar la ventana de impresión para el dossier de propiedades vía `w.document.write()`, parámetros dinámicos y enlaces externos podían ser inyectados con scripts maliciosos si el origen de datos contenía cargas maliciosas.
+      2. *Secreto Interno Blando en Despacho (`lib/notifications/dispatch.js`):* El secreto de autenticación de notificaciones internas podía permitir cadenas por defecto inseguras si faltaba la variable de entorno, requiriendo Fail-Closed inmediato con `requireEnv('INTERNAL_API_SECRET')`.
+      3. *Condición de Carrera en Pasarela Wompi (`modules/08-checkout.js`):* Si el usuario abría el widget de pago y cancelaba o cambiaba de ventana, el estado `pagoWompiEnProgreso` podía quedar bloqueado impidiendo nuevos intentos de pago.
+      4. *Canje de Tokens de Retención en Frontend (`modules/01-state.js`):* La URL con parámetro `retention_token` recibida por el usuario vía correo de retención requería canje automático en el arranque con emisión de sesión JWT de rescate.
+      5. *Desalineación de CORS en Notificaciones (`api/notifications.js`):* El endpoint de notificaciones requería alinearse con la política institucional `aplicarCorsSeguro(req, res)` antes de la resolución de preflight `OPTIONS`.
+    - **Solución Implementada:**
+      1. *Sanitización Integral y Validación de URLs en Dossier (`modules/05-carousel.js`):* Implementada sanitización estricta mediante `escaparHtml()` en todas las variables y validación defensiva de dominios autorizados (`wa.me`, `fincaraiz.com.co`, `metrocuadrado.com`, `ciencuadras.com`, `puntopropiedad.com`) antes de permitir hipervínculos en el dossier imprimible.
+      2. *Fail-Closed en Notificaciones Internas (`lib/notifications/dispatch.js`):* Forzado `requireEnv('INTERNAL_API_SECRET')` con fallback seguro en modo de pruebas.
+      3. *Mecanismo `restablecerBloqueoPago()` (`modules/08-checkout.js`):* Integración de restablecimiento seguro en los eventos `focus`, en el callback de cierre de Wompi y al cerrar el modal de checkout.
+      4. *Canje y Acreditación de Retención (`modules/01-state.js`):* Extracción automática de `retention_token` de los parámetros de búsqueda, consumo atómico vía `POST /api/auth` (`action: 'consume_retention'`), acreditación inmediata de créditos y emisión de notificación toast informativa.
+      5. *CORS Canónico Institucional (`api/notifications.js`):* Integrada la protección `aplicarCorsSeguro(req, res)` bloqueando accesos no autorizados.
+      6. *Optimización y Cumplimiento del Estándar Desmulta ($\le 500$ líneas):* Compactación de código en `modules/01-state.js` (486 líneas) y `modules/08-checkout.js` (486 líneas), garantizando holgura operativa $< 490$ líneas en los 17 módulos de la plataforma.
+    - **Validación y Despliegue:**
+      1. `node --check` superado al 100% en todos los archivos modificados.
+      2. Compilación de bundles ejecutada exitosamente con `node scripts/build.js` (`app.min.js`: 326,624 bytes, `style.min.css`: 156,663 bytes).
+    - **Archivos Afectados:**
+      - `modules/05-carousel.js`, `lib/notifications/dispatch.js`, `modules/08-checkout.js`, `modules/01-state.js`, `api/notifications.js`, `modules/06-cards.js`, `app.js`, `app.min.js`, `MEMORY.md`.
 
 ---
 
