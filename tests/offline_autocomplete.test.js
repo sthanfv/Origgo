@@ -17,7 +17,7 @@ describe('📡 SUITE 1: Resiliencia Offline y Caché Service Worker', () => {
   const offlineModule = require(path.join(ROOT_DIR, 'modules', '14-offline.js'));
 
   test('sw.js define partición dedicada de imágenes y control LRU', () => {
-    assert(/origgo-images-v\d+/.test(swCode), 'Debe contar con partición aislada de caché para imágenes');
+    assert(swCode.includes('origgo-images-v11'), 'Debe contar con partición aislada de caché para imágenes');
     assert(swCode.includes('purgarExcesoCache') || swCode.includes('LIMITE_MAXIMO_IMAGENES_CACHE'), 'Debe gestionar cuota LRU de almacenamiento');
   });
 

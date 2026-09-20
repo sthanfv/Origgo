@@ -98,7 +98,7 @@ describe('Pruebas Exhaustivas de Deduplicación y Combinatoria de Filtros', () =
         if (vistosEnlaces.has(enlace)) return false;
         vistosEnlaces.add(enlace);
       }
-      const firma = `${String(item.titulo || '').toLowerCase().trim()}_${String(item.precio || '').toLowerCase().trim()}_${String(item.ciudad || '').toLowerCase().trim()}_${String(item.dato_1 || '').toLowerCase().trim()}`;
+      const firma = `${String(item.titulo || '').toLowerCase().trim()}_${String(item.precio || '').toLowerCase().trim()}_${String(item.ciudad || '').toLowerCase().trim()}`;
       if (firma.length > 5) {
         if (vistosFirmas.has(firma)) return false;
         vistosFirmas.add(firma);

@@ -14,9 +14,5 @@ data/local_db.json
 data/push_subscriptions.json
 data/*.sig
 dist/
-test-results/
-playwright-report/
-bun.lock
-bun.lockb
-yarn.lock
-pnpm-lock.yaml
+*.zip
+origgo_legacy_backup.zip

@@ -14,14 +14,12 @@ const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 
 let cacheDataset = null;
 let mtimeCache = 0;
-let indiceMemoria = null;
 
 /**
- * Carga y almacena en caché en memoria el archivo inmobiliario.json con detección de cambios en disco,
- * pre-indexación por ciudad, operación y ordenamiento para responder en tiempo ultrarrápido (< 50ms).
- * @returns {{ dataset: Object, indice: Object }}
+ * Carga y almacena en caché en memoria el archivo inmobiliario.json con detección de cambios en disco.
+ * @returns {Object}
  */
-function obtenerDatasetEIndices() {
+function obtenerDatasetCatalogo() {
   const rutaCatalogo = path.join(__dirname, '..', '..', 'data', 'inmobiliario.json');
   if (!fs.existsSync(rutaCatalogo)) {
     throw new Error('Archivo de catálogo no encontrado');
@@ -32,67 +30,8 @@ function obtenerDatasetEIndices() {
     const raw = fs.readFileSync(rutaCatalogo, 'utf8');
     cacheDataset = JSON.parse(raw);
     mtimeCache = stat.mtimeMs;
-
-    // Deduplicación idempotente en una sola pasada al cargar
-    const leadsRaw = Array.isArray(cacheDataset.leads) ? cacheDataset.leads : [];
-    const vistosIds = new Set();
-    const vistosFirmas = new Set();
-    const leadsUnicos = leadsRaw.filter((item) => {
-      if (!item || typeof item !== 'object') return false;
-      const id = String(item.id || '').trim();
-      if (id) {
-        if (vistosIds.has(id)) return false;
-        vistosIds.add(id);
-      }
-      const firma = `${normalizar(item.titulo || '')}_${normalizar(item.precio || '')}_${normalizar(item.ciudad || item.ubicacion || '')}_${normalizar(item.dato_1 || '')}`;
-      if (firma.length > 5) {
-        if (vistosFirmas.has(firma)) return false;
-        vistosFirmas.add(firma);
-      }
-      return true;
-    });
-
-    // 1. Conteo y resumen de ciudades agregadas para el selector de la interfaz
-    const resumenCiudades = {};
-    leadsUnicos.forEach((item) => {
-      let c = (item.ciudad || item.ubicacion || '').trim();
-      if (!c) return;
-      if (c.includes(',')) c = c.split(',').pop().trim();
-      const cNorm = c.charAt(0).toUpperCase() + c.slice(1);
-      resumenCiudades[cNorm] = (resumenCiudades[cNorm] || 0) + 1;
-    });
-
-    // 2. Pre-clasificación por criterios de ordenamiento para resolución O(1)
-    const porRecientes = [...leadsUnicos].sort((a, b) => (b.timestamp_ms || b.timestamp || 0) - (a.timestamp_ms || a.timestamp || 0));
-    const porPrecioMenor = [...leadsUnicos].sort((a, b) => extraerPrecioCop(a.precio) - extraerPrecioCop(b.precio));
-    const porPrecioMayor = [...leadsUnicos].sort((a, b) => extraerPrecioCop(b.precio) - extraerPrecioCop(a.precio));
-    const porM2Menor = [...leadsUnicos].sort((a, b) => {
-      const mA = extraerMetrosCuadrados(a.superficie_m2 || a.dato_1);
-      const mB = extraerMetrosCuadrados(b.superficie_m2 || b.dato_1);
-      const rA = mA > 0 ? extraerPrecioCop(a.precio) / mA : Infinity;
-      const rB = mB > 0 ? extraerPrecioCop(b.precio) / mB : Infinity;
-      return rA - rB;
-    });
-    const porRebaja = [...leadsUnicos].sort((a, b) => {
-      const rA = parseFloat(String(a.porcentaje_rebaja || a.rebaja || 0).replace(/[^\d.]/g, '')) || 0;
-      const rB = parseFloat(String(b.porcentaje_rebaja || b.rebaja || 0).replace(/[^\d.]/g, '')) || 0;
-      return rB - rA;
-    });
-
-    indiceMemoria = {
-      leadsBase: leadsUnicos,
-      resumenCiudades,
-      preordenados: {
-        recientes: porRecientes,
-        precio_menor: porPrecioMenor,
-        precio_mayor: porPrecioMayor,
-        m2_menor: porM2Menor,
-        rebaja_mayor: porRebaja
-      }
-    };
   }
-
-  return { dataset: cacheDataset, indice: indiceMemoria };
+  return cacheDataset;
 }
 
 /**
@@ -149,7 +88,26 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { dataset, indice } = obtenerDatasetEIndices();
+    const dataset = obtenerDatasetCatalogo();
+    let leadsRaw = Array.isArray(dataset.leads) ? [...dataset.leads] : [];
+
+    // Deduplicación idempotente preventiva de leads
+    const vistosIds = new Set();
+    const vistosFirmas = new Set();
+    let leads = leadsRaw.filter((item) => {
+      if (!item || typeof item !== 'object') return false;
+      const id = String(item.id || '').trim();
+      if (id) {
+        if (vistosIds.has(id)) return false;
+        vistosIds.add(id);
+      }
+      const firma = `${normalizar(item.titulo || '')}_${normalizar(item.precio || '')}_${normalizar(item.ciudad || item.ubicacion || '')}`;
+      if (firma.length > 5) {
+        if (vistosFirmas.has(firma)) return false;
+        vistosFirmas.add(firma);
+      }
+      return true;
+    });
 
     // Extracción segura de parámetros de búsqueda y paginación
     let urlObj = null;
@@ -167,11 +125,7 @@ module.exports = async function handler(req, res) {
     const busquedaFiltro = normalizar(query.search || urlObj.searchParams.get?.('search') || '');
     const ordenCriterio = String(query.sort || urlObj.searchParams.get?.('sort') || 'recientes').toLowerCase();
 
-    // Selección de base pre-ordenada si no hay búsqueda compleja
-    const fuenteBase = (indice.preordenados[ordenCriterio] || indice.preordenados.recientes);
-    let leads = fuenteBase;
-
-    // 1. Filtrado por Ciudad (tolerancia a acentos y subcadenas)
+    // 1. Filtrado por Ciudad
     if (ciudadFiltro) {
       leads = leads.filter((item) => {
         const c = normalizar(item.ciudad || item.ubicacion || '');
@@ -194,46 +148,49 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3. Filtrado por Texto / Búsqueda Inteligente (Omnibox)
+    // 3. Filtrado por Texto / Búsqueda Inteligente
     if (busquedaFiltro) {
       const tokens = busquedaFiltro.split(/\s+/).filter((t) => t.length > 0);
       leads = leads.filter((item) => {
-        const textoCompleto = normalizar(`${item.titulo || ''} ${item.ubicacion || ''} ${item.sector || ''} ${item.barrio || ''} ${item.descripcion || ''}`);
+        const textoCompleto = normalizar(`${item.titulo || ''} ${item.ubicacion || ''} ${item.sector || ''} ${item.descripcion || ''}`);
         return tokens.every((tok) => textoCompleto.includes(tok));
       });
     }
 
-    // 4. Si se aplicaron filtros y no era un conjunto pre-ordenado trivial, garantizar ordenamiento
-    if ((ciudadFiltro || operacionFiltro || busquedaFiltro) && ordenCriterio !== 'recientes') {
-      if (ordenCriterio === 'm2_menor') {
-        leads.sort((a, b) => {
-          const mA = extraerMetrosCuadrados(a.superficie_m2 || a.dato_1);
-          const mB = extraerMetrosCuadrados(b.superficie_m2 || b.dato_1);
-          const rA = mA > 0 ? extraerPrecioCop(a.precio) / mA : Infinity;
-          const rB = mB > 0 ? extraerPrecioCop(b.precio) / mB : Infinity;
-          return rA - rB;
-        });
-      } else if (ordenCriterio === 'rebaja_mayor') {
-        leads.sort((a, b) => {
-          const rA = parseFloat(String(a.porcentaje_rebaja || a.rebaja || 0).replace(/[^\d.]/g, '')) || 0;
-          const rB = parseFloat(String(b.porcentaje_rebaja || b.rebaja || 0).replace(/[^\d.]/g, '')) || 0;
-          return rB - rA;
-        });
-      } else if (ordenCriterio === 'precio_menor') {
-        leads.sort((a, b) => extraerPrecioCop(a.precio) - extraerPrecioCop(b.precio));
-      } else if (ordenCriterio === 'precio_mayor') {
-        leads.sort((a, b) => extraerPrecioCop(b.precio) - extraerPrecioCop(a.precio));
-      }
+    // 4. Ordenamiento
+    if (ordenCriterio === 'm2_menor') {
+      leads.sort((a, b) => {
+        const m2A = extraerMetrosCuadrados(a.superficie_m2);
+        const m2B = extraerMetrosCuadrados(b.superficie_m2);
+        const pA = extraerPrecioCop(a.precio);
+        const pB = extraerPrecioCop(b.precio);
+        const ratioA = m2A > 0 ? pA / m2A : Infinity;
+        const ratioB = m2B > 0 ? pB / m2B : Infinity;
+        return ratioA - ratioB;
+      });
+    } else if (ordenCriterio === 'rebaja_mayor') {
+      leads.sort((a, b) => {
+        const rebajaA = parseFloat(String(a.porcentaje_rebaja || 0).replace(/[^\d.]/g, '')) || 0;
+        const rebajaB = parseFloat(String(b.porcentaje_rebaja || 0).replace(/[^\d.]/g, '')) || 0;
+        return rebajaB - rebajaA;
+      });
+    } else if (ordenCriterio === 'precio_menor') {
+      leads.sort((a, b) => extraerPrecioCop(a.precio) - extraerPrecioCop(b.precio));
+    } else if (ordenCriterio === 'precio_mayor') {
+      leads.sort((a, b) => extraerPrecioCop(b.precio) - extraerPrecioCop(a.precio));
+    } else {
+      // Por defecto: Más recientes (cronológico inverso por timestamp o índice)
+      leads.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     }
 
-    // 5. Partición por Lotes (Paginación Serverless)
+    // 5. Paginación y Partición por Lotes (Batching)
     const total = leads.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const lotePaginado = leads.slice(startIndex, endIndex);
 
-    // Cabeceras de caché Edge para respuesta ultrarrápida (< 150ms) en Vercel CDN
+    // Cabeceras de caché Edge para respuesta instantánea en Vercel CDN
     res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=300');
 
     return res.status(200).json({
@@ -244,7 +201,6 @@ module.exports = async function handler(req, res) {
       totalPages,
       hayMas: page < totalPages,
       config: dataset.config || {},
-      ciudades: indice.resumenCiudades,
       leads: lotePaginado
     });
   } catch (err) {

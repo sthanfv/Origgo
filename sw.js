@@ -5,8 +5,8 @@
  * Estándar Ecosistema Desmulta DevSecOps.
  */
 
-const NOMBRE_CACHE_CORE = 'origgo-core-v12-20260917';
-const NOMBRE_CACHE_IMGS = 'origgo-images-v12';
+const NOMBRE_CACHE_CORE = 'origgo-core-v11-20260915';
+const NOMBRE_CACHE_IMGS = 'origgo-images-v11';
 const LIMITE_MAXIMO_IMAGENES_CACHE = 60;
 
 const RECURSOS_CRITICOS = [
@@ -75,13 +75,12 @@ async function purgarExcesoCache(nombreCache, maxItems = LIMITE_MAXIMO_IMAGENES_
 }
 
 self.addEventListener('install', (evento) => {
-  self.skipWaiting();
   evento.waitUntil(
     caches.open(NOMBRE_CACHE_CORE).then((cache) => {
       return cache.addAll(RECURSOS_CRITICOS).catch((err) => {
         console.warn('[SW] Aviso de pre-cache parcial:', err);
       });
-    })
+    }).then(() => self.skipWaiting())
   );
 });
 
@@ -110,16 +109,10 @@ self.addEventListener('fetch', (evento) => {
     return;
   }
 
-  // 1. GESTIÓN ESPECIALIZADA DE IMÁGENES (Locales y CDN propios/seguros)
-  // Las imágenes de portales externos (Metrocuadrado, FincaRaíz, etc.) NO se interceptan
-  // con fetch() en el Service Worker para evitar violaciones de connect-src de CSP o fallos de CORS,
-  // permitiendo que el navegador las descargue directamente mediante el elemento <img> nativo.
-  const esRecursoLocalOPropio = (url.origin === self.location.origin) ||
-    url.hostname.includes('r2.dev') ||
+  // 1. GESTIÓN ESPECIALIZADA DE IMÁGENES (Locales y de CDN como Unsplash)
+  const esImagen = evento.request.destination === 'image' ||
+    url.pathname.match(/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i) ||
     url.hostname.includes('unsplash.com');
-
-  const esImagen = (evento.request.destination === 'image' ||
-    url.pathname.match(/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i)) && esRecursoLocalOPropio;
 
   if (esImagen) {
     evento.respondWith(

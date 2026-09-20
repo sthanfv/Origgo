@@ -169,18 +169,6 @@ module.exports = async function handler(req, res) {
     const { leadId, contactoCifrado, leadCity, lang = 'es' } = validation.data;
     const isEn = lang === 'en';
 
-    // 🛡️ Comprobar si el inmueble ha sido retirado / desindexado por el titular (Notice & Takedown)
-    if (typeof db.isLeadBlacklisted === 'function') {
-      const estaDesindexado = await db.isLeadBlacklisted(leadId);
-      if (estaDesindexado) {
-        return res.status(410).json({
-          ok: false,
-          error: 'INMUEBLE_DESINDEXADO',
-          message: isEn ? 'This property was removed from the index by its owner. Zero credits deducted.' : 'Este inmueble ha sido retirado por su propietario. No se descontaron créditos.'
-        });
-      }
-    }
-
     const leadCatalogo = obtenerLeadPorId(leadId);
     const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
 
@@ -413,6 +401,29 @@ module.exports = async function handler(req, res) {
         });
       }
       return res.status(400).json({ ok: false, error: respuestaFinal.error });
+    }
+
+    // Despacho transaccional autónomo del Dossier en PDF/HTML por correo (Fase 2)
+    if (respuestaFinal.ok) {
+      (async () => {
+        try {
+          const userDoc = await db.getUserByPhone(session.phone);
+          const buyerEmail = session.email || userDoc?.email || (req.body?.email ? String(req.body.email).trim() : null);
+          if (buyerEmail) {
+            const { despacharReporteDossierEmail } = require('../../lib/report-generator');
+            await despacharReporteDossierEmail({
+              email: buyerEmail,
+              lead: leadEncontrado,
+              contacto: respuestaFinal.contacto,
+              datosRevelados: respuestaFinal.datosRevelados,
+              userPhone: session.phone,
+              lang
+            });
+          }
+        } catch (eEmail) {
+          console.warn('[unlock] Aviso en despacho de dossier por email:', eEmail.message);
+        }
+      })();
     }
 
     return res.status(200).json(respuestaFinal);

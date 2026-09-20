@@ -1,0 +1,183 @@
+/**
+ * 🔑 SERVICIO DE AUTENTICACIÓN Y DESAFÍOS CRIPTOGRÁFICOS
+ * Origgo Intelligence — Adaptador React / Vite
+ * 
+ * Orquesta la resolución de retos Proof-of-Work (PoW) en el navegador,
+ * la validación de PIN + WhatsApp y la persistencia de tokens JWT.
+ */
+
+import { apiFetch } from './api';
+import { UserSession } from '../types';
+
+/** Estructura del reto de seguridad devuelto por el backend */
+export interface DesafioSeguridad {
+  salt: string;
+  timestamp: number;
+  expira: number;
+  dificultad: number;
+  signature: string;
+  nonce?: number;
+}
+
+/**
+ * Resuelve de forma computacional en el cliente el reto de Prueba de Trabajo (PoW).
+ * @param desafio Reto emitido por el backend con salt y dificultad
+ * @returns Nonce que satisface la dificultad de prefijo con ceros
+ */
+export async function resolverDesafioPoW(desafio: DesafioSeguridad): Promise<number> {
+  if (!desafio || !desafio.salt) return 0;
+  const dificultad = parseInt(String(desafio.dificultad), 10) || 3;
+  const prefijoRequerido = '0'.repeat(dificultad);
+  const salt = desafio.salt;
+
+  if (typeof window !== 'undefined' && window.crypto?.subtle) {
+    const encoder = new TextEncoder();
+    let nonce = 0;
+    while (nonce < 1000000) {
+      const datos = encoder.encode(`${salt}:${nonce}`);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', datos);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+      if (hashHex.startsWith(prefijoRequerido)) {
+        return nonce;
+      }
+      nonce++;
+    }
+  }
+  return 0;
+}
+
+/**
+ * Solicita y resuelve automáticamente el desafío de seguridad anti-fuerza bruta.
+ * @returns Objeto con el reto y nonce resuelto
+ */
+export async function obtenerDesafioResuelto(): Promise<DesafioSeguridad | null> {
+  try {
+    const respuesta = await apiFetch<{ ok: boolean; challenge: DesafioSeguridad }>('/api/auth/challenge');
+    if (!respuesta || !respuesta.challenge) return null;
+
+    const nonce = await resolverDesafioPoW(respuesta.challenge);
+    return {
+      ...respuesta.challenge,
+      nonce,
+    };
+  } catch (error) {
+    console.warn('[auth] Error al obtener o resolver desafío de seguridad:', error);
+    return null;
+  }
+}
+
+/**
+ * Inicia sesión mediante WhatsApp y PIN de 4 dígitos.
+ * @param celular Número de WhatsApp de 10 dígitos
+ * @param pin Código PIN asignado (ej. HNT-4821 o 4821)
+ */
+export async function iniciarSesionConPin(
+  celular: string,
+  pin: string
+): Promise<{ ok: boolean; token?: string; user?: UserSession; error?: string }> {
+  try {
+    const retoResuelto = await obtenerDesafioResuelto();
+
+    const payload: any = {
+      action: 'login',
+      celular: celular.replace(/[^\d]/g, ''),
+      pin: pin.trim(),
+    };
+
+    if (retoResuelto) {
+      payload.securityChallenge = retoResuelto;
+    }
+
+    const res = await apiFetch<{ ok: boolean; token: string; user: UserSession; error?: string }>(
+      '/api/auth/session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (res.ok && res.token) {
+      localStorage.setItem('origgo_auth_jwt_token', res.token);
+      localStorage.setItem('origgo_session_phone', res.user?.phone || celular);
+      return { ok: true, token: res.token, user: res.user };
+    }
+
+    return { ok: false, error: res.error || 'Credenciales no válidas' };
+  } catch (err: any) {
+    return { ok: false, error: err.message || 'Fallo de autenticación en el servidor' };
+  }
+}
+
+/**
+ * Reclama la acreditación de una sesión y créditos tras completar un pago en Wompi.
+ * @param reference Referencia de la transacción de Wompi
+ */
+export async function reclamarReferenciaPago(
+  reference: string
+): Promise<{ ok: boolean; token?: string; user?: UserSession; tempPin?: string; isNewUser?: boolean; error?: string }> {
+  try {
+    const res = await apiFetch<{
+      ok: boolean;
+      token: string;
+      user: UserSession;
+      tempPin?: string;
+      isNewUser?: boolean;
+      error?: string;
+    }>('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'claim_reference',
+        reference: reference.trim(),
+      }),
+    });
+
+    if (res.ok && res.token) {
+      localStorage.setItem('origgo_auth_jwt_token', res.token);
+      if (res.user?.phone) {
+        localStorage.setItem('origgo_session_phone', res.user.phone);
+      }
+      return res;
+    }
+
+    return { ok: false, error: res.error || 'No se pudo reclamar la orden de pago' };
+  } catch (err: any) {
+    return { ok: false, error: err.message || 'Error al conectar con el ledger de pagos' };
+  }
+}
+
+/**
+ * Verifica si hay una sesión activa válida guardada en el navegador.
+ */
+export async function verificarSesionLocal(): Promise<{ authenticated: boolean; user?: UserSession }> {
+  const token = localStorage.getItem('origgo_auth_jwt_token');
+  if (!token) {
+    return { authenticated: false };
+  }
+
+  try {
+    const res = await apiFetch<{ authenticated: boolean; user?: UserSession }>('/api/auth/session', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.authenticated && res.user) {
+      return { authenticated: true, user: { ...res.user, token } };
+    }
+    return { authenticated: false };
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+/**
+ * Cierra la sesión activa y limpia los registros locales.
+ */
+export function cerrarSesionLocal(): void {
+  try {
+    localStorage.removeItem('origgo_auth_jwt_token');
+    localStorage.removeItem('origgo_session_phone');
+  } catch {}
+}

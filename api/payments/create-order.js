@@ -69,20 +69,11 @@ module.exports = async function handler(req, res) {
     if (!id) return res.status(400).json({ error: 'Falta ID de transacción' });
 
     try {
-      const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
+      const isProd = process.env.NODE_ENV === 'production' && !process.env.WOMPI_PUBLIC_KEY?.includes('test');
       const host = isProd ? 'production.wompi.co' : 'sandbox.wompi.co';
-      const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_test_local_suite';
       
       const data = await new Promise((resolve, reject) => {
-        const reqWompi = https.request({
-          hostname: host,
-          path: `/v1/transactions/${encodeURIComponent(id)}`,
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${publicKey}`,
-            'Accept': 'application/json'
-          }
-        }, (response) => {
+        https.get(`https://${host}/v1/transactions/${encodeURIComponent(id)}`, (response) => {
           let body = '';
           response.on('data', (chunk) => body += chunk);
           response.on('end', () => {
@@ -92,9 +83,7 @@ module.exports = async function handler(req, res) {
               reject(e);
             }
           });
-        });
-        reqWompi.on('error', reject);
-        reqWompi.end();
+        }).on('error', reject);
       });
 
       if (data && data.data && data.data.reference) {

@@ -16,7 +16,6 @@ const db = require('../../lib/db');
 const { generatePin } = require('../../lib/crypto');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
-const { procesarLoteRetencion } = require('../../lib/retention');
 
 /**
  * Valida la cabecera Authorization: Bearer <CRON_SECRET> en tiempo constante.
@@ -138,10 +137,18 @@ module.exports = async function handler(req, res) {
     const ordenesPendientes = await db.getPendingOrders(25);
     metricas.totalRevisadas = ordenesPendientes.length;
 
-    if (ordenesPendientes.length > 0) {
-      const ahora = Date.now();
-      const DOS_MINUTOS_MS = 2 * 60 * 1000;
-      const VEINTICUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
+    if (ordenesPendientes.length === 0) {
+      return res.status(200).json({
+        ok: true,
+        mensaje: 'No hay órdenes pendientes para conciliar.',
+        metricas,
+        detalles
+      });
+    }
+
+    const ahora = Date.now();
+    const DOS_MINUTOS_MS = 2 * 60 * 1000;
+    const VEINTICUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
 
     const isProd = (process.env.WOMPI_PUBLIC_KEY || '').startsWith('pub_prod_');
     const wompiApiBase = isProd ? 'https://production.wompi.co/v1' : 'https://sandbox.wompi.co/v1';
@@ -259,32 +266,6 @@ module.exports = async function handler(req, res) {
             ? trxAprobada.customer_email.toLowerCase().trim()
             : (orden.email ? orden.email.toLowerCase().trim() : null);
 
-          // 🛡️ Cerrojo de Entrega Unificado: Verificar si la orden ya fue acreditada previamente (vía webhook o claim_reference)
-          const yaReclamada = await db.isTransactionProcessed(`claim_${ref}`);
-          if (yaReclamada) {
-            console.log(`[reconcile-cron] Referencia ${ref} ya fue acreditada previamente. Sincronizando estado.`);
-            await db.updateOrderStatus(ref, 'APPROVED', {
-              transactionId: trxAprobada.id,
-              paymentMethod: trxAprobada.payment_method_type,
-              reconciledAt: new Date().toISOString(),
-              reconciledBy: 'cron_already_credited',
-              email: emailCliente,
-              celular
-            });
-            metricas.aprobadas++;
-            detalles.push({ reference: ref, accion: 'YA_ACREDITADA_ESTADO_SINCRONIZADO' });
-            continue;
-          }
-
-          // Adquirir candado de entrega atómico para bloquear dobles acreditaciones simultáneas
-          await db.recordTransaction(`claim_${ref}`, {
-            reference: ref,
-            celular,
-            transactionId: trxAprobada.id,
-            reconciledBy: 'cron',
-            claimedAt: new Date().toISOString()
-          });
-
           // Auto-acreditar saldo en el ledger
           const usuarioActualizado = await db.addCredits(celular, creditos, pin, planData, emailCliente);
 
@@ -361,43 +342,10 @@ module.exports = async function handler(req, res) {
         detalles.push({ reference: ref, accion: 'ERROR_PROCESAMIENTO', error: errLoop.message });
       }
     }
-  }
-
-    // -------------------------------------------------------------
-    // 🔄 TAREA SECUNDARIA DIARIA: MOTOR DE RETENCIÓN Y CICLO DE VIDA
-    // -------------------------------------------------------------
-    let resultadoRetencion = { procesados: 0, impactados: 0, acciones: [] };
-    try {
-      console.log('[Cron Diario] Iniciando evaluación de retención de clientes...');
-      const candidatos = typeof db.getActiveUsersForRetention === 'function'
-        ? await db.getActiveUsersForRetention(150)
-        : [];
-
-      if (candidatos.length > 0) {
-        resultadoRetencion = await procesarLoteRetencion(candidatos);
-        console.log(`[Cron Diario] Retención ejecutada: ${resultadoRetencion.impactados} usuarios impactados de ${resultadoRetencion.procesados} evaluados.`);
-      } else {
-        console.log('[Cron Diario] Cero candidatos pendientes de retención hoy.');
-      }
-    } catch (errRetencion) {
-      console.warn('[Cron Diario] Aviso no fatal en motor de retención:', errRetencion.message);
-    }
 
     return res.status(200).json({
       ok: true,
-      mensaje: 'Cron de conciliación y retención ejecutado exitosamente.',
       ejecutadoEn: new Date().toISOString(),
-      timestamp: new Date().toISOString(),
-      conciliacion: {
-        totalPendientes: ordenesPendientes ? ordenesPendientes.length : 0,
-        actualizadas: metricas.aprobadas + metricas.rechazadas + metricas.expiradas,
-        ignoradas: metricas.omitidasPorRecientes + metricas.pendientes
-      },
-      retencion: {
-        evaluados: resultadoRetencion.procesados || 0,
-        impactados: resultadoRetencion.impactados || 0,
-        accionesGeneradas: resultadoRetencion.acciones?.length || 0
-      },
       metricas,
       detalles
     });

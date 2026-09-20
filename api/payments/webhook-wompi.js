@@ -60,16 +60,16 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: 'Firma inválida o incompleta' });
   }
 
-  // 🛡️ Ventana Anti-Replay: Tolera hasta 24 horas (86.400s) para soportar reintentos oficiales de Wompi ante latencias bancarias
+  // 🛡️ Ventana Anti-Replay: el timestamp no puede diferir en más de 5 minutos (300 segundos) del reloj del servidor
   if (process.env.NODE_ENV !== 'test') {
     const timestampMs = typeof event.timestamp === 'number' 
       ? (event.timestamp > 1e11 ? event.timestamp : event.timestamp * 1000)
       : Date.parse(event.timestamp);
     if (!isNaN(timestampMs)) {
-      const desfaseSegundos = (Date.now() - timestampMs) / 1000;
-      if (desfaseSegundos > 86400 || desfaseSegundos < -300) {
-        console.warn(`[webhook-wompi] Rechazo por timestamp fuera de ventana (desfase: ${desfaseSegundos.toFixed(0)}s)`);
-        return res.status(400).json({ error: 'Timestamp fuera de ventana anti-replay' });
+      const desfaseSegundos = Math.abs(Date.now() - timestampMs) / 1000;
+      if (desfaseSegundos > 300) {
+        console.warn(`[webhook-wompi] Rechazo por timestamp expirado (desfase: ${desfaseSegundos.toFixed(0)}s > 300s)`);
+        return res.status(400).json({ error: 'Timestamp expirado (ventana anti-replay superada)' });
       }
     }
   }
@@ -228,43 +228,11 @@ module.exports = async function handler(req, res) {
     await db.savePendingOrder(reference, pendingOrder);
   }
 
-  // 🛡️ Cerrojo de Entrega Unificado: Verificar si la orden ya fue acreditada vía claim_reference
-  const yaReclamada = await db.isTransactionProcessed(`claim_${reference}`);
-  if (yaReclamada) {
-    console.log(`[webhook-wompi] Referencia ${reference} ya fue acreditada previamente por el usuario. Omitiendo doble entrega.`);
-    const uExistente = await db.getUserByPhone(celular);
-    return res.status(200).json({
-      ok: true,
-      alreadyCredited: true,
-      user: { phone: uExistente?.phone || celular, credits: uExistente?.credits || 0, plan: uExistente?.plan || null }
-    });
-  }
-
-  // Adquirir candado de entrega para bloquear colisiones simultáneas
-  await db.recordTransaction(`claim_${reference}`, {
-    reference,
-    celular,
-    transactionId,
-    claimedAt: new Date().toISOString()
-  });
-
   const existingUser = await db.getUserByPhone(celular);
   const pin = existingUser ? existingUser.pin : generatePin();
 
   const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
   console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
-
-  // Registro atómico en el embudo de conversión
-  try {
-    const { registrarEventoEmbudo, ETAPAS_EMBUDO } = require('../../lib/funnel');
-    await registrarEventoEmbudo({
-      etapa: ETAPAS_EMBUDO.CONVERSION,
-      tipo: 'pago',
-      montoCop: montoPagado > 0 ? montoPagado / 100 : 0,
-      plan: pendingOrder?.productType || null,
-      ciudad: pendingOrder?.city || null
-    });
-  } catch (_) {}
 
   // Sincronizar preferencia de idioma en el perfil si viene en la orden
   if (pendingOrder?.lang && (pendingOrder.lang === 'es' || pendingOrder.lang === 'en')) {
