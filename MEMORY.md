@@ -1,6 +1,37 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 15:11 (GMT-5)
+Última actualización: 2026-09-20 15:18 (GMT-5)
+
+---
+
+-87. **Blindaje Definitivo contra Bloqueos de Imágenes y Mismatch de Service Worker: Bypass de Dominios Externos en sw.js v13, CSP connect-src Universal y modulePreload: false**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Bloqueos de Imágenes Inmobiliarias por CSP:* En consola aparecía recurrentemente `sw.js:153 Fetch API cannot load https://multimedia.metrocuadrado.com/... Refused to connect because it violates the document's Content Security Policy.` y violaciones de `connect-src`.
+      2. *Causa Raíz:*
+         - En HTML, las etiquetas `<img>` se rigen por la directiva `img-src` (que permite `https:`). Sin embargo, el Service Worker `sw.js` interceptaba indiscriminadamente las solicitudes de imágenes de terceros (`multimedia.metrocuadrado.com`, `fincaraiz.com.co`, etc.) y ejecutaba `fetch(evento.request)`.
+         - Al ser una llamada `fetch()`, el navegador la somete a la directiva `connect-src` de CSP. Dado que `multimedia.metrocuadrado.com` no estaba explícitamente en `connect-src`, el navegador bloqueaba la conexión y fallaba la carga.
+      3. *Advertencia de Mismatch en Preload de Módulos:* En consola aparecía `A preload for 'vendor-DfSJUp79.js' is found, but is not used because it is a cross-world service worker resource mismatch.` debido a etiquetas `<link rel="modulepreload">` inyectadas por Vite en concurrencia con el Service Worker.
+    - **Solución Implementada:**
+      1. **Bypass de Imágenes de Terceros en `sw.js` (Versión `v13`):**
+         - Si una solicitud de imagen proviene de un dominio externo (`url.origin !== self.location.origin`), el Service Worker hace `return;` de inmediato sin invocar `evento.respondWith()`.
+         - El navegador carga la imagen directamente con el motor nativo de renderizado bajo la directiva `img-src 'self' data: https: blob:`, sin someterla a `connect-src` ni gastar cuota de caché del cliente.
+         - Sincronización a `public/sw.js` y actualización a caché `v13`.
+      2. **Cobertura Universal de Dominios en CSP (`vercel.json`):**
+         - Se agregaron a `connect-src` todos los orígenes de imágenes inmobiliarias y servicios de traducción: `https://*.metrocuadrado.com`, `https://multimedia.metrocuadrado.com`, `https://*.fincaraiz.com.co`, `https://img.fincaraiz.com.co`, `https://images.fincaraiz.com.co`, `https://*.mercadolibre.com`, `https://*.mlstatic.com`, `https://*.properati.com.co`, `https://*.ciencuadras.com`, `https://cdn2.infocasas.com.uy`, `https://*.infocasas.com.uy`, `https://translate-pa.googleapis.com` y comodines de Google APIs.
+      3. **Erradicación de Mismatch en Preload (`vite.config.mts`):**
+         - Configuración de `modulePreload: false` en `build`, eliminando advertencias de colisión entre el Service Worker y el parser del navegador.
+      4. **Validación:**
+         - `npm run lint`: 0 errores.
+         - `npm run build`: 0 advertencias y 0 errores.
+         - `npm test`: 100% de las 8 fases DevSecOps superadas con éxito.
+    - **Archivos Afectados:**
+      - `sw.js`
+      - `public/sw.js`
+      - `vercel.json`
+      - `vite.config.mts`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Imágenes de Metrocuadrado y portales cargando limpiamente, cero errores de CSP y cero advertencias de preload.
 
 ---
 

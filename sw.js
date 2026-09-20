@@ -5,8 +5,8 @@
  * Estándar Ecosistema Desmulta DevSecOps.
  */
 
-const NOMBRE_CACHE_CORE = 'origgo-core-v12-20260920';
-const NOMBRE_CACHE_IMGS = 'origgo-images-v12';
+const NOMBRE_CACHE_CORE = 'origgo-core-v13-20260920';
+const NOMBRE_CACHE_IMGS = 'origgo-images-v13';
 const LIMITE_MAXIMO_IMAGENES_CACHE = 60;
 
 const RECURSOS_CRITICOS = [
@@ -129,10 +129,15 @@ self.addEventListener('fetch', (evento) => {
     return;
   }
 
-  // 1. GESTIÓN ESPECIALIZADA DE IMÁGENES (Locales y de CDN como Unsplash)
+  // 1. GESTIÓN DE IMÁGENES: Solo cachear imágenes locales del propio origen
   const esImagen = evento.request.destination === 'image' ||
-    url.pathname.match(/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i) ||
-    url.hostname.includes('unsplash.com');
+    url.pathname.match(/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i);
+
+  // Si la imagen proviene de portales externos (Metrocuadrado, FincaRaiz, etc.), NO INTERCEPTAR.
+  // El navegador la carga limpiamente con <img> nativo sin restricciones de connect-src.
+  if (esImagen && url.origin !== self.location.origin) {
+    return;
+  }
 
   if (esImagen) {
     evento.respondWith(
