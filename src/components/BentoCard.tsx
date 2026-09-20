@@ -17,6 +17,29 @@ interface BentoCardProps {
   onUnlock: (item: LeadItem, index: number) => void;
 }
 
+function formatearFechaRelativa(fecha?: string, isEn?: boolean): string {
+  if (!fecha) return isEn ? 'Recent' : 'Reciente';
+  if (!isEn) return fecha;
+  const mMin = fecha.match(/(\d+)\s*(?:m|minutos|min)/i);
+  if (mMin) return `${mMin[1]}m ago`;
+  const mHoras = fecha.match(/(\d+)\s*(?:h|horas|hora)/i);
+  if (mHoras) return `${mHoras[1]}h ago`;
+  const mDias = fecha.match(/(\d+)\s*(?:d|días|dia|dias)/i);
+  if (mDias) return `${mDias[1]}d ago`;
+  return fecha.replace(/^Hace\s+/i, '').trim() + ' ago';
+}
+
+function formatearDatoSpecs(dato?: string, isEn?: boolean): string {
+  if (!dato || !isEn) return dato || '';
+  return dato
+    .replace(/(\d+)\s*Hab/gi, '$1 Beds')
+    .replace('1 Beds', '1 Bed')
+    .replace(/(\d+)\s*Baño[s]?/gi, '$1 Baths')
+    .replace('1 Baths', '1 Bath')
+    .replace(/(\d+)\s*Garaje[s]?/gi, '$1 Parking')
+    .replace('1 Parkings', '1 Parking');
+}
+
 export const BentoCard: React.FC<BentoCardProps> = React.memo(({
   item,
   index,
@@ -155,14 +178,12 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
           <span className="badge-time-pill">
             <i className="fa-regular fa-clock"></i> 
             <span className="time-relative-text">
-              {item.fecha_relativa 
-                ? (isEn ? item.fecha_relativa.replace('Hace ', '').replace('m', 'm ago').replace('h', 'h ago').replace('d', 'd ago') : item.fecha_relativa) 
-                : (isEn ? 'Recent' : 'Reciente')}
+              {formatearFechaRelativa(item.fecha_relativa, isEn)}
             </span>
           </span>
           {item.urgencia && (
             <span className={`badge-status-pill ${item.urgencia_tipo || 'urgente'}`}>
-              <i className="fa-solid fa-bolt"></i> {item.urgencia}
+              <i className="fa-solid fa-bolt"></i> {isEn && item.urgencia_en ? item.urgencia_en : item.urgencia}
             </span>
           )}
           {isUnlocked && (
@@ -198,16 +219,16 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
           <div className="card-location">
             <i className="fa-solid fa-location-dot"></i>
             <span>
-              {unlockedData?.realLocation || `${item.tipo_inmueble || (item.tipo_operacion === 'arriendo' ? (isEn ? 'Rent' : 'Arriendo') : (isEn ? 'Sale' : 'Venta'))} · ${item.barrio}, ${item.ciudad}`}
+              {unlockedData?.realLocation || `${(isEn && item.tipo_inmueble_en ? item.tipo_inmueble_en : item.tipo_inmueble) || (item.tipo_operacion === 'arriendo' ? (isEn ? 'Rent' : 'Arriendo') : (isEn ? 'Sale' : 'Venta'))} · ${item.barrio}, ${item.ciudad}`}
             </span>
           </div>
 
           <h3 
             className="card-title" 
-            title={unlockedData?.realTitle || item.titulo}
+            title={unlockedData?.realTitle || (isEn && item.titulo_en ? item.titulo_en : item.titulo)}
             onClick={() => setIsSlideupOpen(!isSlideupOpen)}
           >
-            {unlockedData?.realTitle || item.titulo}
+            {unlockedData?.realTitle || (isEn && item.titulo_en ? item.titulo_en : item.titulo)}
           </h3>
 
           {(item.dato_1 || item.dato_2) && (
@@ -217,7 +238,7 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
               title={isEn ? "Click to view full specs" : "Click para ver ficha completa"}
             >
               <i className="fa-solid fa-ruler-combined"></i>
-              <span>{[item.dato_1, item.dato_2].filter(Boolean).join(' · ')}</span>
+              <span>{[formatearDatoSpecs(item.dato_1, isEn), formatearDatoSpecs(item.dato_2, isEn)].filter(Boolean).join(' · ')}</span>
             </div>
           )}
 
@@ -307,13 +328,13 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
             {item.dato_1 && (
               <div className="slideup-spec-card">
                 <span className="slideup-spec-key"><i className="fa-solid fa-ruler-combined"></i> {t('slideup_spec_area', 'Área')}</span>
-                <span className="slideup-spec-val">{item.dato_1}</span>
+                <span className="slideup-spec-val">{formatearDatoSpecs(item.dato_1, isEn)}</span>
               </div>
             )}
             {item.dato_2 && (
               <div className="slideup-spec-card">
                 <span className="slideup-spec-key"><i className="fa-solid fa-bed"></i> {t('slideup_spec_rooms', 'Distribución')}</span>
-                <span className="slideup-spec-val">{item.dato_2}</span>
+                <span className="slideup-spec-val">{formatearDatoSpecs(item.dato_2, isEn)}</span>
               </div>
             )}
           </div>

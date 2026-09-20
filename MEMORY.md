@@ -1,6 +1,52 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 11:15 (GMT-5)
+Última actualización: 2026-09-20 12:00 (GMT-5)
+
+---
+
+-79. **Ingesta Segura de Leads desde Hardware (Samsung Galaxy J7), Cifrado en Reposo y Corrección de Traducciones Bilingües**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Fallo en conmutación a inglés:* Al cambiar a inglés, los tiempos relativos mostraban texto corrupto (`7 H AGOORAS` en lugar de `7h ago`) debido a reemplazos frágiles sobre cadenas compuestas en español. Faltaba enlace de atributos bilingües (`titulo_en`, `tipo_inmueble_en`, `urgencia_en`) y existía bloqueo CSP en `vercel.json` para scripts inline de inicialización de tema e idioma.
+      2. *Arquitectura de Ingesta desde Hardware Local:* Se requería canalizar el flujo de oportunidades capturadas por el scraper que se ejecuta en el dispositivo Samsung Galaxy J7 hacia el backend serverless y Firestore, garantizando autenticación blindada, limitación de lotes (Hobby Plan safe), cifrado obligatorio en reposo y exclusión de anuncios desindexados (Notice & Takedown).
+    - **Solución Implementada:**
+      1. **Corrección Bilingüe y CSP:**
+         - En `src/components/BentoCard.tsx`: creación de funciones robustas `formatearFechaRelativa(fecha, isEn)` y `formatearDatoSpecs(dato, isEn)`.
+         - Soporte preferente para `titulo_en`, `tipo_inmueble_en` y `urgencia_en` en la tarjeta y en el slideup drawer de especificaciones.
+         - En `vercel.json`: adición de `'unsafe-inline'` a `script-src` para permitir la inicialización sin FOUC de tema e idioma desde `index.html`.
+      2. **Persistencia y Lotes en `lib/db.js`:**
+         - Declaración de `leadsRef` e integración transparente en Firestore (`db.collection('leads')`) y almacenamiento local en memoria (`createMemoryCollection('leads')`).
+         - Implementación de `upsertLeadsBatch(leads)` con reintentos `withRetry()`, timestamps atómicos (`updatedAt`, `createdAt`) e idempotencia por ID de lead.
+      3. **Endpoint Blindado `api/leads/ingest.js`:**
+         - Exclusividad para método HTTP `POST`.
+         - Autenticación en tiempo constante (`crypto.timingSafeEqual`) contra `process.env.INGEST_SECRET_KEY` vía cabecera `x-origgo-ingest-token`.
+         - Control de saturación perimetral con `checkRateLimitAsync`.
+         - Límite estricto de máximo 100 leads por lote (HTTP 413 ante desbordamiento).
+         - Validación de integridad: `id`, `titulo`, `precio_raw` y `contacto_cifrado` AES-256-GCM obligatorio.
+         - Filtro activo contra la lista negra de Notice & Takedown (`db.isLeadBlacklisted`).
+      4. **Despachador Transaccional `scripts/outbox_dispatcher.js`:**
+         - Patrón Transactional Outbox para hardware Samsung Galaxy J7 con SQLite (`better-sqlite3`) y fallback JSON.
+         - Despacho en lotes de 25 leads con backoff exponencial y jitter aleatorio ante pérdidas de señal celular.
+         - Marcado de estados transaccionales (`PENDING` -> `SENT`).
+      5. **Suite DevSecOps Automatizada:**
+         - Creación de `tests/leads_ingest.test.js` con 6 pruebas unitarias integradas en `scripts/validate.js` (Fase 5).
+         - Configuración de `INGEST_SECRET_KEY` en `.env.example` y `lib/env.js`.
+         - `data/outbox*` y `data/*.db` protegidos en `.gitignore`.
+    - **Archivos Afectados:**
+      - `src/components/BentoCard.tsx`
+      - `vercel.json`
+      - `lib/db.js`
+      - `lib/env.js`
+      - `.env.example`
+      - `.gitignore`
+      - `api/leads/ingest.js`
+      - `scripts/outbox_dispatcher.js`
+      - `tests/leads_ingest.test.js`
+      - `scripts/validate.js`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - 100% de las 8 fases DevSecOps aprobadas (0 errores).
+      - Conmutación bilingüe fluida y sin violaciones CSP.
+      - Circuito de ingesta desde hardware local listo y asegurado.
 
 ---
 

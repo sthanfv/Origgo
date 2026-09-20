@@ -60,7 +60,9 @@ Este repositorio contiene la plataforma moderna desacoplada de Origgo diseñada 
 | **Telemetría y Perro Guardián serverless** | [`api/telemetry/report.js`](api/telemetry/report.js) | Ingesta no bloqueante con ofuscación PII/PCI |
 | **Perro Guardián y reporte en cliente** | [`modules/00-security.js`](modules/00-security.js) | `inicializarPerroGuardian()`, `sendBeacon` |
 | **Cola de reintentos y contrato de catálogo** | [`modules/03-api.js`](modules/03-api.js) | `fetchConReintentos()`, `validarContratoCatalogo()` |
-| **Compilador y minificador de assets** | [`scripts/build.js`](scripts/build.js) | Ensambla modules/ -> app.js y styles/ -> style.css |
+| **Ingesta segura de leads desde hardware** | [`api/leads/ingest.js`](api/leads/ingest.js) | Token en tiempo constante, validación de integridad y filtro 410 |
+| **Despachador transaccional Outbox (Galaxy J7)** | [`scripts/outbox_dispatcher.js`](scripts/outbox_dispatcher.js) | Cola SQLite local, lotes de 25 y backoff exponencial |
+| **Auto-soporte y desindexación (Notice & Takedown)**| [`api/support.js`](api/support.js) | Retiro de anuncios por propietarios (Habeas Data) |
 | **Suite de validación DevSecOps (8 fases)** | [`scripts/validate.js`](scripts/validate.js) | `npm test` antes de cada despliegue |
 | **Firma criptográfica offline de datasets** | [`scripts/sign-data.js`](scripts/sign-data.js) | Genera firmas `.sig` para JSONs estáticos |
 
