@@ -31,8 +31,13 @@
           var l = localStorage.getItem('origgo_lang');
           if (l === 'en') {
             document.documentElement.lang = 'en';
-          } else if (l === 'es') {
+          } else {
             document.documentElement.lang = 'es';
+          }
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(function(reg) {
+              reg.update();
+            }).catch(function() {});
           }
         } catch(e) {}
       })();

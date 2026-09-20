@@ -1,6 +1,43 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 14:20 (GMT-5)
+Última actualización: 2026-09-20 14:35 (GMT-5)
+
+---
+
+-84. **Erradicación Definitiva de Errores de Consola: Blindaje de Service Worker v12 contra Intercepción de Terceros, Cobertura Completa de Dominios en CSP y Sincronización en tests/filters_sorting**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Errores Rojos en Consola en `sw.js:222`:* El usuario reportó múltiples violaciones de CSP arrojadas desde `sw.js:222` al conectar a `https://www.gstatic.com/...` y `https://translate.google.com/gen204...` arrojando `Uncaught (in promise) TypeError: Failed to fetch`.
+      2. *Causas Raíz Detectadas:*
+         - En `sw.js`, el manejador `fetch` interceptaba todas las solicitudes de la página mediante `evento.respondWith()` en su bloque de contingencia de recursos estáticos, incluso las generadas por extensiones o módulos de traducción de Google.
+         - Al ejecutar `fetch(evento.request)` dentro del Service Worker contra un dominio externo de telemetría/traducción no listado en `connect-src` de CSP (`https://www.gstatic.com`), la petición era bloqueada y la promesa era rechazada sin capturador `.catch()`, provocando un fallo de promesa no capturada en la consola.
+         - En `public/`, no existía `sw.js` empaquetado para distribución por Vite en producción, impidiendo la actualización del worker en clientes previamente instalados.
+         - En `tests/filters_sorting.test.js`, la firma compuesta de deduplicación no contemplaba `item.dato_1` (área), difiriendo de `App.tsx` y arrojando fallo en `assert.strictEqual(deduplicados.length, 150)`.
+    - **Solución Implementada:**
+      1. **Guardia Perimetral Estricta en `sw.js` (Versión `v12`):**
+         - Ignorar de raíz cualquier protocolo no `http/https`.
+         - Detección inmediata y bypass de dominios de Google Translate (`translate`, `gstatic.com`, `google.com`, `googleapis.com`), retornando sin invocar `evento.respondWith()` para que el navegador resuelva de forma nativa.
+         - En el bloque de recursos estáticos, limitación estricta a `url.origin === self.location.origin`. Todo origen externo que no sea imagen es ignorado por el Service Worker.
+         - Envoltorio de contingencia en `fetch` con `.catch(() => new Response('', { status: 408 }))` para anular por completo los rechazos de promesas.
+      2. **Distribución Automática de `sw.js`:**
+         - Copia de `sw.js` a `public/sw.js`, garantizando que Vite lo incluya en `dist/sw.js` en cada build.
+         - En `index.html`: registro proactivo y llamada a `reg.update()` para forzar el reemplazo del worker obsoleto en el navegador del cliente.
+      3. **Ampliación Integral de CSP en `vercel.json`:**
+         - Inclusión de `https://www.gstatic.com`, `https://*.gstatic.com`, `https://*.google.com` y `https://*.googleapis.com` en `connect-src`, `style-src`, `script-src` y `font-src`.
+      4. **Armonización de Firma en `tests/filters_sorting.test.js`:**
+         - Inclusión de `item.dato_1` en la firma canónica para validar con precisión matemática la unicidad de los 150 inmuebles del catálogo.
+      5. **Pruebas y Verificación:**
+         - `npm run lint`: 0 errores.
+         - `npm run build`: 100% exitoso.
+         - `npm test`: 100% de las 8 fases DevSecOps en verde.
+    - **Archivos Afectados:**
+      - `sw.js`
+      - `public/sw.js`
+      - `vercel.json`
+      - `index.html`
+      - `tests/filters_sorting.test.js`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Consola 100% limpia, sin intercepciones no deseadas del Service Worker ni rechazos de CSP.
 
 ---
 
