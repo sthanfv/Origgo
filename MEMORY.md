@@ -1,6 +1,33 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 11:05 (GMT-5)
+Última actualización: 2026-09-20 11:15 (GMT-5)
+
+---
+
+-78. **Restauración de Métodos de Soporte, Desindexación Automatizada (Notice & Takedown) y Salvaguarda HTTP 410 en Desbloqueo**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Restauración de reclamos y desindexación:* Se requería reactivar el circuito completo de auto-soporte y retiro de anuncios por solicitud de propietarios (Habeas Data / Ley 1581 de 2012) sin afectar la arquitectura React.
+      2. *Prevención de cobros sobre inmuebles retirados:* Si un inmueble ha sido desindexado por su titular o propietario, el endpoint `/api/leads/unlock` debe rechazar la solicitud de desbloqueo con HTTP 410 (Gone) y cero deducción de créditos para el usuario.
+    - **Solución Implementada:**
+      1. **Paso 1: Restauración en `lib/db.js`:**
+         - Incorporación de `addBlacklistedLead(leadId, data)` con saneamiento de teléfono, truncado de motivo y reintentos con backoff.
+         - Incorporación de `getBlacklistedLeadIds()` para proveer al scraper la lista de exclusión antes de sincronizar catálogo en R2.
+         - Incorporación de `isLeadBlacklisted(leadId)` para verificación en tiempo constante.
+         - Conexión tanto a Firestore (`blacklistedLeadsRef = db.collection('blacklisted_leads')`) como al almacenamiento local en memoria (`memoryStore.blacklisted_leads`), con soporte para consultas globales `collection.get()`.
+         - Exportación explícita en `module.exports`.
+      2. **Paso 2: Salvaguarda en `api/leads/unlock.js`:**
+         - Evaluación preventiva mediante `db.isLeadBlacklisted(leadId)` antes de obtener el lead del catálogo.
+         - Respuesta inmediata con HTTP 410 `INMUEBLE_DESINDEXADO` en español e inglés sin deducción de créditos.
+      3. **Integración en la Suite de Pruebas:**
+         - Incorporación de `tests/support_blacklist.test.js` en la Fase 5 de `scripts/validate.js`.
+         - Aprobación al 100% de las 9 pruebas unitarias de soporte, regex de URLs, hash y salvaguarda 410.
+    - **Archivos Afectados:**
+      - `lib/db.js`
+      - `api/leads/unlock.js`
+      - `scripts/validate.js`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Sistema de Notice & Takedown 100% operativo en backend, compatible con Firestore y fallback local, validado por DevSecOps.
 
 ---
 
