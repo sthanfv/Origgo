@@ -3,7 +3,7 @@
   "version": "3.2.0",
   "description": "Plataforma de Oportunidades Inmobiliarias Directas (FSBO) y Arbitraje con Pasarela Wompi y Criptografía AES-256-GCM",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

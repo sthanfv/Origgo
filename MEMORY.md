@@ -1,6 +1,24 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 15:08 (GMT-5)
+Última actualización: 2026-09-20 15:11 (GMT-5)
+
+---
+
+-86. **Alineación Total de Runtime en Vercel: Fijación Mandatoria de Node 24.x en engines para Cero Errores y Cero Advertencias**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Aviso de Deprecación y Desalineación en Vercel:* Al desplegar en Vercel con `"node": "20.x"`, el motor de compilación arrojaba `Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your package.json file to use Node.js 24.` y la advertencia `Warning: Due to "engines": { "node": "20.x" } in your package.json file, the Node.js Version defined in your Project Settings ("24.x") will not apply`.
+    - **Solución Implementada:**
+      1. **Sincronización Estricta de Versión en `package.json`:**
+         - Actualización de `engines.node` a `"24.x"` conforme a las directivas nativas del proyecto en Vercel, garantizando compatibilidad hacia adelante y erradicando toda alerta de deprecación y conflicto de configuración.
+      2. **Verificación de Entorno:**
+         - `npm run lint`: 0 errores.
+         - `npm run build`: 0 advertencias y 0 errores.
+         - `npm test`: 100% de las 8 fases DevSecOps aprobadas (0 errores).
+    - **Archivos Afectados:**
+      - `package.json`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Configuración de Vercel y `package.json` en perfecta sincronía a 24.x sin ningún error ni advertencia.
 
 ---
 
