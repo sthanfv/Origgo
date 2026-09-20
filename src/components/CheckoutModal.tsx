@@ -32,7 +32,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   );
   const [selectedPlan, setSelectedPlan] = useState<ModalPlanOption>('welcome_free');
   const [selectedCityCoverage, setSelectedCityCoverage] = useState(selectedLead?.ciudad || 'Bogotá');
-  const [phoneInput, setPhoneInput] = useState(userSession?.phone || '');
+  const [phoneInput, setPhoneInput] = useState(() => {
+    return userSession?.phone || localStorage.getItem('origgo_auth_phone') || '';
+  });
   const [pinInput, setPinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -45,6 +47,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         setActiveTab('cuenta');
       } else {
         setActiveTab('comprar');
+      }
+      if (userSession?.phone) {
+        setPhoneInput(userSession.phone);
+      } else {
+        const savedPhone = localStorage.getItem('origgo_auth_phone');
+        if (savedPhone) setPhoneInput(savedPhone);
       }
       setErrorMessage(null);
       setSuccessMessage(null);
@@ -62,6 +70,35 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  // Renderizar alerta de estado o error visible
+  const renderStatusAlert = () => {
+    if (!errorMessage && !successMessage) return null;
+    const isErr = !!errorMessage;
+    return (
+      <div
+        style={{
+          background: isErr ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+          border: `1px solid ${isErr ? '#ef4444' : '#10b981'}`,
+          borderRadius: 10,
+          padding: '10px 14px',
+          margin: '10px 0',
+          fontSize: '0.82rem',
+          fontWeight: 700,
+          color: isErr ? '#ef4444' : '#10b981',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <i
+          className={isErr ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-check'}
+          style={{ fontSize: '1.05rem', flexShrink: 0 }}
+        ></i>
+        <span>{errorMessage || successMessage}</span>
+      </div>
+    );
+  };
 
   // Manejo de inicio de sesión con PIN + PoW en backend (Pestaña Restaurar Cuenta)
   const handleRestorePin = async (e: React.FormEvent) => {
@@ -123,14 +160,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     if (cleanPhone.length < 10) {
       setErrorMessage(
         isEn
-          ? 'Enter your WhatsApp number to activate your free unlock'
-          : 'Ingresa tu WhatsApp de 10 dígitos para activar tu desbloqueo de bienvenida'
+          ? '⚠️ Enter your 10-digit WhatsApp number to activate your free unlock'
+          : '⚠️ Ingresa tu WhatsApp de 10 dígitos para activar tu desbloqueo de cortesía'
       );
       return;
     }
 
     setIsLoading(true);
     try {
+      localStorage.setItem('origgo_auth_phone', cleanPhone);
       // Guardar el teléfono y garantizar al menos 1 crédito de cortesía
       const nuevosCreditos = Math.max(1, userCredits);
       onSessionUpdate({
@@ -169,11 +207,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     if (cleanPhone.length < 10) {
       setErrorMessage(
         isEn
-          ? 'WhatsApp number is required to back up your credits'
-          : 'Ingresa tu número de WhatsApp para vincular y respaldar tus créditos'
+          ? '⚠️ WhatsApp number is required to back up your credits'
+          : '⚠️ Ingresa tu WhatsApp de 10 dígitos para vincular y respaldar tus créditos'
       );
       return;
     }
+    localStorage.setItem('origgo_auth_phone', cleanPhone);
 
     setIsLoading(true);
     try {
@@ -227,16 +266,37 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div
-      className="modal-backdrop checkout-modal-backdrop"
+      className="modal-backdrop active checkout-modal-backdrop"
+      style={{
+        pointerEvents: 'auto',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        zIndex: 100000,
+        padding: '1.25rem 1rem 3.5rem 1rem',
+      }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal-card checkout-modal-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-card checkout-modal-card"
+        style={{
+          pointerEvents: 'auto',
+          margin: '0 auto',
+          maxWidth: 500,
+          width: '100%',
+          position: 'relative',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Botón Circular de Cierre */}
         <button
           type="button"
           className="btn-modal-close"
+          style={{ pointerEvents: 'auto', zIndex: 100, cursor: 'pointer' }}
           onClick={(e) => {
             e.stopPropagation();
             onClose();
@@ -247,64 +307,80 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         </button>
 
         {/* Cabecera del Modal */}
-        <div className="checkout-modal-header">
-          <div className="checkout-badge-pill">
+        <div className="checkout-modal-header" style={{ paddingRight: '2.5rem', marginBottom: 12 }}>
+          <div className="checkout-badge-pill" style={{ marginBottom: 6 }}>
             <i className="fa-solid fa-shield-halved"></i>{' '}
             <span>{isEn ? 'WOMPI SECURE PAYMENT GATEWAY' : 'PASARELA DE PAGO SEGURA WOMPI'}</span>
           </div>
-          <h2 className="checkout-modal-title">
+          <h2 className="checkout-modal-title" style={{ fontSize: '1.25rem', marginBottom: 4 }}>
             {isEn ? 'Direct Owners Unlock' : 'Desbloqueo de Propietarios Directos'}
           </h2>
-          <p className="checkout-modal-subtitle">
+          <p className="checkout-modal-subtitle" style={{ fontSize: '0.78rem', margin: 0 }}>
             {isEn
               ? 'No intermediaries, no agency commissions, no forced subscriptions.'
               : 'Sin intermediarios, comisiones de agencia ni mensualidades forzosas.'}
           </p>
         </div>
 
-        {/* Resumen del Inmueble Seleccionado */}
+        {/* Resumen Compacto del Inmueble Seleccionado */}
         {selectedLead && (
-          <div className="modal-lead-summary-card">
-            <div className="modal-lead-thumb-wrap">
+          <div
+            className="modal-lead-summary-card"
+            style={{
+              padding: '8px 12px',
+              gap: 10,
+              marginBottom: 12,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              className="modal-lead-thumb-wrap"
+              style={{ width: 56, height: 56, minWidth: 56, borderRadius: 10, overflow: 'hidden' }}
+            >
               <img
                 src={selectedLead.imagen}
                 alt={selectedLead.titulo}
                 className="modal-lead-thumb"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
                 }}
               />
             </div>
-            <div className="modal-lead-info-col">
-              <div className="modal-lead-row">
-                <span className="lead-row-label">{isEn ? 'Property:' : 'Inmueble:'}</span>
-                <span className="lead-row-val font-bold">{selectedLead.titulo}</span>
+            <div className="modal-lead-info-col" style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: '0.84rem',
+                  fontWeight: 800,
+                  color: 'var(--text-main)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {selectedLead.titulo}
               </div>
-              <div className="modal-lead-row">
-                <span className="lead-row-label">{isEn ? 'Location:' : 'Ubicación:'}</span>
-                <span className="lead-row-val">
-                  {selectedLead.ciudad} • {selectedLead.barrio || 'Estrato 4'}
-                </span>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                {selectedLead.ciudad} • {selectedLead.barrio || 'Directo'}
               </div>
-              <div className="modal-lead-row">
-                <span className="lead-row-label">{isEn ? 'Listed Price:' : 'Precio Publicado:'}</span>
-                <span className="lead-row-val text-emerald font-extrabold" style={{ color: 'var(--accent-emerald, #10B981)', fontWeight: 800 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                <span style={{ color: 'var(--accent-emerald, #10B981)', fontWeight: 900, fontSize: '0.92rem' }}>
                   {selectedLead.precio}
                 </span>
-              </div>
-              <div className="modal-lead-row">
-                <span className="lead-row-label">{isEn ? 'Unit Rate:' : 'Valor Unitario:'}</span>
-                <span className="lead-row-val font-bold">
-                  {selectedLead.precio_m2 || '$ 2.469.136 / m²'}
-                </span>
+                {selectedLead.precio_m2 && (
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 600 }}>
+                    {selectedLead.precio_m2}
+                  </span>
+                )}
               </div>
             </div>
           </div>
         )}
 
         {/* Barra de Pestañas */}
-        <div className="checkout-tabs-bar">
+        <div className="checkout-tabs-bar" style={{ marginBottom: 12 }}>
           <button
             type="button"
             className={`checkout-tab-btn ${activeTab === 'cuenta' ? 'active' : ''}`}
@@ -339,47 +415,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <span>{isEn ? 'Restore Account' : 'Restaurar Cuenta'}</span>
           </button>
         </div>
-
-        {/* Mensajes de Alerta y Estado */}
-        {errorMessage && (
-          <div
-            style={{
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid #ef4444',
-              borderRadius: 10,
-              padding: '8px 12px',
-              marginBottom: 12,
-              fontSize: '0.78rem',
-              color: '#ef4444',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <i className="fa-solid fa-circle-exclamation"></i>
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        {successMessage && (
-          <div
-            style={{
-              background: 'rgba(16, 185, 129, 0.15)',
-              border: '1px solid #10b981',
-              borderRadius: 10,
-              padding: '8px 12px',
-              marginBottom: 12,
-              fontSize: '0.78rem',
-              color: '#10b981',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <i className="fa-solid fa-circle-check"></i>
-            <span>{successMessage}</span>
-          </div>
-        )}
 
         {/* PESTAÑA 1: COMPRAR PLANES */}
         {activeTab === 'comprar' && (
@@ -430,29 +465,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             )}
 
-            {/* Banner Informativo de WhatsApp */}
-            <div className="checkout-phone-alert">
-              <div className="phone-alert-icon">
-                <i className="fa-solid fa-shield-halved"></i>
-              </div>
-              <div className="phone-alert-body">
-                <strong>{isEn ? 'Authentication WhatsApp:' : 'WhatsApp de Autenticación:'}</strong>
-                <span>
-                  {isEn
-                    ? 'Your access PIN and credits will be bound to this mobile number.'
-                    : 'Tu PIN de acceso y créditos quedarán sellados con este número.'}
-                </span>
-              </div>
-            </div>
-
             {/* Formulario de WhatsApp */}
-            <div className="checkout-form-group">
-              <label className="checkout-form-label">
-                <i className="fa-brands fa-whatsapp" style={{ color: '#22C55E' }}></i>
-                <span>
-                  {isEn
-                    ? 'Authentication WhatsApp (10 digits):'
-                    : 'WhatsApp de Autenticación (10 dígitos):'}
+            <div className="checkout-form-group" style={{ margin: '14px 0 10px 0' }}>
+              <label className="checkout-form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <i className="fa-brands fa-whatsapp" style={{ color: '#22C55E', fontSize: '1.05rem' }}></i>
+                  <strong>{isEn ? 'Authentication WhatsApp:' : 'WhatsApp de Autenticación:'}</strong>
+                </span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                  {isEn ? '10 digits' : '10 dígitos'}
                 </span>
               </label>
               <div className="checkout-input-wrapper">
@@ -460,18 +481,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <input
                   type="tel"
                   className="checkout-text-input"
-                  placeholder="3228128201"
+                  placeholder={isEn ? 'e.g. 300 123 4567' : 'Ej: 300 123 4567'}
                   value={phoneInput}
                   maxLength={10}
-                  onChange={(e) => setPhoneInput(e.target.value.replace(/[^\d]/g, ''))}
+                  onChange={(e) => {
+                    setPhoneInput(e.target.value.replace(/[^\d]/g, ''));
+                    setErrorMessage(null);
+                  }}
                 />
               </div>
-              <span className="checkout-input-help">
+              <span className="checkout-input-help" style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 4 }}>
                 {isEn
-                  ? 'Your credits will be locked to this mobile number so you can use them from any device.'
-                  : 'Tus créditos quedarán asociados a este celular para que los uses desde cualquier dispositivo.'}
+                  ? '🔒 Your credits and PIN will be bound to this number.'
+                  : '🔒 Tu PIN de acceso y créditos quedarán sellados con este número.'}
               </span>
             </div>
+
+            {/* Mensaje de Alerta y Estado sobre el botón */}
+            {renderStatusAlert()}
 
             {/* Botón Principal Wompi / Desbloqueo Gratis */}
             <button
@@ -519,35 +546,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <span>{isEn ? 'Cancel and back to catalog' : '← Cancelar y volver al catálogo'}</span>
             </button>
 
-            {/* Leyenda Legal y Sellos Oficiales */}
-            <div className="checkout-legal-notice">
+            {/* Leyenda Legal Compacta */}
+            <div className="checkout-legal-notice" style={{ marginTop: 12, fontSize: '0.72rem', textAlign: 'center', color: 'var(--text-dim)' }}>
               <i className="fa-solid fa-shield-halved" style={{ color: 'var(--accent-emerald)', marginRight: 4 }}></i>
               {isEn ? (
-                <>By continuing, you agree to the Terms of Service and Privacy Policy.</>
+                <>SFC regulated payment via Wompi • Official operator Desmulta</>
               ) : (
-                <>Al continuar, autorizas el tratamiento de datos y aceptas los Términos de Servicio (v1.0) y Política de Privacidad.</>
+                <>Pago seguro vigilado SFC vía Wompi • Operador registrado Desmulta</>
               )}
-            </div>
-
-            <div className="checkout-operator-card">
-              <i className="fa-solid fa-building-columns" style={{ fontSize: '1.1rem', color: 'var(--accent-emerald)' }}></i>
-              <div>
-                <strong>{isEn ? 'Official Merchant of Record:' : 'Operador de Cobro Oficial:'}</strong>{' '}
-                {isEn
-                  ? 'Your payment is safely processed through SFC certified gateways in favor of our registered operator Desmulta.'
-                  : 'Tu pago se procesa de forma segura a través de pasarela certificada y vigilada por la Superintendencia Financiera a nombre de nuestro comercio operador registrado Desmulta.'}
-              </div>
-            </div>
-
-            <div className="checkout-guarantee-badges">
-              <span>
-                <i className="fa-solid fa-shield"></i>{' '}
-                {isEn ? 'Secure Wompi Gateway (SFC Regulated)' : 'Pasarela Segura Wompi (Vigilada SFC)'}
-              </span>
-              <span>
-                <i className="fa-solid fa-bolt"></i>{' '}
-                {isEn ? 'Instant Activation' : 'Activación Instantánea'}
-              </span>
             </div>
           </div>
         )}
@@ -571,10 +577,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <input
                   type="tel"
                   className="checkout-text-input"
-                  placeholder="3228128201"
+                  placeholder={isEn ? 'e.g. 300 123 4567' : 'Ej: 300 123 4567'}
                   value={phoneInput}
                   maxLength={10}
-                  onChange={(e) => setPhoneInput(e.target.value.replace(/[^\d]/g, ''))}
+                  onChange={(e) => {
+                    setPhoneInput(e.target.value.replace(/[^\d]/g, ''));
+                    setErrorMessage(null);
+                  }}
                 />
               </div>
             </div>
@@ -590,7 +599,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   className="checkout-text-input"
                   placeholder="Ej: 7492 o Ref. de pago"
                   value={pinInput}
-                  onChange={(e) => setPinInput(e.target.value)}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    setErrorMessage(null);
+                  }}
                   style={{ textAlign: 'center', letterSpacing: '0.15em', fontSize: '1.05rem' }}
                 />
               </div>
@@ -601,11 +613,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </span>
             </div>
 
+            {/* Mensaje de Alerta y Estado sobre el botón */}
+            {renderStatusAlert()}
+
             <button
               type="submit"
               className="btn-confirm-wompi"
               disabled={isLoading}
-              style={{ marginTop: 14 }}
+              style={{ marginTop: 10 }}
             >
               {isLoading ? (
                 <>

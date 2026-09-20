@@ -1,6 +1,41 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 17:01 (GMT-5)
+Última actualización: 2026-09-20 17:21 (GMT-5)
+
+---
+
+-89. **Erradicación Definitiva de Bloqueo de Interacción y Desbordamiento en Modal de Checkout: `pointer-events: auto`, Alineación `flex-start`, Scroll Natural y Alertas Contextuales**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Modal Estático y Bloqueado ("no sirve sigue siendo estático"):* El usuario reportó que el modal parecía una imagen fija en la que nada funcionaba, no se podía hacer clic en los botones, ni escribir en el campo de texto, ni subir o bajar con la rueda del ratón.
+      2. *Causa Raíz Criptográfica y de CSS:*
+         - En `origgo-style.min.css`, `.modal-backdrop` poseía la regla `pointer-events: none;` por diseño para estado inactivo, y únicamente habilitaba `pointer-events: auto;` si incluía la clase `.active`. En `CheckoutModal.tsx`, el contenedor principal utilizaba `className="modal-backdrop checkout-modal-backdrop"` omitiendo `.active`, por lo que el navegador anuló el 100% de los eventos de cursor, clics, toques táctiles y eventos de rueda de ratón en el modal.
+         - En `src/index.css`, el backdrop estaba configurado con `display: flex; align-items: center;`. Al ser el contenido más alto que la pantalla del portátil (~650px), la propiedad `align-items: center` forzó la parte superior del modal hacia coordenadas negativas fuera del viewport (`y < 0`). Dado que en CSS flexbox el desbordamiento negativo queda recortado sin posibilidad de desplazarse hacia arriba, la cabecera, el botón de cierre `X` y las alertas de validación quedaban completamente inaccesibles e invisibles.
+         - El placeholder del campo de teléfono era `"3228128201"`, lo que aparentaba ser un número real prellenado. Al hacer clic en el botón sin escribir, la validación rechazaba el campo vacío y arrojaba error, pero el mensaje de alerta se pintaba en la parte superior del modal que estaba recortada fuera de la pantalla.
+    - **Solución Implementada:**
+      1. **Garantía Incondicional de Interactividad (`CheckoutModal.tsx`):**
+         - Incorporación obligatoria de la clase `.active` y estilos en línea de máxima prioridad: `pointerEvents: 'auto'`, `display: 'flex'`, `alignItems: 'flex-start'`, `justifyContent: 'center'`, `overflowY: 'auto'`, `WebkitOverflowScrolling: 'touch'`, `zIndex: 100000` y espaciado de margen inferior `padding: '1.25rem 1rem 3.5rem 1rem'`.
+         - Ajuste del botón circular `X`: `pointerEvents: 'auto'`, `zIndex: 100`, `cursor: 'pointer'`.
+      2. **Alineación y Scroll Natural Accesible desde Arriba:**
+         - Al alinear con `align-items: flex-start`, el modal inicia siempre en la coordenada superior `y = 0` con margen visible, garantizando que el título, el botón `X` y los planes nunca queden recortados fuera de la pantalla.
+         - El backdrop maneja fluidamente el desplazamiento vertical (`overflow-y: auto`), permitiendo que el usuario navegue hacia abajo y vuelva hacia arriba con la rueda del ratón, trackpad o gesto táctil sin trabas.
+      3. **Alertas Contextuales y Claridad en Formulario:**
+         - Reubicación de los mensajes de error y confirmación (`renderStatusAlert()`) directamente sobre los botones de acción (`btn-confirm-wompi` y `btn-restore-session`). Si el usuario omite su número, la alerta roja aparece inmediatamente en su campo de visión.
+         - Sustitución del placeholder confuso `"3228128201"` por `"Ej: 300 123 4567"` (`"e.g. 300 123 4567"` en inglés) y precarga automática del número desde `localStorage` (`origgo_auth_phone`) o `userSession`.
+         - Compactación visual de la ficha del inmueble (`modal-lead-summary-card`) y retiro del banner informativo redundante para reducir la altura vertical en más de 160 píxeles.
+      4. **Limpieza de Directivas Conflictivas (`src/index.css` y `public/origgo-style.css`):**
+         - Sustitución de `align-items: center` por `align-items: flex-start` en `.modal-backdrop.checkout-modal-backdrop`.
+         - Retiro de reglas conflictivas de `max-height: none !important; overflow: visible !important;` en `public/origgo-style.css`.
+      5. **Pruebas y Verificación:**
+         - `npm run lint` (`tsc --noEmit`): 0 errores.
+         - `npm run build` (`vite build`): Generado en 3.09s, 0 errores, 0 advertencias.
+         - `npm test` (`node scripts/validate.js`): 100% de las 8 fases DevSecOps aprobadas (incluyendo 769 líneas en `CheckoutModal.tsx` bajo el umbral de 800).
+    - **Archivos Afectados:**
+      - `src/components/CheckoutModal.tsx`
+      - `src/index.css`
+      - `public/origgo-style.css`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Modal de checkout 100% interactivo, con eventos de ratón y táctiles reactivos, desplazamiento vertical accesible desde arriba sin recorte alguno, botones y cierres inmediatamente funcionales, y retroalimentación visual clara.
 
 ---
 

@@ -3424,10 +3424,8 @@ main {
   max-width: 540px;
   width: 100%;
   margin: 0 auto;
-  overflow: visible !important;
-  max-height: none !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  position: relative;
+  pointer-events: auto;
 }
 
 /* Erradicación absoluta e incondicional de barras nativas en modales para Windows */
@@ -6221,7 +6219,7 @@ main {
   40%, 60% { transform: translate3d(3px, 0, 0); }
 }
 @media (max-width: 640px) {
-  .checkout-modal-card { max-height: none !important; overflow: visible !important; padding: 1.25rem 1rem 2rem !important; border-radius: 20px !important; margin: auto 0.75rem !important; }
+  .checkout-modal-card { padding: 1.25rem 1rem 2rem !important; border-radius: 20px !important; margin: 0 auto !important; }
   .pricing-options-grid { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
   .checkout-text-input { font-size: 1.1rem !important; padding: 0.75rem !important; }
   .btn-confirm-wompi { padding: 0.95rem 1rem !important; font-size: 0.95rem !important; min-height: 48px !important; }
