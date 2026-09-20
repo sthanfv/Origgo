@@ -285,6 +285,11 @@ export function App() {
 
   // Manejo de Desbloqueo de Inmueble
   const handleOpenUnlock = (item: LeadItem) => {
+    // Si el usuario ya cuenta con sesión activa y créditos disponibles, desbloquear directamente
+    if (userSession?.token && userCredits > 0) {
+      handleConfirmUnlock(item);
+      return;
+    }
     setLeadToUnlock(item);
     setCheckoutModalOpen(true);
   };

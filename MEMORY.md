@@ -1,6 +1,50 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 15:18 (GMT-5)
+Última actualización: 2026-09-20 17:01 (GMT-5)
+
+---
+
+-88. **Blindaje contra Autotraducción Forzada del Navegador, Actualización de Service Worker v14 y Rediseño Interactivo del Modal de Checkout**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Autotraducción Inadecuada de Chrome al Cambiar Idioma a Inglés:* Al seleccionar inglés (`EN`), Google Chrome interpretaba la página como español y forzaba una traducción automática inversa que deformaba el texto y la marca Origgo ("Abrigo", "Bajada de...").
+      2. *Aviso de Pre-cache Parcial en Service Worker:* En consola aparecía `[SW] Aviso de pre-cache parcial: TypeError: Failed to execute 'addAll' on 'Cache': Request failed sw.js:81` debido a llamadas atómicas `cache.addAll()` con rutas que no siempre estaban presentes en el servidor de desarrollo.
+      3. *Fricción y Bloqueo en Modal de Desbloqueo / Checkout:*
+         - En pantallas de laptops (768p/1080p), el modal crecía verticalmente sin límite y sin scroll interno (`overflow-y`), desplazando el campo de teléfono y el botón de acción fuera del viewport visible, dando la impresión de ser una imagen fija e inoperable.
+         - Si un usuario ya contaba con créditos (`userCredits > 0`), al presionar "Desbloquear Contacto Directo" en una tarjeta se abría innecesariamente el modal de compra en lugar de consumir su saldo y mostrar el propietario de inmediato.
+         - El botón de cierre `X` carecía de `z-index` elevado y contraste suficiente en dispositivos compactos.
+    - **Solución Implementada:**
+      1. **Inmunidad contra Autotraducción No Solicitada (`index.html`):**
+         - Configuración de `<html lang="es" translate="no" class="notranslate">`.
+         - Inserción de meta tags de protección: `<meta name="google" content="notranslate" />` y `<meta name="googlebot" content="notranslate" />`.
+      2. **Evolución del Service Worker a Versión `v14` (`sw.js` y `public/sw.js`):**
+         - Renovación de caché a `origgo-core-v14-20260920`.
+         - Depuración de lista de recursos críticos pre-cacheados (exclusivamente archivos reales y activos: `/`, `/index.html`, `/data/inmobiliario.json`, `/manifest.json`, `/favicon.svg`, `/favicon.ico`, `/apple-touch-icon.png`, `/origgo-style.min.css`, `/404.html`).
+         - Migración de `cache.addAll()` a `Promise.allSettled()` con captura resiliente por recurso para evitar cualquier error o advertencia en consola si un archivo estático no está disponible.
+      3. **Desbloqueo Inmediato para Usuarios con Crédito (`src/App.tsx`):**
+         - En `handleOpenUnlock(item)`: si `userSession?.token` está activo y `userCredits > 0`, se procesa inmediatamente el consumo de 1 crédito con `handleConfirmUnlock(item)`, eliminando modales innecesarios.
+      4. **Modularización de Planes de Tarifas (`src/data/plans.ts`):**
+         - Creación del módulo desacoplado `plans.ts` exportando `MODAL_PLANS` y su contrato tipado TypeScript `ModalPlanOption`, manteniendo `CheckoutModal.tsx` estrictamente por debajo del límite de 800 líneas (754 líneas).
+      5. **Rediseño Ergonómico e Interactivo de `CheckoutModal.tsx` e `index.css`:**
+         - Incorporación de `max-height: min(92vh, 740px)` y `overflow-y: auto` con barra de desplazamiento estilizada para asegurar que todos los controles sean accesibles en cualquier resolución.
+         - Corrección de la pestaña por defecto: si `userCredits === 0`, el modal se abre directamente en la pestaña `comprar` (con el desbloqueo de cortesía de bienvenida seleccionado) en vez de bloquearse en `cuenta`.
+         - En la pestaña `cuenta`, adición de botón de acción directo "Desbloquear Inmueble (1 Crédito)" cuando existe un lead seleccionado.
+         - Estandarización de botones "Volver" mediante la clase `.btn-modal-back`.
+         - Realce del botón de cierre `X` con `z-index: 50` y cursor táctil accesible.
+      6. **Verificación y Pruebas:**
+         - `npm run lint` (`tsc --noEmit`): 0 errores.
+         - `npm run build` (`vite build`): Compilación exitosa en 4.69s, 0 errores, 0 advertencias.
+         - `npm test` (`node scripts/validate.js`): 100% de las 8 fases DevSecOps aprobadas con 0 errores (incluyendo auditoría de modularidad).
+    - **Archivos Afectados:**
+      - `index.html`
+      - `public/sw.js`
+      - `sw.js`
+      - `src/App.tsx`
+      - `src/data/plans.ts`
+      - `src/components/CheckoutModal.tsx`
+      - `src/index.css`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Interfaz responsiva con scroll interno funcional en el modal de checkout. Cero interferencia de autotraducción en inglés. Service Worker v14 en ejecución limpia sin advertencias. Desbloqueo directo y fluido tanto para usuarios nuevos (con cortesía gratuita) como recurrentes (con saldo de créditos).
 
 ---
 

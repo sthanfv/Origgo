@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { LeadItem, UserSession } from '../types';
 import { useLanguage } from '../i18n';
 import { iniciarSesionConPin } from '../services/auth';
-import { crearOrdenPagoBackend, desplegarWidgetWompi, ProductTypeId } from '../services/wompi';
+import { crearOrdenPagoBackend, desplegarWidgetWompi } from '../services/wompi';
+import { MODAL_PLANS, ModalPlanOption } from '../data/plans';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -14,8 +15,6 @@ interface CheckoutModalProps {
   onSessionUpdate: (session: UserSession) => void;
   onLogout: () => void;
 }
-
-type ModalPlanOption = ProductTypeId | 'welcome_free';
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
@@ -29,7 +28,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 }) => {
   const { isEn } = useLanguage();
   const [activeTab, setActiveTab] = useState<'comprar' | 'tengo-pin' | 'cuenta'>(
-    userSession ? 'cuenta' : 'comprar'
+    userSession && userCredits > 0 ? 'cuenta' : 'comprar'
   );
   const [selectedPlan, setSelectedPlan] = useState<ModalPlanOption>('welcome_free');
   const [selectedCityCoverage, setSelectedCityCoverage] = useState(selectedLead?.ciudad || 'Bogotá');
@@ -38,6 +37,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Sincronizar pestaña activa cuando se abre el modal
+  React.useEffect(() => {
+    if (isOpen) {
+      if (userSession && userCredits > 0) {
+        setActiveTab('cuenta');
+      } else {
+        setActiveTab('comprar');
+      }
+      setErrorMessage(null);
+      setSuccessMessage(null);
+    }
+  }, [isOpen, userSession, userCredits]);
 
   // Escuchar tecla Escape para cerrar el modal
   React.useEffect(() => {
@@ -373,93 +385,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {activeTab === 'comprar' && (
           <div>
             <div className="pricing-options-grid">
-              {/* Opción de Bienvenida: 1 Desbloqueo Gratis ($0) */}
-              <label
-                className={`pricing-option-card welcome-card ${selectedPlan === 'welcome_free' ? 'active-option' : ''}`}
-                onClick={() => setSelectedPlan('welcome_free')}
-              >
-                <div className="featured-ribbon" style={{ background: '#059669' }}>
-                  🎁 {isEn ? 'WELCOME ($0)' : 'BIENVENIDA ($0)'}
-                </div>
-                <div className="option-header-row">
-                  <span className="option-name">{isEn ? '1 Free Unlock' : '1 Desbloqueo Gratis'}</span>
-                  <span className="option-price">$ 0</span>
-                </div>
-                <p className="option-desc">
-                  {isEn
-                    ? 'Try it at zero cost. 1 verified direct contact as a welcome gift by entering your WhatsApp.'
-                    : 'Pruébalo sin costo. 1 contacto directo verificado de bienvenida ingresando tu número de WhatsApp.'}
-                </p>
-              </label>
-
-              {/* Opción Individual */}
-              <label
-                className={`pricing-option-card ${selectedPlan === 'single_lead' ? 'active-option' : ''}`}
-                onClick={() => setSelectedPlan('single_lead')}
-              >
-                <div className="option-header-row">
-                  <span className="option-name">{isEn ? 'Single Unlock' : 'Desbloqueo Individual'}</span>
-                  <span className="option-price">$ 5.000</span>
-                </div>
-                <p className="option-desc">
-                  {isEn
-                    ? '1 verified direct owner contact. Ideal for a one-time purchase.'
-                    : '1 Contacto verificado del propietario directo. Ideal para compra puntual.'}
-                </p>
-              </label>
-
-              {/* Opción 10 Contactos (Destacado) */}
-              <label
-                className={`pricing-option-card ${selectedPlan === 'pack_10_leads' ? 'active-option' : ''}`}
-                onClick={() => setSelectedPlan('pack_10_leads')}
-              >
-                <div className="featured-ribbon">⭐ {isEn ? 'MOST POPULAR (-30%)' : 'MÁS POPULAR (-30%)'}</div>
-                <div className="option-header-row">
-                  <span className="option-name">{isEn ? '10 Contacts Pack' : 'Bolsa 10 Contactos'}</span>
-                  <span className="option-price">$ 35.000</span>
-                </div>
-                <p className="option-desc">
-                  {isEn
-                    ? '$3,500 per lead. Credits never expire and stay bound to your PIN.'
-                    : '$3.500 por contacto. Los créditos no vencen y quedan asociados a tu PIN.'}
-                </p>
-              </label>
-
-              {/* Plan Pro Ciudad */}
-              <label
-                className={`pricing-option-card ${selectedPlan === 'subscription_city' ? 'active-option' : ''}`}
-                onClick={() => setSelectedPlan('subscription_city')}
-              >
-                <div className="option-header-row">
-                  <span className="option-name">{isEn ? 'City Pro Plan' : 'Plan Pro Ciudad'}</span>
-                  <span className="option-price">
-                    $ 89.000 <span style={{ fontSize: '0.7rem', fontWeight: 600 }}>/ mes</span>
-                  </span>
-                </div>
-                <p className="option-desc">
-                  {isEn
-                    ? 'Unlimited 30-day access to all direct owners in your city.'
-                    : 'Acceso ilimitado por 30 días a todos los propietarios directos de tu ciudad.'}
-                </p>
-              </label>
-
-              {/* Plan Nacional VIP */}
-              <label
-                className={`pricing-option-card ${selectedPlan === 'subscription_national' ? 'active-option' : ''}`}
-                onClick={() => setSelectedPlan('subscription_national')}
-              >
-                <div className="option-header-row">
-                  <span className="option-name">{isEn ? 'National VIP Plan' : 'Plan Nacional VIP'}</span>
-                  <span className="option-price">
-                    $ 149.000 <span style={{ fontSize: '0.7rem', fontWeight: 600 }}>/ mes</span>
-                  </span>
-                </div>
-                <p className="option-desc">
-                  {isEn
-                    ? 'Full coverage across all Colombia + Exclusive price drop alerts.'
-                    : 'Acceso total en toda Colombia + Radar exclusivo de rebajas de precio.'}
-                </p>
-              </label>
+              {MODAL_PLANS.map((plan) => (
+                <label
+                  key={plan.id}
+                  className={`pricing-option-card ${plan.id === 'welcome_free' ? 'welcome-card' : ''} ${selectedPlan === plan.id ? 'active-option' : ''}`}
+                  onClick={() => setSelectedPlan(plan.id)}
+                >
+                  {plan.ribbon && (
+                    <div className="featured-ribbon" style={plan.ribbon.bg ? { background: plan.ribbon.bg } : undefined}>
+                      {plan.ribbon.text}
+                    </div>
+                  )}
+                  <div className="option-header-row">
+                    <span className="option-name">{isEn ? plan.nameEn : plan.nameEs}</span>
+                    <span className="option-price">
+                      {plan.price}
+                      {plan.period && <span style={{ fontSize: '0.7rem', fontWeight: 600 }}> {plan.period}</span>}
+                    </span>
+                  </div>
+                  <p className="option-desc">{isEn ? plan.descEn : plan.descEs}</p>
+                </label>
+              ))}
             </div>
 
             {/* Selector de Ciudad (Solo si se elige Plan Pro Ciudad) */}
@@ -476,33 +422,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onChange={(e) => setSelectedCityCoverage(e.target.value)}
                     style={{ background: 'transparent', cursor: 'pointer' }}
                   >
-                    <option value="Bogotá">Bogotá D.C.</option>
-                    <option value="Medellín">Medellín / Valle de Aburrá</option>
-                    <option value="Cali">Cali</option>
-                    <option value="Barranquilla">Barranquilla</option>
-                    <option value="Cartagena">Cartagena</option>
-                    <option value="Bucaramanga">Bucaramanga</option>
-                    <option value="Pereira">Pereira / Eje Cafetero</option>
-                    <option value="Santa Marta">Santa Marta</option>
+                    {['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Pereira', 'Santa Marta'].map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
                   </select>
                 </div>
               </div>
             )}
 
-            {/* Banner de Advertencia de WhatsApp Real */}
+            {/* Banner Informativo de WhatsApp */}
             <div className="checkout-phone-alert">
               <div className="phone-alert-icon">
-                <i className="fa-solid fa-triangle-exclamation"></i>
+                <i className="fa-solid fa-shield-halved"></i>
               </div>
               <div className="phone-alert-body">
-                <strong>
-                  {isEn ? 'Attention: Enter your REAL, active WhatsApp' : 'Atención: Ingresa tu WhatsApp REAL y activo'}
-                </strong>
-                <p>
+                <strong>{isEn ? 'Authentication WhatsApp:' : 'WhatsApp de Autenticación:'}</strong>
+                <span>
                   {isEn
-                    ? 'This number is your unique security key. If you enter an invalid number, you will not be able to access your credits or recover your PIN. No spam or unsolicited calls.'
-                    : 'Este número es tu identificador único de seguridad. Si ingresas un número falso o equivocado, no podrás acceder a tus créditos ni recuperar tu PIN. El sistema no realiza llamadas ni spam.'}
-                </p>
+                    ? 'Your access PIN and credits will be bound to this mobile number.'
+                    : 'Tu PIN de acceso y créditos quedarán sellados con este número.'}
+                </span>
               </div>
             </div>
 
@@ -529,8 +468,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
               <span className="checkout-input-help">
                 {isEn
-                  ? 'Your credits will be locked to this mobile number so you can use them from any phone or PC.'
-                  : 'Tus créditos quedarán sellados con este celular para que los uses desde cualquier teléfono o PC.'}
+                  ? 'Your credits will be locked to this mobile number so you can use them from any device.'
+                  : 'Tus créditos quedarán asociados a este celular para que los uses desde cualquier dispositivo.'}
               </span>
             </div>
 
@@ -548,43 +487,36 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </>
               ) : selectedPlan === 'welcome_free' ? (
                 <>
-                  <i className="fa-solid fa-unlock"></i>
-                  <span>{isEn ? 'Activate Free Welcome Unlock ($0)' : 'Activar Desbloqueo Gratis de Bienvenida ($0)'}</span>
+                  <i className="fa-solid fa-gift"></i>
+                  <span>{isEn ? 'Activate 1 Free Unlock ($0 COP)' : 'Desbloquear Gratis Ahora ($0 COP)'}</span>
+                </>
+              ) : selectedPlan === 'single_lead' ? (
+                <>
+                  <i className="fa-solid fa-lock"></i>
+                  <span>{isEn ? 'Pay Single Unlock ($5,000 COP)' : 'Pagar Desbloqueo Individual ($5.000 COP)'}</span>
+                </>
+              ) : selectedPlan === 'pack_10_leads' ? (
+                <>
+                  <i className="fa-solid fa-star"></i>
+                  <span>{isEn ? 'Pay 10 Contacts Pack ($35,000 COP)' : 'Pagar Bolsa 10 Contactos ($35.000 COP)'}</span>
+                </>
+              ) : selectedPlan === 'subscription_city' ? (
+                <>
+                  <i className="fa-solid fa-city"></i>
+                  <span>{isEn ? 'Activate City Pro ($89,000 COP)' : 'Activar Plan Pro Ciudad ($89.000 COP)'}</span>
                 </>
               ) : (
                 <>
-                  <i className="fa-solid fa-lock"></i>
-                  <span>{isEn ? 'Continue to Secure Payment with Wompi' : 'Continuar al Pago Seguro con Wompi'}</span>
+                  <i className="fa-solid fa-crown"></i>
+                  <span>{isEn ? 'Activate National VIP ($149,000 COP)' : 'Activar Plan Nacional VIP ($149.000 COP)'}</span>
                 </>
               )}
             </button>
 
             {/* Botón para volver atrás o cancelar sin trabas */}
-            <button
-              type="button"
-              className="btn-modal-back"
-              onClick={onClose}
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.15))',
-                color: 'var(--text-muted, rgba(255, 255, 255, 0.8))',
-                borderRadius: '0.85rem',
-                padding: '0.75rem 1.25rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                marginTop: -4,
-                marginBottom: '1rem',
-                transition: 'all 0.2s ease',
-              }}
-            >
+            <button type="button" className="btn-modal-back" onClick={onClose}>
               <i className="fa-solid fa-arrow-left"></i>
-              <span>{isEn ? 'Back to Catalog' : '← Volver al Catálogo'}</span>
+              <span>{isEn ? 'Cancel and back to catalog' : '← Cancelar y volver al catálogo'}</span>
             </button>
 
             {/* Leyenda Legal y Sellos Oficiales */}
@@ -687,6 +619,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </>
               )}
             </button>
+
+            <button type="button" className="btn-modal-back" onClick={onClose}>
+              <i className="fa-solid fa-arrow-left"></i>
+              <span>{isEn ? 'Cancel and back to catalog' : '← Cancelar y volver al catálogo'}</span>
+            </button>
           </form>
         )}
 
@@ -699,13 +636,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 12,
-                marginBottom: 16,
+                marginBottom: 14,
               }}
             >
               <div
                 style={{
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   borderRadius: '50%',
                   background: 'rgba(16, 185, 129, 0.15)',
                   border: '1px solid var(--accent-emerald)',
@@ -713,16 +650,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--accent-emerald)',
-                  fontSize: '1.3rem',
+                  fontSize: '1.2rem',
                 }}
               >
                 <i className="fa-solid fa-user-shield"></i>
               </div>
               <div style={{ textAlign: 'left' }}>
-                <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-main)' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-main)' }}>
                   +57 {userSession?.phone || phoneInput || '3001234567'}
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
                   {isEn ? 'Verified Account' : 'Cuenta Verificada'}
                 </span>
               </div>
@@ -732,29 +669,49 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               style={{
                 background: 'var(--bg-surface, rgba(255, 255, 255, 0.04))',
                 border: '1px solid var(--border-subtle)',
-                borderRadius: 14,
-                padding: 16,
-                marginBottom: 16,
+                borderRadius: 12,
+                padding: 12,
+                marginBottom: 14,
               }}
             >
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 800 }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 800 }}>
                 {isEn ? 'Available Unlocks' : 'Desbloqueos Disponibles'}
               </span>
-              <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-emerald)', margin: '4px 0' }}>
+              <div style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--accent-emerald)', margin: '2px 0' }}>
                 {userCredits}
               </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                 {isEn
                   ? 'Active credits without expiration date'
                   : 'Créditos activos sin fecha de caducidad'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            {/* Desbloqueo Directo con 1 Crédito si hay un inmueble seleccionado */}
+            {selectedLead && userCredits > 0 && (
               <button
                 type="button"
                 className="btn-confirm-wompi"
-                style={{ flex: 2, marginBottom: 0 }}
+                style={{ marginBottom: 12, background: 'var(--accent-emerald)', color: '#FFFFFF' }}
+                onClick={() => {
+                  onConfirmUnlock(selectedLead);
+                  onClose();
+                }}
+              >
+                <i className="fa-solid fa-unlock-keyhole"></i>
+                <span>
+                  {isEn
+                    ? `Unlock Property (1 Credit)`
+                    : `Desbloquear Inmueble (1 Crédito)`}
+                </span>
+              </button>
+            )}
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <button
+                type="button"
+                className="btn-confirm-wompi"
+                style={{ flex: 2, marginBottom: 0, padding: '0.7rem 1rem' }}
                 onClick={() => setActiveTab('comprar')}
               >
                 <i className="fa-solid fa-plus"></i>
@@ -768,11 +725,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   background: 'transparent',
                   border: '1px solid #ef4444',
                   color: '#ef4444',
-                  borderRadius: 12,
-                  fontSize: '0.8rem',
+                  borderRadius: 10,
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  padding: '8px 12px',
+                  padding: '6px 10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -783,6 +740,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <span>{isEn ? 'Sign Out' : 'Salir'}</span>
               </button>
             </div>
+
+            <button type="button" className="btn-modal-back" onClick={onClose}>
+              <i className="fa-solid fa-arrow-left"></i>
+              <span>{isEn ? 'Cancel and back to catalog' : '← Cancelar y volver al catálogo'}</span>
+            </button>
           </div>
         )}
       </div>

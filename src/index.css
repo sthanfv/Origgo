@@ -673,7 +673,29 @@ body,
   color: #111827 !important;
 }
 
-/* Modales en Modo Claro */
+/* Modales Globales y Modo Claro */
+.modal-card {
+  position: relative;
+  max-height: min(92vh, 760px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) transparent;
+}
+
+.modal-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 9999px;
+}
+
+.modal-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 [data-theme="light"] .modal-card {
   background-color: #FFFFFF !important;
   border-color: #E7E5E4 !important;
@@ -805,14 +827,14 @@ body,
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background-color: rgba(5, 17, 14, 0.65);
+  background-color: rgba(5, 17, 14, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   overflow-y: auto;
-  padding: 2.5rem 1rem 3.5rem;
+  padding: 1.25rem 1rem;
 }
 
 [data-theme="light"] .modal-backdrop.checkout-modal-backdrop {
@@ -822,13 +844,31 @@ body,
 .checkout-modal-card {
   background-color: var(--bg-card, #0B2B26);
   border: 1px solid var(--border-card, hsl(166, 40%, 23%));
-  border-radius: 2rem;
-  max-width: 520px;
+  border-radius: 1.5rem;
+  max-width: 490px;
   width: 100%;
-  padding: 1.75rem 1.65rem;
+  max-height: min(92vh, 740px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) transparent;
+  padding: 1.35rem 1.35rem;
   position: relative;
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
   animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.checkout-modal-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checkout-modal-card::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 9999px;
+}
+
+.checkout-modal-card::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 [data-theme="light"] .checkout-modal-card {
@@ -844,10 +884,12 @@ body,
 
 .btn-modal-close {
   position: absolute;
-  top: 1.15rem;
-  right: 1.15rem;
-  width: 36px;
-  height: 36px;
+  top: 1rem;
+  right: 1rem;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   border-radius: 9999px;
   background: var(--glass-metrics-bg, rgba(255, 255, 255, 0.08));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
@@ -856,10 +898,10 @@ body,
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   line-height: 1;
   transition: all 0.2s ease;
-  z-index: 10;
+  z-index: 50;
 }
 
 [data-theme="light"] .btn-modal-close {
@@ -931,13 +973,13 @@ body,
 /* Tarjeta Resumen del Inmueble */
 .modal-lead-summary-card {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
   background: var(--bg-surface, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
-  border-radius: 1rem;
-  padding: 10px 14px;
-  margin-bottom: 1.25rem;
+  border-radius: 0.85rem;
+  padding: 8px 10px;
+  margin-bottom: 0.85rem;
 }
 
 [data-theme="light"] .modal-lead-summary-card {
@@ -946,9 +988,9 @@ body,
 }
 
 .modal-lead-thumb-wrap {
-  width: 110px;
-  height: 75px;
-  border-radius: 0.65rem;
+  width: 72px;
+  height: 54px;
+  border-radius: 0.5rem;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -964,7 +1006,7 @@ body,
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   overflow: hidden;
 }
 
@@ -972,13 +1014,13 @@ body,
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
-  font-size: 0.78rem;
+  gap: 6px;
+  font-size: 0.74rem;
 }
 
 .lead-row-label {
   color: var(--text-dim, rgba(255, 255, 255, 0.6));
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 [data-theme="light"] .lead-row-label {
@@ -1003,9 +1045,9 @@ body,
   background: var(--bg-surface, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
   border-radius: 9999px;
-  padding: 4px;
+  padding: 3px;
   gap: 4px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
 }
 
 [data-theme="light"] .checkout-tabs-bar {
@@ -1018,15 +1060,15 @@ body,
   background: transparent;
   border: none;
   border-radius: 9999px;
-  padding: 7px 12px;
-  font-size: 0.76rem;
+  padding: 6px 8px;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text-muted, rgba(255, 255, 255, 0.7));
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
@@ -1051,16 +1093,16 @@ body,
 .pricing-options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 0.85rem;
 }
 
 .pricing-option-card {
   position: relative;
   border: 1.5px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   background: var(--bg-surface, rgba(255, 255, 255, 0.03));
-  padding: 12px;
+  padding: 9px 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -1157,13 +1199,13 @@ body,
 /* Banner de Advertencia WhatsApp */
 .checkout-phone-alert {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  border-radius: 0.85rem;
-  padding: 10px 12px;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 0.75rem;
+  padding: 8px 10px;
+  margin-bottom: 0.75rem;
 }
 
 [data-theme="light"] .checkout-phone-alert {
@@ -1173,14 +1215,13 @@ body,
 
 .phone-alert-icon {
   color: #F59E0B;
-  font-size: 1.1rem;
+  font-size: 1rem;
   flex-shrink: 0;
-  margin-top: 1px;
 }
 
 .phone-alert-body {
-  font-size: 0.73rem;
-  line-height: 1.4;
+  font-size: 0.72rem;
+  line-height: 1.35;
   color: var(--text-main, #FFFFFF);
 }
 
@@ -1190,7 +1231,7 @@ body,
 
 .phone-alert-body strong {
   display: block;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   margin-bottom: 2px;
   color: #F59E0B;
 }
@@ -1203,12 +1244,12 @@ body,
 .checkout-form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 1rem;
+  gap: 4px;
+  margin-bottom: 0.75rem;
 }
 
 .checkout-form-label {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-main, #FFFFFF);
   display: flex;
@@ -1225,7 +1266,7 @@ body,
   align-items: stretch;
   background: var(--bg-surface, rgba(255, 255, 255, 0.05));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
-  border-radius: 0.85rem;
+  border-radius: 0.75rem;
   overflow: hidden;
   transition: all 0.2s ease;
 }
@@ -1241,10 +1282,10 @@ body,
 }
 
 .checkout-input-prefix {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: var(--accent-emerald, #10B981);
-  padding: 0.65rem 0.85rem;
+  padding: 0.55rem 0.75rem;
   border-right: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
   display: flex;
   align-items: center;
@@ -1263,9 +1304,9 @@ body,
   border: none;
   color: var(--text-main, #FFFFFF);
   font-family: var(--font-display, 'Lufga', sans-serif);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  padding: 0.65rem 0.85rem;
+  padding: 0.55rem 0.75rem;
   outline: none;
   width: 100%;
 }
@@ -1275,9 +1316,9 @@ body,
 }
 
 .checkout-input-help {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-dim, rgba(255, 255, 255, 0.5));
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 [data-theme="light"] .checkout-input-help {
@@ -1291,9 +1332,9 @@ body,
   background: var(--accent-emerald, #10B981);
   color: #041B12;
   border: none;
-  padding: 0.9rem 1.25rem;
-  border-radius: 0.85rem;
-  font-size: 0.95rem;
+  padding: 0.8rem 1.15rem;
+  border-radius: 0.75rem;
+  font-size: 0.92rem;
   font-weight: 800;
   cursor: pointer;
   display: flex;
@@ -1319,6 +1360,40 @@ body,
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.btn-modal-back {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
+  color: var(--text-muted, rgba(255, 255, 255, 0.8));
+  border-radius: 0.75rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-back:hover {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.05));
+  color: var(--text-main, #FFFFFF);
+}
+
+[data-theme="light"] .btn-modal-back {
+  border-color: #E7E5E4;
+  color: #78716C;
+}
+
+[data-theme="light"] .btn-modal-back:hover {
+  background: #F5F5F4;
+  color: #1C1917;
 }
 
 /* Sellos y Garantías */

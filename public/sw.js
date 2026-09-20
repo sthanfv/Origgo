@@ -5,26 +5,20 @@
  * Estándar Ecosistema Desmulta DevSecOps.
  */
 
-const NOMBRE_CACHE_CORE = 'origgo-core-v13-20260920';
-const NOMBRE_CACHE_IMGS = 'origgo-images-v13';
+const NOMBRE_CACHE_CORE = 'origgo-core-v14-20260920';
+const NOMBRE_CACHE_IMGS = 'origgo-images-v14';
 const LIMITE_MAXIMO_IMAGENES_CACHE = 60;
 
 const RECURSOS_CRITICOS = [
-  './',
-  './index.html',
-  './style.min.css',
-  './app.js',
-  './app.min.js',
-  './data/inmobiliario.json',
-  './manifest.json',
-  './favicon.svg',
-  './favicon.ico',
-  './favicon-32x32.png',
-  './apple-touch-icon.png',
-  './assets/img/push-icon-192.png',
-  './assets/img/push-icon-512.png',
-  './assets/img/origgo-icon.svg',
-  './404.html'
+  '/',
+  '/index.html',
+  '/data/inmobiliario.json',
+  '/manifest.json',
+  '/favicon.svg',
+  '/favicon.ico',
+  '/apple-touch-icon.png',
+  '/origgo-style.min.css',
+  '/404.html'
 ];
 
 /**
@@ -77,9 +71,11 @@ async function purgarExcesoCache(nombreCache, maxItems = LIMITE_MAXIMO_IMAGENES_
 self.addEventListener('install', (evento) => {
   evento.waitUntil(
     caches.open(NOMBRE_CACHE_CORE).then((cache) => {
-      return cache.addAll(RECURSOS_CRITICOS).catch((err) => {
-        console.warn('[SW] Aviso de pre-cache parcial:', err);
-      });
+      return Promise.allSettled(
+        RECURSOS_CRITICOS.map((recurso) =>
+          cache.add(recurso).catch(() => {})
+        )
+      );
     }).then(() => self.skipWaiting())
   );
 });
