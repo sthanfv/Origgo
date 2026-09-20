@@ -1,6 +1,38 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 12:00 (GMT-5)
+Última actualización: 2026-09-20 12:25 (GMT-5)
+
+---
+
+-80. **Generación Criptográfica de INGEST_SECRET_KEY, Despliegue en Hardware Samsung Galaxy J7 y Validación E2E en Vivo**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Generación de Secreto Criptográfico Robusto:* Se requería emitir un token de ingesta de alta entropía (256 bits) para autorizar exclusivamente al hardware local a enviar oportunidades al backend.
+      2. *Configuración Segmentada en Entorno Local (.env):* Almacenar de forma segura y estructurada todas las variables del sistema (Criptografía, Ingesta, Wompi, Push, Cloudflare R2) sin riesgo de filtración a Git.
+      3. *Despliegue Físico en el Teléfono (Samsung Galaxy J7 Prime):* Sincronizar el token secreto y el despachador outbox transaccional en el directorio de Termux (`/data/data/com.termux/files/home/ofertas-hunter-pro/`) y validar la transmisión en vivo.
+    - **Solución Implementada:**
+      1. **Generación Criptográfica:**
+         - Emisión mediante CSPRNG (`crypto.randomBytes(32).toString('hex')`): `b158a28bded82fa4b66935b4ffc0fa47b7e3c5253335b876f960dc3b42532220`.
+      2. **Creación y Blindaje de `.env` Local:**
+         - Archivo `.env` estructurado en 6 secciones funcionales, protegido por `.gitignore`.
+         - Incorporación del keyring bilingüe para descifrado de leads legados y modernos (`v1` y `v2`).
+      3. **Despliegue en Dispositivo Samsung Galaxy J7 Prime (`SM-G610F`):**
+         - Conexión vía ADB (`3300aebadc113449`).
+         - Inyección de variables en `/data/data/com.termux/files/home/ofertas-hunter-pro/.env`.
+         - Despliegue del despachador `outbox_dispatcher.js` optimizado con `node:sqlite` nativo (`DatabaseSync`) de Node.js v24.
+         - Creación del lanzador `run_outbox.sh` con `LD_LIBRARY_PATH` y permisos de ejecución `chmod 755`.
+      4. **Validación E2E en Vivo con Túnel Inverso (`adb reverse`):**
+         - Habilitación del túnel `adb reverse tcp:3000 tcp:3000`.
+         - Ejecución del ciclo de despacho desde Termux: **25 leads reales** leídos de `data/hunter.db`, transmitidos con `x-origgo-ingest-token`, recibidos por `/api/leads/ingest`, validados y confirmados por el servidor con código HTTP 200.
+         - Actualización automática en SQLite a `status = 'SENT'` con fecha y hora de entrega.
+    - **Archivos Afectados:**
+      - `.env` (local)
+      - `ofertas-hunter-pro/.env` (en el Samsung Galaxy J7)
+      - `ofertas-hunter-pro/outbox_dispatcher.js` (en el Samsung Galaxy J7)
+      - `ofertas-hunter-pro/run_outbox.sh` (en el Samsung Galaxy J7)
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Hardware Samsung Galaxy J7 sincronizado y validado operando con el despachador outbox.
+      - Transmisión verificada con 100% de éxito y confirmación en tiempo real.
 
 ---
 
