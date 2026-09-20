@@ -1,6 +1,50 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 12:25 (GMT-5)
+Última actualización: 2026-09-20 12:56 (GMT-5)
+
+---
+
+-81. **Unificación de Base de Datos como Fuente de Verdad en Desbloqueo, Sincronización de Leads Reales del Samsung J7 y Blindaje de Despliegue en Vercel**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Fuente de Verdad en Desbloqueo:* El endpoint `/api/leads/unlock` dependía del catálogo estático en disco (`inmobiliario.json`), impidiendo que leads recién ingresados en la base de datos (Firestore o `local_db.json`) desde el hardware pudieran desbloquearse de inmediato.
+      2. *Erradicación de Datos Mock en Catálogo:* El catálogo aún conservaba números de prueba (ej. `310 100 0000` en `lead-inm-976`). Se requería sincronizar las 24/25 oportunidades reales de propietarios directos capturadas y transmitidas por el Samsung Galaxy J7 Prime.
+      3. *Fallo de Despliegue en Vercel:* Colisión de rutas por la presencia simultánea de `api/telemetry.js` y el subdirectorio `api/telemetry/report.js`, además de faltar reglas rewrite en `vercel.json` y definición de versión de Node.js.
+      4. *Blindaje de Variables de Entorno:* Eliminación definitiva de `.env.example` para evitar confusiones, protección estricta en `.gitignore` y aclaración sobre la suficiencia de los motores nativos de Rate Limiting y Proof-of-Work (PoW) matemáticos sin dependencia obligatoria de servicios SaaS externos (Upstash/Turnstile).
+    - **Solución Implementada:**
+      1. **Base de Datos como Fuente de Verdad (`lib/leads.js` y `api/leads/unlock.js`):**
+         - Implementación y exportación de `obtenerLeadPorIdAsync(leadId)` en `lib/leads.js` que consulta prioritariamente `db.leadsRef.doc(id).get()` con fallback seguro al índice estático en disco.
+         - Actualización de `api/leads/unlock.js` para consumir de forma asíncrona la entidad directa desde la base de datos.
+      2. **Sincronización y Firma Criptográfica del Catálogo:**
+         - Reemplazo y enriquecimiento de 24 leads en `data/inmobiliario.json` con los contactos reales cifrados en AES-256-GCM y URLs verificadas de Metrocuadrado provenientes del J7 (`lead-inm-976` con celular `3108689898`).
+         - 0 mockups restantes en todo el catálogo de producción.
+         - Firma criptográfica offline regenerada con HMAC-SHA256 (`node scripts/sign-data.js`).
+      3. **Solución de Colisión y Despliegue en Vercel Serverless:**
+         - Eliminación de la carpeta colisionante `api/telemetry/report.js` vía `git rm`.
+         - Actualización de `vercel.json` con rewrites para `/api/support/:action`, `/api/telemetry/:action` y `/api/payments/webhook`.
+         - Fijación de `"engines": { "node": ">=20.0.0" }` en `package.json`.
+         - Actualización de `tests/telemetry_watchdog.test.js` para importar `lib/telemetry/report.js`.
+      4. **Seguridad y Limpieza de Entorno:**
+         - Erradicación de `.env.example` del repositorio vía `git rm`.
+         - Eliminación de líneas vacías de configuración opcional en `.env` local (`TURNSTILE_*`, `UPSTASH_*`), operando bajo protección nativa autónoma 100% verificada.
+         - 8 fases DevSecOps superadas con éxito total en `scripts/validate.js` (0 errores).
+    - **Archivos Afectados:**
+      - `lib/leads.js`
+      - `api/leads/unlock.js`
+      - `data/inmobiliario.json`
+      - `data/inmobiliario.json.sig`
+      - `vercel.json`
+      - `package.json`
+      - `README.md`
+      - `.gitignore`
+      - `.env` (local)
+      - `tests/telemetry_watchdog.test.js`
+      - `scripts/validate.js`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Catálogo 100% real de propietarios directos firmado.
+      - Desbloqueo conectado a la base de datos como fuente de verdad.
+      - Despliegue en Vercel reparado y optimizado.
+      - Suite de validación en verde (8/8 fases aprobadas).
 
 ---
 

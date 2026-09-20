@@ -16,7 +16,7 @@ const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { unlockLeadSchema, validateBody } = require('../../lib/validation');
 const { requireEnv } = require('../../lib/env');
-const { obtenerLeadPorId } = require('../../lib/leads');
+const { obtenerLeadPorId, obtenerLeadPorIdAsync } = require('../../lib/leads');
 const { ejecutarConIdempotencia } = require('../../lib/idempotency');
 
 const JWT_SECRET = requireEnv('JWT_SECRET', {
@@ -181,7 +181,7 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    const leadCatalogo = obtenerLeadPorId(leadId);
+    const leadCatalogo = await obtenerLeadPorIdAsync(leadId);
     const permiteContactoDePrueba = process.env.NODE_ENV === 'test' && contactoCifrado;
 
     // Verificar integridad HMAC-SHA256 del dataset si existe firma

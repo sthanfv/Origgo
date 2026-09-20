@@ -61,7 +61,9 @@ async function ejecutarValidacionCompleta() {
     'api/user/balance.js',
     'api/media/proxy.js',
     'api/notifications.js',
-    'api/telemetry/report.js'
+    'api/telemetry.js',
+    'api/support.js',
+    'api/leads/ingest.js'
   ];
 
   // Añadir también los módulos individuales de modules/

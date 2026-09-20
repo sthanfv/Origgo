@@ -56,10 +56,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789896289405,
       "fecha_relativa": "Hace 1 hora",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:1f3d6b79f8621d91d4c000e9:285124fc7004a4c3897e51158344eb04:b038750097ef912c045df99f4b4bf3ef9eefb41b605773518e0bc205149b0c98120c0c66cab590646ae3fbf0ab84c094dea936bc4de9c10ed6a64a7a307694af080fedd4dcfdff779b79ade73abd7e765decb886b9d886e340b67624b4029510ac49f5f122609786c9f352a80c7586332a2e869781eb35ad525d892758a3968d9f5041cc3f8379d9c0e29a08722df1a0a08734f26f923d0e16aea854098b4df7d6446e4ffa051af00e16a72b34d6ad9ab5bb053190bb1eae8758da796c1e379da0c17bda219ed58147bfe8b02233d7a81b652b426b435937a1e59d18866e861952f1238f9e95cd476c53a6475956e05945207c870d84ae211bf4b039",
+      "contacto_cifrado": "v1:d3a0a8d71e71af43ec0784ee:6147bb7690e906a3d1f3a792f0f33693:a382ffcbb27271f457fbebfa94aa91bec0b896523bea99010b2f38a0c028ec799b145788dcd5bcd7bfabbb4c22ea954ad8f7346d218499f752bd2f5bb2293625d9a52570c06276c1b048bab0c6b64916428b21ff3c14c7f013ed52a0a40ff4fb9045483ca09a20f02288368fce1fff099d37cf9b887f6cd62e7490061e1a8a6a1e1925717d44f16b8fd24142a1de1c83832883d31d9cd9ab93128f71b84a4891697e30fba985c98814c65bfac9923cd917a99e1bca6f8467f2b16a1a3c09ef5775c8d3c4df31486c4873f51696281f94bf12b18cb64511bec9658f0b54bb8606d8a630f1b43c32f9b8c86d7e21d7983e1057b10e6b34bac89a0d69ed822bec5b4a1e825831bed400e4896dffc5542abc73309fa25ad30f26e8640df92c11f858aa2bb8b604cd12cb977dceff443c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "27.4 m²",
@@ -75,7 +75,9 @@
         "Bathrooms": "1 Full Bath",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-964",
@@ -118,10 +120,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789873840267,
       "fecha_relativa": "Hace 8 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:a3d372631103f0f9d0f62674:230a5a64fd675a53d7c116f70b9d5efa:07db41509af866172bcc47e4371b7da9d9d054f6ffadd4bfa0d4abb1c7494fe2ee9d891f3441b1345b3ec2f4f53a261e6183ef34fa7377c42d33456ccc3f08aa5f392d4e0d6d6ba2ed60a7d2aecc44b821031e32f9f5d9a84f89f96386c2a30d1e6994532a7e1b51c29555134bc5ac75386602c8611f551cfd8262fbc7f8255b54de2a3eae997ce84a134fe6e9ffa007fc04de74c58be581c3e9c4e188a2d970c07b582d4bea4b0647b7882fa74940247bb3ecc9c182fc9ec7cd72332b5b215476d0727d0f2525d8c4351b1426047ac601ba3bb560a06ebc0ab207bc7e316c2d70a1e1516dfd5b866e2bf122a739c5a7f72b5b90a4023a3d25991a386ffd9e0ef10f3834d7ef81f48db3",
+      "contacto_cifrado": "v1:5b0672ba9a58fff05ef10239:89c1d954858f58a258f4c3daa984931c:8959a6776c3f60d664b7d896d0a02e2d965a5db20fb3de134763527b03dc1b5d238d51113f812b9c99c20b1b4f8d4b350da775675cc7f8b2e66950afbf1ffa4a615ae82092da46be74c5c7e4364ea34c8574404fcb262e2ec211abfdbd354bcfccdd59da210e074a3c8be33e093f05e5190b8e06dbb859eb0feaae470dcf70490d60f5d7e7da3b7ebec389fce890c2e59d96f3204bfc33cd8b84b9c8b9372010d4db64c5ab26793158932a360764954d5b5cbe7de39312f307846aacfd354d4d4f53ab2d4be7cd95caedb35b21059d3998ac5fa4f3d9b17dc60416ef9828793031f987955d5107294ea3ba1d392bc8a10dedc018acfbbec0d2fc582a775e60bd2e71c3773c132ff27a541fa73a32e5291b335e6472074d8e894f52c072ecdceb906f9272f67ea5244feef882d4042756f6d206a16f64148a1a8d38acdeaa50d693a69fe691c4a2de",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "44 m²",
@@ -137,7 +139,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-963",
@@ -190,10 +194,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789868936691,
       "fecha_relativa": "Hace 9 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:ad12ac59a48795a96d56580e:470ec7a192996ae31e7beb009662762b:a5695e3f440d4a2e8ff2a66f579677b4b28cc46341ba8e4d3b0aea1d504ad51a75e9da723b6caf3a9e0f21e4af1656bd5d298ed1a426fd26f914f5f42961b91ccf164d70d98f9a520cb028f040f890b3e628633a838999bbedc51594752e295753b1c8d5307097bacef6d159b862f2e2b0198a43779ef86e94560746829846e43346e5b75f9c091998fd4a873a13f1e4a379748d8add6e4741c07e098217e168aea21a6e5e1cbb402534c5e8dafd5cd13bc2c6437607c348edbbec264c847dc3aa373e4e0e158e5ce3e1f4fab27519e5b4cfe4f4789373d0d9a9acdfba89ffbb70fc339a0abe7737b7",
+      "contacto_cifrado": "v1:f80bc9089c5d3a9b6fb6b705:ce85def55ec22c4e0b4b072d96b4edf8:487721cf3c2625b9fb2535ed607cba9c33076fab2519c40d027201a88b13580f732a88382eead7313feaf7f337a3fc50f8c7bd5bdecfe4a7e762daecfaf1cd001091908278488437b53b288fe2de6fb148ca534ec64e0754744fce2bd564c64cffd024b88cffac3e0f73d6aaeb974bcdec1a2f7d9964a771d28dcf74e0d70f5ca490c81ab1a4006008f926d35bc8fcdb2e7ebacba7ffee0f657378e254a38f014650e6788baff28f747809f120b2166ad1896c34730ac985ecccc9d0f77d8d84a20a771755093b177457604f93ef1da98aff0f2e98f13f2ae393cbf25f8d9001c1253d01c8be4251d3e0f2ec061e5d80b07360685aebeb094aa5097bc612818c2eb332443308927652c3385ca6f40fe6b23c45590b0c0f1feab3",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "420 m²",
@@ -209,7 +213,9 @@
         "Bathrooms": "4 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-951",
@@ -262,10 +268,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789860764744,
       "fecha_relativa": "Hace 11 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:8e2dd4795b66c35c9d6cf48f:78051284f69bf18d8878826a49de122e:45c736e3dffb44b990d4e4a912ceb3176621edab6afeb9dc74a263dcc3e2e0a8196a154bf93d1ea7b9c51adec21a640bce0fc064ffab8144bf9a49c6762873937ab5176490325f11ac5f7b06116db04479ef6e0968e0d29a03d6c6c1726665503b5ca201fcd1da7c78f528aca0514d05ab39ca59db0fa016bda7dcc19d73bf0a238f596eaf2d93319b16bb5d52c91f18588b45dd74500e14492e60f58069927a7e2c3bf249d4b339236d45f35fef5a5c673e96648a8c027464e3435531d981d17e8ab883c7ec717a3a420a5ac7d76153a981f02ee28bd73c9db1a83c54875b3e1b160e9648001e2b6b81b908e42022c64c66a85ca29752e1dc4951e589a5002e4cd39a903dda8375829c",
+      "contacto_cifrado": "v1:36a4f14768f38897054216e4:0364170dc89a199b71f85da0945b00db:3ca4a0ac1a217c9febfead888570dd6d1f8194514efb8b9b01d42db030b54f5b3a023fe18786de17bb44dbf1d105abc05233acfac56f2797422c7336ba66fe191fe1bd176fefdaa657ec9b2cbabe830fd9a36d9e4e05803940240380bbcfa7be458a3af1a2c52cc6dd8053def3f75e768314921b44bbd1252764e75b023810cf763c203a122360827617aa35368b285bfc19cd50caa97560daf2d4a9fa8edd6589132da0c46e9b63fabdf1ccd5eec20ac3a3404b17d8b11ea4df33d5f9d6dd1ca1c383c355c2b8c5579a1d469c74281cd4d6015e8a1052956d2838b5fa4f22f9dd64f2f0c737bca0074e71e4a63d00b9008b4c10846c20c16944d20ddb9330f0817b8f0c4f39efbc51bf62675a467fe1fb2829e96355ba8016f74060dd5dfa8735a924141898494a5c44a94a9ca32f9410f5983b74a98c761b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "96 m²",
@@ -281,7 +287,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-927",
@@ -328,10 +336,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789839146752,
       "fecha_relativa": "Hace 17 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "324 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:888ee179e27391579b33bc6e:2dfca7f62cc2dfa3acfa86d17d4c6b7d:2742eee072ddd17bbfe188972a0fe9d28752c5b004bb2e3ff62326794fcf9dc69347d4c2345ef594bd338551afb860c9362453d28f2d1ed193615ad10ef01689277e0b3605b78ff5698e06c42b06df8dffeec3bb79dfaa9649be01d5b0d7f746bb8407cf1d4e4caa2fb1b9067fa97391ad1797281a059f5393db2228913a2d47b0f64d5039e21fff6b51a1b3433a55eb8e62822595ab015479479480d0d9f5dda41bdb88141822f6289430df5b1c137adf55025ecafb7042ef3c9ed43950b068b538e7e717b21c17c720413e7dc4125fea94fb86ccfd21804aa88ff21b190b3613cdccd31a49d0160c45c29bfc3e52dad92b8c07bae9c3ec22ff98a525142189",
+      "contacto_cifrado": "v1:da23dfcf92c4c77cdf2ee254:d996c3c3d3019b54f4e8160757143e83:1b25324a8e769467d723b054aa699e97975b17f1bdf4fa97f71411a673c9b2de75cfbe5edaae2e51e78b7fc9f4e2486b7d1f8b9eeeb75449dd4edcaa5c1886b6153382382a64ba029f1e2336385590407908cafd1406c488ebd8abcc457a0ce1e1d28dd7a8e96265441b6217d67e2e2ab179d797dd7e0933d521cd28bc60a0935cdc7bf3752d5ff08e4fe2b108f34bced5c7131e729418a70764880b4e581a1d8f52c03e81e089a6566e9e5a8cdc35b4d5ab35bc6668327c637377be364f1eaa87fc3dccdba402d03517334ed8a226a0e7cbf4c1d7553364cca6879680ea33e95e5bbc01139cae8699c876b8162d7a738cfc6c19853036399c42e1c1aa173f54ddc078cca41207e1853e8b53c4c1f13663b3c623594c82871c490323ea1c473ce165b0087b572a9cbfbbe038f9c4af903bf983f8626b99a6",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "86.74 m²",
@@ -347,7 +355,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-926",
@@ -388,10 +398,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789839146714,
       "fecha_relativa": "Hace 17 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:202c63fc7040e89ecb4b0c0d:d07dd9d5f86e70ae600a7a974082691d:367669c77b1fdd68b6a5484e5428877e40eee6e79fbfc4df027f047f1c387e26b2c6ae17c7caa849b048f62518c326202a93942319d3a4a44d69ba52878c4072af9f5ab9cd1ac44ac0bf74ea515409e79f64b70623200ecd8d57595b0644d8307feee5031a36d62e790e2620de20ffd47d3fc53660f1348931277096440e33f5d8360ea2cf30959ade9979f843f9e87cc877bc40fa0ec4b4ff68741452ac2433bea2ad9a0ebd1003cee6f65e9f41da61abac361d602939cba82d212d67b87d6d96b756403c2fb114bb9ea3e9f8a40d13500a32860f1804e8d3153c213c5350c55e9355abe89f7d37e2052c4d82473b479b4481066b64b640ac0378bbfb7d962522aa3fff813b406a09f99f310c968805e414c9444360f10bbe6db2589c7ecac572",
+      "contacto_cifrado": "v1:bcd354e1f55cb7bd755a7458:3580262e5ad36a2065107f237011e88d:285776ab0ce97604456d2a6a6413eedcd1c76d01001513af0c2da734e97c01969a34454333936596b47c8628421f0d85e3c90461a976e5c719da81fbb47db14cc353c529ad26b76604842028b33e5f1cc76e77501492381e819939b18c4f3b804ef4fe6901de3cecfdd0f61b3edc17fd252d2e546b8b11201a180f4089f4d26126cf53e264c37ee1a5f971848586036620c9ba05bfba1a8f612328b189351250beddba5fc39c2e1a639bb672a6d6173d2e48fa12fe75245926156d4a22cfae41780fa9794afbc6fe1c297b94566d945a9c305e8c55374a63e76af343317c7eab9141beaf7de97336716bbb1e0c09cd2421611634ca48be05febac0aff14af832864ba42d4bbef9dce0acc16d0d3e80636ecf857d2c3bf84223f680b8c3e4d6a5e20638504c685682d00e79ea2e1e934ed66b018393eee49e72c42aee9cbb61d683aa2e16717129d4ad62",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "73.67 m²",
@@ -407,7 +417,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-917",
@@ -456,10 +468,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789820833259,
       "fecha_relativa": "Hace 22 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "302 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:d9073b5316f172f30180815c:745d4bc19d3f5ddd0175f5d08a6c9a36:a77cee8f21cf0e1f80d681cf001031dfc59dfe3b922bc555a13db203bf13cfc46e95264e32122d4c80ee055294c60fca9736896b05d638ba0a040db39412f4e5c234e6812a67d4a81e7bb77e4be8a275ead3e1a69ca9ba4bf249b16e685cd40d9c691479ee761f3c01cb2fb87378d9298ef73b018a54d14c3722dc8b62160cfffa2967815c40d35cf8fe30d59ca7a56a2a68b2a8996316e1325bb62471c994debd62a32e2e5bb508b3bcc1fa8ca36b99393b7ce065adaf2313bb8516a3c18e4f185d70700d44cbf3ce08c0900b3da3450e3ee720c4d863c9b87b45bede3f4a8369a04c915f9a9752169bd01eb7bbaa558d967827efb514e903359c8c201028edfae889",
+      "contacto_cifrado": "v1:60f795a2fbb686091122e089:207e58a265c231836be231be7227a865:d78b14634b30b08b0792f02815160b60c8c7bb75a1fa1e358909786e56b2a16ed81eea67b607a6faa46d039ecaef14da7a9634f746cf87cb641288afaf1eb64f3a8d9bb03f800957748e4bc4b7c2f6ac08c5a7d612f06c434df68e98a4c9431056fb279abab36aa2229f979c3078ab1877a94bdd4e9e27ced1d1de04099d84974463a026554040393d9d72957707cd483ed74f4b30a50d426aed0698602f146463fd114f5a397bd2877f32d084628cf1889b9a0e38619a843a6bca3f395d8850db9e137e4d7194f654c5c92b2943ffc6d59f8b07169502d31031e4bbe1d12d6fb469687bb4dd2ae577b472fd29420f6977be99f573ce32d840b76a46ffaf02f30d15095eff6d22a5ebefe1e88507d08e0c32b48334d1455b897f7942878bd8f2",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "84 m²",
@@ -475,7 +487,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-898",
@@ -938,10 +952,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789893189683,
       "fecha_relativa": "Hace 2 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "321 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:7d164d509b6c84e13b5b85a0:f637de8aaea91d41bc3dfc797e71a517:628675522df18e2b5a76f9360f992faf0b893881527139cf2b7714a40e0eb79b6651d2032430a1d9bb4e673e49baa85f6a0115245f11a4985ac60cf96c54eb98d76b785afe5933d51800a6edd73f4772fecd30e52a2d8dfdfb84d37b88f85536acbe4c4622ace7f42114c337bbb0325f01d0a5576187df504e90b0cdbf71e7c1eca5850ac01afc5170e3eec236daa383926a6892502d170f285a7c12885fe05a37163ffeac85a5e3e940f0412076f6d9dc37652c4d4be6c2e4a873a580fad33f923af4b022df5ddb8a36a54b67e6350c995a403480d3631afc0cce9357bb1a0bbd084c6ef7687d0eba239d4e011f5a50acecb6f1521215c02d0125b9e14ba003a1f8ca4b689fdd42c758d9",
+      "contacto_cifrado": "v1:9a4bf0d15cd075e30a53c029:f84e4f33bce8bd95fbe23857fc1d54ae:15fec7783b180b56fbd4630cc5e1a53d31a32dcfa9db9bc431420915525ffb6d359bbaf845ab0cdeb5cc02ac31ec9c8d7fc2c974d1f8b95e374719c0a7349610e2d8154454a7d063c2dcc3f0bd6a0f7791d6b1a9af81a6218d5c2777d1bb23bf79931b30ceedac483b14f056d309e64d1281568117bd38e81fbb77b014db7772bd84f84234abdb739512188dda6f3657c665eef192132e5170853b9b4d2ac3ceb82cdbbd214e238715e6364ebe25745d2be61acdb0849d00337ad00980d4b3a1ebdf7bda6deaaf6a8b5a2ec4cfc16bc8ea8adea49738ff7c27d626894ca70bbf1ba31a9787ad746799e2115f15ca6963fedfb931c92cf01f5bb43ba8ba7bb5bb55236811756725111faabfecaf1a74b7b383b86738fbb861650d65d1534357e5ebaa84b47df7c088cfb7a2d8408a23e9463f7c1f1cc8698e6dceb0ae77c5fdfbce90ec7a67c7eaf78b8a18936b9d6f56148eac",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "90 m²",
@@ -957,7 +971,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-798",
@@ -1673,10 +1689,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789893189652,
       "fecha_relativa": "Hace 2 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "314 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:4a311e7dea2203d3310bae51:7c0579e9f577eb9c8bf5b484f850042d:1613fec52e1f605d960e945b1931924e48a5e9c240e9687cea7df09040c16641865bf4e81a1e49a4790a26a07fa4ddcfe769477b50372725eed57adf171a94d4594633061503f275b6f3f8ca811d35402188cf879840529d31fcdbc9b9d6238cc33155cf732c76f1b0d43da144a895249172e41c0a83647ae00bbc5637e062ad4193d186bd0486da2348eb3ea1f884e72a4d26737410ea2bf758669c1ef4ca09c46201532eaf0e021153c694977589fa1ea7f4f9304265544201bb17088f8ad99298dca460afef8a3e0d7b8f68b6c9ec9f30ea2ff38f30e8fe83b2da2123860aaacd7e22e527fbacb807129347c153fb466651cf280554dd94ba107007c57b7d6dfcc0052f2174e66c",
+      "contacto_cifrado": "v1:709d7c545c58084937d64ce9:655fa15ce9949aa0eed1268bafefe9ba:906426359fbf37c15b6fbbebfce695c13dbc3656578e31ed3d3875cebad0624a318f778ed66f00af5461bacaa1eb83d8aaa3abac038dc46b2344dced92f73ad9b5f3e10dbffe06a97903b15973bb89a83cea6bf159937c920b16b1aba7b300a079662bf8a5f49cffd102cf146b94beb29ec826f0081a7fbb844c90b6922989f2ad8640ab75a8c155e96d2a1b46ece7c48270ff8d966b3e96f503f3a2e9362a683e72b365394ef0324548f5405af5fb9ff082adfc1b69ee988a33a64b5e5fe2786db834a3432980ce9551c4fb5e2b7baa1b0c0345e6a034ffe9fe1ce20ea1bc83ffebb1a72e861c403773090e8866bf4b438df4c9d6933385efa05efa27d3dacd45e5b92cfbeed9078971086f723c0ec170f40ccf008ac8a2d8c6c202c22866aecde56a68115832b6dc5c09c4a2a9f0aedcaa7ee89c266b614d98aabbbcdb34d53e2e928f88bd8d7c711d2adb1cc5475f26905b40ec2852eb125d",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "64 m²",
@@ -1692,7 +1708,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-616",
@@ -2500,10 +2518,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789876839577,
       "fecha_relativa": "Hace 7 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:5c271a15115e019d5f1a6663:dff80a661b430017cc0093d93f831ee3:e8deb377e47120fbe3af56cc29b2f479ece24fb42fee1b8bd3f7177dd54d791b65537c9d063a742b05bf1a596e13deebd1d94dbe697d3fa8ef4deed4db2cbbf45ae668e14ad18e8cd414e36f676c7639d8483b9578fb6282ff1091964e49ce3cc2200461668f8df1168dc5e9d61d5f321608a746f6159a03239ca7eea356c1f8cf47f5b086325f471451d8aacbf6bf032d53582d41310e051ae6ec8c5a551090e930cfe0ff48e53ef946dbfd960f0e48abb4ec641a7ee6cd0fc7fde4956eb6fb5f6d1b3c3e950a916a237e9f54ee8fc1bae95431a674e651e6ccf5b5eec501dec40201bee595c3ea856d994c7923352fbfb1c16cce97622f85dc3925a9d0ab6ee174ac2a",
+      "contacto_cifrado": "v1:453683134f9896c29d0d2005:5fc91348814cd3d14fef1099d077a204:4b7c5dca245b94c2323bb21fc531ba9f93fdc1df186585c2c58440a6a90a7a065abc096276032494bd243df39da3543950c24c15be9e2a923974b87c67b6636291fc1c16f214c89372c639208eb6f208c9d96b1c98660472c47c07294c0d49efc8b458690717e8433440a97d1227f00dc0758423b5675b5129421165dd0ded007997a56fd7c2935405ca0deb7e15a1e0edde12d6df3484ca0d2c748e58a68914692e29b48b1029496e6f184e17cf2f12830cc7efa86bfa7e0c6cf57d08b99e812fd7c75d8cc1a7a3c434a850f8c1d51af476099784f2ccfc1e805742ed7ad3c4b68554651a7464b63985037450bc80d0581170c2371759d0f168fa38ede9208f186406289a868201fe349a3c61249dac7e14919081cf1f1729e3d57c6bb8b3ea06a7ec9ee377c295485cd99a447f088925d486849fe0d18e5613387da49f27378ab5d10fc8",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "137 m²",
@@ -2519,7 +2537,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-465",
@@ -3336,10 +3356,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789876839570,
       "fecha_relativa": "Hace 7 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:be74220bb5898dd39f4d1291:e5e1cec5767f1bfc2096401c967d3dbf:9acff5cafa9abb1174c7f637a654d3844a2ef96f751da93a45376d8533f00cb8ff52b38e3a643c1219a292c566001b03fb5b2cc5600f3ad985dc6b0a4ceadf278c6c7c5f4cb521bb29a05cd46086c4ee4f19ad7e6fe340c82300c67a1388ed81f16b5354ae67ed83ffd9cc28fa896d53d42b7134e769870069fda736d7a8d08e8c291a4f8f08f7a32f938c55b3b5353b927124f5429ebaef500ce39376d9fc6efe33062377007eb071c35de4b75c6cf9926c8879f085b477f03cb646dd24ebcc89e4285312c55afec5183acc8318ac3ab81d2f7e0ff43d0922631336d4ef7ce38141cf416a81a52802abe46ffb02723c4a5f798c8953c1d2ec4a51bd524b0bc78659039dca",
+      "contacto_cifrado": "v1:b12fb605abdb3b9fd75a7bda:1519dc5c65c327feb9f7179c60c7942c:03e8ea6b5e96de045fc6027590da5c9dbbb6b3c7833b4b5f72e94e624d26e692dcfed18f81991491a0e05e79d3c5642a4d63dbfd870e524f330cf29a347d9da4d387ba3d17b1874c6c220e62cfb3a45c66bc82ee2365996b30e8aec2b35c3a0587c9240a6f5a08ae938d5af32e339d48599639bded21cc6bb99aff6488a83e3bec4ded5a3b87374106e56ef30d73edc881f7f6182ba6c00a51f917acb82b8e86cc6b30ac9c687aab89b8764c6fc4e548bc528657dc9ce9e933d39947ffce41c7e33e19084c7e71ecab42b675dc0732ff213a21961c0c516c6ba04f1931673317250b054aed292a876fce133b8e850640d0385cb62217536d57dea7ef4e7e4d1f15afbcb0bfb842d73b40a63ab86ca51960e1adc586aeb43d3748daa348d10e5bdf6b1649af79105fb07c14ed2c5a03c6d748a073a42be455d89ef6f5d3ca512aaa99405fb81b2d8f99",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "63 m²",
@@ -3355,7 +3375,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-464",
@@ -4023,10 +4045,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789865688947,
       "fecha_relativa": "Hace 10 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:75d3b2faf34fdafa446e3e5c:eb054f0e50bd265ec9f0c7ca1253052f:76e703f86e78adf6b56dec69b6fa139ec9411288d9398e58ce474290becb8ea5c75aea6857dbf8cf6cfd346fbcb3194140d72c8906bf2461f95009c04d5b260c12f8708983dde787ee9019a7fe6dbcb9c78233281e8e9b1712238de28e4af924a951fd0784a14c662f827a7be80ee0960ae1f94ff905d8c54b402cc7d3c0caa5745b98681efebcd83c62784e08044b44ae02c438fc0b52866bd1c44ba36f2c0a986b80b7058d93742834340eb70845b025ad09b6f75d6068fdc75a899ca2349e09408e9b240b64bdc565d0fc63f741f51abc1e4f3b315eb2154577a864f430ac6e686d8d414f64d0ba054b1fc096022eca825abdd7f487a3308c8a0956",
+      "contacto_cifrado": "v1:2b89c814bd290919101d291d:1f0e60b21f0f7b73bb37caab796dc654:cdf6fbcdc07f6ef9a7cc14f3ef674ce94ab617963fae7085e0b40ba5f5985dff0f0ccd29e4019ef0531813a53588229cd3d2b704997145ef74bfce3b04b57309596615ce0cb24555214bf7678c0505f8f32321776186a345014a7d6a31631a494e93254733311b420a4d3d5fab7f689963f43c79d8b2f7cab7f513d092a082885cf06d707b362a8fed060f820fa6ffb73090690f077a7d7705d2a34ce68c37ee5e0fd2c66d1c9761dd048e4fc3ea027f95647a5cd6032b11ed58f8557f5c4bf467c29745d37e1ee255115b6ad1cafe80927ccc6e2c7bd28fdbd2c1eb8fc96ec7c1d3533f88aee889f13254d75a9a0f803306ad94f908995a3c0c214620f0b16cfa957377c90af190f4ddabb0df8c8535977f1a386a1cc3e0a28d8ba745c98b75a9993c5aa1deca92711c3d227debe805d62ebab098130d",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "92 m²",
@@ -4042,7 +4064,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-463",
@@ -4703,10 +4727,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789857899306,
       "fecha_relativa": "Hace 12 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:97d6cea89232775221d45a62:01095b973418f0280b6b3b0604807ada:ded77e6188001d5ac8719f4033681ab234dc462d9c88ce1730d0d6a49a6906604382e8bdf252b7e37be584003eb918c4189c612f0650db786c863a8d33bac362e8287256924e4aeb79550fddaf4cc02ac268992708e35ae32af699a245fb8152218f5888be1e26a8e99decd390c7476e507b66ee8553f79152033e16ba61666d799ed95ad58ecbd5e76063762890bea4f407aa06f359003c894e507e7ca997639ad2cb0c2025c5c893a40b6d7c6817b3d9fdf4d0e4d19d93f62e1f132f9d481ebd9ce904250c377d0451215f971797e377e8347d2538362fecdfac8fadecaf737fd90ca52b2c9da21b295e07c9fc71d12fb9cfc337f6f1f6111f",
+      "contacto_cifrado": "v1:cb45e607e6a358308af37ad1:598afed89b9665b8ebeec1111a01b52c:94687f8841ba18cdcbbe9806d4f84d31fa760eb99398dedac092a0b71d257a2bb37acaa304cca2f76d6f46252b2d6c8718aa962f96dfa9f74fb6f8f49330b1ec499cf35133ca9356430e92b2f5ea461a53a7b366236acc541512e108c2cdb834e5a99c2a1b49092088d85b76a6158fd425005b6eaa80a11988571941838626501d7a56836290b99efdf64894954068d39f59fed72fa885840f44bbed897f76b5c4b02489f6648b7b3f424ce33ec4ed670edf64805e01329a9098be1766b6d56945ec24ff7037224c46568f21f21dcebd90486a0d5f6e4b551992c7c18cfb5328bde6880b68f65f1ed09d0db5ee0a81ccf650dbadd1e6649da2c666e603517cc4753840667733ff2d30e3846d5d745b8f2e395e15da500345657325a33de5fa12f812b615786899607a904b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "37 m²",
@@ -4722,7 +4746,9 @@
         "Bathrooms": "1 Full Bath",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-462",
@@ -5338,10 +5364,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789847353358,
       "fecha_relativa": "Hace 15 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:45906bfb8f04df2c80929570:705a94d5b6c04d070ee37900fe1c2587:4a87df80b10ade94eb7d9a7a6c6ece5d972e9edf25af65dcf60342dbd9f099fa2dc707fe06616ff2495e481be51f08f9394d3bc95e92815cd957cc50676447f108e8acbba48bda7ef62f07a3e1afa5b16b74f3a347f499bb2468da9b2b30ef2ef6a82db0f1ce07609be16c043f110277e51fabdbcedbcf37feb01ecaa48d8cea8b8ada3cee95ca0f2edb75088a59656abb680f0aa334186923f7f2b58e266f0e60eecf3bdebfabc92db8c3ebdc3ced8f44ec892ee9c4cfe58dec961861f276f91b98e5d0e7ec7295d644621b8b59a2998f2d9fc8106eec5db135a64fa64892a9b248ba1a6cdae7ea1061aece2fa42b8ae7955ce5d8f9148fe39b26",
+      "contacto_cifrado": "v1:06358cc7d936a62dc1064390:afedd2eec8e6d34b4578a9d7bf8824f7:2f99d82ae47070f8862f06a11f35fbac4e18916da4c1b98f9940e811630dbeb6c31df30e3d3518190b46e07b39593452b4473539f89d1a7465a9fe737a2f6b55ac889edd08de320ae239064e2b6416e6dd571743a2ed0b202f90d09641aef70956c7c92b53950ccdd44f2a1c886e8d5140f3a7fbca57e649190670b409262019d71e9e8cc5bc0b40a303347e836db00a983921a173dec4f2e5238326974face26d587cce13221a1e6c5a574d472a0c156faa2c8e5bffb5175f8aeb90d7864ee4706d8eeb2a76d3f52a03291ab88e927789449f09cf5b3ddbc3fdf1b5fabf7b4dfdb0a7ac4a9252d657413b39cf222b3ae28d6a77c1bf8138c425d8ed763b9d245fc7976cc1fece2d900c7bc9db284cddeab0b03be5c7125963a845d5e2ddc85a101b30267be85262e04966088cb9b8c47194d7ff9e73f021c2ea1f",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "54 m²",
@@ -5357,7 +5383,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-460",
@@ -5885,10 +5913,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789844884828,
       "fecha_relativa": "Hace 16 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:21c3b0ada348a3eb2b8d3d6e:983b9ecea08c20a989364593ab08337f:a34641e2a29efe13b98071f39796b0b60b38951ce03b1bdd3ea679aacb912164b307193465648f9d293c963977635602a15f2f491d46218247b462d6c5d472595cfa68a529e17d00ae91baa3b8207945d5960736da4c3489c16ce61e3aa55123594a8e5916d0fd685379a63c7d16f9d0fbeb6ce54b043073535ff694a7a8c91ed96250daf0e957772a02b6b81adf441acaf565f4a7ca210bc720450c316a1ee1190658ea89aec8730e4b10716e7d2b33871eb2262bb0c992b1ae0d6daa1bc3609f6e1552991cdb00dd7c09dd25dd18386b2e424e6c7e23eddb905040b48de14b18a251efd5829fad4c74d24f9c7c1a106b7d9726e1e4f763c0",
+      "contacto_cifrado": "v1:557ee138e1ae07c5cabb204a:6a2c97e7a80f2b8c20aa79b5cb9190b2:2dc2e1ab3ce3ca249b01cb7b3a97f6f374f2959cf12c8496a817840784c5557775d6ab3afce72ee1d04ba1277d59aef7d48de8d6f7cb3a5a1830c6ea562b40a4eb62261a48bfcf1e70df34ca281e71b391b3470aacb5a9964ade9ed97442d0a1c8739896fa1b62cab7932bea73e650f17a8a2b713acc0d35b594c1ebb82a7e248ba6b7af7c56ba7101d1dd8bbdf51412992dbaff6cc8be99b076ab01895fd1371fecddd4e5d0646be9cabdd55ff7be3b98a82da570e129b83ff6f8313497aec4e713b39481fe367c26798e32f45e78bc76f8abb7e95938d8811be96173eaf83cdd22c259b4a997a9f637fe3bdc8cec4a0fa8f7b24df91f60a29c94ec34928f459f09ae86d1cc0f72fef0a50a9f58fa29da4e4ba7af9c378adbc1ce019612503d0d08fe6612d2e8bb3392b82da4beff842ae55239e1c8a2",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "167 m²",
@@ -5904,7 +5932,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-593",
@@ -6231,10 +6261,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789841597958,
       "fecha_relativa": "Hace 17 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "300 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:cac861dec532903b744e72ac:10aaca623c5e928dc3ce2469e3d53ac3:144a14c568f70cb3b90d870aa772886ad98ead6f23890262b500138798720cab7b3ac722516bddc507ce88aeddaf7861da487633130ed91238fca14bfbac033d595bc05fc326786803dfaa499fd52c58ad94efae2059a2708eb843e502a5592be50ce790d89bdd17342c1d9e54fb4b87d06b9c23431b4e3a4bcdf32fbe226999de65eba3b63d6e6a62fa094a8fee361dff4acf80caca44c7c8b99247524dcf9417ec7d1ae5277417d22c28aa5e0430c1514c602898f4f390e48b134b20f45bb534456dce463949c4ca513b831a5f65ee36a2d80032836b2fa2db5b770b288a70683bcfaf9bc8c2aa1b3359306caf6df2c3428e2f9e0a0ad92068edfe5af94c",
+      "contacto_cifrado": "v1:42679ecb10b5d97fcdc95ec1:427792028ce5871a15424b2931b9c896:dce911d011df42297133fafd514f812e2347efa042a8696cb1fcfb1e63c286ed72361c23b4d21feab0269c82d6c595073250d735ba5aeba2651d276a5640c6c9c96a3cbb4e392ab0a6798d0db930e8b91f918589395f9ed7c791ab13dd5af899511366f84d050f6617c57a2aa6052984a9aa9d32266e5ce31b665b637aaf75c2bd730a12f5215b94eda62bec19083cb9effc4dae319cae6758cf23e3913421e647987f6431300a02ee4bd4490b4fe1e8996191a5f7310de1736f1a660fefbb78c639952cad9297ed216e9cb648688aeaa4dc5f64cfcf3365eac4f02b48693509f41c3abcea3c2d6b91ecd1816b1428aae004d0692259858c61090fa568e0fe3d29d5b7e57fe423b67fc389b266d77855cb0e6e79ddcedef57b9818daf2a0c72643e1ee358593dcb0f608c0863d6094a46528e30ff67000d48445e319a4dc8836cf76fcc52922761eec",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "74 m²",
@@ -6250,7 +6280,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-556",
@@ -6640,10 +6672,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789836547302,
       "fecha_relativa": "Hace 18 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "311 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:4eb5b34a6cdbcfbf61723fae:5d29ee2c8077e14e21d768207661f856:eb95196734ecc01185c3c0aa89bd0364b6757104d17ac998eb9e6efd2d72cca6adb9348b4bd038aeed9ddd52d688c387dada5ae731f636b7df17eedb66bbbbc69be64f161816c806688f08ef6d96af8eed0168bc88c33e233b37cac95b6b298e380111da1673c610cf7184595a4e61f717d5ae956e133ced4cf16761d20110fb5d57458e85ac0989f12aca75cbb6589f854114c0c749806b2452ffc0c3c33828c90fe82acc7bcbc17816990a04213b68b4b50b915538b42b311eb550baaa7185b64bd05a5d7f5b4800e07eed421247660292f299e31afcd09970526206ea57d15c30203997d99f122acb7a0cf6aa83981d9d212f039b",
+      "contacto_cifrado": "v1:128611cef10455d61deb0af0:431900af975dd9a1daa1c1eb23566dc9:471a6bf61ffabcca75ab96c10ec681f8ca7f8ae3feb03058b9debc3c667fbbeddc32e46647adb59c21606ccbf32a799321f5b288e7675d70d5ec87d2e52b8256af4fc8aa18307ce03e35abae733b55fecbc0978bb6272773ee62707abb800b9e7d83b905898036bd460ad334eb09d7a7453310914b0dfd408d1091703c53bbccdb749c2a907ac87a5f9baac32901a1c3819d8b3d0a55b0b4657a539c945c100507f5beb70ea6674a73a3fd043b20ab96ec3e7ec4aee44e08549f089785deddcf92d378d09f5378c74a9864a8bee0bc63aaa4d362e29ca57c36aa9425128d3a1e5f4808c391c4afeef127fd1ffca099dd95f8979d8852fcbedc7ac296dd34efc0ef3b9156d6910a30605f40314ac3b8091930f8a04c66a1db78bf06f98e964fd0e106315f1ff3fe9a",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "71.02 m²",
@@ -6659,7 +6691,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-555",
@@ -6915,10 +6949,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789831389115,
       "fecha_relativa": "Hace 19 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "315 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:6678b3ab7518932c0f4656e0:49fef64219f7ba0c2ec7eef2b6e896bc:28a093d755bb45948a505d14135bd0a695ff6d27232ca07c13b01cf1ffcb22f5e5afc71eb876e8af935a91a7b54c78d020cb1ea2f921d04b6a3519fbe850f9f14d1866c481450e3775d811cc0899e788d9e6c835b215b1766f0c8d4bd7c5d450107c1d0b2848404f474ac7057742ac64ef5ef65a61e8df4dd7f83a66e557ce0f51f2390579154b8bbefa3b9194f74da205e1773ed35ca202a8f732adb7a1e80d8caff6dc8b2a99036ed4668b8aa5da1846adf6e1d69a616e79fa63982967f65a9d5da46aacbf93482cc468a092c69bfab22605324737bbd6f597278e19c7fe8d0015c85bded339ec46090cbf72b1bca44e33ec8ecf795975936f65016b060b",
+      "contacto_cifrado": "v1:6287e83bfe339d61fc63e2ea:3f31f50400818ebf4e3b51ae9627c8a5:68a78ba54341dbdcb83fa1df7491e5653d4988390646ea9a99e618748db16dee736b4f96a9a51a2223b04f2ed36420fd7bf08242d9e94c1f3b54ffd02c1c499a610dfe9039303adf09824f098793d097722eb5b761d689a6edf6e0e8dec6e025ec1f56c25c660f48f4e256f5fa80a3f2903c4773b2181d2502af819467c5187a7759cb7f34c1788fe0de84fcb00ebd72da7ac8c2e537368728a54d85963f106397b6d911dddfdd997670df77930f33d08d4ce113d483ab76f49049565277df9e60d1b899e3c5001184449e5c3b3e575ef284888e279e1227270d759090c9d9145dc00f602007c956aac3373f8659195b354e1608f6ca9d8ba380b4855d1f9268d35eff134ccea2d3bafdd3b7f2b69728385a32188101469d080cfa4bbe2099f9a09cdd59953fc83ead40f42054b3987ba68fee709cd45f5c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "35 m²",
@@ -6934,7 +6968,9 @@
         "Bathrooms": "1 Full Bath",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-538",
@@ -7202,10 +7238,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789823437558,
       "fecha_relativa": "Hace 22 horas",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:cf036d26aa190abab97497dd:57417bef22ac9b3305eb592683603d6c:78e6f6cbdea3dbc9141c165b73549b7ea7a1f01fc5b4c7370573aafb0753ddb2973db24609b7d066b367c4afe8cf22e7fa2b96645e51c49ca97832b3ef99a721aee70ea217ee87ab7db29cf7b21119b4bdd6aa698e7666746c4f795e6a8e4e7ad2a5c55462242a9c08a6f93c3f203e9b4727aae419c9ce6bf7c6daf1d8e29856057dc09553e8e48b580659db716e449cc5251bfbd5bcb1ac562a0dd854bdc8531135f725f9c7105b9399e4bc00c0d4686d92d36a79df16d87372c6e6f6f86bba00dba96556624cf692ab3ffdf7d4cef5ba50d0484e58e41b1f734a3862db72e825d3d5305892b7d74dc52c9d5388af91de9b2e3faf5dfb347a46e3bf8e82a182e51206f871a750bd99bb",
+      "contacto_cifrado": "v1:8a2d157eb5ed4a3a90d7a51d:3ecb0095d21274d3a07b1c14a422f091:bab26f6a6a24811125fe5fe40ce9320974b1d23020d8ae010a9b3a8c27ef3d9b5b1c64fdedd8ffae32b3451cdd98ec437dfdd30130d0b2f6eaffa3e490987031f4f7cc62af5f2e03be1b8d63ba1a2387084ec087223f9228e67cb36543b7f927f67b91827c5d9c92e3363ba65097bde6fd2efa912629c3ace176ecdf91741bba1f182d225cd0ba723dff0907f4830c1dd3fc2982e3eeaf9e491eb51b17247f05c52758c9a5da8fce31e6d2c6d2e98ae6a7b5daead4ca7dfa46cfa2dec5b535be04d33a8f5b4431ca5723e4284a605d130348715c77e4772b616a99ba767822b1d7360e3c8beb8e2702990c13b82ce8d82ce0f6b250fe7f07242941565c4862f982d3a8a6246c06c0dea4afb9b2cfdeb584ce990740224c4e686ff72b1717128beeae0a884b7c9d15c6ddbf6a62e426a96510bd31a912b11c8a53cde0113fa056060c3241a63159494c45734bef2771291192bb5c65c555",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "97 m²",
@@ -7221,7 +7257,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-537",
@@ -7483,10 +7521,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789813053475,
       "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:6dc9f344417972750d7379d6:fd1398b28b4f022142683e0635bba616:cddba212dd6930985cb56187e97ae85bf60d7a75e28a9b9f8a4b66cbb2dfcf9ab5830831230fa63873fb0c440ec3f7e48d04dff1741244db178b38caafe495899e1b236ff758152c67b5a40001269fb01cb1932438b30f15d804d91c95f747679f608742831136fbe5a625f7da20e22ff8303ed02891746c0f663703292ab5b381a6df8d7ac9aa039823016094e7bd79a93d9be5295eb214f468c07f0dfbde46ef5a44f3be6dc7a17b37b2b4223c6df205b3caeddf8c8be18644c2350c47a753aba3bbb5eb84ba4a9de206f187470fd2485fa8f3e50225128bb37791284cc7511034bbaca386145c9e8aea82dfe1bfa3f662e1653d2796192ee5",
+      "contacto_cifrado": "v1:2026780bfd54464e4f50d363:bb17eaf471c2bb772432e0aa6713c646:1f486a9582ce2f751c4a611a2999368c54d8061e92df682ed12be3f5df3023652a75b63d157d1862be0c0e7b1299407e0134237eb3a2b81a59466160489a5c6b64a0b3c7f38c0adad771c736f1b4a72ed1cc582cb6b23a2c731bf372c129a4c334cb759da399c84fe6064c122a2acacda198e25b09efd29dbc424b94d2a44b0ccec9ddcf4b50ec2b5bee8d5443b89a062f11d6fc0973e5935fca38b8118801c956241dfcfb41c777399805f9992f6b709057496520c23aa8c47cdd490fc974d31e38701a6f87970ad1b99a6d4df728f179f6f677a7a425ec2bd6e5126f430243cf5499e48c17447f4567b1b518f484ce3abbcc072469d5bb3945b24805bd4deb6f28f1dcdba6cf64dc9b11a10dd5a1c39cc9e136dfcc393739da87db1280fe4b156588",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "65 m²",
@@ -7502,7 +7540,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-535",
@@ -7753,10 +7793,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789810055120,
       "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "310 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:0a77d17d96e9b8147ed16e1f:cf88a3c0c3ca5ab35f3de7cddd2e09b3:74b748ab59d922e060d2a75c18fb7ae53d7d798ac9cd99371c31363a8d9fa8f0117f1cee07024fa283e984085640c24add54f49224a0eb7f492a6c1515483880cf17f4f19aeac570271d03c59cd2ca6ebb1b3099776b3edf145450585b21d18a846607211dcec8e4bc7b79983d8d6038976b0ed0ef3f83301670cd6b5edecbf37a3c6e24cbb1d3003c2590e75643d52e4e3aa30a8cef69c2c97a50ec313e602eb696a16e5c2c035f3375241fd31b435655505f9d96e28e7c2425d844a18328a360b1a3911e627544ec0e19a6dd02d8e538d24fad9f88aff14cf43197ea3341ac6e2e3fbe465edfb5c8",
+      "contacto_cifrado": "v1:9b812874dae675e3a76dee36:ce169defe16128e71805a7de959cac04:73fc3ee5e8b80e7c5fbbe71a588bbcb6b004408e3ed2408283c0f6b4c8043c85e848525f256d1f6c756c86a5cc90311920227b7d8b57291ef98b67a58fe297384b5efbfce315d10c5da6762a738b4005c7da0a67bba2d9b307821c2807c64a8c068e848c2b57e189c8af4015cdf7aa1aaa9d65b27cfb789f6e0dd8c79036711786f49e690ba931b4b2de9e7ffeecc093c0dffb69111bbe760fc01f112b81f8a30966cdaeac7bf6b95e89d8eb27dec70e67631c16c57a74ee48e15899f04dc6e778b76482bc7c37a1d6054c89bc444b36e029f4ad0c8dc2c0e826247daa7ce5652fd345b97c803a884868841e5510e17e8255dfa7f70d9c897d6359d197dc743e78d13f2e442eb1dcc41607fc1728874d09dc225509a7d12fca5577f404eee4",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "154 m²",
@@ -7772,7 +7812,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-534",
@@ -8222,10 +8264,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789799226194,
       "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "320 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:c9a44466c154ec079c7ff47f:9d8f57083aab53b60d54060d30d6fc65:8d52fc1ab27eb687122695ee86702a43fd5c39c987c7b94ce9eb41c75f5d40bcad3221a19fbb1509476b28ffb36f4fda97044f3a491f751b9f233a957a62d54f98cd7794528dffc373e67dbfd9861c8ddcee8178295054f50b9b516896a9311296eaea4b8e9a66e767b7173915253cda4b25b4bcca3d6bee8f7d275a6ea24a6ce8755f97368946c404923683719468024205d571bd1d62e48fcfd6db0e0a12182783b39de63a0ef71c1b594850d603cd4dee3764e71f857fa62b096659274413db37822732f2f2a6c1d0fcd7101656a032a978caecae8185f7cfc7353f2f3c6dc020e71ddc660a1fb67c65be36fcc5bbdab689d2cede66ffb72592e971eb280e2d0b9ec6",
+      "contacto_cifrado": "v1:b7ad3aebd0f867a28480282d:9b7228ab3d4c2cf550fc56afd12194e5:32f9d6476ea70eb6598ded4f7d26bf985b3970302821c86fc7539aad152444606f7510a61c3d81972f0ca8b6006e8191c7de863ca520c79830b1fc826e7fb9a5db66d2b52c26028a31fd9bce89e9236cc0ee3d5488d0cb8413ea1301ad3a2a1d0022a06253c03ab862404d98e103d36b27f1e6824fd5106701709dc3d68b8919668f3f9f3d2541413bae9cd5d581168d59d6fb5872971b8da23ca19a5eaf13eab3bbee8bbe08701a3192159d09d3e5407eeef16c3207bda17a4a017d85c1ca77b744535e8a36c9ace271771078e50bb46bd46b84911eae0e6fae19c3c58d95dc9b4b8b042f2dcdc29a41589421ac5d2787f4574e8e5c8aa764f17841bc3f98fbd82507afb01b3db7e0811592b0429af45ade25946b30fea9eeee7709020680e4f163ef2deb076237e05d41172616c90f53daa5a9446e3a30156a567364bf8b781ccf3d8d19a59574ba49729c",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "70 m²",
@@ -8241,7 +8283,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-436",
@@ -8500,10 +8544,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789793601699,
       "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "301 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:4b97f627c1d75c1ce9e31388:feb4b9248c940776b553292dc4a8e8d5:f22531eb5a1d4b37897b7b6011890c59c8fd4af7c7b79d03f9723d10953e20771ba4443f3579900a54f4a7575382740497b2896c07b591f4f13ecca8b7d239401d69cac906f3db1813ba9c231008e066e0cfff3a8b8faaa3f767fae0cfb9943449baabd290c0848df436bdd4d0743e203219a67b6803ed8d51e86497e0363aa32665feb639d63a75869010327abc27b6bcf1f25bc87956d3e02ad3bf6447322fdddfcb32ce62aef501ed9b68bc337e1021ea4826b327093ca87cf6077bcfcc4198ab89ef25d50f539804749f28ae2067c767332e80117764a9986187a5f730c79fc9ea9c472bc7",
+      "contacto_cifrado": "v1:e94c398b53a64d985edccb49:d95bd835cb6ed223bf0e15cd0d06569e:ccbd4a1bf6288c106c09a23db0363918add6e60a0d4da3bf7f72845d24d8c4c72f453f3780ae2bfba89599f1db94157152d94b69ba384d14485a8b9ef9c3bd40c89ef47d42d0c5c36090a31582730b7ea93ab961ffb6ffdeb7ec3d5458416e5d4bc1ebc1e6d810b59678a5077d474cd6ba99a398514b42a5e72c3dd19095b1a16663e5d71822fd85c555d7f92bee3a6f54af445906b92c4426cb11044b6c79debb37507a71b1df0466ee2fd69d259d78d08a5b572e33a900e21b051da14679602f3c95d7f987b9597d8f4ca87db8e72a7eb9a17baf97ba7fb08666c9132ad884f6af43ec6e54dbb00df810f7a491d2cac6973be7c996fdc47a94b98fd21d7d870d6e70442b1307de42d9a9e72949fc41e28586c3e7c53a866328d9bf74d15f261aba4257a92f7432276b601122",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "132 m²",
@@ -8519,7 +8563,9 @@
         "Bathrooms": "3 Full Baths",
         "Parking": "2 Spaces",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-435",
@@ -8784,10 +8830,10 @@
       "senales_urgencia": [],
       "timestamp_ms": 1789793601658,
       "fecha_relativa": "Hace 1 día",
-      "portal": "Metrocuadrado",
+      "portal": "metrocuadrado",
       "telefono_bloqueado": "324 ••• ••••",
       "enlace_bloqueado": "https://metrocuadrado.com.co/inmueble-••••••",
-      "contacto_cifrado": "v1:2704e855f940200e467e3be2:eed294321ad1d3b2d3cfb318f3fec11a:cbf6c2693a20438543cb0906df09f66a3d0c521513ee96fb8f952475edad4cd495e5adbd89423e7dce1ea38d2662411644a52d6c55f4d60433e309cf08127072269cc4c890822f2423d7422f93dbc1cf47b1384383e595ce4d54085e6a67a22781aa6c559e182b7e3b68361746d59e6ccf2e8563b5c914a5d92a7721d6f3870ed7e72d8b319eb38b70f6348e996f985bbda251984dc34f5c13b2196d81090d251b1bc67bf9967aa27799eef22b3e6f7332e2f9661153d89754f7d274d6989e6bd9811487ce9fba1e601ebbdc1b2457b285f880d117e41ffeb1cce6e6c6be028eb1608ee5f2823eff075896e7fa366ee1cbb388",
+      "contacto_cifrado": "v1:b5a562872c277d98692dad20:6a531605b9fa75daee49b09bc0766ced:a94a973b85cc07a43d505fbcb38f962138f64663c6ad955ca2469409cbcce20b111b3c28096c5160882f6bc2179a1d72af7329f5e745303ef91b53c9c99db044c5ed07c637c28a119548e4766d112b79d66b7d0a13c128888a3c4d9ef4b13337f6af2875c403eee806e0a59e0d175ac2f2cf1ea6baa89dd408a44bbcbff8f5e226c11c5a6903425622b066f84669b76f2206cb53875d80c5d2e4165c7dc720e25f52dd51e08721d5831fe97bcf8cae58fb8dbca9899545516d893359da2d4db595c20ac720f0c3d35a0f11ed960481677f0626c8a995dfc106ece76c6570ec31500167140a8a337214bfba4039451b33ba1aa1605094f7ba94aea1ca72e249182135b741ef9292ccf8ba1d25074860bb168e4f5817c8ec475b35791794d1d97c1749ebcc6dd0a4a18b",
       "detalles": {
         "Estrato": "4 Residencial",
         "Área": "56.5 m²",
@@ -8803,7 +8849,9 @@
         "Bathrooms": "2 Full Baths",
         "Parking": "1 Space",
         "Contact": "Verified Owner"
-      }
+      },
+      "updatedAt": "2026-09-20T17:23:01.181Z",
+      "createdAt": "2026-09-20T17:23:01.181Z"
     },
     {
       "id": "lead-inm-433",

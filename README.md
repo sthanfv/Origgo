@@ -86,7 +86,7 @@ hunter-portal-showcase/
 ├── MEMORY.md                   # Bitácora de memoria persistente del sistema
 ├── ARCHITECTURE.md             # Arquitectura técnica en 4 capas y estándares OWASP
 ├── vercel.json                 # Cabeceras globales OWASP (HSTS, nosniff, DENY) y caché
-├── .env.example                # Plantilla de variables de entorno de producción
+├── .gitignore                  # Protección perimetral de variables y secretos
 ├── modules/                    # Módulos JavaScript especializados (< 500 líneas)
 │   ├── 00-security.js          # Escape HTML, sanitización de URL, teléfono y contacto cliente
 │   ├── 01-state.js             # Estado reactivo, localStorage mínimo y sesión JWT sin PIN

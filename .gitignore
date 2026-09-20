@@ -4,9 +4,13 @@ Thumbs.db
 *.log
 .temp*
 *.tmp
+# Variables de entorno y secretos privados (Zero-Trust)
 .env
-.env*.local
+.env*
+*.env
 *.pem
+*.key
+*.cert
 serviceAccountKey*.json
 service-account*.json
 data/ledger_store.json
