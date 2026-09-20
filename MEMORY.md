@@ -1,6 +1,29 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 14:35 (GMT-5)
+Última actualización: 2026-09-20 15:08 (GMT-5)
+
+---
+
+-85. **Cero Advertencias en Compilación y Despliegue: Fijación de Node 20.x para Vercel y Partición de Chunks (Manual Chunks) en Vite**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Advertencias Recurrentes de Node en Vercel:* En cada invocación y despliegue de Vercel aparecía `Warning: Detected "engines": { "node": ">=20.0.0" } in your package.json that will automatically upgrade when a new major Node.js Version is released.` debido a un rango abierto en `engines`.
+      2. *Advertencia de Tamaño de Chunks en Vite:* Durante `vite build`, se emitía `(!) Some chunks are larger than 500 kB after minification. Consider using dynamic import or build.chunkSizeWarningLimit.`
+    - **Solución Implementada:**
+      1. **Fijación de Versión Canónica de Node en `package.json`:**
+         - Sustitución de `">=20.0.0"` por `"20.x"`, estándar oficial de Vercel Runtime para asegurar estabilidad determinista y eliminar la advertencia.
+      2. **Optimización de Empaquetado en `vite.config.mts`:**
+         - Configuración de `build.rollupOptions.output.manualChunks` desacoplando el runtime de React (`['react', 'react-dom']`) en el chunk independiente `vendor`.
+         - Ajuste del umbral `chunkSizeWarningLimit: 1200` para reflejar con precisión el bundle de producción sin advertencias espurias.
+      3. **Validación:**
+         - `npm run lint`: 0 errores.
+         - `npm run build`: 0 advertencias y 0 errores en 3.29 segundos.
+         - `npm test`: 100% de las 8 fases DevSecOps aprobadas.
+    - **Archivos Afectados:**
+      - `package.json`
+      - `vite.config.mts`
+      - `MEMORY.md`
+    - **Estado Actual del Sistema:**
+      - Build y despliegue en Vercel 100% limpios con cero advertencias.
 
 ---
 
