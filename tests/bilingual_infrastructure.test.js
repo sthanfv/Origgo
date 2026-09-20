@@ -34,9 +34,16 @@ const {
 
 const { registrarSuscripcion, obtenerSuscripcionesActivas } = require('../lib/push-subscriptions');
 const { resetRateLimiter } = require('../lib/rate-limiter');
-const { DICCIONARIO_TERMINOS, normalizarTextoBusqueda, coincideBusquedaInteligente } = require('../modules/04-filters');
-const { traducirBadgeUrgencia, traducirTituloCatalogo, traducirDatoDistribucion } = require('../modules/06-cards');
-const { DICCIONARIO_I18N, calcularReferenciaUSD } = require('../modules/13-i18n');
+const {
+  DICCIONARIO_TERMINOS,
+  normalizarTextoBusqueda,
+  coincideBusquedaInteligente,
+  traducirBadgeUrgencia,
+  traducirTituloCatalogo,
+  traducirDatoDistribucion,
+  DICCIONARIO_I18N,
+  calcularReferenciaUSD
+} = require('../lib/i18n-helpers');
 
 describe('🌐 Infraestructura Bilingüe — Correos Transaccionales (Resend)', () => {
   it('Debe generar plantilla de restauración en español con textos institucionales correctos', () => {

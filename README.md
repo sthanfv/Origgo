@@ -1,5 +1,5 @@
 # 🏛️ Origgo Intelligence — Portal Showcase ($0 Cost)
-## Fachada Web de Alta Gama con React 19 + Vite 8 + TypeScript, Pasarela Wompi y Backend Serverless
+## Fachada Web de Alta Gama con React 19 + Vite 6 + TypeScript 5, Pasarela Wompi y Backend Serverless
 
 Este repositorio contiene la plataforma moderna desacoplada de Origgo diseñada para conectar a compradores directamente con propietarios de inmuebles (FSBO) y detectar oportunidades de arbitraje en Colombia.
 
@@ -7,7 +7,7 @@ Este repositorio contiene la plataforma moderna desacoplada de Origgo diseñada 
 
 ## 🎯 Principios de Diseño y Arquitectura (Estándar Ecosistema Desmulta)
 
-1. **Frontend Moderno de Alto Rendimiento:** Migrado de módulos artesanales a **React 19, Vite 8, TypeScript estricto y Tailwind CSS v4**. Cero deuda técnica, HMR instantáneo y bundle optimizado para producción.
+1. **Frontend Moderno de Alto Rendimiento:** Migrado de módulos artesanales a **React 19, Vite 6, TypeScript estricto y Tailwind CSS v4**. Cero deuda técnica, HMR instantáneo y bundle optimizado para producción.
 2. **Criptografía Zero-Trust en Reposo:** Los teléfonos y enlaces reales de los propietarios directos se cifran en origen con **AES-256-GCM** (`iv:authTag:ciphertext`). El JSON público únicamente expone el teléfono ofuscado (`+57 ••• ••••`).
 3. **Desbloqueo en Memoria y Sesiones JWT:** El descifrado ocurre estrictamente en el backend serverless (`/api/leads/unlock`) tras validar un token JWT firmado (HMAC-SHA256) sin exponer PIN ni contactos persistentes en el navegador.
 4. **Pasarela Wompi e Idempotencia:** Integración oficial con Wompi Bancolombia (Sandbox y Producción) con validación criptográfica de firmas de integridad SHA-256 y eventos mediante `crypto.timingSafeEqual`, previniendo ataques de timing y doble acreditación.

@@ -32,6 +32,12 @@ async function run() {
   const nonce = await resolverPoW(jsonChal.challenge);
   console.log(`✓ PoW resuelto con nonce: ${nonce}`);
 
+  // Preparar usuario de prueba en base de datos
+  const { createRequire } = await import('module');
+  const require = createRequire(import.meta.url);
+  const db = require('./lib/db.js');
+  await db.addCredits('3001234567', 10, '7492');
+
   // 3. Login con PIN
   console.log('2. Iniciando sesión con celular 3001234567 y PIN 7492...');
   const resLogin = await fetch('http://127.0.0.1:3000/api/auth/session', {

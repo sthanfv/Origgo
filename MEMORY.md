@@ -1,6 +1,49 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 09:22 (GMT-5)
+Última actualización: 2026-09-20 11:05 (GMT-5)
+
+---
+
+-77. **Saneamiento Definitivo de Activos Estáticos, Ajuste de Dependencias a Versiones Estables y Sincronización DevSecOps para React 19 / Vite 6**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Dependencias con versiones futuras inestables:* `package.json` contenía versiones no publicadas o experimentales (`vite@8`, `typescript@7`, `zod@4`) que generaban incompatibilidad de plugins (`@vitejs/plugin-react@6` requiriendo rutas no exportadas).
+      2. *Duplicación de activos en raíz y public/:* La presencia de `assets/` en la raíz generaba colisiones e incoherencia respecto a la convención estándar de Vite (`public/assets/`).
+      3. *Ubicación errónea de favicons y PWA en raíz:* Vite sirve activos públicos desde `public/`. Los favicons, manifest y robots en la raíz no eran expuestos en el bundle de producción `dist/`.
+      4. *Fallo en suite de validación pre-commit (8 fases):* `scripts/validate.js` y tests unitarios aún evaluaban el monolito viejo (`modules/`, `styles/`, `style.min.css`, `app.js`) y buscaban recursos en ubicaciones obsoletas.
+    - **Solución Implementada:**
+      1. **Paso 1: Estabilización de dependencias (`package.json`):**
+         - `"vite": "^6.2.0"`
+         - `"@vitejs/plugin-react": "^4.3.4"`
+         - `"zod": "^3.24.2"`
+         - `"typescript": "^5.7.3"`
+         - Adición de scripts `validate`, `test` y `test:integration`.
+      2. **Paso 2: Eliminación de carpeta duplicada en raíz:**
+         - Ejecución de `git rm -r assets/`. Todos los iconos, logos y fuentes residen exclusivamente en `public/assets/`.
+      3. **Paso 3: Migración de favicons, manifest y metadatos:**
+         - Traslado con `git mv` de `favicon.ico`, `favicon.svg`, `favicon-32x32.png`, `favicon-48x48.png`, `apple-touch-icon.png`, `push-icon-*.png`, `og-image.png`, `manifest.json`, `robots.txt`, `sitemap.xml` a `public/`.
+         - Copia de seguridad de `404.html`, `llms.txt` y verificación de Google en `public/` para asegurar su despliegue en `dist/`.
+      4. **Paso 4: Actualización de `scripts/validate.js`:**
+         - Fase 2 adaptada para auditar `src/index.css` y `public/origgo-style.min.css`.
+         - Fase 3 adaptada para validar `<!DOCTYPE html>`, `public/` y `main.tsx`.
+         - Fase 8 adaptada para auditar modularidad de `src/components` y `src/services` ($\le 800$ líneas).
+      5. **Saneamiento de Catálogo y Pruebas Unitarias:**
+         - Deduplicación limpia de 5 anuncios repetidos en `data/inmobiliario.json` (145 oportunidades únicas).
+         - Regeneración de firma HMAC-SHA256 con `node scripts/sign-data.js`.
+         - Creación del módulo canónico `lib/i18n-helpers.js` para desacoplar las pruebas bilingües del frontend eliminado.
+         - Soporte de recarga multi-proceso en `lib/db.js` ante cambios en `data/local_db.json`.
+      6. **Validación Autónoma Exhaustiva:**
+         - `npm run lint` (`tsc --noEmit`): 0 errores.
+         - `npm run build`: Compilación con Vite 6 en 3.07s.
+         - `npm test` (`node scripts/validate.js`): 100% de las 8 fases aprobadas (0 errores).
+         - `node test_integration.mjs`: Flujo E2E completo (PoW + PIN + JWT + Desbloqueo AES-256-GCM) aprobado al 100%.
+    - **Archivos Afectados:**
+      - `package.json`, `package-lock.json`, `index.html`, `README.md`, `MEMORY.md`
+      - `scripts/validate.js`, `lib/i18n-helpers.js`, `lib/db.js`, `test_integration.mjs`
+      - `data/inmobiliario.json`, `data/inmobiliario.json.sig`
+      - `tests/bilingual_infrastructure.test.js`, `tests/leads_pagination.test.js`, `tests/filters_sorting.test.js`
+      - `public/*` (activos y metadatos)
+    - **Estado Actual del Sistema:**
+      - Listo para producción en Vercel y sincronizado con el repositorio remoto `https://github.com/sthanfv/Origgo.git`.
 
 ---
 
