@@ -25,6 +25,8 @@ Este repositorio contiene la plataforma moderna desacoplada de Origgo diseñada 
 | **Creación de orden y firma de integridad Wompi** | [`api/payments/create-order.js`](api/payments/create-order.js) | Generación SHA-256 de integridad para pasarela |
 | **Webhook de pagos y acreditación de créditos** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | Validación HMAC `timingSafeEqual` y ledger |
 | **Login por WhatsApp + PIN y reclamo post-pago** | [`api/auth/session.js`](api/auth/session.js) | `claim_reference`, reconciliación API Wompi |
+| **Solicitud de crédito cortesía freemium** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | Verificación Anti-Sybil y despacho Magic Link |
+| **Activación atómica de cortesía por correo** | [`lib/auth/welcome-verify.js`](lib/auth/welcome-verify.js) | Quema de token, acreditación Firestore y JWT |
 | **Emisión de desafíos anti-bot (PoW / Turnstile)** | [`api/auth/challenge.js`](api/auth/challenge.js) | Retos firmados HMAC-SHA256 con ventana temporal |
 | **Motor de desafíos y Proof-of-Work criptográfico**| [`lib/challenge.js`](lib/challenge.js) | Generación y verificación de PoW y Turnstile |
 | **Conciliación automática y Vercel Cron Fail-Safe** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |

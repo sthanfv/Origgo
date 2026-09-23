@@ -1730,4 +1730,27 @@ body,
   gap: 8px !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   15. ESCUDO PERIMETRAL ANTI-WATERMARK EN MEDIOS INMOBILIARIOS
+   Aplica un recorte sutil en overflow: hidden para ocultar
+   marcas de agua o logos de portales ubicados en bordes inferiores
+   ═══════════════════════════════════════════════════════════════ */
+.card-media {
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.card-static-img,
+.carousel-img {
+  transform: scale(1.06) translateY(-2%) !important;
+  transform-origin: center top !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.bento-card:hover .card-static-img,
+.bento-card:hover .carousel-img {
+  transform: scale(1.09) translateY(-2%) !important;
+}
+
+
 

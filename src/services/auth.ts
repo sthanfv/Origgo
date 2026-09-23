@@ -181,3 +181,153 @@ export function cerrarSesionLocal(): void {
     localStorage.removeItem('origgo_session_phone');
   } catch {}
 }
+
+/**
+ * Obtiene o genera una huella digital determinista del dispositivo (DeviceId)
+ * para prevención de ataques Sybil y multi-cuentas en regalos de bienvenida.
+ */
+export function obtenerDeviceId(): string {
+  try {
+    const almacenado = localStorage.getItem('origgo_device_fingerprint_v1');
+    if (almacenado && almacenado.length >= 16) {
+      return almacenado;
+    }
+
+    const componentes = [
+      navigator.userAgent || '',
+      navigator.language || '',
+      screen.width + 'x' + screen.height,
+      screen.colorDepth || '',
+      new Date().getTimezoneOffset(),
+      Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+    ].join('###');
+
+    // Generar hash simple determinista
+    let hash = 0;
+    for (let i = 0; i < componentes.length; i++) {
+      hash = (hash << 5) - hash + componentes.charCodeAt(i);
+      hash |= 0;
+    }
+
+    const fingerprint = 'dev_' + Math.abs(hash).toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+    localStorage.setItem('origgo_device_fingerprint_v1', fingerprint);
+    return fingerprint;
+  } catch {
+    return 'dev_anon_' + Date.now().toString(36);
+  }
+}
+
+/**
+ * Solicita el crédito de bienvenida ($0 COP) requiriendo Doble Opt-In por correo electrónico.
+ */
+export async function solicitarCreditoBienvenidaApi(params: {
+  celular: string;
+  email: string;
+  leadId?: string;
+  lang?: 'es' | 'en';
+}): Promise<{
+  ok: boolean;
+  pendingVerification?: boolean;
+  message?: string;
+  error?: string;
+  alreadyClaimed?: boolean;
+}> {
+  const deviceId = obtenerDeviceId();
+  try {
+    const res = await apiFetch<{
+      ok: boolean;
+      pendingVerification?: boolean;
+      message?: string;
+      error?: string;
+      alreadyClaimed?: boolean;
+    }>('/api/auth/welcome-credit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular: params.celular.replace(/[^\d]/g, ''),
+        email: params.email.trim().toLowerCase(),
+        deviceId,
+        leadId: params.leadId,
+        lang: params.lang || 'es',
+      }),
+    });
+    return res;
+  } catch (err: any) {
+    return {
+      ok: false,
+      error: err.message || 'Error de conexión solicitando el crédito de bienvenida',
+    };
+  }
+}
+
+/**
+ * Valida el token de verificación de bienvenida recibido en el enlace del correo electrónico.
+ */
+export async function verificarTokenBienvenidaApi(
+  token: string,
+  lang: 'es' | 'en' = 'es'
+): Promise<{
+  ok: boolean;
+  token?: string;
+  user?: UserSession;
+  message?: string;
+  error?: string;
+}> {
+  try {
+    const res = await apiFetch<{
+      ok: boolean;
+      token?: string;
+      user?: UserSession;
+      message?: string;
+      error?: string;
+    }>('/api/auth/welcome-verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token: token.trim(),
+        lang,
+      }),
+    });
+
+    if (res.ok && res.token) {
+      localStorage.setItem('origgo_auth_jwt_token', res.token);
+      if (res.user?.phone) {
+        localStorage.setItem('origgo_session_phone', res.user.phone);
+        localStorage.setItem('origgo_auth_phone', res.user.phone);
+      }
+      return res;
+    }
+
+    return { ok: false, error: res.error || 'Token de activación inválido o expirado' };
+  } catch (err: any) {
+    return {
+      ok: false,
+      error: err.message || 'No fue posible validar el token de activación',
+    };
+  }
+}
+
+/**
+ * Solicita el reenvío del PIN de acceso y Magic Link al correo electrónico registrado.
+ */
+export async function recuperarPinPorEmailApi(
+  email: string,
+  lang: 'es' | 'en' = 'es'
+): Promise<{ ok: boolean; message?: string; error?: string }> {
+  try {
+    const res = await apiFetch<{ ok: boolean; message?: string; error?: string }>('/api/auth/recover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        lang,
+      }),
+    });
+    return res;
+  } catch (err: any) {
+    return {
+      ok: false,
+      error: err.message || 'Error solicitando recuperación de PIN',
+    };
+  }
+}

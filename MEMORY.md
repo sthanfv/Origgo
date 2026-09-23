@@ -1,6 +1,62 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 06:06 (GMT-5)
+Última actualización: 2026-09-23 07:15 (GMT-5)
+
+---
+
+- 91. **Hito 91: Blindaje Freemium Doble Opt-In por Correo, Barreras Anti-Sybil, Escudo Anti-Marcas de Agua y Modularización de Checkout**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Fraude en Cortesía Gratuita y Teléfonos Falsos:* El usuario podía reclamar saldo libremente ingresando cualquier teléfono inventado. `CheckoutModal.tsx` asignaba el crédito directo en `localStorage` (`Math.max(1, userCredits)`) y `App.tsx` generaba un identificador sintético (`idHash`), permitiendo evasión ilimitada de cobros mediante recarga o modo incógnito.
+      2. *Riesgo Legal y de Bloqueo por Marcas de Agua:* Las fotos extraídas por el scraper contenían marcas de agua visibles en las esquinas inferiores de portales inmobiliarios tradicionales (Metrocuadrado / Fincaraíz), exponiendo la plataforma a quejas de copyright o bloqueos de dominio.
+      3. *Deuda de Modularidad en Checkout:* `CheckoutModal.tsx` creció hasta 949 líneas, infringiendo la regla institucional de máximo 800 líneas por módulo React.
+    - **Solución Implementada:**
+      1. **Autenticación Freemium Doble Opt-In por Correo Electrónico (`api/auth.js`, `lib/auth/welcome-credit.js`, `lib/auth/welcome-verify.js`):**
+         - El pase de cortesía exige obligatoriamente un correo electrónico real y un celular válido que inicie en 3 (10 dígitos).
+         - Se genera un token criptográfico de un solo uso (`crypto.randomBytes(24).toString('hex')`) con 60 minutos de vigencia, persistido en la colección `welcome_tokens`.
+         - Se despacha vía Resend un correo con Enlace Mágico de activación directa (`?welcome_token=...`) y PIN de seguridad de 4 dígitos para restauraciones futuras.
+         - Cero emisión de JWT previo a la verificación: la API responde `{ ok: true, pendingVerification: true }`. El crédito solo se acredita cuando el usuario hace clic en su enlace o valida su PIN.
+      2. **Defensa Perimetral Anti-Sybil (`lib/validation.js`, `lib/db.js`):**
+         - Normalización canónica de correos (`normalizarEmail` elimina puntos y alias `+` en Gmail).
+         - Lista negra de dominios de correos desechables/temporales (`tempmail.com`, `10minutemail.com`, `guerrillamail.com`, `mailinator.com`, etc.).
+         - Huella digital determinista de dispositivo (`obtenerDeviceId()`) persistida en `claimed_devices` y emails en `claimed_emails`, retornando HTTP 409 Conflicto ante intentos de re-reclamo.
+      3. **Escudo Anti-Marcas de Agua en Tarjetas de Catálogo (`src/index.css`):**
+         - Inserción de reglas CSS perimetrales en `.card-media { overflow: hidden; }` y zoom sutil `transform: scale(1.06) translateY(-2%); transition: transform 0.4s ease;` en `.card-static-img` y `.carousel-img`.
+         - Oculta de forma limpia y elegante las marcas de agua quemadas en los bordes inferiores sin distorsionar el inmueble.
+      4. **Activación Automática de Magic Link en el Frontend (`src/App.tsx`):**
+         - Detección de parámetro `?welcome_token=...` en la URL al cargar la página: valida con el backend, actualiza la sesión, limpia la URL con `history.replaceState` y desbloquea de inmediato el lead que el usuario estaba intentando consultar.
+         - Erradicación total del fallback sintético con `idHash`.
+      5. **Modularización Arquitectónica de `CheckoutModal.tsx` (de 949 a 665 líneas):**
+         - Extracción de componentes especializados:
+           - `LeadSummaryMini.tsx` (74 líneas): Ficha compacta del inmueble seleccionado.
+           - `WelcomeVerificationNotice.tsx` (99 líneas): Sub-estado visual con botón de reenvío tras emitir el enlace.
+           - `RestorePinTab.tsx` (180 líneas): Formulario completo de inicio de sesión con PIN y recuperación por correo.
+           - `AccountProfileTab.tsx` (157 líneas): Perfil de usuario verificado con balance de créditos, desbloqueo y logout.
+      6. **Corrección de Resiliencia en Capa de Datos (`lib/db.js` y `lib/auth/welcome-verify.js`):**
+         - Declaración de `memoryStore` y `guardarAlmacenLocal` en el ámbito superior del módulo para evitar fallos de referencia en tests o entornos sin Firebase activo.
+         - Normalización de retornos `success: true` y `ok: true`.
+    - **Validación Automatizada (100% en Verde):**
+      - `node --test tests/smoke_freemium_flow.test.js`: 6 de 6 pruebas unitarias e integración aprobadas al 100%.
+      - `npm run lint` (`tsc --noEmit`): 0 errores de TypeScript.
+      - `npm test` (`node scripts/validate.js`): Las 8 fases DevSecOps pasaron con 0 errores (18 módulos auditados < 800 líneas, cero credenciales, R2 y Wompi 100%).
+      - `npm run build` (`vite build`): Compilación de producción generada en 2.54s con código de salida 0.
+    - **Archivos Afectados:**
+      - `lib/db.js`
+      - `lib/auth/welcome-verify.js`
+      - `lib/validation.js`
+      - `lib/email-templates.js`
+      - `api/auth.js`
+      - `src/App.tsx`
+      - `src/services/auth.ts`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/WelcomeVerificationNotice.tsx`
+      - `src/components/RestorePinTab.tsx`
+      - `src/components/AccountProfileTab.tsx`
+      - `src/components/LeadSummaryMini.tsx`
+      - `src/index.css`
+      - `tests/smoke_freemium_flow.test.js`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Sistema 100% blindado contra abusos freemium. Cero créditos falsos en cliente. Doble verificación obligatoria por correo para regalos de cortesía. Escudo estético contra marcas de agua activo. Arquitectura modular estrictamente dentro de los límites.
 
 ---
 

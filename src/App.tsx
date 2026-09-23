@@ -3,7 +3,12 @@ import { LeadItem, UserSession } from './types';
 import { INMUEBLES_DATA, SECTORES_TOTALES } from './data';
 import { useLanguage } from './i18n';
 import { registrarEfectosRippleGlobales } from './utils/ripple';
-import { verificarSesionLocal, cerrarSesionLocal, reclamarReferenciaPago } from './services/auth';
+import {
+  verificarSesionLocal,
+  cerrarSesionLocal,
+  reclamarReferenciaPago,
+  verificarTokenBienvenidaApi,
+} from './services/auth';
 import { desbloquearLeadApi } from './services/leads';
 import { SiteHeader } from './components/SiteHeader';
 import { CommandBar } from './components/CommandBar';
@@ -174,8 +179,45 @@ export function App() {
 
   // Carga inicial y reconciliación de pagos / sesiones
   useEffect(() => {
-    // 1. Reconciliación automática si el usuario regresa de Wompi con ?reference=...
     const urlParams = new URLSearchParams(window.location.search);
+
+    // 1. Detección y activación de Magic Link de Bienvenida (?welcome_token=... o ?token=...)
+    const welcomeToken = urlParams.get('welcome_token') || urlParams.get('token');
+    if (welcomeToken && !welcomeToken.includes('.')) {
+      verificarTokenBienvenidaApi(welcomeToken, isEn ? 'en' : 'es')
+        .then((res) => {
+          if (res.ok && res.user && res.token) {
+            setUserSession({ ...res.user, token: res.token });
+            setUserCredits(res.user.credits || 1);
+            notify(
+              isEn
+                ? '✓ Welcome gift activated! 1 free credit added to your account.'
+                : '✓ ¡Regalo de bienvenida activado! 1 crédito acreditado a tu cuenta.'
+            );
+
+            // Limpiar parámetro de URL limpiamente
+            const nuevaUrl = new URL(window.location.href);
+            nuevaUrl.searchParams.delete('welcome_token');
+            nuevaUrl.searchParams.delete('token');
+            window.history.replaceState({}, '', nuevaUrl.toString());
+
+            // Si había un inmueble pendiente guardado, abrirlo
+            const pendingLeadId = localStorage.getItem('origgo_pending_lead_id');
+            if (pendingLeadId) {
+              localStorage.removeItem('origgo_pending_lead_id');
+              const leadEncontrado = leads.find((l) => l.id === pendingLeadId);
+              if (leadEncontrado) {
+                setTimeout(() => handleConfirmUnlock(leadEncontrado), 400);
+              }
+            }
+          } else {
+            notify(res.error || (isEn ? 'Invalid activation link' : 'Enlace de activación inválido'));
+          }
+        })
+        .catch(() => {});
+    }
+
+    // 2. Reconciliación automática si el usuario regresa de Wompi con ?reference=...
     const wompiRef = urlParams.get('reference') || urlParams.get('id');
 
     if (wompiRef) {
@@ -196,7 +238,7 @@ export function App() {
         .catch(() => {});
     }
 
-    // 2. Comprobar sesión JWT activa existente en el backend
+    // 3. Comprobar sesión JWT activa existente en el backend
     verificarSesionLocal().then((res) => {
       if (res.authenticated && res.user) {
         setUserSession(res.user);
@@ -352,33 +394,13 @@ export function App() {
       return;
     }
 
-    // Caso B: Sesión local o cortesía de bienvenida
-    setUserCredits((c) => Math.max(0, c - 1));
-    let telLimpio = item.telefono_bloqueado?.replace(/[^\d]/g, '') || '';
-    if (telLimpio.length < 10) {
-      // Si el teléfono público venía con máscara de puntos (ej. "314 ••• ••••"),
-      // generar determinísticamente el número de 10 dígitos para prueba o cortesía
-      const prefijo = telLimpio.length >= 3 ? telLimpio.slice(0, 3) : '314';
-      const idHash = Math.abs(
-        item.id.split('').reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0)
-      ).toString().padStart(7, '4521890').slice(-7);
-      telLimpio = `${prefijo}${idHash}`;
-    }
-
-    setUnlockedMap((prev) => ({
-      ...prev,
-      [item.id]: {
-        phone: telLimpio,
-        realTitle: item.titulo,
-        realLocation: `${item.barrio}, ${item.ciudad}`,
-        portal: item.portal || 'Directo',
-        link: item.enlace || item.enlace_bloqueado || '',
-      },
-    }));
+    // Si el usuario no cuenta con sesión autenticada en el servidor, exigir registro/checkout
+    setLeadToUnlock(item);
+    setCheckoutModalOpen(true);
     notify(
       isEn
-        ? `✓ Direct owner contact unlocked: ${item.titulo}`
-        : `✓ ¡Contacto directo del propietario desbloqueado!`
+        ? '🔒 Please activate your account or select a plan to unlock this owner'
+        : '🔒 Ingresa tu WhatsApp y correo para activar tu desbloqueo de cortesía'
     );
   };
 

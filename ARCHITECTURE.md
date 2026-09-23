@@ -79,6 +79,14 @@ Toda interacción crítica con la capa de base de datos se ejecuta a través del
 $$\text{delay} = \min(200 \times 2^{\text{intento}}, 2000) + \text{random}(0, 150) \text{ ms}$$
 Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) ante micro-cortes de red en la infraestructura de Google Cloud.
 
+### 3.4 Autenticación Freemium Doble Opt-In y Mitigación Anti-Sybil
+- **Problema previo**: Un atacante podía inventar números telefónicos o utilizar `localStorage` para obtener desbloqueos gratuitos ilimitados sin validar su identidad.
+- **Solución implementada**:
+  - `lib/auth/welcome-credit.js`: Exige un número de teléfono celular colombiano válido (10 dígitos que inician con 3) y un correo electrónico legítimo, rechazando dominios desechables/temporales (`lib/validation.js`).
+  - `lib/db.js`: Huella digital de dispositivo (`claimed_devices`) y correos reclamados (`claimed_emails`) impiden re-reclamos (HTTP 409 Conflicto).
+  - Emisión de Magic Link criptográfico de 24 bytes (`welcome_tokens`) con ventana de 60 minutos y despacho transaccional vía Resend.
+  - Cero emisión de JWT hasta que el enlace de verificación es activado en el backend (`lib/auth/welcome-verify.js`).
+
 ---
 
 ### 4.0 Localizador Rápido de Archivos Backend, Serverless y Scripts
@@ -88,6 +96,8 @@ Esto previene el fenómeno de "rebaño atronador" (*thundering herd problem*) an
 | **Validación y procesamiento de webhooks** | [`api/payments/webhook-wompi.js`](api/payments/webhook-wompi.js) | HMAC `timingSafeEqual`, acreditación atómica |
 | **Conciliación automática Vercel Cron** | [`api/payments/reconcile-cron.js`](api/payments/reconcile-cron.js) | Verificación periódica server-to-server de órdenes `PENDING` |
 | **Inicio de sesión y reclamo de referencias** | [`api/auth/session.js`](api/auth/session.js) | Verificación directa con API oficial de Wompi |
+| **Solicitud de cortesía freemium (Anti-Sybil)** | [`lib/auth/welcome-credit.js`](lib/auth/welcome-credit.js) | Validación Zod, lista negra dominios y Magic Link |
+| **Activación de cortesía y quema de token** | [`lib/auth/welcome-verify.js`](lib/auth/welcome-verify.js) | Verificación atómica, acreditación Firestore y JWT |
 | **Recuperación de PIN por email** | [`api/auth/recover.js`](api/auth/recover.js) | Tokens temporales firmados con Resend |
 | **Desbloqueo seguro y deducción de créditos**| [`api/leads/unlock.js`](api/leads/unlock.js) | Descifrado AES-256-GCM y verificación `.sig` |
 | **Consulta de saldo y estado reactivo** | [`api/user/balance.js`](api/user/balance.js) | Ledger y verificación de sesión JWT |
