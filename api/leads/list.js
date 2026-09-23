@@ -88,8 +88,47 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const dataset = obtenerDatasetCatalogo();
-    let leadsRaw = Array.isArray(dataset.leads) ? [...dataset.leads] : [];
+    let leadsRaw = [];
+    let origenDatos = 'local_file';
+
+    // 1. Intentar consultar leads en vivo desde Google Cloud Firestore
+    try {
+      const db = require('../../lib/db');
+      const ref = db.leadsRef;
+      if (ref) {
+        const snapshot = await ref
+          .where('activo', '==', true)
+          .orderBy('timestamp_ms', 'desc')
+          .limit(300)
+          .get();
+
+        if (!snapshot.empty) {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            // Omitir contacto cifrado en listado público por seguridad
+            const { contacto_cifrado: _omitido, ...leadPublico } = data;
+            leadsRaw.push({ ...leadPublico, id: doc.id });
+          });
+          if (leadsRaw.length > 0) {
+            origenDatos = 'firestore';
+          }
+        }
+      }
+    } catch (errFs) {
+      console.warn('[leads:list] Firestore no disponible, usando dataset local:', errFs.message);
+    }
+
+    // 2. Si Firestore no devolvió datos, recurrir al archivo local sincronizado
+    let datasetConfig = {};
+    if (leadsRaw.length === 0) {
+      try {
+        const dataset = obtenerDatasetCatalogo();
+        leadsRaw = Array.isArray(dataset.leads) ? [...dataset.leads] : [];
+        datasetConfig = dataset.config || {};
+      } catch (errDisk) {
+        console.warn('[leads:list] Error leyendo dataset local:', errDisk.message);
+      }
+    }
 
     // Deduplicación idempotente preventiva de leads
     const vistosIds = new Set();
@@ -200,7 +239,8 @@ module.exports = async function handler(req, res) {
       total,
       totalPages,
       hayMas: page < totalPages,
-      config: dataset.config || {},
+      config: datasetConfig || {},
+      fuente: origenDatos,
       leads: lotePaginado
     });
   } catch (err) {

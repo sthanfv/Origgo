@@ -22,3 +22,6 @@ data/*.sig
 dist/
 *.zip
 origgo_legacy_backup.zip
+.next/
+*.tsbuildinfo
+test-results/

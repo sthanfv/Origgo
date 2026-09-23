@@ -1,10 +1,28 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-20 17:21 (GMT-5)
+Última actualización: 2026-09-23 06:06 (GMT-5)
 
 ---
 
--89. **Erradicación Definitiva de Bloqueo de Interacción y Desbordamiento en Modal de Checkout: `pointer-events: auto`, Alineación `flex-start`, Scroll Natural y Alertas Contextuales**:
+- 90. **Hito 90: Integración de Producción en `main`: Catálogo en Vivo con Firestore, Vite 6, React 19 y Cero Mockups**:
+    - **Diagnóstico y Contexto:**
+      1. *Ramas divergentes y despliegue Vercel:* El intento anterior se desvió a una rama secundaria `feature/migracion-moderna-2026` con Next.js 14 que falló en Vercel Preview (salida `dist` ausente), mientras que `main` continuaba desplegando con Vite. Se toma la directiva estricta de trabajar siempre sobre `main`.
+      2. *Catálogo estático falso (Mockup):* `src/App.tsx` cargaba los inmuebles desde un JSON estático o datos en memoria (`src/data.ts`). El endpoint `/api/leads/list.js` leía del archivo `data/inmobiliario.json` en disco en vez de la base de datos real.
+    - **Solución Implementada:**
+      1. *Lectura en Vivo de Google Cloud Firestore (`api/leads/list.js`):* El endpoint ahora consulta directamente `leadsRef` (`db.collection('leads')`) filtrando por `activo == true`, orden cronológico descendente y límite de 300 ítems, con fallback automático al dataset local en caso de contingencia.
+      2. *Conexión Dinámica en el Frontend (`src/App.tsx`):* Se reemplazó la carga de archivos locales por una llamada asíncrona a `/api/leads/list?limit=250` con fallback resiliente al JSON estático y deduplicación canónica triple-key.
+      3. *Saneamiento de Entorno y Gitignore:* Eliminación de residuos `.next/`, `tsconfig.tsbuildinfo` y blindaje en `.gitignore`.
+    - **Validación Automatizada (100%):**
+      - `npm run build`: Vite v6.4.3 compila en 2.62s generando bundle optimizado en `dist/` con código 0.
+      - `npm run lint`: `tsc --noEmit` completado con 0 errores de TypeScript.
+      - `npm test`: Las 8 fases DevSecOps aprobadas al 100% con 0 errores.
+    - **Estado Post-Hito:**
+      - Producción en `main` alineada con la configuración de Vercel (`outputDirectory: dist`, Node 24).
+      - Catálogo sincronizado en tiempo real con la base de datos Firestore y alimentado por el scraper.
+
+---
+
+- 89. **Erradicación Definitiva de Bloqueo de Interacción y Desbordamiento en Modal de Checkout: `pointer-events: auto`, Alineación `flex-start`, Scroll Natural y Alertas Contextuales**:
     - **Diagnóstico y Necesidad de Negocio:**
       1. *Modal Estático y Bloqueado ("no sirve sigue siendo estático"):* El usuario reportó que el modal parecía una imagen fija en la que nada funcionaba, no se podía hacer clic en los botones, ni escribir en el campo de texto, ni subir o bajar con la rueda del ratón.
       2. *Causa Raíz Criptográfica y de CSS:*

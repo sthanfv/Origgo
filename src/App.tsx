@@ -204,10 +204,10 @@ export function App() {
       }
     });
 
-    // 3. Cargar catálogo dinámico con fail-safe y deduplicación
-    fetch('/data/inmobiliario.json')
+    // 3. Cargar catálogo en vivo desde API Firestore con fail-safe y deduplicación
+    fetch('/api/leads/list?limit=250')
       .then((res) => {
-        if (!res.ok) throw new Error('No se pudo cargar el catálogo JSON');
+        if (!res.ok) throw new Error('Fallo en endpoint API');
         return res.json();
       })
       .then((data) => {
@@ -216,7 +216,18 @@ export function App() {
           setLeads(deduplicarLeadsCanonica(items));
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Respaldo secundario a archivo JSON estático si la API tiene latencia o desconexión
+        fetch('/data/inmobiliario.json')
+          .then((res) => res.json())
+          .then((data) => {
+            const items = data?.leads || data?.inmuebles;
+            if (Array.isArray(items) && items.length > 0) {
+              setLeads(deduplicarLeadsCanonica(items));
+            }
+          })
+          .catch(() => {});
+      });
   }, [isEn]);
 
   // Filtrado y Ordenamiento Reactivo
