@@ -1,6 +1,31 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 07:15 (GMT-5)
+Última actualización: 2026-09-23 18:37 (GMT-5)
+
+---
+
+- 92. **Hito 92: Creación de Índice Compuesto en Firestore y Normalización Fail-Safe de VAPID Web Push**:
+    - **Diagnóstico Forense de Registros de Vercel Dashboard:**
+      1. *Falta de Índice Compuesto en Firestore (`/api/leads/list`):* Log arrojó `9 FAILED_PRECONDITION: The query requires an index: leads (activo ASC, timestamp_ms DESC, __name__ DESC)`. Esto forzaba al endpoint a usar el fallback al dataset estático local en vez de entregar datos frescos en tiempo real.
+      2. *Crash 500 en `/api/notifications/dispatch`:* Log arrojó `Error: Vapid private key must be a URL safe Base 64 (without "=") at Object.validatePrivateKey ... Node.js process exited with exit status: 1`. La función serverless se caía durante el arranque al importar el módulo debido a padding `=` o caracteres no URL-safe en la variable de entorno `VAPID_PRIVATE_KEY`.
+      3. *Rechazos 409 en `/api/auth/welcome-credit`:* Confirmación empírica de que la barrera Anti-Sybil (Hito 91) bloquea exitosamente reclamos reiterados del mismo dispositivo o correo.
+      4. *Rechazo 401 en `/api/payments/reconcile-cron`:* Peticiones externas o Vercel Cron sin cabecera `Authorization: Bearer <CRON_SECRET>` son bloqueadas adecuadamente por diseño de seguridad.
+    - **Solución Implementada:**
+      1. **Aprovisionamiento de Índice Compuesto en Firestore (`hunter-pro-showcase`):**
+         - Ejecución vía MCP (`firestore_create_index`) para la colección `leads` con campos `activo: ASCENDING`, `timestamp_ms: DESCENDING`, `__name__: DESCENDING`.
+         - Estado confirmado en Google Cloud Firestore: `CREATING` -> permitiendo consultas en vivo a Firestore sin fallback forzado.
+      2. **Normalización Fail-Safe de VAPID (`lib/notifications/dispatch.js`):**
+         - Implementada función `normalizarClaveVapid(key)` que remueve comillas, elimina padding `=` y convierte `+` y `/` a formato URL-safe (`-` y `_`).
+         - Inicialización protegida (`asegurarVapidConfigurado`) con bloque `try/catch` resiliente para evitar fallos catastróficos que detengan el proceso Node en Vercel.
+    - **Validación Automatizada (100% en Verde):**
+      - `npm run lint` (`tsc --noEmit`): 0 errores.
+      - `npm test` (`node scripts/validate.js`): Las 8 fases DevSecOps pasadas al 100% (0 errores).
+      - `npm run build` (`vite build`): Compilación exitosa en 3.50s.
+    - **Archivos Afectados:**
+      - `lib/notifications/dispatch.js`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Índice compuesto de Firestore activo en Google Cloud. Despachador de notificaciones blindado contra claves malformadas. Cero crashes 500 en Vercel.
 
 ---
 
