@@ -9,10 +9,13 @@
  * 4. Guarda de seguridad en POST /api/leads/unlock: rechazo con HTTP 410 y cero créditos descontados.
  */
 
-const { describe, it } = require('node:test');
+process.env.NODE_ENV = 'test';
+
+const { describe, it, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
 const db = require('../lib/db');
 const { signJwt } = require('../lib/crypto');
+const { resetRateLimiter } = require('../lib/rate-limiter');
 const { takedown: takedownHandler, blacklist: blacklistHandler } = require('../api/support');
 const unlockHandler = require('../api/leads/unlock');
 
@@ -33,6 +36,10 @@ function mockRes() {
 }
 
 describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Takedown)', () => {
+  beforeEach(() => {
+    resetRateLimiter();
+  });
+
   it('1. Ledger debe registrar y detectar un lead en lista negra', async () => {
     const testId = `takedown-unit-${Date.now()}`;
     const resAdd = await db.addBlacklistedLead(testId, {
@@ -54,7 +61,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const leadId = `fincaraiz-unit-${Date.now()}`;
     const req = {
       method: 'POST',
-      headers: { 'x-forwarded-for': '186.84.10.15' },
+      headers: { 'x-forwarded-for': '186.84.10.21' },
       body: { leadId, phone: '3159998877', reason: 'ya_vendido' }
     };
     const res = mockRes();
@@ -126,7 +133,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
   it('6. POST /api/support/takedown debe rechazar texto libre sin identificador con LEAD_ID_INVALIDO', async () => {
     const req = {
       method: 'POST',
-      headers: { 'x-forwarded-for': '186.84.10.15' },
+      headers: { 'x-forwarded-for': '186.84.10.26' },
       body: { leadId: 'Hola por favor bajen mi casa de la calle 45 no quiero que la publiquen mas', phone: '3159998877' }
     };
     const res = mockRes();
@@ -142,7 +149,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const targetLeadId = `lead-inm-hash-${Date.now()}`;
     const req = {
       method: 'POST',
-      headers: { 'x-forwarded-for': '186.84.10.15' },
+      headers: { 'x-forwarded-for': '186.84.10.27' },
       body: { leadId: `https://origgo.online/#lead-modal?id=${targetLeadId}`, phone: '3001234567' }
     };
     const res = mockRes();
@@ -161,7 +168,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const portalNum = '194209999';
     const req = {
       method: 'POST',
-      headers: { 'x-forwarded-for': '186.84.10.15' },
+      headers: { 'x-forwarded-for': '186.84.10.28' },
       body: { leadId: `https://www.fincaraiz.com.co/inmueble/${portalNum}`, phone: '3001234567' }
     };
     const res = mockRes();
@@ -181,7 +188,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const textoLargo = 'Texto de prueba '.repeat(100); // > 1500 caracteres
     const req = {
       method: 'POST',
-      headers: { 'x-forwarded-for': '186.84.10.15' },
+      headers: { 'x-forwarded-for': '186.84.10.29' },
       body: { leadId: targetLeadId, phone: '3001234567', reason: textoLargo }
     };
     const res = mockRes();
