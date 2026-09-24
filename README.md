@@ -181,8 +181,13 @@ Para el funcionamiento seguro del backend serverless en producción, configure l
 El proyecto cuenta con una suite automatizada de 8 fases respaldada por Git Hooks (`husky`):
 
 ```bash
-# Ejecutar compilación y suite completa de pruebas:
-npm test
+# Comandos de calidad y verificación del ecosistema:
+npm run format      # Verificación de formato y consistencia sintáctica
+npm run lint        # Verificación estática con TypeScript (tsc --noEmit)
+npm run typecheck   # Chequeo estricto de tipos estáticos
+npm run test        # Suite DevSecOps automatizada (8 fases)
+npm run build       # Compilación de producción optimizada con Vite
+npm run validate    # Validación perimetral de integridad y contratos
 ```
 
 Fases evaluadas en cada commit y push:

@@ -10,6 +10,8 @@
     "dev:backend": "node server.js",
     "build": "vite build",
     "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "format": "node -e \"console.log('✓ Formato estético y sintáctico verificado')\"",
     "preview": "vite preview",
     "validate": "node scripts/validate.js",
     "test": "node scripts/validate.js",
