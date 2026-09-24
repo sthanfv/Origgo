@@ -1,6 +1,35 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 20:55 (GMT-5)
+Última actualización: 2026-09-23 21:05 (GMT-5)
+
+---
+
+- 97. **Hito 97: Activación Oficial del Dominio Verificado `origgo.online` en Resend y Despacho Transaccional Global**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Descubrimiento de Dominio Verificado:* El usuario confirmó que `origgo.online` ya se encuentra formalmente verificado en Resend (desde hace 18 días con DKIM y SPF aprobados).
+      2. *Eliminación de Restricciones Sandbox:* Al utilizar el remitente institucional de dominio `@origgo.online`, Resend elimina la limitación de pruebas (que obligaba a enviar solo a `fv9316@gmail.com`), permitiendo despachos a cualquier proveedor de correo del mundo (Gmail, Hotmail, Outlook, Yahoo, etc.).
+    - **Solución Implementada:**
+      1. **Configuración de Remitente Institucional Oficial:**
+         - Actualizado `RESEND_FROM_EMAIL="Origgo <seguridad@origgo.online>"` como secreto en Vercel `Production` y `Preview`.
+         - Actualizado el fallback en `lib/email-templates.js` y `lib/auth/recover.js`.
+         - Actualizado el `.env` local.
+      2. **Pruebas de Despacho en Vivo:**
+         - Despacho transaccional directo con remitente `Origgo <seguridad@origgo.online>` a la cuenta titular: Exitoso con ID `01a0d123-ad07-752a-8641-77ee534067e5`.
+         - Despacho transaccional a destinatario externo (`delivered@resend.dev`): Exitoso con ID `01a0d123-bd5c-77c8-9445-64cdcabc4d40` (confirmando despacho global sin restricciones).
+      3. **Despliegue Atómico a Producción:**
+         - Promovido a `https://origgo.online` (Deployment ID: `dpl_FduBhjqBPbK27WE9RHXaEcw235nm`).
+    - **Validación Automatizada (100% en Verde):**
+      - `npm run lint` (`tsc --noEmit`): 0 errores.
+      - `node --test tests/smoke_freemium_flow.test.js tests/error_humanizer.test.js`: 13 de 13 pruebas aprobadas (cero errores 403).
+      - `npm test` (`node scripts/validate.js`): 8 de 8 fases DevSecOps pasadas al 100%.
+      - Despliegue en producción en vivo en `https://origgo.online`.
+    - **Archivos Afectados:**
+      - `lib/email-templates.js`
+      - `lib/auth/recover.js`
+      - `.env`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Infraestructura de correos oficial, profesional y verificada bajo `seguridad@origgo.online`. Despacho abierto a todo público a nivel nacional e internacional.
 
 ---
 
