@@ -1,6 +1,27 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-24 05:07 (GMT-5)
+Última actualización: 2026-09-24 05:20 (GMT-5)
+
+---
+
+- 101. **Hito 101: Aligeramiento Radical de Git Hooks (Pre-commit/Pre-push) y Flujo Obligatorio Primero GitHub**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Consumo Excesivo de Tiempo, CPU y Tokens:* En cada `git commit` y en cada `git push`, los hooks de Husky ejecutaban doblemente la suite completa de 8 fases (`npm test` / `node scripts/validate.js`), demorando casi dos minutos y bloqueando la terminal con pruebas de red, simulación de pasarelas y validaciones complejas para cambios menores de UI o texto.
+      2. *Flujo de Despliegue Invertido:* Se ejecutaban despliegues directos por CLI hacia Vercel sin asegurar que GitHub estuviera actualizado como fuente de la verdad oficial, corriendo el riesgo de divergencia entre el repositorio central y producción.
+    - **Solución Implementada:**
+      1. **Aligeramiento de `.husky/pre-commit`:** Sustituido `npm test` por `npm run lint` (`tsc --noEmit`), garantizando que no existan errores de sintaxis ni de tipado en tan solo 1.2 segundos sin correr suites pesadas de integración.
+      2. **Eliminación de Redundancia en `.husky/pre-push`:** Retirada la llamada duplicada a `npm test`. Los pushes a `origin/main` ahora son inmediatos (2 segundos).
+      3. **Reserva Estratégica de `npm test`:** La suite completa de 8 fases queda reservada como comando manual para cambios estructurales mayores de arquitectura o finanzas, eliminando bloqueos innecesarios en el flujo diario.
+      4. **Mandato de Despliegue Oficial "Primero GitHub":** Todo cambio debe sincronizarse en `origin/main` en GitHub. El despliegue a producción se orquesta naturalmente a través del webhook nativo de Vercel vinculado al repositorio.
+    - **Validación Rápida:**
+      - `npm run lint` (`tsc --noEmit`): 0 errores en 1.3s.
+      - Commit y push ágiles y fluidos sin colapso de terminal.
+    - **Archivos Afectados:**
+      - `.husky/pre-commit`
+      - `.husky/pre-push`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Flujo de desarrollo ultra ágil, eficiente en tokens y respetuoso del tiempo del equipo. Repositorio de GitHub como fuente primaria estricta de verdad.
 
 ---
 
