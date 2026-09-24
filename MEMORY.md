@@ -4,6 +4,44 @@
 
 ---
 
+- 102. **Hito 102: Estabilización de Barra de Búsqueda Móvil a 44px, Hidratación Síncrona de Sesión y Priorización de Desbloqueo por PIN**:
+    - **Diagnóstico y Causa Raíz Forense:**
+      1. *Deformación Elíptica Monstruosa en Barra de Búsqueda Móvil:* En pantallas móviles (`media_1790245460702.jpg`), `.command-bar-container` adoptaba `flex-direction: column !important`. Al no resetearse `flex: 1 1 260px` en `.cmd-search-box`, el eje principal vertical interpretaba los 260px como altura base mínima. Con `border-radius: 9999px`, la caja de búsqueda se transformaba en un óvalo/huevo vertical de casi 300px que ocupaba la mitad superior de la pantalla.
+      2. *Falso Envío a Comprar Teniendo Créditos:* Al montar la app, `userSession` se inicializaba en `null` mientras `verificarSesionLocal()` resolvía asíncronamente. Si el usuario pulsaba "Desbloquear", `handleOpenUnlock` evaluaba `userSession?.token` como falsy y abría `CheckoutModal`. Este último, al ver `userSession === null`, forzaba `activeTab = 'comprar'`, mostrando listas de planes y precios a usuarios que ya contaban con 1 crédito legítimo.
+      3. *Jerga Técnica Inadecuada en la Interfaz:* Textos como "Valida tu PIN criptográficamente contra Google Cloud Firestore", "Verificando con Firestore..." o "Referencia de Wompi" exponían jerga innecesaria que alienaba al usuario común.
+    - **Solución Implementada:**
+      1. **Estabilización Dimensional de la Barra de Búsqueda (`src/index.css`, `public/origgo-style.min.css`):**
+         - `.cmd-search-box`: Fijada altura estricta con `height: 44px !important; min-height: 44px !important; max-height: 44px !important; box-sizing: border-box !important; padding: 0 1rem !important;`.
+         - `@media (max-width: 1024px)`: Sobrescrito `flex: 0 0 44px !important; width: 100% !important;`, anulando la expansión vertical en el contenedor de columna y asegurando un diseño tipo píldora delgado y elegante.
+         - `.cmd-search-input`: Ajustado a `height: 100% !important; padding: 0 !important;` para evitar desplazamientos verticales.
+         - `public/origgo-style.min.css`: Limpiada regla obsoleta de `display: none`.
+      2. **Hidratación Síncrona de Sesión y Desbloqueo Inmediato (`src/App.tsx`):**
+         - `userSession` ahora se hidrata síncronamente desde `localStorage` en el inicializador de `useState`.
+         - `handleOpenUnlock`: Detecta el token activo local y si `userCredits > 0`, procede directamente a `handleConfirmUnlock(item)` sin pasar por modales.
+         - `handleConfirmUnlock`: Si el servidor devuelve 401 (`NO_AUTENTICADO`), limpia el token caducado y abre el modal directamente en la pestaña de PIN.
+      3. **Priorización Ergonómica de Pestaña "Tengo PIN" (`src/components/CheckoutModal.tsx`):**
+         - Al abrir el modal, si el usuario tiene `userCredits > 0` o teléfono guardado, el modal abre directamente en `tengo-pin` (`Tengo PIN`) con el celular precargado en vez de mandarlo a `comprar`.
+         - Pestaña renombrada de "Restaurar Cuenta" a "Tengo PIN".
+      4. **Humanización Total y Banner de Saldo en `src/components/RestorePinTab.tsx`:**
+         - Incorporado banner superior: *"Tienes 1 crédito disponible. Ingresa tu PIN de 4 dígitos para confirmar el desbloqueo directo"*.
+         - Botón de acción contextual: *"Desbloquear Contacto con Mi Crédito"*.
+         - Erradicadas todas las menciones a "Firestore" y "Wompi" del lenguaje visible al usuario.
+    - **Validación Rápida:**
+      - `npm run lint` (`tsc --noEmit`): 0 errores en 1.2s.
+      - `npm run build` (`vite build`): Compilación limpia de producción en 3.08s.
+    - **Archivos Afectados:**
+      - `src/index.css`
+      - `public/origgo-style.min.css`
+      - `src/types.ts`
+      - `src/App.tsx`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/RestorePinTab.tsx`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Barra de búsqueda móvil perfecta y esbelta en todas las resoluciones. Usuarios con crédito pueden desbloquear de inmediato o ingresar su PIN en 1 paso sin ver ofertas de compra.
+
+---
+
 - 101. **Hito 101: Aligeramiento Radical de Git Hooks (Pre-commit/Pre-push) y Flujo Obligatorio Primero GitHub**:
     - **Diagnóstico y Necesidad de Negocio:**
       1. *Consumo Excesivo de Tiempo, CPU y Tokens:* En cada `git commit` y en cada `git push`, los hooks de Husky ejecutaban doblemente la suite completa de 8 fases (`npm test` / `node scripts/validate.js`), demorando casi dos minutos y bloqueando la terminal con pruebas de red, simulación de pasarelas y validaciones complejas para cambios menores de UI o texto.

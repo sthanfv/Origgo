@@ -41,13 +41,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onLogout,
 }) => {
   const { isEn } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'comprar' | 'tengo-pin' | 'cuenta'>(
-    userSession && userCredits > 0 ? 'cuenta' : 'comprar'
-  );
+  const [activeTab, setActiveTab] = useState<'comprar' | 'tengo-pin' | 'cuenta'>(() => {
+    if (userSession?.token && userCredits > 0) return 'cuenta';
+    try {
+      const savedPhone = localStorage.getItem('origgo_session_phone') || localStorage.getItem('origgo_auth_phone');
+      if (userCredits > 0 || savedPhone) return 'tengo-pin';
+    } catch {}
+    return 'comprar';
+  });
   const [selectedPlan, setSelectedPlan] = useState<ModalPlanOption>('welcome_free');
   const [selectedCityCoverage, setSelectedCityCoverage] = useState(selectedLead?.ciudad || 'Bogotá');
   const [phoneInput, setPhoneInput] = useState(() => {
-    return userSession?.phone || localStorage.getItem('origgo_auth_phone') || '';
+    return userSession?.phone || localStorage.getItem('origgo_session_phone') || localStorage.getItem('origgo_auth_phone') || '';
   });
   const [emailInput, setEmailInput] = useState(() => {
     return localStorage.getItem('origgo_auth_email') || '';
@@ -80,16 +85,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Sincronizar estado cuando se abre el modal
   React.useEffect(() => {
     if (isOpen) {
-      if (userSession && userCredits > 0) {
+      const savedPhone =
+        userSession?.phone ||
+        localStorage.getItem('origgo_session_phone') ||
+        localStorage.getItem('origgo_auth_phone');
+
+      if (userSession?.token && userCredits > 0) {
         setActiveTab('cuenta');
+      } else if (userCredits > 0 || savedPhone) {
+        // Si el usuario tiene créditos o ya tiene cuenta guardada, abrir en PIN directamente
+        setActiveTab('tengo-pin');
       } else {
         setActiveTab('comprar');
       }
-      if (userSession?.phone) {
-        setPhoneInput(userSession.phone);
-      } else {
-        const savedPhone = localStorage.getItem('origgo_auth_phone');
-        if (savedPhone) setPhoneInput(savedPhone);
+
+      if (savedPhone) {
+        setPhoneInput(savedPhone);
       }
       const savedEmail = localStorage.getItem('origgo_auth_email');
       if (savedEmail) setEmailInput(savedEmail);
@@ -193,8 +204,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     if (!pinInput.trim()) {
       setErrorMessage(
         isEn
-          ? 'Please enter your access PIN or payment reference'
-          : 'Ingresa tu Código de Acceso (PIN) o Referencia de Wompi'
+          ? 'Please enter your 4-digit access PIN'
+          : 'Ingresa tu Código de Acceso (PIN) de 4 dígitos'
       );
       return;
     }
@@ -455,7 +466,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               }}
             >
               <i className="fa-solid fa-key"></i>{' '}
-              <span>{isEn ? 'Restore Account' : 'Restaurar Cuenta'}</span>
+              <span>{isEn ? 'Access with PIN' : 'Tengo PIN'}</span>
             </button>
             {userSession && userCredits > 0 && (
               <button
@@ -673,7 +684,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
         )}
 
-        {/* PESTAÑA 2: RESTAURAR CUENTA / TENGO PIN */}
+        {/* PESTAÑA 2: TENGO PIN / ACCESO DIRECTO */}
         {activeTab === 'tengo-pin' && (
           <RestorePinTab
             phoneInput={phoneInput}
@@ -692,6 +703,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             setErrorMessage={setErrorMessage}
             setSuccessMessage={setSuccessMessage}
             isEn={isEn}
+            userCredits={userCredits}
+            selectedLead={selectedLead}
+            onGoToBuy={() => {
+              setActiveTab('comprar');
+              setErrorMessage(null);
+            }}
           />
         )}
 

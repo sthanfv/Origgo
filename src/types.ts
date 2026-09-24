@@ -55,6 +55,7 @@ export interface UserSession {
   unlockedLeads?: string[];
   token?: string;
   verified?: boolean;
+  welcomeCreditClaimed?: boolean;
 }
 
 /** Información revelada de un propietario directo tras desbloqueo */

@@ -86,14 +86,30 @@ export function App() {
     }
   });
 
-  // 2. Estado de Sesión y Créditos
-  const [userSession, setUserSession] = useState<UserSession | null>(null);
+  // 2. Estado de Sesión y Créditos (hidratación síncrona inmediata)
+  const [userSession, setUserSession] = useState<UserSession | null>(() => {
+    try {
+      const token = localStorage.getItem('origgo_auth_jwt_token');
+      if (!token) return null;
+      const phone = localStorage.getItem('origgo_session_phone') || localStorage.getItem('origgo_auth_phone') || '';
+      const savedCredits = localStorage.getItem('origgo_user_credits_v1');
+      return {
+        token,
+        phone,
+        credits: savedCredits ? Math.max(0, Number(savedCredits)) : 1,
+        welcomeCreditClaimed: true,
+      };
+    } catch {
+      return null;
+    }
+  });
+
   const [userCredits, setUserCredits] = useState<number>(() => {
     try {
       const token = localStorage.getItem('origgo_auth_jwt_token');
       if (!token) return 0;
       const saved = localStorage.getItem('origgo_user_credits_v1');
-      return saved ? Number(saved) : 0;
+      return saved ? Math.max(0, Number(saved)) : 1;
     } catch {
       return 0;
     }
@@ -344,11 +360,23 @@ export function App() {
 
   // Manejo de Desbloqueo de Inmueble
   const handleOpenUnlock = (item: LeadItem) => {
+    const activeToken = userSession?.token || localStorage.getItem('origgo_auth_jwt_token');
+
     // Si el usuario ya cuenta con sesión activa y créditos disponibles, desbloquear directamente
-    if (userSession?.token && userCredits > 0) {
+    if (activeToken && userCredits > 0) {
+      if (!userSession?.token) {
+        const phone = localStorage.getItem('origgo_session_phone') || localStorage.getItem('origgo_auth_phone') || '';
+        setUserSession({
+          token: activeToken,
+          phone,
+          credits: userCredits,
+          welcomeCreditClaimed: true,
+        });
+      }
       handleConfirmUnlock(item);
       return;
     }
+
     setLeadToUnlock(item);
     setCheckoutModalOpen(true);
   };
@@ -356,10 +384,12 @@ export function App() {
   const handleConfirmUnlock = async (item: LeadItem) => {
     if (!item || !item.id) return;
 
+    const activeToken = userSession?.token || localStorage.getItem('origgo_auth_jwt_token');
+
     // Caso A: Si el usuario cuenta con sesión autenticada con token JWT
-    if (userSession?.token) {
+    if (activeToken) {
       try {
-        const res = await desbloquearLeadApi(item, userSession.token, isEn ? 'en' : 'es');
+        const res = await desbloquearLeadApi(item, activeToken, isEn ? 'en' : 'es');
 
         if (res.ok && res.contacto) {
           if (typeof res.nuevoBalance === 'number') {
@@ -393,6 +423,15 @@ export function App() {
           return;
         }
 
+        if (res.codigoError === 'NO_AUTENTICADO') {
+          cerrarSesionLocal();
+          setUserSession(null);
+          setLeadToUnlock(item);
+          setCheckoutModalOpen(true);
+          notify(isEn ? '🔒 Enter your PIN to continue' : '🔒 Ingresa tu PIN de 4 dígitos para continuar');
+          return;
+        }
+
         notify(`⚠️ ${humanizarError(res.error || res.codigoError, isEn)}`);
       } catch (err: any) {
         notify(`⚠️ ${humanizarError(err, isEn)}`);
@@ -400,14 +439,9 @@ export function App() {
       return;
     }
 
-    // Si el usuario no cuenta con sesión autenticada en el servidor, exigir registro/checkout
+    // Si el usuario no cuenta con sesión autenticada en el servidor, abrir modal
     setLeadToUnlock(item);
     setCheckoutModalOpen(true);
-    notify(
-      isEn
-        ? '🔒 Please activate your account or select a plan to unlock this owner'
-        : '🔒 Ingresa tu WhatsApp y correo para activar tu desbloqueo de cortesía'
-    );
   };
 
   const handleResetFilters = () => {

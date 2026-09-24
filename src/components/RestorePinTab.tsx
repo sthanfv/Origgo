@@ -1,4 +1,5 @@
 import React from 'react';
+import { LeadItem } from '../types';
 
 interface RestorePinTabProps {
   phoneInput: string;
@@ -17,11 +18,14 @@ interface RestorePinTabProps {
   setErrorMessage: (val: string | null) => void;
   setSuccessMessage: (val: string | null) => void;
   isEn: boolean;
+  userCredits?: number;
+  selectedLead?: LeadItem | null;
+  onGoToBuy?: () => void;
 }
 
 /**
- * Pestaña modular para inicio de sesión por PIN o referencia Wompi,
- * y recuperación segura de PIN vía correo electrónico.
+ * Pestaña modular para acceso rápido con PIN de 4 dígitos y confirmación de desbloqueo,
+ * sin jerga técnica y con recuperación asistida por correo.
  */
 export const RestorePinTab: React.FC<RestorePinTabProps> = ({
   phoneInput,
@@ -40,9 +44,43 @@ export const RestorePinTab: React.FC<RestorePinTabProps> = ({
   setErrorMessage,
   setSuccessMessage,
   isEn,
+  userCredits = 0,
+  selectedLead = null,
+  onGoToBuy,
 }) => {
   return (
     <form onSubmit={handleRestorePin}>
+      {/* Banner Informativo si el usuario cuenta con saldo reconocido */}
+      {userCredits > 0 && (
+        <div
+          style={{
+            background: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid var(--accent-emerald)',
+            borderRadius: 12,
+            padding: '10px 14px',
+            marginBottom: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            textAlign: 'left',
+          }}
+        >
+          <i className="fa-solid fa-bolt" style={{ color: '#F59E0B', fontSize: '1.25rem', flexShrink: 0 }}></i>
+          <div>
+            <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'block' }}>
+              {isEn
+                ? `You have ${userCredits} credit available`
+                : `Tienes ${userCredits} ${userCredits === 1 ? 'crédito disponible' : 'créditos disponibles'}`}
+            </strong>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+              {isEn
+                ? 'Enter your 4-digit PIN to confirm the unlock instantly.'
+                : 'Ingresa tu PIN de 4 dígitos para confirmar el desbloqueo directo.'}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="checkout-form-group">
         <label className="checkout-form-label">
           <i className="fa-brands fa-whatsapp" style={{ color: '#22C55E' }}></i>
@@ -67,29 +105,30 @@ export const RestorePinTab: React.FC<RestorePinTabProps> = ({
       <div className="checkout-form-group">
         <label className="checkout-form-label">
           <i className="fa-solid fa-key" style={{ color: 'var(--accent-emerald)' }}></i>
-          <span>{isEn ? 'Access PIN or Wompi Ref:' : 'Código de Acceso (PIN) o Ref. Wompi:'}</span>
+          <span>{isEn ? '4-Digit Access PIN:' : 'Código PIN de 4 dígitos:'}</span>
         </label>
         <div className="checkout-input-wrapper">
           <input
             type="text"
             className="checkout-text-input"
-            placeholder="Ej: 7492 o Ref. de pago"
+            placeholder="Ej: 8731"
             value={pinInput}
+            maxLength={12}
             onChange={(e) => {
               setPinInput(e.target.value);
               setErrorMessage(null);
             }}
-            style={{ textAlign: 'center', letterSpacing: '0.15em', fontSize: '1.05rem' }}
+            style={{ textAlign: 'center', letterSpacing: '0.15em', fontSize: '1.05rem', fontWeight: 700 }}
           />
         </div>
         <span className="checkout-input-help">
           {isEn
-            ? 'Verifies your PIN cryptographically against Google Cloud Firestore.'
-            : 'Valida tu PIN criptográficamente contra Google Cloud Firestore.'}
+            ? 'Enter the 4-digit PIN you received in your email.'
+            : 'Ingresa el PIN de 4 dígitos que recibiste en tu correo.'}
         </span>
       </div>
 
-      {/* Sub-bloque: Recuperación de PIN si se le olvidó */}
+      {/* Sub-bloque: Recuperación de PIN si no lo recuerda */}
       <div style={{ textAlign: 'right', margin: '4px 0 12px 0' }}>
         <button
           type="button"
@@ -160,15 +199,40 @@ export const RestorePinTab: React.FC<RestorePinTabProps> = ({
         {isLoading ? (
           <>
             <i className="fa-solid fa-circle-notch fa-spin"></i>
-            <span>{isEn ? 'Verifying...' : 'Verificando con Firestore...'}</span>
+            <span>{isEn ? 'Verifying PIN...' : 'Verificando PIN...'}</span>
           </>
         ) : (
           <>
-            <i className="fa-solid fa-arrows-rotate"></i>
-            <span>{isEn ? 'Restore My Credits' : 'Restaurar Mis Créditos'}</span>
+            <i className="fa-solid fa-unlock-keyhole"></i>
+            <span>
+              {selectedLead && userCredits > 0
+                ? (isEn ? 'Unlock Contact with My Credit' : 'Desbloquear Contacto con Mi Crédito')
+                : (isEn ? 'Access My Account' : 'Entrar a Mi Cuenta')}
+            </span>
           </>
         )}
       </button>
+
+      {/* Enlace para nuevos usuarios si desean ver planes o regalo */}
+      {onGoToBuy && (
+        <div style={{ textAlign: 'center', marginTop: 10 }}>
+          <button
+            type="button"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-dim)',
+              fontSize: '0.74rem',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 4,
+            }}
+            onClick={onGoToBuy}
+          >
+            {isEn ? 'New to Origgo? See plans & free unlock' : '¿Aún no tienes cuenta? Ver planes y cortesía gratis'}
+          </button>
+        </div>
+      )}
 
       <button type="button" className="btn-modal-back" onClick={onClose}>
         <i className="fa-solid fa-arrow-left"></i>
