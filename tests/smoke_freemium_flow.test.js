@@ -177,4 +177,28 @@ describe('🛡️ Smoke Test: Flujo Freemium Doble Opt-In y Barreras de Segurida
     assert.equal(resReclamo2.statusCode, 409, 'Debe responder 409 conflicto si el deviceId ya reclamó');
     assert.equal(resReclamo2.payload?.alreadyClaimed, true);
   });
+
+  it('7. Debe reconocer al usuario existente con créditos disponibles y entregar enlace HTTP 200 sin bloquear con 409', async () => {
+    const rand = Math.floor(1000000 + Math.random() * 9000000);
+    const celular = '319' + rand;
+    const email = `usuario.existente.${rand}@origgo.online`;
+    const deviceId = 'dev_smoke_existing_' + rand;
+
+    // Crear usuario con 1 crédito previo
+    await db.addCredits(celular, 1, 'HNT-9999', null, email);
+    await db.updateUserPreferences(celular, { welcomeCreditClaimed: true });
+
+    const req = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      body: { celular, email, deviceId, lang: 'es' }
+    };
+    const res = crearMockRes();
+
+    await welcomeCreditHandler(req, res);
+    assert.equal(res.statusCode, 200, 'Debe retornar HTTP 200 para usuario con créditos');
+    assert.equal(res.payload?.ok, true);
+    assert.equal(res.payload?.existingAccountWithCredits, true);
+    assert.equal(res.payload?.credits, 1);
+  });
 });

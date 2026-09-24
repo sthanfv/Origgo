@@ -7,6 +7,7 @@ interface SiteHeaderProps {
   isSideMenuOpen: boolean;
   isPushActive: boolean;
   userCredits: number;
+  hasSession?: boolean;
   onToggleSideMenu: () => void;
   onToggleTheme: () => void;
   onTogglePush: () => void;
@@ -18,6 +19,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   isSideMenuOpen,
   isPushActive,
   userCredits,
+  hasSession = false,
   onToggleSideMenu,
   onToggleTheme,
   onTogglePush,
@@ -165,7 +167,9 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           >
             <i className="fa-solid fa-bolt" style={{ color: '#F59E0B' }}></i>
             <span className="btn-vip-text">
-              {userCredits > 0 ? `${userCredits} ${isEn ? (userCredits === 1 ? 'Credit' : 'Credits') : (userCredits === 1 ? 'Crédito' : 'Créditos')}` : t('vip_btn_default', 'Créditos / Planes')}
+              {hasSession && userCredits > 0
+                ? `${userCredits} ${isEn ? (userCredits === 1 ? 'Credit' : 'Credits') : (userCredits === 1 ? 'Crédito' : 'Créditos')}`
+                : (isEn ? '🎁 1 Free Unlock' : '🎁 1 Desbloqueo Gratis')}
             </span>
           </button>
         </div>

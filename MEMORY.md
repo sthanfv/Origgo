@@ -1,6 +1,45 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 23:32 (GMT-5)
+Última actualización: 2026-09-24 05:07 (GMT-5)
+
+---
+
+- 100. **Hito 100: Reconocimiento Inteligente de Cuentas con Créditos en Bienvenida, Sincronización Veraz de Cabecera y Acceso Directo por PIN**:
+    - **Diagnóstico y Causa Raíz Forense:**
+      1. *Falso Positivo de Saldo en Cabecera Móvil y Escritorio:* En `src/App.tsx`, el estado `userCredits` tenía un fallback hardcodeado `return saved ? Number(saved) : 1`. Al abrir la plataforma en un navegador sin sesión activa o en modo incógnito (ej. Brave en Android), la cabecera mostraba falsamente `⚡ 1 Crédito` a pesar de que `userSession` era `null`.
+      2. *Bloqueo Injusto en Reclamo de Cortesía:* El usuario legítimo titular (`3113114357` / `fv9316@gmail.com`) cuenta con 1 crédito activo y PIN `HNT-8731` en la base de datos. Al intentar desbloquear un lead sin sesión activa, se abría el modal de checkout; al volver a ingresar sus datos en la pestaña de bienvenida para hacer uso de su saldo, el backend lo rechazaba con HTTP 409 `EMAIL_YA_RECLAMADO` o `CREDITO_YA_RECLAMADO` en vez de facilitarle el acceso a su crédito.
+      3. *Falta de Vía Rápida de Acceso por PIN:* Los usuarios que ya disponen de PIN debían descifrar manualmente cómo cambiar a la pestaña "Restaurar Cuenta", generando frustración.
+    - **Solución Implementada:**
+      1. **Reconocimiento Inteligente de Cuentas con Saldo (`lib/auth/welcome-credit.js`):**
+         - El backend comprueba si el celular o correo pertenecen a un usuario existente. Si `usuarioExistente.credits > 0`, ya no rechaza con 409: genera un token de acceso de 60 minutos, despacha el Magic Link y recordatorio de PIN por Resend, y responde HTTP 200 `{ ok: true, pendingVerification: true, existingAccountWithCredits: true, credits: usuarioExistente.credits }`.
+         - Si `credits === 0` y la cortesía ya fue consumida, se preservan intactas las defensas perimetrales Anti-Sybil (409 Conflicto).
+      2. **Preservación Atómica de Saldo en Verificación (`lib/db.js`):**
+         - En `verifyAndBurnWelcomeToken`, se condiciona la acreditación de créditos a `!userActual?.welcomeCreditClaimed`. Si el usuario ya era existente con saldo, no se le inflan créditos espurios, preservando su balance legítimo y emitiendo un JWT firmado de 30 días con su PIN y leads desbloqueados.
+      3. **Sincronización Veraz de Cabecera (`src/App.tsx`, `src/components/SiteHeader.tsx`):**
+         - `userCredits` se inicializa estrictamente en `0` a menos que exista un token JWT firmado en `localStorage.getItem('origgo_auth_jwt_token')`.
+         - La etiqueta del botón VIP se condiciona a `hasSession && userCredits > 0 ? '⚡ X Créditos' : '🎁 1 Desbloqueo Gratis'` (`🎁 1 Free Unlock`). Cero confusión para visitantes no autenticados.
+      4. **Acceso Directo Ergonómico por PIN (`src/components/CheckoutModal.tsx`, `src/components/WelcomeVerificationNotice.tsx`):**
+         - Incorporado enlace visible directo `¿Ya tienes cuenta o PIN? Inicia sesión aquí` al pie del formulario de cortesía.
+         - Incorporado botón `¿Ya conoces tu PIN? Entra directamente` en la pantalla de verificación enviada, permitiendo al usuario ingresar su PIN sin esperar el correo si lo desea.
+      5. **Pruebas Automatizadas de Regresión:**
+         - Incorporada prueba unitaria `7. Debe reconocer al usuario existente con créditos disponibles y entregar enlace HTTP 200 sin bloquear con 409` en `tests/smoke_freemium_flow.test.js`.
+    - **Validación Automatizada (100% en Verde):**
+      - `npm run lint` (`tsc --noEmit`): 0 errores de tipado.
+      - `node --test tests/smoke_freemium_flow.test.js tests/error_humanizer.test.js tests/support_blacklist.test.js`: 23 de 23 pruebas pasadas en 17.7s.
+      - `npm test` (`node scripts/validate.js`): Las 8 fases DevSecOps pasaron con 0 errores (18 módulos React auditados < 800 líneas, Wompi y Ledger 100%).
+      - `npm run build` (`vite build`): Compilación limpia de producción en 3.67s.
+    - **Archivos Afectados:**
+      - `lib/auth/welcome-credit.js`
+      - `lib/db.js`
+      - `src/App.tsx`
+      - `src/components/SiteHeader.tsx`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/WelcomeVerificationNotice.tsx`
+      - `src/services/auth.ts`
+      - `tests/smoke_freemium_flow.test.js`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Cabecera y saldo 100% veraces y sincronizados. Usuarios existentes con créditos pueden iniciar sesión por Magic Link o PIN instantáneo sin bloqueos de 409. Experiencia fluida tanto para usuarios nuevos como recurrentes.
 
 ---
 

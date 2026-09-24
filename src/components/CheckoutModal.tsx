@@ -282,6 +282,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           localStorage.setItem('origgo_pending_lead_id', selectedLead.id);
         }
         setIsWelcomeVerificationSent(true);
+        if (res.existingAccountWithCredits) {
+          setSuccessMessage(
+            isEn
+              ? `Account detected with ${res.credits || 1} credit(s)! Check your email for the access link, or enter your PIN.`
+              : `¡Detectamos tu cuenta con ${res.credits || 1} crédito(s) activo(s)! Te enviamos el enlace a tu correo, o ingresa directamente con tu PIN.`
+          );
+        }
         return;
       }
 
@@ -476,6 +483,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 isLoading={isLoading}
                 onBack={() => setIsWelcomeVerificationSent(false)}
                 onResend={handleUnlockGratisBienvenida}
+                onGoToPin={() => {
+                  setIsWelcomeVerificationSent(false);
+                  setActiveTab('tengo-pin');
+                }}
               />
             ) : (
               /* VISTA NORMAL DE PLANES Y FORMULARIO */
@@ -582,6 +593,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       ? '🔒 Your 1-click Magic Link and security PIN will be delivered here.'
                       : '🔒 Tu Enlace Mágico de 1 clic y PIN de seguridad serán enviados aquí.'}
                   </span>
+                </div>
+
+                {/* Acceso directo para usuarios con cuenta o PIN existente */}
+                <div style={{ textAlign: 'center', margin: '4px 0 10px 0' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setErrorMessage(null);
+                      setSuccessMessage(null);
+                      setActiveTab('tengo-pin');
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--accent-emerald)',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      padding: '4px 8px',
+                    }}
+                  >
+                    <i className="fa-solid fa-key" style={{ marginRight: 6 }}></i>
+                    {isEn ? 'Already have an account or PIN? Log in here' : '¿Ya tienes cuenta o PIN? Inicia sesión aquí'}
+                  </button>
                 </div>
 
                 {/* Mensaje de Alerta y Estado sobre el botón */}

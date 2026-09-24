@@ -228,6 +228,8 @@ export async function solicitarCreditoBienvenidaApi(params: {
 }): Promise<{
   ok: boolean;
   pendingVerification?: boolean;
+  existingAccountWithCredits?: boolean;
+  credits?: number;
   message?: string;
   error?: string;
   alreadyClaimed?: boolean;
@@ -237,6 +239,8 @@ export async function solicitarCreditoBienvenidaApi(params: {
     const res = await apiFetch<{
       ok: boolean;
       pendingVerification?: boolean;
+      existingAccountWithCredits?: boolean;
+      credits?: number;
       message?: string;
       error?: string;
       alreadyClaimed?: boolean;

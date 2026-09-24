@@ -90,10 +90,12 @@ export function App() {
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [userCredits, setUserCredits] = useState<number>(() => {
     try {
+      const token = localStorage.getItem('origgo_auth_jwt_token');
+      if (!token) return 0;
       const saved = localStorage.getItem('origgo_user_credits_v1');
-      return saved ? Number(saved) : 1; // 1 crédito de cortesía inicial
+      return saved ? Number(saved) : 0;
     } catch {
-      return 1;
+      return 0;
     }
   });
 
@@ -244,6 +246,9 @@ export function App() {
       if (res.authenticated && res.user) {
         setUserSession(res.user);
         setUserCredits(res.user.credits || 0);
+      } else {
+        setUserSession(null);
+        setUserCredits(0);
       }
     });
 
@@ -436,6 +441,7 @@ export function App() {
         isSideMenuOpen={isSideMenuOpen}
         isPushActive={isPushActive}
         userCredits={userCredits}
+        hasSession={Boolean(userSession?.token)}
         onToggleSideMenu={() => setIsSideMenuOpen(!isSideMenuOpen)}
         onToggleTheme={handleToggleTheme}
         onTogglePush={() => {

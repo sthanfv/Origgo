@@ -6,6 +6,7 @@ interface WelcomeVerificationNoticeProps {
   isLoading: boolean;
   onBack: () => void;
   onResend: () => void;
+  onGoToPin?: () => void;
 }
 
 /**
@@ -18,6 +19,7 @@ export const WelcomeVerificationNotice: React.FC<WelcomeVerificationNoticeProps>
   isLoading,
   onBack,
   onResend,
+  onGoToPin,
 }) => {
   return (
     <div
@@ -170,6 +172,31 @@ export const WelcomeVerificationNotice: React.FC<WelcomeVerificationNoticeProps>
           )}
         </button>
       </div>
+
+      {onGoToPin && (
+        <div style={{ marginTop: 14 }}>
+          <button
+            type="button"
+            onClick={onGoToPin}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--accent-emerald)',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 12px',
+            }}
+          >
+            <i className="fa-solid fa-key"></i>
+            <span>{isEn ? 'Already know your PIN? Log in directly' : '¿Ya conoces tu PIN? Entra directamente'}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
