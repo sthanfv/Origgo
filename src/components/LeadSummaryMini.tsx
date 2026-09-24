@@ -52,7 +52,7 @@ export const LeadSummaryMini: React.FC<LeadSummaryMiniProps> = ({ lead }) => {
           <span style={{ color: 'var(--accent-emerald, #10B981)', fontWeight: 900, fontSize: '0.92rem' }}>
             {lead.precio}
           </span>
-          {lead.descuento_arbitraje && (
+          {Boolean(lead.descuento_arbitraje && lead.descuento_arbitraje > 0) && (
             <span
               style={{
                 fontSize: '0.68rem',

@@ -1,6 +1,46 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 19:26 (GMT-5)
+Última actualización: 2026-09-23 19:48 (GMT-5)
+
+---
+
+- 94. **Hito 94: Resolución de Entrega de Correo Freemium (Doble Opt-In), Remoción de '0' Residual y Pulido Visual del Modal de Checkout**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Falso Positivo en Despacho de Correo Electrónico:* Al solicitar el crédito de cortesía, el frontend anunciaba "¡Enlace de Activación Enviado!", pero ningún correo llegaba a la bandeja ni a spam. La auditoría forense determinó que:
+         - La variable `RESEND_API_KEY` contenía una clave de eventos de Wompi (`prod_events_...`) en lugar de una API key legítima de Resend (`re_...`), causando rechazo HTTP 401 en Resend.
+         - El remitente `seguridad@resend.dev` violaba la política de Resend (exige `onboarding@resend.dev` en cuentas no verificadas).
+         - `lib/auth/welcome-credit.js` no validaba el booleano devuelto por `despacharCorreoBienvenidaFreemium`, emitiendo HTTP 200 `{ ok: true, pendingVerification: true }` aun cuando la pasarela de correo fallaba.
+      2. *Glitch Visual del '0' Residual en LeadSummaryMini:* En la ficha resumen del inmueble aparecía un '0' residual pegado al precio (`$ 210.000.000 0`) debido a una evaluación booleana permisiva en JSX (`{lead.descuento_arbitraje && ...}` con valor `0`).
+      3. *Superposición Caótica de Pestañas y Botones Desbordados:* Las pestañas superiores (`Planes y Cortesía` / `Restaurar Cuenta`) permanecían visibles y desarticuladas sobre la pantalla de verificación enviada, y los botones de acción (`Corregir Datos` y `Reenviar Enlace`) se desbordaban en pantallas estrechas.
+    - **Solución Implementada:**
+      1. **Blindaje de Pasarela de Correo (`lib/email-templates.js`, `lib/auth/welcome-credit.js`):**
+         - Configuración del remitente de pruebas oficial `onboarding@resend.dev` como fallback seguro.
+         - Captura exhaustiva de respuestas no-200 de la API de Resend con log forense de la causa raíz.
+         - `welcome-credit.js` valida el retorno del despacho y, ante fallo del proveedor de correo, aborta la transacción y responde HTTP 502 `{ error: 'ERROR_ENVIO_CORREO', message: '...' }`, erradicando falsos positivos.
+      2. **Humanización de Errores de Despacho (`src/utils/error-formatter.ts`):**
+         - Mapeo de `ERROR_ENVIO_CORREO` a mensaje empático y claro en español e inglés.
+      3. **Erradicación del '0' Fantasma (`src/components/LeadSummaryMini.tsx`):**
+         - Condición estricta `{Boolean(lead.descuento_arbitraje && lead.descuento_arbitraje > 0) && ...}`.
+      4. **Aislamiento y Estilizado Limpio de Checkout (`src/components/CheckoutModal.tsx`, `src/components/WelcomeVerificationNotice.tsx`, `src/index.css`):**
+         - Ocultamiento de las pestañas superiores `.checkout-tabs-nav` cuando `isWelcomeVerificationSent` está activo.
+         - Rediseño ergonómico de `WelcomeVerificationNotice.tsx` con fondo de contraste suave, badge con borde acentuado y botones en cuadrícula adaptativa con `min-height: 44px`, `white-space: nowrap` y estados de carga (`Reenviando...`).
+         - Sección 17 añadida en `src/index.css` con estilos pulidos y reglas móviles (`<= 640px`).
+    - **Validación Automatizada (100% en Verde):**
+      - `node --test tests/error_humanizer.test.js tests/smoke_freemium_flow.test.js`: 13 de 13 pruebas unitarias aprobadas.
+      - `npm run lint` (`tsc --noEmit`): 0 errores.
+      - `npm test` (`node scripts/validate.js`): Las 8 fases DevSecOps pasaron con 0 errores (18 componentes React < 800 líneas, cero credenciales, R2 y Wompi 100%).
+      - `npm run build` (`vite build`): Compilación exitosa en 2.68s.
+    - **Archivos Afectados:**
+      - `lib/email-templates.js`
+      - `lib/auth/welcome-credit.js`
+      - `src/utils/error-formatter.ts`
+      - `src/components/LeadSummaryMini.tsx`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/WelcomeVerificationNotice.tsx`
+      - `src/index.css`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Despacho de correo validado con prevención de falsos positivos. Cero caracteres residuales en la ficha del lead. Pantalla de verificación del modal de checkout 100% pulida y responsiva en móviles y escritorio.
 
 ---
 

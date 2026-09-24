@@ -409,45 +409,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {/* Resumen Compacto del Inmueble Seleccionado */}
         {selectedLead && <LeadSummaryMini lead={selectedLead} />}
 
-        {/* Pestañas de Navegación */}
-        <div className="checkout-tabs-nav" style={{ marginBottom: 14 }}>
-          <button
-            type="button"
-            className={`checkout-tab-btn ${activeTab === 'comprar' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('comprar');
-              setIsWelcomeVerificationSent(false);
-              setErrorMessage(null);
-            }}
-          >
-            <i className="fa-solid fa-cart-shopping"></i>{' '}
-            <span>{isEn ? 'Plans & Welcome' : 'Planes y Cortesía'}</span>
-          </button>
-          <button
-            type="button"
-            className={`checkout-tab-btn ${activeTab === 'tengo-pin' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('tengo-pin');
-              setErrorMessage(null);
-            }}
-          >
-            <i className="fa-solid fa-key"></i>{' '}
-            <span>{isEn ? 'Restore Account' : 'Restaurar Cuenta'}</span>
-          </button>
-          {userSession && userCredits > 0 && (
+        {/* Pestañas de Navegación (Ocultas durante la pantalla de verificación enviada) */}
+        {!isWelcomeVerificationSent && (
+          <div className="checkout-tabs-nav" style={{ marginBottom: 14 }}>
             <button
               type="button"
-              className={`checkout-tab-btn ${activeTab === 'cuenta' ? 'active' : ''}`}
+              className={`checkout-tab-btn ${activeTab === 'comprar' ? 'active' : ''}`}
               onClick={() => {
-                setActiveTab('cuenta');
+                setActiveTab('comprar');
+                setIsWelcomeVerificationSent(false);
                 setErrorMessage(null);
               }}
             >
-              <i className="fa-solid fa-user-check"></i>{' '}
-              <span>{isEn ? 'My Account' : 'Mi Cuenta'}</span>
+              <i className="fa-solid fa-cart-shopping"></i>{' '}
+              <span>{isEn ? 'Plans & Welcome' : 'Planes y Cortesía'}</span>
             </button>
-          )}
-        </div>
+            <button
+              type="button"
+              className={`checkout-tab-btn ${activeTab === 'tengo-pin' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('tengo-pin');
+                setErrorMessage(null);
+              }}
+            >
+              <i className="fa-solid fa-key"></i>{' '}
+              <span>{isEn ? 'Restore Account' : 'Restaurar Cuenta'}</span>
+            </button>
+            {userSession && userCredits > 0 && (
+              <button
+                type="button"
+                className={`checkout-tab-btn ${activeTab === 'cuenta' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('cuenta');
+                  setErrorMessage(null);
+                }}
+              >
+                <i className="fa-solid fa-user-check"></i>{' '}
+                <span>{isEn ? 'My Account' : 'Mi Cuenta'}</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* PESTAÑA 1: COMPRAR PLANES / BIENVENIDA */}
         {activeTab === 'comprar' && (

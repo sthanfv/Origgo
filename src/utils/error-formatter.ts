@@ -54,6 +54,10 @@ const DICCIONARIO_ERRORES: Record<string, ErrorDictEntry> = {
     es: 'Este enlace de activación ya fue utilizado. Tu cuenta se encuentra activa y puedes ingresar con tu PIN.',
     en: 'This activation link has already been used. Your account is active and you can log in with your PIN.'
   },
+  ERROR_ENVIO_CORREO: {
+    es: 'No pudimos entregar el correo de activación en este momento. Por favor verifica que tu dirección esté bien escrita o intenta de nuevo en unos minutos.',
+    en: 'Could not deliver the activation email at this time. Please verify your email address or try again in a few minutes.'
+  },
 
   // Autenticación por Celular y PIN / Referencias Wompi
   PIN_INCORRECTO: {
