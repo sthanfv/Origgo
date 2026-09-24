@@ -96,7 +96,7 @@ export function App() {
       return {
         token,
         phone,
-        credits: savedCredits ? Math.max(0, Number(savedCredits)) : 1,
+        credits: savedCredits ? Math.max(0, Number(savedCredits)) : 0,
         welcomeCreditClaimed: true,
       };
     } catch {
@@ -109,7 +109,7 @@ export function App() {
       const token = localStorage.getItem('origgo_auth_jwt_token');
       if (!token) return 0;
       const saved = localStorage.getItem('origgo_user_credits_v1');
-      return saved ? Math.max(0, Number(saved)) : 1;
+      return saved ? Math.max(0, Number(saved)) : 0;
     } catch {
       return 0;
     }

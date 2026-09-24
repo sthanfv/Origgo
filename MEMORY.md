@@ -4,6 +4,36 @@
 
 ---
 
+- 103. **Hito 103: Desaturación de Cabecera Móvil, Filtros en Filas/Carrusel Fluido y Erradicación de Crédito No Activado**:
+    - **Diagnóstico y Causa Raíz Forense (`media_1790246723888.png`):**
+      1. *Cabecera Móvil Saturada de Iconos Redundantes:* En pantallas móviles de 360px-390px, el encabezado apiñaba simultáneamente: Logo, Switch `ES / EN`, Campana de notificaciones Push `🔔`, Engranaje de Tema `⚙️` y Botón VIP. Estos últimos dos eran completamente redundantes porque `MobileBottomBar` ya los ofrece fijos al pulgar del usuario.
+      2. *Falso Positivo Visual de Crédito Activo:* El botón de cabecera incluía un rayo `⚡` incondicional con el texto `🎁 1 Desbloqueo Gratis` aun cuando el visitante no tenía sesión ni créditos (`userCredits === 0`). Esto generaba la falsa impresión de que ya se disponía de un saldo en billetera listo para usar, frustrando al usuario cuando el sistema le solicitaba registrarse. Adicionalmente, `src/App.tsx` mantenía un fallback `: 1` residual en su inicializador.
+      3. *Filtros Desplegables Cortados y Solapamiento de Nichos:* En `public/origgo-style.min.css` (posición 85899), `.cmd-niche-group` tenía `overflow: hidden` y `.cmd-niche-tab` tenía `flex: 1 1 0; min-width: 0;`, provocando que en móvil los textos "Rebajas Urgentes" y "Arbitraje" se montaran uno encima del otro (`Rebajas Urgentes~ Arbitraje`) y no permitiera desplazarse horizontalmente. Asimismo, los dropdowns de filtros se recortaban en la derecha.
+    - **Solución Implementada:**
+      1. **Desaturación Radical de la Cabecera Móvil (`src/index.css`):**
+         - En `@media (max-width: 768px)`, se ocultan `.site-header .btn-push-subscribe` y `.site-header .btn-theme-toggle`, despejando el 60% del espacio del header y dejando únicamente el Logo a la izquierda, y `ES / EN` junto al botón de acción a la derecha.
+      2. **Transparencia Cero-Falsedad en Saldo vs Regalo (`src/components/SiteHeader.tsx`, `src/App.tsx`):**
+         - Si `hasSession && userCredits > 0`: Muestra el rayo dorado `⚡ X Créditos`.
+         - Si NO hay sesión (`userCredits === 0`): Muestra el icono de regalo `🎁 Probar Gratis` (o `🎁 Free Gift`), sin rayo `⚡` ni números simulados.
+         - En `src/App.tsx`, eliminados todos los fallbacks `: 1`. Si no hay token verificado, el balance es estrictamente `0`.
+      3. **Filtros en Filas Flexibles y Carrusel de Nichos Táctil Suave (`src/index.css`, `public/origgo-style.min.css`):**
+         - `.cmd-filters-group`: Organizado en móvil con `flex-wrap: wrap !important` y `overflow: visible !important`, permitiendo que Ciudad, Orden y Operación se vean completos y que sus menús desplegables floten hacia abajo con `z-index: 99999` sin ser recortados jamás.
+         - `.cmd-niche-group`: Convertido en un carrusel horizontal táctil con `overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; touch-action: pan-x !important;`.
+         - `.cmd-niche-tab`: Fijado con `flex: 0 0 auto !important; min-width: max-content !important; white-space: nowrap !important;`, erradicando por completo el solapamiento entre textos.
+    - **Validación Rápida:**
+      - `npm run lint` (`tsc --noEmit`): 0 errores en 1.1s.
+      - `npm run build` (`vite build`): Compilación exitosa en 3.40s.
+    - **Archivos Afectados:**
+      - `src/index.css`
+      - `public/origgo-style.min.css`
+      - `src/components/SiteHeader.tsx`
+      - `src/App.tsx`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Cabecera móvil limpia y aireada de estándar Silicon Valley. Filtros 100% funcionales y legibles. Saldo honesto que solo se enciende cuando el usuario activa realmente sus créditos.
+
+---
+
 - 102. **Hito 102: Estabilización de Barra de Búsqueda Móvil a 44px, Hidratación Síncrona de Sesión y Priorización de Desbloqueo por PIN**:
     - **Diagnóstico y Causa Raíz Forense:**
       1. *Deformación Elíptica Monstruosa en Barra de Búsqueda Móvil:* En pantallas móviles (`media_1790245460702.jpg`), `.command-bar-container` adoptaba `flex-direction: column !important`. Al no resetearse `flex: 1 1 260px` en `.cmd-search-box`, el eje principal vertical interpretaba los 260px como altura base mínima. Con `border-radius: 9999px`, la caja de búsqueda se transformaba en un óvalo/huevo vertical de casi 300px que ocupaba la mitad superior de la pantalla.

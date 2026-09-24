@@ -1891,6 +1891,28 @@ body,
   }
 }
 
+/* Desaturación y Espaciado Amplio de Cabecera Móvil (Estándar de la Industria) */
+@media (max-width: 768px) {
+  .site-header .btn-push-subscribe,
+  .site-header .btn-theme-toggle {
+    display: none !important;
+  }
+
+  .site-header-inner {
+    padding: 0.5rem 0.85rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .nav-actions {
+    gap: 0.45rem !important;
+  }
+
+  .btn-vip-header {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.76rem !important;
+  }
+}
+
 /* Adaptación Ergonómica para Tablets y Móviles (<= 1024px) */
 @media (max-width: 1024px) {
   .command-bar-wrapper {
@@ -1899,11 +1921,12 @@ body,
   }
 
   .command-bar-container {
-    border-radius: 20px !important;
+    border-radius: 16px !important;
     flex-direction: column !important;
     align-items: stretch !important;
     padding: 0.65rem 0.75rem !important;
     gap: 0.65rem !important;
+    overflow: visible !important;
   }
 
   .cmd-search-box {
@@ -1917,22 +1940,66 @@ body,
     box-sizing: border-box !important;
   }
 
+  /* Filtros desplegables en filas flexibles sin recorte para que los menús floten libremente */
   .cmd-filters-group {
     width: 100% !important;
-    overflow-x: auto !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding-bottom: 2px !important;
-    flex-wrap: nowrap !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.45rem !important;
+    overflow: visible !important;
+    padding: 0 !important;
   }
 
-  .cmd-filters-group::-webkit-scrollbar {
+  .cmd-filter-pill-dropdown-wrapper {
+    position: relative !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .cmd-filter-pill {
+    width: 100% !important;
+    justify-content: space-between !important;
+    white-space: nowrap !important;
+    padding: 0.42rem 0.75rem !important;
+    font-size: 0.76rem !important;
+    border-radius: 9999px !important;
+  }
+
+  .cmd-dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 6px) !important;
+    left: 0 !important;
+    min-width: 210px !important;
+    max-width: 290px !important;
+    z-index: 99999 !important;
+  }
+
+  /* Categorías y nichos: Carrusel horizontal táctil suave sin solapamientos */
+  .cmd-niche-group {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    scrollbar-width: none !important;
+    gap: 0.45rem !important;
+    padding: 2px 1.5rem 4px 0 !important;
+  }
+
+  .cmd-niche-group::-webkit-scrollbar {
     display: none !important;
   }
 
-  .cmd-niche-group {
-    width: 100% !important;
-    padding-bottom: 2px !important;
+  .cmd-niche-tab {
+    flex: 0 0 auto !important;
+    min-width: max-content !important;
+    white-space: nowrap !important;
+    padding: 0.42rem 0.85rem !important;
+    font-size: 0.78rem !important;
+    border-radius: 9999px !important;
+    letter-spacing: normal !important;
   }
 }
 

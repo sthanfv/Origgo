@@ -165,12 +165,21 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             }}
             title={t('vip_btn_title', 'Ver créditos y planes')}
           >
-            <i className="fa-solid fa-bolt" style={{ color: '#F59E0B' }}></i>
-            <span className="btn-vip-text">
-              {hasSession && userCredits > 0
-                ? `${userCredits} ${isEn ? (userCredits === 1 ? 'Credit' : 'Credits') : (userCredits === 1 ? 'Crédito' : 'Créditos')}`
-                : (isEn ? '🎁 1 Free Unlock' : '🎁 1 Desbloqueo Gratis')}
-            </span>
+            {hasSession && userCredits > 0 ? (
+              <>
+                <i className="fa-solid fa-bolt" style={{ color: '#F59E0B' }}></i>
+                <span className="btn-vip-text">
+                  {userCredits} {isEn ? (userCredits === 1 ? 'Credit' : 'Credits') : (userCredits === 1 ? 'Crédito' : 'Créditos')}
+                </span>
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-gift" style={{ color: '#10B981' }}></i>
+                <span className="btn-vip-text">
+                  {isEn ? 'Free Gift' : 'Probar Gratis'}
+                </span>
+              </>
+            )}
           </button>
         </div>
       </div>
