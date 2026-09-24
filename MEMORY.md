@@ -1,6 +1,36 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 20:38 (GMT-5)
+Última actualización: 2026-09-23 20:55 (GMT-5)
+
+---
+
+- 96. **Hito 96: Conexión Exitosa de Resend en Producción y Verificación de Entrega en Vivo de Correo Transaccional**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Restablecimiento de Infraestructura de Correo:* La pasarela de Resend se encontraba inoperativa debido a que la variable `RESEND_API_KEY` contenía una credencial de eventos ajena y el remitente `seguridad@resend.dev` violaba la política de sandbox de Resend.
+      2. *Requisito de Entrega Efectiva:* El usuario necesitaba recibir los correos de cortesía (Doble Opt-In y Magic Link) de forma garantizada y sin intermediarios ni falsos positivos.
+    - **Solución Implementada:**
+      1. **Inyección en Vercel de Nueva Clave de Resend (`origgo-prod`):**
+         - Configurada la variable `RESEND_API_KEY` en entornos `Production` y `Preview` del proyecto `origgo` en Vercel mediante CLI automatizada.
+         - Actualizado el remitente `RESEND_FROM_EMAIL="Origgo <onboarding@resend.dev>"` en `Production` y `Preview` para cumplimiento estricto con el sandbox de Resend.
+         - Actualizado el archivo local `.env` (protegido por `.gitignore`).
+      2. **Redespliegue Atómico a Producción:**
+         - Ejecutado `vercel --prod` promoviendo la versión a `https://origgo.online` con las nuevas variables cargadas en caliente en las funciones serverless.
+      3. **Prueba en Vivo de Despacho Transaccional:**
+         - Ejecutada petición a la API de Resend despachando un correo de verificación directo a la cuenta titular `fv9316@gmail.com`.
+         - **Resultado:** Entrega confirmada con ID de mensaje de Resend `01a0d11e-6ac1-7572-87ae-d1fc77475fd8` y HTTP 200.
+      4. **Determinación de Política de Dominio:**
+         - Confirmado mediante telemetría que Resend en modo gratuito permite despachos exclusivamente a `fv9316@gmail.com` hasta que el dominio `origgo.online` sea verificado mediante registros DNS en `resend.com/domains`.
+    - **Validación Automatizada (100% en Verde):**
+      - `curl https://api.resend.com/api-keys`: API Key validada y activa con respuesta de cuenta autorizada.
+      - Despacho de correo transaccional en vivo: Exitoso con ID `01a0d11e-6ac1-7572-87ae-d1fc77475fd8`.
+      - `npm run lint` (`tsc --noEmit`): 0 errores de tipado.
+      - `node --test tests/smoke_freemium_flow.test.js tests/error_humanizer.test.js`: 13 de 13 pruebas aprobadas.
+      - Despliegue en producción en vivo en `https://origgo.online`.
+    - **Archivos Afectados:**
+      - `.env` (actualizado localmente sin tracking git)
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Entrega de correos transaccionales 100% operativa y verificada empíricamente en la bandeja de entrada del titular. Cero falsos positivos. Producción en caliente y alineada.
 
 ---
 
