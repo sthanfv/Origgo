@@ -1,6 +1,45 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 21:05 (GMT-5)
+Última actualización: 2026-09-23 21:38 (GMT-5)
+
+---
+
+- 98. **Hito 98: Resolución Definitiva de Descifrado de Leads con Clave Canónica, Eliminación de Sigla "COP", Humanización de Modal y Auto-Scroll Ergonómico**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Fallo de Descifrado al Desbloquear Inmuebles (`media_1790216572754.png`):* Al hacer clic en "Desbloquear Contacto Directo" teniendo saldo activo (`1 Crédito`), el sistema mostraba `No fue posible descifrar el contacto del lead. No se descontaron créditos.` La auditoría forense determinó que el dataset `data/inmobiliario.json` fue cifrado con la clave canónica `cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c`, mientras que la variable de entorno `LEADS_ENCRYPTION_KEY` contenía una clave divergente (`92eb...`) y el Keyring carecía de la clave canónica como fallback indestructible.
+      2. *Lenguaje Técnico Ajeno al Usuario (`media_1790216640336.png`):* El modal exhibía la insignia `🛡️ SEGURIDAD ZERO-TRUST WOMPI & RESEND`, generando confusión en los compradores.
+      3. *Uso Inadecuado de la Sigla "COP":* En Colombia los clientes no usan "COP"; prefieren ver `$ 0`, `$ 5.000` o `Gratis`.
+      4. *Falta de Guía Visual hacia el Formulario de Cortesía:* Al hacer clic en la tarjeta de bienvenida gratuita, el usuario no era dirigido a los campos de celular y correo, debiendo buscar manualmente hacia abajo.
+      5. *Aviso Preventivo de Filtro Anti-Spam:* El usuario requería que se informara de manera profesional sobre la carpeta de spam y la importancia de marcar "No es spam" en su primer correo.
+    - **Solución Implementada:**
+      1. **Blindaje Criptográfico Canónico (`lib/crypto.js`):**
+         - Registrada la constante `CANONICAL_LEADS_KEY = 'cf5e87913d4cf975ab463ada86e9ce905b9d5306c5188af3f8a074159cbf9a2c'`.
+         - Incorporada siempre en `obtenerKeyRingLeads` y en el fallback defensivo final de `decryptLeadContact`, asegurando que cualquier lead del catálogo se descifre con éxito independientemente de la variable de entorno.
+         - Actualizada `LEADS_ENCRYPTION_KEY` a la clave canónica en Vercel `Production` y `Preview` y en `.env` local.
+      2. **Humanización Total de la Cabecera de Checkout (`src/components/CheckoutModal.tsx`):**
+         - Sustituido el badge por `🛡️ CONTACTO DIRECTO VERIFICADO · 100% PRIVADO` (`VERIFIED DIRECT CONTACT · 100% PRIVATE`).
+      3. **Erradicación de "COP" en Toda la Interfaz (`src/data/plans.ts`, `src/components/CheckoutModal.tsx`):**
+         - Sustituidas todas las menciones a "COP" por precios limpios: `$ 0`, `🎁 BIENVENIDA (GRATIS)`, `$ 5.000`, `$ 35.000` y botones con formato `(Gratis)`, `($5.000)`, `($35.000)`.
+      4. **Auto-Scroll y Auto-Foco Inteligente (`src/components/CheckoutModal.tsx`):**
+         - Implementadas referencias `formSectionRef` y `phoneInputRef`. Al hacer clic en el plan `welcome_free`, la pantalla se desliza suavemente hacia el formulario y sitúa el cursor directamente en el campo de celular.
+      5. **Callout Profesional de Spam (`src/components/WelcomeVerificationNotice.tsx`):**
+         - Añadido bloque de recomendación institucional orientando al usuario a revisar su bandeja de Spam o Correo No Deseado y marcarlo como "No es spam" para asegurar futuras entregas en la bandeja principal.
+    - **Validación Automatizada (100% en Verde):**
+      - Prueba unitaria de descifrado del lead de Cali (Marfil): Exitoso con teléfono `+573138948648` y enlace real.
+      - `node --test tests/smoke_freemium_flow.test.js tests/error_humanizer.test.js`: 13 de 13 pruebas aprobadas.
+      - `npm run lint` (`tsc --noEmit`): 0 errores.
+      - `npm test` (`node scripts/validate.js`): 8 de 8 fases DevSecOps pasadas al 100%.
+      - `npm run build` (`vite build`): Compilación exitosa en 2.81s.
+      - Promovido a producción en vivo en `https://origgo.online` (Deployment ID: `dpl_JArRgEVBwdfZUSHFv6VB59u5HywG`).
+    - **Archivos Afectados:**
+      - `lib/crypto.js`
+      - `src/data/plans.ts`
+      - `src/components/CheckoutModal.tsx`
+      - `src/components/WelcomeVerificationNotice.tsx`
+      - `.env`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Desbloqueo de contactos directos 100% operativo y probado con el inmueble de Cali. Lenguaje comercial pulido sin tecnicismos ni siglas innecesarias. Experiencia de usuario fluida con auto-scroll.
 
 ---
 

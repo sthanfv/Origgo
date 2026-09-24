@@ -62,6 +62,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isRecoverPinOpen, setIsRecoverPinOpen] = useState(false);
   const [recoverEmailInput, setRecoverEmailInput] = useState('');
 
+  // Referencias para auto-scroll y auto-foco
+  const phoneInputRef = React.useRef<HTMLInputElement>(null);
+  const formSectionRef = React.useRef<HTMLDivElement>(null);
+
+  const handleSelectPlan = (planId: ModalPlanOption) => {
+    setSelectedPlan(planId);
+    setErrorMessage(null);
+    if (planId === 'welcome_free') {
+      setTimeout(() => {
+        formSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        phoneInputRef.current?.focus();
+      }, 60);
+    }
+  };
+
   // Sincronizar estado cuando se abre el modal
   React.useEffect(() => {
     if (isOpen) {
@@ -393,8 +408,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {/* Cabecera del Modal */}
         <div className="checkout-modal-header" style={{ paddingRight: '2.5rem', marginBottom: 12 }}>
           <div className="checkout-badge-pill" style={{ marginBottom: 6 }}>
-            <i className="fa-solid fa-shield-halved"></i>{' '}
-            <span>{isEn ? 'WOMPI & RESEND ZERO-TRUST SECURITY' : 'SEGURIDAD ZERO-TRUST WOMPI & RESEND'}</span>
+            <i className="fa-solid fa-shield-halved" style={{ color: 'var(--accent-emerald)' }}></i>{' '}
+            <span>{isEn ? 'VERIFIED DIRECT CONTACT · 100% PRIVATE' : 'CONTACTO DIRECTO VERIFICADO · 100% PRIVADO'}</span>
           </div>
           <h2 className="checkout-modal-title" style={{ fontSize: '1.25rem', marginBottom: 4 }}>
             {isEn ? 'Direct Owners Unlock' : 'Desbloqueo de Propietarios Directos'}
@@ -470,7 +485,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <label
                       key={plan.id}
                       className={`pricing-option-card ${plan.id === 'welcome_free' ? 'welcome-card' : ''} ${selectedPlan === plan.id ? 'active-option' : ''}`}
-                      onClick={() => setSelectedPlan(plan.id)}
+                      onClick={() => handleSelectPlan(plan.id)}
                     >
                       {plan.ribbon && (
                         <div className="featured-ribbon" style={plan.ribbon.bg ? { background: plan.ribbon.bg } : undefined}>
@@ -512,7 +527,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 )}
 
                 {/* Formulario de WhatsApp */}
-                <div className="checkout-form-group" style={{ margin: '14px 0 8px 0' }}>
+                <div ref={formSectionRef} className="checkout-form-group" style={{ margin: '14px 0 8px 0' }}>
                   <label className="checkout-form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <i className="fa-brands fa-whatsapp" style={{ color: '#22C55E', fontSize: '1.05rem' }}></i>
@@ -525,6 +540,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <div className="checkout-input-wrapper">
                     <span className="checkout-input-prefix">+57</span>
                     <input
+                      ref={phoneInputRef}
                       type="tel"
                       className="checkout-text-input"
                       placeholder={isEn ? 'e.g. 300 123 4567' : 'Ej: 300 123 4567'}
@@ -586,27 +602,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   ) : selectedPlan === 'welcome_free' ? (
                     <>
                       <i className="fa-solid fa-gift"></i>
-                      <span>{isEn ? 'Activate 1 Free Unlock ($0 COP)' : 'Activar Desbloqueo de Cortesía ($0 COP)'}</span>
+                      <span>{isEn ? 'Activate 1 Free Unlock (Free)' : 'Activar Desbloqueo de Cortesía (Gratis)'}</span>
                     </>
                   ) : selectedPlan === 'single_lead' ? (
                     <>
                       <i className="fa-solid fa-lock"></i>
-                      <span>{isEn ? 'Pay Single Unlock ($5,000 COP)' : 'Pagar Desbloqueo Individual ($5.000 COP)'}</span>
+                      <span>{isEn ? 'Pay Single Unlock ($5,000)' : 'Pagar Desbloqueo Individual ($5.000)'}</span>
                     </>
                   ) : selectedPlan === 'pack_10_leads' ? (
                     <>
                       <i className="fa-solid fa-star"></i>
-                      <span>{isEn ? 'Pay 10 Contacts Pack ($35,000 COP)' : 'Pagar Bolsa 10 Contactos ($35.000 COP)'}</span>
+                      <span>{isEn ? 'Pay 10 Contacts Pack ($35,000)' : 'Pagar Bolsa 10 Contactos ($35.000)'}</span>
                     </>
                   ) : selectedPlan === 'subscription_city' ? (
                     <>
                       <i className="fa-solid fa-city"></i>
-                      <span>{isEn ? 'Activate City Pro ($89,000 COP)' : 'Activar Plan Pro Ciudad ($89.000 COP)'}</span>
+                      <span>{isEn ? 'Activate City Pro ($89,000)' : 'Activar Plan Pro Ciudad ($89.000)'}</span>
                     </>
                   ) : (
                     <>
                       <i className="fa-solid fa-crown"></i>
-                      <span>{isEn ? 'Activate National VIP ($149,000 COP)' : 'Activar Plan Nacional VIP ($149.000 COP)'}</span>
+                      <span>{isEn ? 'Activate National VIP ($149,000)' : 'Activar Plan Nacional VIP ($149.000)'}</span>
                     </>
                   )}
                 </button>

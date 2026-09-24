@@ -77,11 +77,40 @@ export const WelcomeVerificationNotice: React.FC<WelcomeVerificationNoticeProps>
         {emailInput}
       </div>
 
-      <p style={{ fontSize: '0.76rem', color: 'var(--text-dim)', lineHeight: 1.45, margin: '0 auto 18px auto', maxWidth: 420 }}>
+      <p style={{ fontSize: '0.76rem', color: 'var(--text-dim)', lineHeight: 1.45, margin: '0 auto 12px auto', maxWidth: 420 }}>
         {isEn
           ? '🔒 Open the email on this device and click the button to activate your 1 free unlock immediately.'
           : '🔒 Abre el correo en este dispositivo y toca el botón para activar tu crédito de cortesía y ver al propietario de inmediato.'}
       </p>
+
+      {/* Nota preventiva profesional sobre bandeja de entrada y spam */}
+      <div
+        style={{
+          background: 'rgba(234, 179, 8, 0.08)',
+          border: '1px solid rgba(234, 179, 8, 0.25)',
+          borderRadius: 12,
+          padding: '10px 14px',
+          margin: '0 auto 18px auto',
+          maxWidth: 440,
+          textAlign: 'left',
+          display: 'flex',
+          gap: 10,
+          alignItems: 'flex-start',
+        }}
+      >
+        <i className="fa-solid fa-circle-info" style={{ color: '#EAB308', marginTop: 3, flexShrink: 0, fontSize: '0.92rem' }}></i>
+        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+          {isEn ? (
+            <>
+              <strong>Delivery note:</strong> If it does not appear in your Primary inbox, please check your <em>Spam or Junk</em> folder. Marking it as <strong>&quot;Not spam&quot;</strong> ensures all your upcoming direct owner links and property alerts arrive directly in your primary inbox.
+            </>
+          ) : (
+            <>
+              <strong>Aviso de entrega:</strong> Si no lo ves en tu bandeja principal, revisa tu carpeta de <em>Spam o Correo No Deseado</em>. Al marcarlo como <strong>&quot;No es spam&quot;</strong>, tus próximos accesos directos y alertas de oportunidades llegarán siempre a tu bandeja principal.
+            </>
+          )}
+        </p>
+      </div>
 
       <div
         style={{
