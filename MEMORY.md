@@ -1,6 +1,42 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 18:37 (GMT-5)
+Última actualización: 2026-09-23 19:26 (GMT-5)
+
+---
+
+- 93. **Hito 93: Humanización Integral de Errores de Checkout y Adaptabilidad Responsiva de la CommandBar**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Exposición de Códigos Internos de Backend en UI:* Al ocurrir un conflicto de reclamo o exceder la cuota temporal de peticiones, el usuario veía textos crudos de servidor en mayúsculas sostenidas (`EMAIL_YA_RECLAMADO`, `LIMITE_EXCEDIDO`) en lugar de mensajes amables, comprensibles y orientados al cliente. La causa raíz radicaba en `src/services/api.ts` donde la evaluación `detalleError = errorJson.error || errorJson.message` priorizaba la clave técnica interna sobre el mensaje humano.
+      2. *Colapso Visual de la Caja de Búsqueda (CommandBar):* En pantallas de laptop (1280px-1366px), la caja omnibox de búsqueda (`.cmd-search-box`) se comprimía hasta un círculo diminuto de 38px mostrando únicamente la lupa. Esto ocurría porque `.cmd-filters-group` y `.cmd-niche-group` contaban con `flex-shrink: 0` y ocupaban más de 1070px en conjunto, mientras que el input carecía de `min-width`.
+    - **Solución Implementada:**
+      1. **Módulo Centralizado de Humanización de Errores (`src/utils/error-formatter.ts`):**
+         - Implementada función pura `humanizarError(error, isEn)` con diccionario canónico que transforma cualquier código técnico (`EMAIL_YA_RECLAMADO`, `LIMITE_EXCEDIDO`, `DISPOSITIVO_YA_RECLAMADO`, `CREDITO_YA_RECLAMADO`, `PIN_INCORRECTO`, `TOO_MANY_REQUESTS`, `IP_BLOCKED`, `CELULAR_INVALIDO`, `SALDO_INSUFICIENTE`, etc.) en mensajes empáticos, seguros y presentables en español e inglés.
+         - Limpieza de prefijos de red (`Error:`, `HTTP 409:`, `Failed to fetch`).
+      2. **Inversión de Prioridad en Adaptador API (`src/services/api.ts`):**
+         - Se modificó la deserialización JSON para priorizar siempre `errorJson.message` sobre `errorJson.error`, preservando el código técnico en la propiedad `.code` del error sin ensuciar el mensaje.
+      3. **Blindaje de CheckoutModal y Notificaciones (`src/components/CheckoutModal.tsx`, `src/App.tsx`):**
+         - Se integró `humanizarError` en los manejadores de reclamo gratuito, restauración de PIN, recuperación por correo, pasarela Wompi y activación de Magic Link.
+      4. **Arquitectura Responsiva y Blindaje de CommandBar (`src/index.css`):**
+         - Se fijó `min-width: 240px !important; flex: 1 1 260px !important;` en `.cmd-search-box` con `min-width: 140px !important;` en `.cmd-search-input`, impidiendo cualquier colapso a círculo.
+         - Se dotó a `.cmd-niche-group` de `flex-shrink: 1 !important; overflow-x: auto !important; scrollbar-width: none;` para permitir un desplazamiento táctil y de rueda suave sin quebrar el layout.
+         - En pantallas medianas (1025px - 1366px), se optimizó el padding de chips ahorrando 120px de espacio horizontal.
+         - En pantallas táctiles (<= 1024px), la barra se adapta a un card redondeado con búsqueda superior y filtros deslizables.
+    - **Validación Automatizada (100% en Verde):**
+      - `node --test tests/error_humanizer.test.js`: 7 de 7 pruebas unitarias aprobadas.
+      - `node --test tests/smoke_freemium_flow.test.js`: 6 de 6 pruebas de integración aprobadas.
+      - `npm run lint` (`tsc --noEmit`): 0 errores de tipado.
+      - `npm test` (`node scripts/validate.js`): Las 8 fases DevSecOps pasaron con 0 errores (18 componentes auditados < 800 líneas, cero credenciales, R2 y Wompi 100%).
+      - `npm run build` (`vite build`): Compilación exitosa de bundle en 2.72s con código de salida 0.
+    - **Archivos Afectados:**
+      - `src/utils/error-formatter.ts` (Nuevo)
+      - `tests/error_humanizer.test.js` (Nuevo)
+      - `src/services/api.ts`
+      - `src/components/CheckoutModal.tsx`
+      - `src/App.tsx`
+      - `src/index.css`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Cero códigos de error crudos en la interfaz de usuario. Experiencia de checkout empática y pulida. CommandBar 100% responsiva y omnibox de búsqueda con visibilidad completa garantizada en cualquier resolución.
 
 ---
 

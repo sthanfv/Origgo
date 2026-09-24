@@ -10,6 +10,7 @@ import {
   verificarTokenBienvenidaApi,
 } from './services/auth';
 import { desbloquearLeadApi } from './services/leads';
+import { humanizarError } from './utils/error-formatter';
 import { SiteHeader } from './components/SiteHeader';
 import { CommandBar } from './components/CommandBar';
 import { SiteHero } from './components/SiteHero';
@@ -211,7 +212,7 @@ export function App() {
               }
             }
           } else {
-            notify(res.error || (isEn ? 'Invalid activation link' : 'Enlace de activación inválido'));
+            notify(humanizarError(res.error || 'TOKEN_INVALIDO', isEn));
           }
         })
         .catch(() => {});
@@ -381,15 +382,15 @@ export function App() {
         }
 
         if (res.codigoError === 'CREDITOS_INSUFICIENTES') {
-          notify(isEn ? '⚠️ Insufficient credits in account' : '⚠️ Saldo de créditos insuficiente');
+          notify(`⚠️ ${humanizarError('CREDITOS_INSUFICIENTES', isEn)}`);
           setLeadToUnlock(item);
           setCheckoutModalOpen(true);
           return;
         }
 
-        notify(`⚠️ ${res.error || 'No fue posible desbloquear el contacto'}`);
+        notify(`⚠️ ${humanizarError(res.error || res.codigoError, isEn)}`);
       } catch (err: any) {
-        notify(`⚠️ ${err.message || 'Error al conectar con el servidor'}`);
+        notify(`⚠️ ${humanizarError(err, isEn)}`);
       }
       return;
     }

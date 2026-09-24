@@ -8,6 +8,7 @@ import {
 } from '../services/auth';
 import { crearOrdenPagoBackend, desplegarWidgetWompi } from '../services/wompi';
 import { MODAL_PLANS, ModalPlanOption } from '../data/plans';
+import { humanizarError } from '../utils/error-formatter';
 import { LeadSummaryMini } from './LeadSummaryMini';
 import { WelcomeVerificationNotice } from './WelcomeVerificationNotice';
 import { RestorePinTab } from './RestorePinTab';
@@ -199,11 +200,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         }, 900);
       } else {
         setErrorMessage(
-          res.error || (isEn ? 'Invalid WhatsApp or PIN' : 'WhatsApp o PIN no válido')
+          humanizarError(res.error || 'CREDENTIALS_INVALID', isEn)
         );
       }
     } catch (err: any) {
-      setErrorMessage(err.message || (isEn ? 'Connection error' : 'Error de conexión con el servidor'));
+      setErrorMessage(humanizarError(err, isEn));
     } finally {
       setIsLoading(false);
     }
@@ -218,7 +219,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     const cleanEmail = recoverEmailInput.trim().toLowerCase();
     if (!cleanEmail || !cleanEmail.includes('@')) {
       setErrorMessage(
-        isEn ? 'Please enter your registered email' : 'Ingresa tu correo electrónico registrado'
+        humanizarError('CORREO_INVALIDO', isEn)
       );
       return;
     }
@@ -233,10 +234,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             : '✓ ¡Correo de recuperación enviado! Revisa tu bandeja de entrada'
         );
       } else {
-        setErrorMessage(res.error || (isEn ? 'Could not send PIN' : 'No se pudo enviar el PIN'));
+        setErrorMessage(humanizarError(res.error || 'CORREO_NO_REGISTRADO', isEn));
       }
     } catch (err: any) {
-      setErrorMessage(err.message || (isEn ? 'Server error' : 'Error en el servidor'));
+      setErrorMessage(humanizarError(err, isEn));
     } finally {
       setIsLoading(false);
     }
@@ -271,16 +272,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
       if (res.alreadyClaimed) {
         setErrorMessage(
-          isEn
-            ? '⚠️ This device or email already claimed its welcome gift. Use Restore Account or pick a plan.'
-            : '⚠️ Este dispositivo o correo ya utilizó su crédito de cortesía. Restaura tu cuenta con tu PIN o adquiere un plan.'
+          humanizarError(res.error || 'EMAIL_YA_RECLAMADO', isEn)
         );
         return;
       }
 
-      setErrorMessage(res.error || res.message || 'No fue posible procesar la solicitud');
+      setErrorMessage(humanizarError(res.error || res.message, isEn));
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error de comunicación con el servidor');
+      setErrorMessage(humanizarError(err, isEn));
     } finally {
       setIsLoading(false);
     }
@@ -343,9 +342,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         }
       });
     } catch (err: any) {
-      setErrorMessage(
-        err.message || (isEn ? 'Error opening Wompi gateway' : 'Error al abrir la pasarela de pagos Wompi')
-      );
+      setErrorMessage(humanizarError(err, isEn));
     } finally {
       setIsLoading(false);
     }

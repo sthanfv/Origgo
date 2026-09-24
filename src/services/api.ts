@@ -92,23 +92,22 @@ export async function apiFetch<T = any>(
       // Si el servidor responde con 4xx (excepto 429 cuota/rate-limit), no tiene sentido reintentar
       if (!respuesta.ok) {
         let detalleError = `HTTP ${respuesta.status}`;
+        let codigoError = '';
         try {
           const errorJson = await respuesta.json();
-          if (errorJson?.error || errorJson?.message) {
-            detalleError = errorJson.error || errorJson.message;
+          codigoError = errorJson?.error || errorJson?.code || '';
+          if (errorJson?.message) {
+            detalleError = errorJson.message;
+          } else if (errorJson?.error) {
+            detalleError = errorJson.error;
           }
         } catch {
           // Cuerpo no es JSON
         }
 
-        if (respuesta.status >= 400 && respuesta.status < 500 && respuesta.status !== 429) {
-          const err = new Error(detalleError);
-          (err as any).status = respuesta.status;
-          throw err;
-        }
-
         const err = new Error(detalleError);
         (err as any).status = respuesta.status;
+        (err as any).code = codigoError;
         throw err;
       }
 
