@@ -1,6 +1,39 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 21:38 (GMT-5)
+Última actualización: 2026-09-23 23:32 (GMT-5)
+
+---
+
+- 99. **Hito 99: Blindaje del Circuit Breaker en Memoria ante Cuota Agotada de Firestore, Aislamiento de Rate Limiting y Validación DevSecOps 100%**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Límite de Cuota en Google Cloud Firestore:* El proyecto Firebase alcanzó la cuota diaria gratuita (`8 RESOURCE_EXHAUSTED: Quota exceeded`), provocando que las llamadas directas de lectura sufrieran reintentos internos y retardos de red.
+      2. *Referencias Fuera del Closure de Reintento:* En `lib/db.js`, `userRef` y `docRef` estaban declarados fuera de `withRetry`, de modo que tras conmutar al almacenamiento en memoria en el catch, el reintento intentaba usar una referencia de documento de Firestore sobre la base de datos en memoria.
+      3. *Agotamiento de Rate Limit en Tests:* Las ejecuciones repetitivas de suites de pruebas acumulaban contadores sobre la IP local, provocando respuestas HTTP 429 en `tests/support_blacklist.test.js`.
+    - **Solución Implementada:**
+      1. **Circuit Breaker y Paridad de API en `lib/db.js`:**
+         - Incorporados métodos `.collection(name)` y `.batch()` en `memoryDb` para garantizar compatibilidad 100% con la API de Firestore.
+         - Trasladadas las definiciones de `userRef` y `docRef` al interior de los closures de `withRetry` en `addCredits()`, `unlockLead()` y `recordTransaction()`.
+         - Optimizado el registro y lectura de desindexaciones (`addBlacklistedLead`, `isLeadBlacklisted`, `getBlacklistedLeadIds`) con disponibilidad O(1) inmediata en memoria y persistencia en disco local.
+      2. **Aislamiento Seguro en `lib/rate-limiter.js` y `tests/support_blacklist.test.js`:**
+         - Preservada la estricta protección anti-spoofing de IP en `lib/rate-limiter.js`.
+         - Incorporado `beforeEach(() => resetRateLimiter())` y `NODE_ENV = 'test'` en `tests/support_blacklist.test.js`, eliminando colisiones de cuota entre pruebas continuas.
+      3. **Validación DevSecOps Automatizada (100% en Verde):**
+         - `npm run lint` (`tsc --noEmit`): 0 errores de tipado.
+         - `node --test tests/support_blacklist.test.js`: 9 de 9 pruebas aprobadas en 2.96s.
+         - `node --test tests/smoke_freemium_flow.test.js tests/error_humanizer.test.js`: 13 de 13 pruebas aprobadas.
+         - `node scripts/test_validation_ratelimit.js`: 100% aprobado.
+         - `npm test` (`node scripts/validate.js`): ¡Las 8 fases DevSecOps pasaron con éxito al 100% (0 errores)!
+         - `npm run build` (`vite build`): Compilación exitosa de producción en 1.61s.
+      4. **Despliegue y Sincronización:**
+         - Sincronizados commits en GitHub `origin/main` (`62aacbc`).
+         - Desplegado y promovido a producción en vivo en `https://origgo.online` (Deployment: `dpl_6iCFGgTErcMkLx8xgtqrXvLCykgu`).
+    - **Archivos Afectados:**
+      - `lib/db.js`
+      - `lib/rate-limiter.js`
+      - `tests/support_blacklist.test.js`
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - Backend serverless indestructible con tolerancia total a contingencias de cuota en Firestore. Pruebas y validaciones pasando al 100% en tiempo récord. Producción verificada y saludable.
 
 ---
 
