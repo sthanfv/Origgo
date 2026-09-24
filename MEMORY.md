@@ -1,6 +1,28 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-23 19:48 (GMT-5)
+Última actualización: 2026-09-23 20:38 (GMT-5)
+
+---
+
+- 95. **Hito 95: Autenticación de Vercel CLI por Token, Enlace de Repositorio a `origgo` y Despliegue en Producción**:
+    - **Diagnóstico y Necesidad de Negocio:**
+      1. *Inspección Autónoma de Infraestructura:* Se requería acceso en tiempo real a registros y variables de entorno de Vercel sin depender de que el usuario copie y pegue logs manualmente.
+      2. *Vinculación de Repositorio:* El repositorio local no estaba enlazado al ID de proyecto `origgo` en Vercel, lo que impedía despliegues directos desde CLI.
+    - **Solución Implementada:**
+      1. **Autenticación Vercel CLI:** Autenticado el entorno con el Personal Access Token de la cuenta `sthanfv`.
+      2. **Vinculación Oficial de Proyecto:** Ejecutado `vercel link --project origgo`, sincronizando metadatos y generando `.env.local` protegido.
+      3. **Despliegue a Producción:** Desplegada la versión oficial a producción (`https://origgo.online`) con los componentes corregidos del Hito 94.
+      4. **Inspección de Logs en Vivo:** Confirmada conexión exitosa a Firebase Firestore y funcionamiento de endpoints serverless.
+    - **Validación Automatizada (100% en Verde):**
+      - `npx vercel whoami`: Autenticado como `sthanfv`.
+      - `npx vercel logs origgo.online`: Flujo de logs consultado con éxito en tiempo real.
+      - `npm test`: 8 de 8 fases DevSecOps aprobadas al 100%.
+      - Despliegue listo en `https://origgo.online`.
+    - **Archivos Afectados:**
+      - `.gitignore` (protegido `.vercel` y `.env*`)
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - IA con capacidad de inspección de logs y despliegue autónomo en Vercel. Producción actualizada y en línea.
 
 ---
 
