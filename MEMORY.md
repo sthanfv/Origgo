@@ -1,40 +1,6 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-24 21:25 (GMT-5)
-
----
-
-- 106. **Hito 106: Auditoría de Ecosistema Móvil, Respaldo de Partición Boot (Plan B) y Rooteo Integral de Redmi Note 10 Pro (`sweet`) con Magisk v30.7**:
-    - **Diagnóstico y Contexto:**
-      1. El usuario solicitó auditar y rootear su segundo dispositivo Xiaomi (**Redmi Note 10 Pro / Pro Max**, modelo `M2101K6R`, nombre clave `sweet`), el cual ya ejecutaba **Project Infinity-X v3.12 (Android 16)** pero sin permisos de superusuario (`su` ausente).
-      2. A diferencia del POCO F3 (arquitectura virtual A/B), el Redmi Note 10 Pro cuenta con arquitectura de partición A-only tradicional con partición de recuperación física dedicada (`/dev/block/bootdevice/by-name/recovery` en `sda30`) independiente del kernel (`boot` en `sde49`).
-      3. El usuario solicitó expresamente un **Plan B de contingencia** antes de cualquier modificación para prevenir bloqueos por bootloop.
-    - **Solución Implementada:**
-      1. **Aseguramiento del Plan B:** Extracción directa por bajo nivel (`dd`) de la imagen de arranque virgen y funcional (`/dev/block/bootdevice/by-name/boot`) y transferencia al equipo local en `C:\Users\Sthan\Descargas\stock_boot_sweet.img` (128 MB) para restauración instantánea por Fastboot en caso de falla.
-      2. **Instalación de Magisk v30.7:** Despliegue de la app oficial en el dispositivo y reinicio hacia OrangeFox Recovery.
-      3. Flasheo por OpenRecoveryScript de `Magisk-v30.7.zip` directamente sobre la imagen de arranque física.
-      4. Reinicio al sistema operativo completado en 5 segundos, verificando la presencia y funcionamiento de `/product/bin/su`, `/product/bin/magisk` y la firma `30.7:MAGISKSU`.
-    - **Archivos Afectados:**
-      - `MEMORY.md`
-    - **Estado Post-Hito:**
-      - Redmi Note 10 Pro (`sweet`) 100% operativo y rooteado con Magisk v30.7 sobre Android 16, con respaldo Plan B preservado en el host.
-
----
-
-- 105. **Hito 105: Provisión de Firmware Base HyperOS 1.0.2.0, Rescate Forense de Bootloop y Despliegue Exitoso de Project Infinity-X v3.12 (Android 16) en POCO F3 (`alioth`)**:
-    - **Diagnóstico y Causa Raíz Forense:**
-      1. El teléfono contaba con firmware de bajo nivel de MIUI 13 sobre Android 12 (`V13.0.6.0.SKHCNXM`). Al instalar Project Infinity-X v3.12 (Android 16), el kernel abortaba durante el arranque debido a incompatibilidad en los servicios AIDL (`android.hardware.light`, TrustZone `tz`, `keymaster` y almacenamiento remoto de módem `rmt_storage`), reiniciando cíclicamente hacia OrangeFox Recovery (*Rescue Party*).
-      2. La documentación oficial del mantenedor (`zenzer0s`) estipula como prerrequisito absoluto el firmware Global **HyperOS 1.0.2.0 (`OS1.0.2.0.TKHMIXM`)**, advirtiendo explícitamente evitar la versión 1.0.3.0.
-    - **Solución Implementada:**
-      1. Localización, descarga y verificación criptográfica íntegra (MD5 `3da88c82f6ea81014415ee8d3f99aca6`) del paquete de firmware `fw_alioth_miui_ALIOTHGlobal_OS1.0.2.0.TKHMIXM_b69e6a5400_13.0.zip` (141.1 MB).
-      2. Transferencia a `/tmp` del dispositivo y flasheo exhaustivo mediante OpenRecoveryScript (`twrp install`) de todas las particiones críticas de hardware (`abl`, `aop`, `bluetooth`, `cmnlib`, `cmnlib64`, `devcfg`, `dsp`, `featenabler`, `hyp`, `imagefv`, `keymaster`, `modem`, `qupfw`, `tz`, `uefisecapp`, `xbl`, `xbl_config`).
-      3. Transferencia de la ROM oficial `Project_Infinity-X-3.12-alioth-18.07.2026-GAPPS-OFFICIAL.zip` (2.15 GB) y flasheo exitoso en la ranura inactiva A.
-      4. Conmutación a la ranura `_a` como slot activo (`twrp set_active a`).
-      5. Reinicio al sistema operativo verificado con éxito absoluto: el dispositivo arrancó el entorno de usuario de Android 16, permaneciendo encendido y estable sin bootloop (`adbd` activo y respondiendo en el sistema).
-    - **Archivos Afectados:**
-      - `MEMORY.md`
-    - **Estado Post-Hito:**
-      - POCO F3 (`alioth`) completamente recuperado y operativo en Android 16 con Project Infinity-X v3.12 y firmware base HyperOS 1.0.2.0.
+Última actualización: 2026-09-24 (GMT-5)
 
 ---
 
