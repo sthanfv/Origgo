@@ -33,6 +33,18 @@
       "destination": "/admin.html"
     },
     {
+      "source": "/api/admin/leads",
+      "destination": "/api/admin?action=leads"
+    },
+    {
+      "source": "/api/admin/config",
+      "destination": "/api/admin?action=config"
+    },
+    {
+      "source": "/api/user/balance",
+      "destination": "/api/auth?action=balance"
+    },
+    {
       "source": "/api/support/:action",
       "destination": "/api/support?action=:action"
     },

@@ -70,6 +70,14 @@ const server = http.createServer(async (req, res) => {
         req.action = rutaRelativa.split('/')[3] || 'subscribe';
       } else if (rutaRelativa === '/api/payments/verify') {
         apiFilePath = path.join(__dirname, 'api', 'payments', 'create-order.js');
+      } else if (rutaRelativa === '/api/user/balance') {
+        // Igual que el reenlace de vercel.json: el saldo vive en api/auth.js (acción balance)
+        apiFilePath = path.join(__dirname, 'api', 'auth.js');
+        req.action = 'balance';
+      } else if (rutaRelativa.startsWith('/api/admin/')) {
+        // Panel de administración consolidado en api/admin.js (acciones leads y config)
+        apiFilePath = path.join(__dirname, 'api', 'admin.js');
+        req.action = rutaRelativa.split('/')[3] || 'leads';
       }
     }
 

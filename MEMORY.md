@@ -4,6 +4,19 @@
 
 ---
 
+- 109. **Hito 109: Consolidación a 12 funciones serverless (límite del plan Hobby de Vercel)**:
+    - **Diagnóstico:** el despliegue del backend del panel (4646cb7) falló en Vercel: "No more than 12 Serverless Functions can be added to a Deployment on the Hobby plan". Antes del panel había exactamente 12 funciones en `api/`; los 2 endpoints nuevos (`api/admin/leads.js`, `api/admin/config.js`) llevaron el total a 14. Como el build falló, producción siguió en el despliegue anterior (sin `/admin` ni el CSP nuevo); el catálogo seguía fresco porque se lee de Firestore en vivo.
+    - **Solución (gratis, sin plan Pro):**
+      1. `api/admin.js` (nuevo): un solo enrutador para el panel (`?action=leads|config`); la lógica pasa a `lib/admin/leads.js` y `lib/admin/config.js` (`lib/` no cuenta como función).
+      2. `api/user/balance.js` se integró en `api/auth.js` como acción `balance` (lógica en `lib/auth/balance.js`).
+      3. `vercel.json`: reenlaces `/api/admin/leads` → `/api/admin?action=leads`, `/api/admin/config` → `/api/admin?action=config` y `/api/user/balance` → `/api/auth?action=balance`. El frontend no cambia.
+      4. `server.js` (servidor local) replica esos reenlaces; `scripts/validate.js` revisa los archivos nuevos.
+    - **Regla para el futuro:** `api/` debe tener como máximo 12 archivos. Toda función nueva se agrega como acción de un enrutador existente (patrón `?action=` de auth, notifications, support, telemetry, admin), con la lógica en `lib/`.
+    - **Verificación:** 12 funciones; servidor local: `/api/user/balance`, `/api/admin/leads` y `/api/admin/config` responden 401 sin sesión y con token falso; `/api/leads/list` 200. `npm test` 8/8, typecheck y build en verde.
+    - **Archivos afectados:** `api/admin.js`, `api/auth.js`, `lib/admin/*`, `lib/auth/balance.js`, `vercel.json`, `server.js`, `scripts/validate.js`, `MEMORY.md`; eliminados `api/admin/leads.js`, `api/admin/config.js`, `api/user/balance.js`.
+
+---
+
 - 108. **Hito 108: Panel de administración (frontend) con inicio de sesión por Google**:
     - **Qué cambió:**
       1. `admin.html` + `src/admin/` (`main.tsx`, `AdminApp.tsx`, `firebase.ts`, `admin.css`): página `/admin` separada del sitio público. Entras con Google (Firebase Auth), lista los inmuebles de Firestore, permite ocultar/mostrar, destacar, eliminar y editar la configuración de la vitrina (contador). Todo contra `api/admin/*`.
