@@ -4,6 +4,20 @@
 
 ---
 
+- 108. **Hito 108: Panel de administración (frontend) con inicio de sesión por Google**:
+    - **Qué cambió:**
+      1. `admin.html` + `src/admin/` (`main.tsx`, `AdminApp.tsx`, `firebase.ts`, `admin.css`): página `/admin` separada del sitio público. Entras con Google (Firebase Auth), lista los inmuebles de Firestore, permite ocultar/mostrar, destacar, eliminar y editar la configuración de la vitrina (contador). Todo contra `api/admin/*`.
+      2. `vite.config.mts`: build de dos páginas (index.html y admin.html).
+      3. `vercel.json`: URL `/admin` → `admin.html`; CSP ampliada para permitir Firebase Auth (dominios de Google/Firebase en connect-src y frame-src).
+      4. `firebase` (SDK de navegador) agregado a dependencias.
+    - **Config web de Firebase:** claves públicas del proyecto `hunter-pro-showcase` incrustadas en `src/admin/firebase.ts` (no son secretas; la seguridad está en el token + ADMIN_EMAILS del servidor).
+    - **Verificación:** `npm run typecheck` y `npm run build` en verde; se generan `dist/admin.html` y el bundle del panel (33 KB gzip), sin tocar el sitio público.
+    - **Pendiente del propietario para probar en producción:** en la consola de Firebase, activar el proveedor Google y agregar `origgo.online`/`origgo.vercel.app` a dominios autorizados; en Vercel, agregar la variable `ADMIN_EMAILS=fv9316@gmail.com`.
+    - **Siguiente:** cortar el canal por commit (que el cazador escriba solo en Firestore) y el pivote (enlace público, sin teléfono).
+    - **Archivos afectados:** `admin.html`, `src/admin/*`, `vite.config.mts`, `vercel.json`, `package.json`, `MEMORY.md`.
+
+---
+
 - 107. **Hito 107: Backend del panel de administración sobre Firestore (fuente de la verdad) con acceso por Google**:
     - **Qué cambió:**
       1. `lib/admin-auth.js` (nuevo): verifica al administrador con el ID token de Firebase (Google Sign-In) y una lista blanca de correos en `ADMIN_EMAILS`. Sin contraseñas que filtrar.

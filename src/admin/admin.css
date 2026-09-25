@@ -1,0 +1,169 @@
+/* Estilos del panel de administración de Origgo. Tema oscuro, sobrio y funcional. */
+:root {
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #0b0f0e;
+  color: #e7efec;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.admin-centro {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.admin-login {
+  background: #121917;
+  border: 1px solid #21302c;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+.admin-login h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+}
+.admin-login p {
+  color: #9fb4ad;
+  margin: 0 0 20px;
+}
+
+.admin-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 16px;
+  border-bottom: 1px solid #21302c;
+  margin-bottom: 16px;
+}
+
+.admin-card {
+  background: #121917;
+  border: 1px solid #21302c;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.admin-card h2 {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+}
+
+.admin-label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: #9fb4ad;
+}
+.admin-label input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 12px;
+  background: #0b0f0e;
+  border: 1px solid #2b3d38;
+  border-radius: 10px;
+  color: #e7efec;
+  font-size: 0.95rem;
+}
+
+.admin-btn {
+  appearance: none;
+  border: 1px solid #2b3d38;
+  background: #1a2420;
+  color: #e7efec;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-btn:hover:not(:disabled) {
+  background: #24322d;
+}
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.admin-btn-primary {
+  background: #1db584;
+  border-color: #1db584;
+  color: #05130e;
+}
+.admin-btn-primary:hover:not(:disabled) {
+  background: #23c993;
+}
+.admin-btn-peligro {
+  border-color: #6b2b2b;
+  color: #ff9a9a;
+}
+.admin-btn-peligro:hover:not(:disabled) {
+  background: #2a1717;
+}
+
+.admin-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-tabla-scroll {
+  overflow-x: auto;
+}
+.admin-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.admin-tabla th,
+.admin-tabla td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #1c2825;
+  vertical-align: middle;
+}
+.admin-tabla th {
+  color: #9fb4ad;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.admin-oculto {
+  opacity: 0.5;
+}
+
+.admin-error {
+  background: #2a1717;
+  border: 1px solid #6b2b2b;
+  color: #ff9a9a;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.admin-ok {
+  background: #10241c;
+  border: 1px solid #1f6b4f;
+  color: #7fe9c0;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.admin-vacio {
+  color: #9fb4ad;
+  text-align: center;
+  padding: 16px;
+}

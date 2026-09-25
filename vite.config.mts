@@ -15,6 +15,11 @@ export default defineConfig(() => {
       modulePreload: false,
       chunkSizeWarningLimit: 1200,
       rollupOptions: {
+        // Dos páginas: el sitio público (index.html) y el panel de administración (admin.html).
+        input: {
+          main: path.resolve(import.meta.dirname, 'index.html'),
+          admin: path.resolve(import.meta.dirname, 'admin.html'),
+        },
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom'],
