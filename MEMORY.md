@@ -1,6 +1,23 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-24 06:20 (GMT-5)
+Última actualización: 2026-09-24 20:25 (GMT-5)
+
+---
+
+- 105. **Hito 105: Provisión de Firmware Base HyperOS 1.0.2.0, Rescate Forense de Bootloop y Despliegue Exitoso de Project Infinity-X v3.12 (Android 16) en POCO F3 (`alioth`)**:
+    - **Diagnóstico y Causa Raíz Forense:**
+      1. El teléfono contaba con firmware de bajo nivel de MIUI 13 sobre Android 12 (`V13.0.6.0.SKHCNXM`). Al instalar Project Infinity-X v3.12 (Android 16), el kernel abortaba durante el arranque debido a incompatibilidad en los servicios AIDL (`android.hardware.light`, TrustZone `tz`, `keymaster` y almacenamiento remoto de módem `rmt_storage`), reiniciando cíclicamente hacia OrangeFox Recovery (*Rescue Party*).
+      2. La documentación oficial del mantenedor (`zenzer0s`) estipula como prerrequisito absoluto el firmware Global **HyperOS 1.0.2.0 (`OS1.0.2.0.TKHMIXM`)**, advirtiendo explícitamente evitar la versión 1.0.3.0.
+    - **Solución Implementada:**
+      1. Localización, descarga y verificación criptográfica íntegra (MD5 `3da88c82f6ea81014415ee8d3f99aca6`) del paquete de firmware `fw_alioth_miui_ALIOTHGlobal_OS1.0.2.0.TKHMIXM_b69e6a5400_13.0.zip` (141.1 MB).
+      2. Transferencia a `/tmp` del dispositivo y flasheo exhaustivo mediante OpenRecoveryScript (`twrp install`) de todas las particiones críticas de hardware (`abl`, `aop`, `bluetooth`, `cmnlib`, `cmnlib64`, `devcfg`, `dsp`, `featenabler`, `hyp`, `imagefv`, `keymaster`, `modem`, `qupfw`, `tz`, `uefisecapp`, `xbl`, `xbl_config`).
+      3. Transferencia de la ROM oficial `Project_Infinity-X-3.12-alioth-18.07.2026-GAPPS-OFFICIAL.zip` (2.15 GB) y flasheo exitoso en la ranura inactiva A.
+      4. Conmutación a la ranura `_a` como slot activo (`twrp set_active a`).
+      5. Reinicio al sistema operativo verificado con éxito absoluto: el dispositivo arrancó el entorno de usuario de Android 16, permaneciendo encendido y estable sin bootloop (`adbd` activo y respondiendo en el sistema).
+    - **Archivos Afectados:**
+      - `MEMORY.md`
+    - **Estado Post-Hito:**
+      - POCO F3 (`alioth`) completamente recuperado y operativo en Android 16 con Project Infinity-X v3.12 y firmware base HyperOS 1.0.2.0.
 
 ---
 
