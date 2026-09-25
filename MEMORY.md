@@ -4,6 +4,18 @@
 
 ---
 
+- 107. **Hito 107: Backend del panel de administración sobre Firestore (fuente de la verdad) con acceso por Google**:
+    - **Qué cambió:**
+      1. `lib/admin-auth.js` (nuevo): verifica al administrador con el ID token de Firebase (Google Sign-In) y una lista blanca de correos en `ADMIN_EMAILS`. Sin contraseñas que filtrar.
+      2. `api/admin/leads.js` (nuevo): API segura del catálogo en Firestore `leads` — GET lista todos (incluidos ocultos), PATCH oculta/muestra/destaca/ordena/edita (lista blanca de campos), DELETE elimina. Nunca expone el contacto.
+      3. `api/admin/config.js` (nuevo): lee y guarda la configuración de la vitrina en `config/showcase` (contador, textos del héroe).
+      4. `.env`: nueva variable `ADMIN_EMAILS` (correos con acceso al panel).
+    - **Por qué:** avanzar hacia "la base de datos es la única fuente de la verdad" y poder subir, ocultar, mover y editar el catálogo desde un panel, como en Desmulta, en vez de depender del JSON subido por commit.
+    - **Pendiente (frontend + prerrequisitos del propietario):** activar Google Sign-In en la consola de Firebase, entregar la config web de Firebase, y crear la interfaz del panel (`admin.html` + entrada Vite) con inicio de sesión Google. Luego: cortar el canal por commit y el pivote (enlace público, sin teléfono). Ver `../ofertas-hunter-pro/docs/PLAN_PIVOTE_BUSCADOR.md`.
+    - **Archivos afectados:** `lib/admin-auth.js`, `api/admin/leads.js`, `api/admin/config.js`, `.env` (local), `MEMORY.md`.
+
+---
+
 - 104. **Hito 104: Estandarización de Scripts de Calidad en `package.json` y Certificación Integral de la Suite**:
     - **Diagnóstico y Necesidad:**
       1. El entorno requería la ejecución encadenada y estandarizada de scripts de calidad: `npm run format`, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` y `npm run validate`.
