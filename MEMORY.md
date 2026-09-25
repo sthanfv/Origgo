@@ -4,6 +4,16 @@
 
 ---
 
+- 113. **Hito 113: Rediseño del panel con la identidad de Origgo, códigos de respaldo en el Escritorio y hoja de ruta de módulos**:
+    - **Por qué:** el propietario entró al panel y lo encontró pobre visualmente frente a los paneles profesionales; pidió guardar los códigos de respaldo en el Escritorio con una advertencia visible y preguntó si todas las funciones del sitio deben administrarse desde el panel.
+    - **Rediseño** (`src/admin/AdminApp.tsx`, `src/admin/admin.css`, `admin.html`): fondo verde-petróleo con brillos y retícula, tarjetas de cristal, Lufga + Inter, logo e insignia "Admin". Entrada en PC con panel de marca a la izquierda y tarjeta a la derecha; botón oficial de Google; las 4 capas visibles; enlace de recuperación de la cuenta de Google. Pantalla de código con 6 casillas (avance automático, pegar, envío al completar) y modo "código de respaldo". Panel con barra fija, avatar, pestañas Catálogo/Vitrina, tarjetas de resumen que filtran al hacer clic, control segmentado de filtros, tabla con encabezado fijo y paginación, y tarjetas en celular.
+    - **Vista previa solo de desarrollo:** `src/admin/vista-previa.ts` (`/admin.html?vista=login|codigo|sin-acceso|panel` con datos de ejemplo). Protegido con `import.meta.env.DEV`; se verificó que el build de producción no incluye los datos de ejemplo.
+    - **Códigos de respaldo:** extraídos por script sin mostrarlos en pantalla a "C:\Users\Sthan\Escritorio\NO TOCAR - Codigos de respaldo ORIGGO.html" (advertencia roja, 8 códigos, pasos de uso). Se borró `ADMIN_2FA_ENROLAMIENTO.html` del proyecto.
+    - **Documentación:** `docs/PANEL_ADMIN.md` (capas de seguridad, operación, recuperación, módulos hechos y pendientes); enlazado en el README. Prioridad siguiente del panel: solicitudes de retiro de anuncios (Habeas Data, `blacklisted_leads`).
+    - **Verificación:** capturas de las pantallas de entrada, código y panel a 1366 px y 390 px sin desbordes ni errores de consola; typecheck, build y `npm test` (8/8) en verde.
+
+---
+
 - 112. **Hito 112: Panel verificado en producción y catálogo usable (búsqueda, filtros, paginación, móvil)**:
     - **Verificación:** el propietario entró a `/admin` desde el celular con Google + código TOTP (Proton Authenticator). La auditoría de Firestore registró `ingreso_2fa` (método totp) el 2026-09-25 5:48 a. m. Las 4 capas funcionan en producción.
     - **Qué cambió (`src/admin/AdminApp.tsx`, `src/admin/admin.css`):** la tabla del catálogo era incómoda (todo en una sola lista larga). Ahora tiene búsqueda sin tildes (título, ciudad, portal, precio, id), filtro (todos/visibles/ocultos/destacados), paginación de 20 por página, contenedor con scroll y encabezado fijo en PC, chips de estado y, en pantallas de menos de 720 px, cada inmueble se muestra como tarjeta con botones de 44 px. En filas ocultas solo se atenúa el texto, no los botones.

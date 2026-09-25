@@ -1,0 +1,44 @@
+# Panel de administración de Origgo (`/admin`)
+
+Panel para operar el negocio sin tocar código: todo lee y escribe en **Firestore**, que es la fuente de la verdad.
+Página aparte del sitio público (`admin.html` + `src/admin/`), con `noindex`.
+
+## Seguridad: 4 capas, verificadas en el servidor en cada acción
+
+| Capa | Qué se comprueba | Dónde |
+| --- | --- | --- |
+| 1. Cuenta de Google | Token de Firebase firmado por Google (RS256), del proyecto correcto y vigente | `lib/admin-auth.js` |
+| 2. Correo autorizado | Correo verificado y presente en `ADMIN_EMAILS` | `lib/admin-auth.js` |
+| 3. Rol de administrador | Custom claim `admin: true` en la cuenta de Firebase | `lib/admin-auth.js` |
+| 4. Código 2FA (TOTP) | Código de la app autenticadora → cookie `HttpOnly; Secure; SameSite=Strict` de 8 h ligada al uid | `lib/admin/dos-factores.js`, `lib/admin/sesion.js` |
+
+Además: máx. 5 intentos de código cada 15 min, cada código sirve una sola vez, y todo queda en `admin_auditoria`.
+No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hito 110 de `MEMORY.md`.
+
+## Operación
+
+| Tarea | Cómo |
+| --- | --- |
+| Dar o quitar el rol de administrador | `node scripts/admin-rol.js` (a los correos de `ADMIN_EMAILS`) · `node scripts/admin-rol.js --quitar correo@...` |
+| Configurar la app autenticadora | `node scripts/admin-2fa-enrolar.js` → abrir `ADMIN_2FA_ENROLAMIENTO.html`, escanear, guardar los códigos y borrar el archivo |
+| Perdí el celular | Entrar con un **código de respaldo** (archivo "NO TOCAR - Codigos de respaldo ORIGGO" en el Escritorio), luego `node scripts/admin-2fa-enrolar.js --forzar` y actualizar `ADMIN_TOTP_SECRET` y `ADMIN_BACKUP_CODES` en Vercel |
+| Olvidé la contraseña | El panel no tiene contraseña propia: se entra con Google. La recuperación es la de la cuenta de Google (enlace en la pantalla de entrada) |
+| Revisar el diseño sin iniciar sesión | `npm run dev` y abrir `/admin.html?vista=login`, `?vista=codigo`, `?vista=sin-acceso` o `?vista=panel` (solo en desarrollo; se elimina del build) |
+
+Variables en Vercel (Production): `ADMIN_EMAILS`, `ADMIN_TOTP_SECRET`, `ADMIN_BACKUP_CODES`.
+Límite del plan Hobby: `api/` debe tener como máximo **12 funciones**; toda ruta nueva del panel va como acción de `api/admin.js`.
+
+## Módulos: hechos y pendientes
+
+El estándar es que toda función del sitio que requiera operación humana se gestione desde el panel. Las llaves, las copias de seguridad y los servidores **no** van aquí: siguen en las consolas de Google, Vercel y GitHub.
+
+| Módulo | Estado | Datos | Notas |
+| --- | --- | --- | --- |
+| Catálogo (ocultar, destacar, eliminar, buscar, filtrar, paginar) | ✅ Hecho | `leads` | |
+| Vitrina (contador de la portada) | ✅ Hecho | `config/showcase` | |
+| Solicitudes de retiro de anuncios (Habeas Data) | ⏳ Prioridad alta | `blacklisted_leads` | Obligación legal: ver y atender las solicitudes de los propietarios desde el panel |
+| Auditoría (ver quién hizo qué) | ⏳ Pendiente | `admin_auditoria` | Ya se registra; falta la vista |
+| Métricas del embudo | ⏳ Pendiente | `funnel_daily_metrics` | |
+| Notificaciones push | ⏳ Pendiente | `push_subscriptions` | Enviar alertas desde el panel |
+| Usuarios, créditos y órdenes | ⏸ Depende del pivote | `users`, `transactions`, `orders` | Con "buscador que enlaza" desaparece la venta de contactos; definir después del pivote |
+| Edición completa de un inmueble (formulario) | ⏳ Pendiente | `leads` | Hoy la API ya acepta los campos editables; falta el formulario |

@@ -156,6 +156,10 @@ hunter-portal-showcase/
 
 ---
 
+## 🛠️ Panel de administración
+
+Panel en `/admin` con acceso por Google + correo autorizado + custom claim `admin` + código TOTP. Operación, recuperación y módulos pendientes en [`docs/PANEL_ADMIN.md`](docs/PANEL_ADMIN.md).
+
 ## ⚙️ Variables de Entorno (Vercel)
 
 Para el funcionamiento seguro del backend serverless en producción, configure las siguientes variables en el panel de Vercel (**Settings > Environment Variables**):
