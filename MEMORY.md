@@ -4,6 +4,23 @@
 
 ---
 
+- 111. **Hito 111: Panel de administración con custom claims + segundo factor TOTP (4 capas)**:
+    - **Qué cambió:** el panel exige ahora cuatro capas, verificadas en el servidor en cada acción (`lib/admin/acceso.js`):
+      1. Token de Google válido (`lib/admin-auth.js`, verificación RS256 sin firebase-admin/auth).
+      2. Correo verificado en `ADMIN_EMAILS`.
+      3. **Custom claim `admin: true`** en Firebase (se asigna con `node scripts/admin-rol.js`, que corre solo en el PC; `--quitar <correo>` lo retira y revoca sesiones).
+      4. **Segundo factor TOTP** (RFC 6238, app autenticadora) → cookie de sesión `HttpOnly; Secure; SameSite=Strict; Path=/api/admin` de 8 h, firmada con una clave derivada de JWT_SECRET (separación de dominio) y ligada al uid.
+    - **Protecciones del código:** máx. 5 intentos cada 15 min (Upstash), cada código TOTP y de respaldo sirve una sola vez (Firestore `admin_usos_unicos`, creación atómica), 8 códigos de respaldo (solo se guardan sus huellas SHA-256 en `ADMIN_BACKUP_CODES`).
+    - **Auditoría:** `admin_auditoria` en Firestore registra ingresos, códigos rechazados, salidas y cada edición/borrado/cambio de vitrina con el correo del administrador.
+    - **Nuevas rutas** (todas dentro de `api/admin.js`, siguen siendo 12 funciones): `/api/admin/estado`, `/api/admin/verificar`, `/api/admin/salir`; reenlace genérico `/api/admin/:action` en vercel.json.
+    - **Frontend:** tras Google, pantalla "Verificación en dos pasos"; si la API pide 2FA (`codigo: 2FA_REQUERIDO`) vuelve a esa pantalla; "Salir" borra la cookie y cierra Google.
+    - **Enrolamiento:** `node scripts/admin-2fa-enrolar.js` genera el secreto y los códigos, los guarda en .env y crea `ADMIN_2FA_ENROLAMIENTO.html` (ignorado por Git) con el QR; no imprime secretos. `qrcode` agregado como devDependency.
+    - **Pruebas:** `tests/admin_2fa.test.js` (14: vectores oficiales RFC 6238, desfase ±30 s, Base32, respaldo, sesión por uid/alterada/vencida, separación de dominio, atributos de cookie, flujo completo, reutilización, auditoría, 503 sin secreto, 6.º intento bloqueado) y `tests/admin_auth.test.js` (9, ahora exige el claim). `npm test` 8/8, typecheck y build en verde.
+    - **Estado:** claim `admin` asignado a fv9316@gmail.com; secreto TOTP generado en .env. Pendiente del propietario: escanear el QR, guardar los códigos de respaldo, borrar el .html y copiar ADMIN_EMAILS, ADMIN_TOTP_SECRET y ADMIN_BACKUP_CODES a Vercel (Production) + Redeploy.
+    - **Archivos afectados:** `lib/admin/{totp,sesion,acceso,auditoria,dos-factores}.js`, `lib/admin-auth.js`, `lib/admin/{leads,config}.js`, `api/admin.js`, `src/admin/AdminApp.tsx`, `src/admin/admin.css`, `scripts/admin-rol.js`, `scripts/admin-2fa-enrolar.js`, `tests/admin_2fa.test.js`, `tests/admin_auth.test.js`, `scripts/validate.js`, `vercel.json`, `.gitignore`, `package.json`, `README.md`, `MEMORY.md`.
+
+---
+
 - 110. **Hito 110: Verificación del token de Google sin firebase-admin/auth (ERR_REQUIRE_ESM en Vercel)**:
     - **Diagnóstico:** tras la consolidación, `/admin` y el saldo quedaron en producción, pero `/api/admin/*` daba 500 `FUNCTION_INVOCATION_FAILED`. Con un diagnóstico temporal la función reportó `ERR_REQUIRE_ESM`: `firebase-admin/auth` → `jwks-rsa` 4 → `jose` 6, que es solo ESM y no se puede cargar con `require()` en las funciones de Vercel (en el PC con Node 26 sí cargaba, por eso en local funcionaba).
     - **Solución:** `lib/admin-auth.js` verifica el ID token de Firebase como documenta Firebase para librerías externas: firma RS256 contra los certificados públicos de Google (con caché según Cache-Control) y comprobación de `aud`, `iss`, `exp`, `iat`, `auth_time` y `sub`, solo con `crypto` nativo. Sin dependencias ESM.

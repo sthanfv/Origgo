@@ -167,3 +167,28 @@ body {
   text-align: center;
   padding: 16px;
 }
+
+/* Verificación en dos pasos */
+.admin-login form,
+form.admin-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.admin-codigo {
+  width: 100%;
+  padding: 12px;
+  background: #0b0f0e;
+  border: 1px solid #2b3d38;
+  border-radius: 10px;
+  color: #e7efec;
+  font-size: 1.5rem;
+  letter-spacing: 0.3em;
+  text-align: center;
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+}
+.admin-btn-enlace {
+  background: transparent;
+  border-color: transparent;
+  color: #9fb4ad;
+}

@@ -5,15 +5,17 @@
  * Enruta según acción a:
  * - /api/admin/leads  -> lib/admin/leads.js  (catálogo en Firestore: listar, ocultar, editar, borrar)
  * - /api/admin/config -> lib/admin/config.js (configuración de la vitrina)
+ * - /api/admin/estado | /verificar | /salir -> lib/admin/dos-factores.js (segundo factor TOTP)
  *
- * Las rutas /api/admin/leads y /api/admin/config llegan aquí por reglas de reenlace en vercel.json.
- * Ambos manejadores exigen sesión de administrador (Google) verificada.
+ * Las rutas /api/admin/<acción> llegan aquí por la regla de reenlace de vercel.json.
+ * Capas de seguridad: Google + ADMIN_EMAILS + custom claim `admin` + TOTP (ver lib/admin/acceso.js).
  *
  * Los manejadores se cargan al primer uso y un fallo de carga se reporta con un código corto
  * (sin rutas ni datos internos) en vez de tumbar la función completa.
  */
 let leadsHandler = null;
 let configHandler = null;
+let dosFactoresHandler = null;
 let errorCarga = null;
 
 function cargarManejadores() {
@@ -21,6 +23,7 @@ function cargarManejadores() {
   try {
     leadsHandler = require('../lib/admin/leads');
     configHandler = require('../lib/admin/config');
+    dosFactoresHandler = require('../lib/admin/dos-factores');
   } catch (e) {
     const faltante = /Cannot find module '([^']+)'/.exec(e && e.message ? e.message : '');
     errorCarga = {
@@ -39,10 +42,14 @@ async function handler(req, res) {
   }
 
   const urlPath = req.url ? req.url.split('?')[0] : '';
-  const action = req.query?.action || (urlPath.endsWith('/config') ? 'config' : 'leads');
+  const action = req.query?.action || urlPath.split('/')[3] || 'leads';
 
   if (action === 'config') {
     return configHandler(req, res);
+  }
+  if (action === 'estado' || action === 'verificar' || action === 'salir') {
+    req.query = { ...(req.query || {}), action };
+    return dosFactoresHandler(req, res);
   }
   return leadsHandler(req, res);
 }

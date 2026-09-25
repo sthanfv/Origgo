@@ -173,6 +173,9 @@ Para el funcionamiento seguro del backend serverless en producción, configure l
 | `RESEND_API_KEY` | Opcional | Llave de API de Resend para el despacho de enlaces temporales de recuperación. |
 | `RESEND_FROM_EMAIL` | Opcional | Remitente verificado en Resend (por defecto: `Origgo <seguridad@origgo.online>`). |
 | `APP_URL` | Opcional | URL base de la aplicación (ej: `https://origgo.online` o `https://origgo.vercel.app`). |
+| `ADMIN_EMAILS` | Crítico (panel) | Correos con acceso al panel `/admin`, separados por coma. Además deben tener el custom claim `admin` (`node scripts/admin-rol.js`). |
+| `ADMIN_TOTP_SECRET` | Crítico (panel) | Secreto Base32 del segundo factor (app autenticadora). Se genera con `node scripts/admin-2fa-enrolar.js`. |
+| `ADMIN_BACKUP_CODES` | Crítico (panel) | Huellas SHA-256 de los códigos de respaldo de un solo uso (las genera el mismo script). |
 
 ---
 

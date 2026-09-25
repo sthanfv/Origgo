@@ -63,6 +63,11 @@ async function ejecutarValidacionCompleta() {
     'lib/admin/leads.js',
     'lib/admin/config.js',
     'lib/admin-auth.js',
+    'lib/admin/totp.js',
+    'lib/admin/sesion.js',
+    'lib/admin/acceso.js',
+    'lib/admin/auditoria.js',
+    'lib/admin/dos-factores.js',
     'api/media/proxy.js',
     'api/notifications.js',
     'api/telemetry.js',
@@ -281,9 +286,16 @@ async function ejecutarValidacionCompleta() {
 
   try {
     execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'admin_auth.test.js')}"`, { stdio: 'pipe' });
-    assert(true, 'Pruebas del acceso al panel (token de Google, ADMIN_EMAILS, 401/403/503) pasadas al 100%');
+    assert(true, 'Pruebas del acceso al panel (token de Google, ADMIN_EMAILS, custom claim, 401/403/503) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test del acceso al panel: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'admin_2fa.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas del segundo factor TOTP (RFC 6238, respaldo, sesión, límite de intentos) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test del segundo factor: ${e.message}`);
   }
 
   try {

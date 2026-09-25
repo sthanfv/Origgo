@@ -31,6 +31,7 @@ function firmar(datos = {}, cabecera = {}) {
     exp: ahora + 3600,
     email: 'admin@ejemplo.com',
     email_verified: true,
+    admin: true,
     ...datos,
   });
   const firma = crypto.sign('RSA-SHA256', Buffer.from(`${h}.${p}`), privateKey).toString('base64url');
@@ -76,6 +77,11 @@ test('rechaza kid desconocido, algoritmo distinto y formato roto', async () => {
   await assert.rejects(verificarIdTokenFirebase(firmar({}, { kid: 'otro' }), opciones), /kid/);
   await assert.rejects(verificarIdTokenFirebase(firmar({}, { alg: 'HS256' }), opciones), /algoritmo/);
   await assert.rejects(verificarIdTokenFirebase('no.es-un.jwt!', opciones), /formato|algoritmo/);
+});
+
+test('403 si falta el custom claim admin (aunque el correo esté autorizado)', async () => {
+  await assert.rejects(verificarAdmin(req(firmar({ admin: false })), opciones), (e) => e.status === 403);
+  await assert.rejects(verificarAdmin(req(firmar({ admin: 'true' })), opciones), (e) => e.status === 403);
 });
 
 test('403 si el correo no está en ADMIN_EMAILS o no está verificado', async () => {

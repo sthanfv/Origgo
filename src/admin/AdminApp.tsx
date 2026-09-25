@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 
@@ -20,37 +20,61 @@ interface ShowcaseConfig {
   counterValue?: string;
 }
 
+/** Error de la API del panel con su código HTTP y código interno (ej. 2FA_REQUERIDO). */
+class ErrorApi extends Error {
+  constructor(
+    mensaje: string,
+    public status: number,
+    public codigo?: string,
+  ) {
+    super(mensaje);
+  }
+}
+
+type Fase = 'cargando' | 'login' | 'sin-acceso' | 'codigo' | 'panel';
+
 /**
  * Panel de administración de Origgo.
- * Acceso con Google; toda acción va contra las API seguras (api/admin/*), que verifican
- * el token y la lista de administradores. Firestore es la fuente de la verdad.
+ * Capas: Google → correo autorizado + custom claim `admin` → código TOTP (app autenticadora).
+ * Toda acción va contra api/admin/*, que vuelve a verificar las cuatro capas en el servidor.
  */
 export function AdminApp() {
   const [user, setUser] = useState<User | null>(null);
-  const [cargandoAuth, setCargandoAuth] = useState(true);
+  const [fase, setFase] = useState<Fase>('cargando');
   const [leads, setLeads] = useState<Lead[]>([]);
   const [config, setConfig] = useState<ShowcaseConfig>({});
+  const [codigo, setCodigo] = useState('');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [ocupado, setOcupado] = useState(false);
 
-  useEffect(() => onAuthStateChanged(auth, (u) => {
-    setUser(u);
-    setCargandoAuth(false);
-  }), []);
+  /** fetch con el token de Google; la cookie del segundo factor viaja sola (HttpOnly). */
+  const authFetch = useCallback(
+    async (ruta: string, opciones: RequestInit = {}, refrescarToken = false) => {
+      const actual = auth.currentUser;
+      if (!actual) throw new ErrorApi('Sesión no iniciada.', 401);
+      const token = await actual.getIdToken(refrescarToken);
+      const headers = new Headers(opciones.headers || {});
+      headers.set('Authorization', `Bearer ${token}`);
+      if (opciones.body) headers.set('Content-Type', 'application/json');
+      const res = await fetch(ruta, { ...opciones, headers, credentials: 'same-origin' });
+      const datos = await res.json().catch(() => ({}));
+      if (!res.ok) throw new ErrorApi(datos.error || `Error ${res.status}`, res.status, datos.codigo);
+      return datos;
+    },
+    [],
+  );
 
-  /** fetch con el token de Google del usuario actual. */
-  const authFetch = useCallback(async (ruta: string, opciones: RequestInit = {}) => {
-    const actual = auth.currentUser;
-    if (!actual) throw new Error('Sesión no iniciada.');
-    const token = await actual.getIdToken();
-    const headers = new Headers(opciones.headers || {});
-    headers.set('Authorization', `Bearer ${token}`);
-    if (opciones.body) headers.set('Content-Type', 'application/json');
-    const res = await fetch(ruta, { ...opciones, headers });
-    const datos = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(datos.error || `Error ${res.status}`);
-    return datos;
+  /** Traduce errores de la API a la fase correcta de la pantalla. */
+  const manejarError = useCallback((e: unknown) => {
+    if (e instanceof ErrorApi && e.codigo === '2FA_REQUERIDO') {
+      setFase('codigo');
+      return;
+    }
+    if (e instanceof ErrorApi && e.status === 403) {
+      setFase('sin-acceso');
+    }
+    setError((e as Error).message);
   }, []);
 
   const cargar = useCallback(async () => {
@@ -63,14 +87,47 @@ export function AdminApp() {
       ]);
       setLeads(dLeads.leads || []);
       setConfig(dConfig.config || {});
+      setFase('panel');
     } catch (e) {
-      setError((e as Error).message);
+      manejarError(e);
     }
-  }, [authFetch]);
+  }, [authFetch, manejarError]);
+
+  /** Tras entrar con Google: ¿ya pasó el segundo factor en este navegador? */
+  const revisarEstado = useCallback(async () => {
+    setError('');
+    try {
+      // Refresca el token para que traiga el custom claim `admin` recién asignado.
+      const estado = await authFetch('/api/admin/estado', {}, true);
+      if (estado.dosFactores) {
+        await cargar();
+      } else {
+        setFase('codigo');
+        if (!estado.configurado) {
+          setError('El segundo factor aún no está configurado en el servidor (ADMIN_TOTP_SECRET).');
+        }
+      }
+    } catch (e) {
+      manejarError(e);
+      if (!(e instanceof ErrorApi && e.codigo === '2FA_REQUERIDO')) setFase('sin-acceso');
+    }
+  }, [authFetch, cargar, manejarError]);
+
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, (u) => {
+        setUser(u);
+        if (!u) {
+          setFase('login');
+          setLeads([]);
+        }
+      }),
+    [],
+  );
 
   useEffect(() => {
-    if (user) cargar();
-  }, [user, cargar]);
+    if (user) revisarEstado();
+  }, [user, revisarEstado]);
 
   const entrar = async () => {
     setError('');
@@ -78,6 +135,33 @@ export function AdminApp() {
       await signInWithPopup(auth, googleProvider);
     } catch (e) {
       setError('No se pudo iniciar sesión: ' + (e as Error).message);
+    }
+  };
+
+  const salir = async () => {
+    try {
+      await authFetch('/api/admin/salir', { method: 'POST', body: '{}' });
+    } catch {
+      // Aunque falle, se cierra la sesión de Google.
+    }
+    await signOut(auth);
+  };
+
+  const verificarCodigo = async (ev: FormEvent) => {
+    ev.preventDefault();
+    setOcupado(true);
+    setError('');
+    try {
+      await authFetch('/api/admin/verificar', {
+        method: 'POST',
+        body: JSON.stringify({ codigo: codigo.trim() }),
+      });
+      setCodigo('');
+      await cargar();
+    } catch (e) {
+      manejarError(e);
+    } finally {
+      setOcupado(false);
     }
   };
 
@@ -93,7 +177,7 @@ export function AdminApp() {
       setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...cambios } : l)));
       setMensaje('Guardado.');
     } catch (e) {
-      setError((e as Error).message);
+      manejarError(e);
     } finally {
       setOcupado(false);
     }
@@ -108,7 +192,7 @@ export function AdminApp() {
       setLeads((prev) => prev.filter((l) => l.id !== id));
       setMensaje('Inmueble eliminado.');
     } catch (e) {
-      setError((e as Error).message);
+      manejarError(e);
     } finally {
       setOcupado(false);
     }
@@ -122,15 +206,15 @@ export function AdminApp() {
       await authFetch('/api/admin/config', { method: 'PUT', body: JSON.stringify(config) });
       setMensaje('Configuración guardada.');
     } catch (e) {
-      setError((e as Error).message);
+      manejarError(e);
     } finally {
       setOcupado(false);
     }
   };
 
-  if (cargandoAuth) return <div className="admin-centro">Cargando…</div>;
+  if (fase === 'cargando') return <div className="admin-centro">Cargando…</div>;
 
-  if (!user) {
+  if (fase === 'login' || !user) {
     return (
       <div className="admin-centro">
         <div className="admin-login">
@@ -145,6 +229,54 @@ export function AdminApp() {
     );
   }
 
+  if (fase === 'sin-acceso') {
+    return (
+      <div className="admin-centro">
+        <div className="admin-login">
+          <h1>Sin acceso</h1>
+          <p>La cuenta {user.email} no tiene permiso para usar el panel.</p>
+          {error && <p className="admin-error">{error}</p>}
+          <button className="admin-btn" onClick={salir}>
+            Salir
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (fase === 'codigo') {
+    return (
+      <div className="admin-centro">
+        <form className="admin-login" onSubmit={verificarCodigo}>
+          <h1>Verificación en dos pasos</h1>
+          <p>Escribe el código de 6 dígitos de tu app autenticadora (o un código de respaldo).</p>
+          <input
+            className="admin-codigo"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+            inputMode="text"
+            autoComplete="one-time-code"
+            autoFocus
+            maxLength={11}
+            placeholder="123456"
+            aria-label="Código de verificación"
+          />
+          <button
+            className="admin-btn admin-btn-primary"
+            type="submit"
+            disabled={ocupado || codigo.trim().length < 6}
+          >
+            Verificar
+          </button>
+          {error && <p className="admin-error">{error}</p>}
+          <button className="admin-btn admin-btn-enlace" type="button" onClick={salir}>
+            Usar otra cuenta
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-wrap">
       <header className="admin-header">
@@ -155,7 +287,7 @@ export function AdminApp() {
           <button className="admin-btn" onClick={cargar} disabled={ocupado}>
             Recargar
           </button>
-          <button className="admin-btn" onClick={() => signOut(auth)}>
+          <button className="admin-btn" onClick={salir}>
             Salir
           </button>
         </div>

@@ -28,3 +28,6 @@ test-results/
 
 .vercel
 .env*
+
+# Enrolamiento del segundo factor del panel (contiene el QR y los códigos de respaldo)
+ADMIN_2FA_ENROLAMIENTO.html
