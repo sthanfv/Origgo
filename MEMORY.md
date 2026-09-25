@@ -4,6 +4,14 @@
 
 ---
 
+- 112. **Hito 112: Panel verificado en producción y catálogo usable (búsqueda, filtros, paginación, móvil)**:
+    - **Verificación:** el propietario entró a `/admin` desde el celular con Google + código TOTP (Proton Authenticator). La auditoría de Firestore registró `ingreso_2fa` (método totp) el 2026-09-25 5:48 a. m. Las 4 capas funcionan en producción.
+    - **Qué cambió (`src/admin/AdminApp.tsx`, `src/admin/admin.css`):** la tabla del catálogo era incómoda (todo en una sola lista larga). Ahora tiene búsqueda sin tildes (título, ciudad, portal, precio, id), filtro (todos/visibles/ocultos/destacados), paginación de 20 por página, contenedor con scroll y encabezado fijo en PC, chips de estado y, en pantallas de menos de 720 px, cada inmueble se muestra como tarjeta con botones de 44 px. En filas ocultas solo se atenúa el texto, no los botones.
+    - **Verificación visual:** capturas con datos de ejemplo a 1366 px y 390 px, sin scroll horizontal; typecheck y build en verde.
+    - **Pendiente:** borrar `ADMIN_2FA_ENROLAMIENTO.html` cuando el propietario confirme que guardó los códigos de respaldo.
+
+---
+
 - 111. **Hito 111: Panel de administración con custom claims + segundo factor TOTP (4 capas)**:
     - **Qué cambió:** el panel exige ahora cuatro capas, verificadas en el servidor en cada acción (`lib/admin/acceso.js`):
       1. Token de Google válido (`lib/admin-auth.js`, verificación RS256 sin firebase-admin/auth).

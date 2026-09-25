@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 
@@ -32,6 +32,17 @@ class ErrorApi extends Error {
 }
 
 type Fase = 'cargando' | 'login' | 'sin-acceso' | 'codigo' | 'panel';
+type Filtro = 'todos' | 'visibles' | 'ocultos' | 'destacados';
+
+const POR_PAGINA = 20;
+
+/** Texto sin tildes y en minúsculas, para buscar "medellin" y encontrar "Medellín". */
+function normalizar(texto: unknown): string {
+  return String(texto ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
 
 /**
  * Panel de administración de Origgo.
@@ -47,6 +58,25 @@ export function AdminApp() {
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [ocupado, setOcupado] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const [filtro, setFiltro] = useState<Filtro>('todos');
+  const [pagina, setPagina] = useState(1);
+
+  const filtrados = useMemo(() => {
+    const q = normalizar(busqueda.trim());
+    return leads.filter((l) => {
+      if (filtro === 'visibles' && l.activo === false) return false;
+      if (filtro === 'ocultos' && l.activo !== false) return false;
+      if (filtro === 'destacados' && !l.destacado) return false;
+      if (!q) return true;
+      return [l.titulo, l.ciudad, l.portal, l.precio, l.id].some((v) => normalizar(v).includes(q));
+    });
+  }, [leads, busqueda, filtro]);
+
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const visibles = filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
+  const ocultosTotal = leads.filter((l) => l.activo === false).length;
 
   /** fetch con el token de Google; la cookie del segundo factor viaja sola (HttpOnly). */
   const authFetch = useCallback(
@@ -318,7 +348,40 @@ export function AdminApp() {
       </section>
 
       <section className="admin-card">
-        <h2>Inmuebles ({leads.length})</h2>
+        <div className="admin-card-cabecera">
+          <h2>
+            Inmuebles <span className="admin-contador">{leads.length} en total · {ocultosTotal} ocultos</span>
+          </h2>
+        </div>
+
+        <div className="admin-herramientas">
+          <input
+            className="admin-buscar"
+            type="search"
+            value={busqueda}
+            onChange={(e) => {
+              setBusqueda(e.target.value);
+              setPagina(1);
+            }}
+            placeholder="Buscar por título, ciudad, portal o precio…"
+            aria-label="Buscar inmuebles"
+          />
+          <select
+            className="admin-filtro"
+            value={filtro}
+            onChange={(e) => {
+              setFiltro(e.target.value as Filtro);
+              setPagina(1);
+            }}
+            aria-label="Filtrar inmuebles"
+          >
+            <option value="todos">Todos</option>
+            <option value="visibles">Visibles</option>
+            <option value="ocultos">Ocultos</option>
+            <option value="destacados">Destacados</option>
+          </select>
+        </div>
+
         <div className="admin-tabla-scroll">
           <table className="admin-tabla">
             <thead>
@@ -332,16 +395,20 @@ export function AdminApp() {
               </tr>
             </thead>
             <tbody>
-              {leads.map((l) => (
+              {visibles.map((l) => (
                 <tr key={l.id} className={l.activo === false ? 'admin-oculto' : ''}>
-                  <td>
+                  <td data-label="Título" className="admin-celda-titulo">
                     {l.titulo || '—'}
                     {l.destacado ? ' ⭐' : ''}
                   </td>
-                  <td>{l.ciudad || '—'}</td>
-                  <td>{l.precio || '—'}</td>
-                  <td>{l.portal || '—'}</td>
-                  <td>{l.activo === false ? 'Oculto' : 'Visible'}</td>
+                  <td data-label="Ciudad">{l.ciudad || '—'}</td>
+                  <td data-label="Precio">{l.precio || '—'}</td>
+                  <td data-label="Portal">{l.portal || '—'}</td>
+                  <td data-label="Estado">
+                    <span className={l.activo === false ? 'admin-chip admin-chip-oculto' : 'admin-chip'}>
+                      {l.activo === false ? 'Oculto' : 'Visible'}
+                    </span>
+                  </td>
                   <td className="admin-acciones">
                     <button
                       className="admin-btn"
@@ -370,7 +437,33 @@ export function AdminApp() {
             </tbody>
           </table>
         </div>
+
         {leads.length === 0 && <p className="admin-vacio">No hay inmuebles en la base de datos.</p>}
+        {leads.length > 0 && filtrados.length === 0 && (
+          <p className="admin-vacio">Ningún inmueble coincide con la búsqueda.</p>
+        )}
+
+        {filtrados.length > POR_PAGINA && (
+          <nav className="admin-paginacion" aria-label="Paginación">
+            <button
+              className="admin-btn"
+              onClick={() => setPagina(paginaActual - 1)}
+              disabled={paginaActual <= 1}
+            >
+              ← Anterior
+            </button>
+            <span>
+              Página {paginaActual} de {totalPaginas} · {filtrados.length} resultados
+            </span>
+            <button
+              className="admin-btn"
+              onClick={() => setPagina(paginaActual + 1)}
+              disabled={paginaActual >= totalPaginas}
+            >
+              Siguiente →
+            </button>
+          </nav>
+        )}
       </section>
     </div>
   );

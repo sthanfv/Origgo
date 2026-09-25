@@ -144,7 +144,8 @@ body {
   font-weight: 600;
   white-space: nowrap;
 }
-.admin-oculto {
+/* Filas ocultas: se atenúa el contenido, no los botones ("Mostrar" debe verse activo). */
+.admin-oculto td:not(.admin-acciones) {
   opacity: 0.5;
 }
 
@@ -191,4 +192,128 @@ form.admin-login {
   background: transparent;
   border-color: transparent;
   color: #9fb4ad;
+}
+
+/* Catálogo: herramientas, contenedor con scroll, paginación y tarjetas en móvil */
+.admin-contador {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #9fb4ad;
+  margin-left: 8px;
+}
+.admin-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.admin-buscar,
+.admin-filtro {
+  padding: 10px 12px;
+  background: #0b0f0e;
+  border: 1px solid #2b3d38;
+  border-radius: 10px;
+  color: #e7efec;
+  font-size: 0.95rem;
+}
+.admin-buscar {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.admin-tabla-scroll {
+  max-height: 65vh;
+  overflow: auto;
+  border: 1px solid #1c2825;
+  border-radius: 12px;
+}
+.admin-tabla thead th {
+  position: sticky;
+  top: 0;
+  background: #121917;
+  z-index: 1;
+}
+.admin-celda-titulo {
+  min-width: 220px;
+}
+.admin-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #10241c;
+  color: #7fe9c0;
+}
+.admin-chip-oculto {
+  background: #2a1717;
+  color: #ff9a9a;
+}
+.admin-paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  color: #9fb4ad;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 720px) {
+  .admin-wrap {
+    padding: 12px;
+  }
+  .admin-card {
+    padding: 14px;
+  }
+  .admin-tabla-scroll {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+  .admin-tabla thead {
+    display: none;
+  }
+  .admin-tabla,
+  .admin-tabla tbody,
+  .admin-tabla tr,
+  .admin-tabla td {
+    display: block;
+    width: 100%;
+  }
+  .admin-tabla tr {
+    background: #0e1412;
+    border: 1px solid #21302c;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .admin-tabla td {
+    border: 0;
+    padding: 4px 0;
+  }
+  .admin-tabla td[data-label]::before {
+    content: attr(data-label) ': ';
+    color: #9fb4ad;
+    font-size: 0.8rem;
+  }
+  .admin-celda-titulo {
+    min-width: 0;
+    font-weight: 700;
+  }
+  .admin-tabla td.admin-celda-titulo::before {
+    content: none;
+  }
+  .admin-tabla td.admin-acciones {
+    padding-top: 10px;
+  }
+  .admin-acciones .admin-btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+  .admin-paginacion span {
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
 }
