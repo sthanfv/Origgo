@@ -4,6 +4,16 @@
 
 ---
 
+- 110. **Hito 110: Verificación del token de Google sin firebase-admin/auth (ERR_REQUIRE_ESM en Vercel)**:
+    - **Diagnóstico:** tras la consolidación, `/admin` y el saldo quedaron en producción, pero `/api/admin/*` daba 500 `FUNCTION_INVOCATION_FAILED`. Con un diagnóstico temporal la función reportó `ERR_REQUIRE_ESM`: `firebase-admin/auth` → `jwks-rsa` 4 → `jose` 6, que es solo ESM y no se puede cargar con `require()` en las funciones de Vercel (en el PC con Node 26 sí cargaba, por eso en local funcionaba).
+    - **Solución:** `lib/admin-auth.js` verifica el ID token de Firebase como documenta Firebase para librerías externas: firma RS256 contra los certificados públicos de Google (con caché según Cache-Control) y comprobación de `aud`, `iss`, `exp`, `iat`, `auth_time` y `sub`, solo con `crypto` nativo. Sin dependencias ESM.
+    - `api/admin.js` carga los manejadores al primer uso y, si fallara la carga, responde 500 con un código corto (sin rutas internas) en vez de tumbar la función.
+    - **Pruebas:** `tests/admin_auth.test.js` (8 casos: token válido, firma alterada, aud/iss, vencido/futuro, kid/algoritmo/formato, 403 correo no autorizado o sin verificar, 401/503, y que no se use `firebase-admin/auth`); integrada en `npm test` (8/8 fases). Descarga real de certificados de Google verificada.
+    - **Lección:** evitar `firebase-admin/auth` en las funciones de Vercel de este proyecto mientras dependa de `jose` solo ESM.
+    - **Archivos afectados:** `lib/admin-auth.js`, `api/admin.js`, `tests/admin_auth.test.js`, `scripts/validate.js`, `MEMORY.md`.
+
+---
+
 - 109. **Hito 109: Consolidación a 12 funciones serverless (límite del plan Hobby de Vercel)**:
     - **Diagnóstico:** el despliegue del backend del panel (4646cb7) falló en Vercel: "No more than 12 Serverless Functions can be added to a Deployment on the Hobby plan". Antes del panel había exactamente 12 funciones en `api/`; los 2 endpoints nuevos (`api/admin/leads.js`, `api/admin/config.js`) llevaron el total a 14. Como el build falló, producción siguió en el despliegue anterior (sin `/admin` ni el CSP nuevo); el catálogo seguía fresco porque se lee de Firestore en vivo.
     - **Solución (gratis, sin plan Pro):**
