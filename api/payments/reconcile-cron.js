@@ -13,7 +13,6 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
-const { generatePin } = require('../../lib/crypto');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
 
@@ -234,16 +233,6 @@ module.exports = async function handler(req, res) {
             continue;
           }
 
-          // Idempotencia atómica: registrar la transacción
-          await db.recordTransaction(trxAprobada.id, {
-            transactionId: trxAprobada.id,
-            reference: ref,
-            status: 'APPROVED',
-            amountInCents: montoPagado,
-            paymentMethod: trxAprobada.payment_method_type,
-            reconciledBy: 'cron'
-          });
-
           // Obtener o generar PIN criptográfico del usuario
           let celular = orden.celular;
           if (!celular && ref.startsWith('HNT-')) {
@@ -260,14 +249,22 @@ module.exports = async function handler(req, res) {
             continue;
           }
 
-          const usuarioExistente = await db.getUserByPhone(celular);
-          const pin = usuarioExistente ? usuarioExistente.pin : generatePin();
           const emailCliente = trxAprobada.customer_email
             ? trxAprobada.customer_email.toLowerCase().trim()
             : (orden.email ? orden.email.toLowerCase().trim() : null);
 
-          // Auto-acreditar saldo en el ledger
-          const usuarioActualizado = await db.addCredits(celular, creditos, pin, planData, emailCliente);
+          // Acreditar UNA sola vez (misma llave que el webhook y el reclamo del usuario)
+          const { usuario: usuarioActualizado } = await db.acreditarPagoUnaVez({
+            reference: ref,
+            transactionId: trxAprobada.id,
+            celular,
+            creditos,
+            planData,
+            email: emailCliente,
+            origen: 'cron',
+            datos: { amountInCents: montoPagado, paymentMethod: trxAprobada.payment_method_type || null }
+          });
+          const pin = usuarioActualizado.pin;
 
           // Sincronizar preferencia de idioma en el perfil si viene en la orden
           if (orden.lang && (orden.lang === 'es' || orden.lang === 'en')) {

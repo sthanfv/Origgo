@@ -11,7 +11,6 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
-const { generatePin, signJwt } = require('../../lib/crypto');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
@@ -134,25 +133,27 @@ module.exports = async function handler(req, res) {
   const reference = transaction.reference;
   const status = transaction.status; // APPROVED | DECLINED | VOIDED
 
-  // 5. Idempotencia atómica: registrar transacción para evitar dobles entregas
-  const esPrimeraVez = await db.recordTransaction(transactionId, {
-    transactionId,
-    reference,
-    status,
-    amountInCents: transaction.amount_in_cents,
-    paymentMethod: transaction.payment_method_type
-  });
-
-  if (!esPrimeraVez) {
-    console.log(`[webhook-wompi] Webhook duplicado ignorado (idempotencia atómica): ${transactionId}`);
-    return res.status(200).json({ ok: true, duplicate: true });
-  }
-
-  // Solo acreditar si la transacción fue efectivamente APROBADA
+  // 5. Solo se entrega lo comprado si la transacción fue APROBADA. Los demás estados no
+  // se registran: no hay nada que entregar y así no se gasta cuota de escrituras.
   if (status !== 'APPROVED') {
     console.log(`[webhook-wompi] Transacción ${transactionId} con estado no aprobado: ${status}`);
     return res.status(200).json({ ok: true, status });
   }
+
+  // Si la base de datos falla, se responde 503 para que Wompi reintente el aviso más tarde
+  // (estándar de webhooks: nunca confirmar con 200 algo que no quedó guardado).
+  try {
+    return await procesarPagoAprobado(transaction, res);
+  } catch (err) {
+    console.error(`[webhook-wompi] No se pudo procesar ${transactionId}: ${err.codigo || ''} ${err.message}`);
+    return res.status(503).json({ error: 'ALMACENAMIENTO_NO_DISPONIBLE', codigo: err.codigo || null });
+  }
+};
+
+/** Resuelve la orden, valida el monto y acredita UNA sola vez (webhook de Wompi). */
+async function procesarPagoAprobado(transaction, res) {
+  const transactionId = transaction.id;
+  const reference = transaction.reference;
 
   // 6. Recuperar la orden asociada (o extraer de la referencia si la lambda es stateless)
   const pendingOrder = await db.getPendingOrder(reference);
@@ -218,21 +219,43 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // 7. Generar PIN de usuario si es nuevo y acreditar saldo
+  // Sin un celular válido no hay a quién acreditar y reintentar no lo arregla: se deja
+  // registrado en los logs para revisión manual y se confirma el aviso a Wompi.
+  if (!/^\d{10}$/.test(db.cleanPhone(celular))) {
+    console.error(`🚨 [webhook-wompi] REVISIÓN MANUAL: pago ${transactionId} (ref ${reference}) sin celular válido.`);
+    return res.status(200).json({ ok: false, revisionManual: true });
+  }
+
+  // 7. Acreditar de forma atómica e idempotente (el PIN de un usuario nuevo se genera ahí)
   const customerEmail = transaction.customer_email ? transaction.customer_email.toLowerCase().trim() : null;
-  if (pendingOrder) {
+  const { duplicado, usuario: usuarioActualizado } = await db.acreditarPagoUnaVez({
+    reference,
+    transactionId,
+    celular,
+    creditos: creditosAAcreditar,
+    planData,
+    email: customerEmail,
+    origen: 'webhook',
+    datos: { amountInCents: transaction.amount_in_cents, paymentMethod: transaction.payment_method_type || null }
+  });
+
+  if (duplicado && (!pendingOrder || pendingOrder.emailSent)) {
+    console.log(`[webhook-wompi] Pago ya entregado, aviso duplicado ignorado: ${transactionId}`);
+    return res.status(200).json({ ok: true, duplicate: true });
+  }
+  if (!duplicado) {
+    console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
+  }
+
+  // La orden se marca aprobada DESPUÉS de acreditar: si acreditar falla, sigue pendiente.
+  if (pendingOrder && pendingOrder.status !== 'APPROVED') {
     pendingOrder.status = 'APPROVED';
     pendingOrder.transactionId = transactionId;
     pendingOrder.approvedAt = new Date().toISOString();
     if (customerEmail) pendingOrder.email = customerEmail;
     await db.savePendingOrder(reference, pendingOrder);
   }
-
-  const existingUser = await db.getUserByPhone(celular);
-  const pin = existingUser ? existingUser.pin : generatePin();
-
-  const usuarioActualizado = await db.addCredits(celular, creditosAAcreditar, pin, planData, customerEmail);
-  console.log(`[webhook-wompi] Acreditación exitosa para ${celular}: +${creditosAAcreditar} créditos.`);
+  const pin = usuarioActualizado.pin;
 
   // Sincronizar preferencia de idioma en el perfil si viene en la orden
   if (pendingOrder?.lang && (pendingOrder.lang === 'es' || pendingOrder.lang === 'en')) {
@@ -261,11 +284,12 @@ module.exports = async function handler(req, res) {
 
   return res.status(200).json({
     ok: true,
-    message: 'Pago procesado y créditos acreditados exitosamente.',
+    duplicate: duplicado,
+    message: duplicado ? 'Pago ya entregado; solo se completó el envío del correo.' : 'Pago procesado y créditos acreditados exitosamente.',
     user: {
       phone: usuarioActualizado.phone,
       credits: usuarioActualizado.credits,
       plan: usuarioActualizado.plan
     }
   });
-};
+}

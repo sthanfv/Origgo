@@ -56,8 +56,9 @@ A diferencia de las aplicaciones web tradicionales monolíticas, este sistema es
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ CAPA 4: PERSISTENCIA Y RESILIENCIA CON BACKOFF EXPONENCIAL (lib/db.js)                         │
 │  • Google Cloud Firestore: Modo primario de producción con soporte multi-región.               │
-│  • Fallback Transaccional: Archivo transaccional local atómico para entornos serverless.       │
-│  • Circuit Breaker & Retry: withRetry() con 3 intentos, backoff exponencial y jitter aleatorio.│
+│  • Modo memoria: solo desarrollo y pruebas sin credenciales (FIRESTORE_DESACTIVADO=1).        │
+│  • Fallo cerrado: withRetry() reintenta 3 veces (8 s) y responde 503; nunca usa memoria en prod│
+│  • Pagos: acreditarPagoUnaVez() acredita y registra pago_<ref> en UNA transacción (idempotente)│
 │  • Autenticación Zero-Trust: Erradicación absoluta de bypass por dígitos de celular.          │
 └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```

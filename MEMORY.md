@@ -1,8 +1,19 @@
 # MEMORY.md — Origgo (Showcase y Ledger de Oportunidades Directas)
 
-Última actualización: 2026-09-24 (GMT-5)
+Última actualización: 2026-09-25 (GMT-5)
 
 ---
+
+- 117. **Hito 117: Pagos que nunca se pierden ni se duplican (fallo cerrado y acreditación única)**:
+    - **Problema 1 (pagos perdidos):** `withRetry` en `lib/db.js` trataba un tiempo de espera (3,5 s, fácil de alcanzar en un arranque en frío) o la cuota agotada como motivo para cambiar TODA la instancia a la "libreta" temporal en memoria. Desde ese momento, pagos y créditos se guardaban en memoria y se perdían al apagarse la función.
+    - **Problema 2 (pago cobrado sin entregar):** el webhook marcaba la transacción como procesada ANTES de acreditar; si acreditar fallaba, el reintento de Wompi se ignoraba como duplicado y el usuario no recibía lo pagado.
+    - **Problema 3 (doble acreditación):** webhook (llave = id de Wompi), reclamo al volver del pago (llave = `claim_<ref>`) y cron (ignoraba el resultado) usaban llaves distintas: un mismo pago podía acreditarse dos veces.
+    - **Solución (estándar de pasarelas):** el modo memoria queda solo para desarrollo/pruebas sin credenciales (`activarModoMemoria`). En producción, cuota agotada → error inmediato; sin respuesta → 3 reintentos (8 s cada uno) y error. Los errores llevan `status: 503` y `codigo` (`CUOTA_AGOTADA` / `FIRESTORE_NO_DISPONIBLE`). Nueva `db.acreditarPagoUnaVez()`: en UNA transacción de Firestore lee el registro `transactions/pago_<referencia>` (y los registros anteriores: id de Wompi y `claim_<ref>`), acredita y escribe el registro; los tres caminos (webhook, reclamo, cron) la usan.
+    - **Webhook:** los avisos no aprobados ya no escriben nada; ante fallo de base responde 503 para que Wompi reintente; la orden se marca APPROVED después de acreditar; sin celular válido responde 200 con `revisionManual` (reintentar no lo arregla) y deja el aviso en el log. `addCredits` hace un solo intento (sumar no es idempotente). El reclamo responde 503 si la base no está disponible.
+    - **Archivos:** `lib/db.js`, `api/payments/webhook-wompi.js`, `api/payments/reconcile-cron.js`, `lib/auth/session.js`, `tests/pagos_idempotentes.test.js` (nuevo), `scripts/validate.js`, `ARCHITECTURE.md`.
+    - **Pruebas (solo las del cambio):** `pagos_idempotentes` 4/4, `test_ledger_wompi` OK, `test_idempotency_concurrency` OK, `reconciliation_cron` 8/8, `smoke_freemium_flow` 7/7, `support_blacklist` 9/9, `cache` 8/8.
+    - **Pendiente:** el aviso "REVISIÓN MANUAL" solo queda en los logs de Vercel; cuando exista el módulo de auditoría del panel, mostrarlo ahí.
+    - **Despliegue (hallazgo):** hay DOS proyectos de Vercel conectados a este repo (`origgo`, que sirve origgo.online, y `hunter-portal-showcase`); cada push despliega dos veces y el proyecto `origgo` alcanzó el límite gratuito ("Deployment rate limited — retry in 24 hours"), por eso `1161f79` no llegó a producción. Estándar: un repo → un proyecto. Recomendado desconectar Git del proyecto duplicado desde el panel de Vercel (gratis). Mientras tanto, agrupar cambios en menos pushes.
 
 - 116. **Hito 116: Ingesta por cambios desde el cazador (activo, retiros y alineación)**:
     - **Contexto:** al instalar la publicación por cambios en el J7 se descubrió que el teléfono NUNCA escribió directo en Firestore (no tiene firebase-admin ni credenciales, correcto por mínimo privilegio): alimenta la vitrina por `POST /api/leads/ingest` con `INGEST_SECRET_KEY`. Ese canal solo recibía inmuebles nuevos y **no los marcaba `activo: true`**, que es el filtro del catálogo público.
