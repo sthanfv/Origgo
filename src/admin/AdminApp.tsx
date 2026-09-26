@@ -11,8 +11,18 @@ import {
 } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
-import { leadsDeEjemplo, vistaPrevia } from './vista-previa';
+import { leadsDeEjemplo, resumenDeEjemplo, vistaPrevia } from './vista-previa';
 import { PanelRetiros } from './PanelRetiros';
+import { PanelResumen, type DatosResumen, type Seccion } from './PanelResumen';
+import { Building2, LayoutDashboard, LogOut, ShieldAlert, Store } from 'lucide-react';
+
+/** Secciones del panel: menú lateral (computador) y barra inferior (teléfono). */
+const SECCIONES: { id: Seccion; nombre: string; Icono: typeof Building2 }[] = [
+  { id: 'resumen', nombre: 'Resumen', Icono: LayoutDashboard },
+  { id: 'catalogo', nombre: 'Catálogo', Icono: Building2 },
+  { id: 'retiros', nombre: 'Retiros', Icono: ShieldAlert },
+  { id: 'vitrina', nombre: 'Vitrina', Icono: Store },
+];
 import { useSesionInactividad } from './sesion-inactividad';
 
 /** Inmueble del catálogo (Firestore `leads`). Se muestran solo campos no sensibles. */
@@ -46,7 +56,7 @@ class ErrorApi extends Error {
 
 type Fase = 'cargando' | 'login' | 'sin-acceso' | 'codigo' | 'panel';
 type Filtro = 'todos' | 'visibles' | 'ocultos' | 'destacados';
-type Pestana = 'catalogo' | 'vitrina' | 'retiros';
+type Pestana = Seccion;
 
 const POR_PAGINA = 20;
 const RECUPERAR_GOOGLE = 'https://accounts.google.com/signin/recovery';
@@ -229,7 +239,9 @@ export function AdminApp() {
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [pagina, setPagina] = useState(1);
-  const [pestana, setPestana] = useState<Pestana>('catalogo');
+  const [pestana, setPestana] = useState<Pestana>('resumen');
+  const [datosResumen, setDatosResumen] = useState<DatosResumen | null>(null);
+  const [cargandoResumen, setCargandoResumen] = useState(false);
 
   const resumen = useMemo(
     () => ({
@@ -498,6 +510,28 @@ export function AdminApp() {
     setPestana('catalogo');
   };
 
+  /** Cifras reales y alertas de la pantalla de inicio (GET /api/admin/resumen). */
+  const cargarResumen = useCallback(async () => {
+    if (import.meta.env.DEV && vistaPrevia()) {
+      setDatosResumen(resumenDeEjemplo());
+      return;
+    }
+    setCargandoResumen(true);
+    try {
+      setDatosResumen(await authFetch('/api/admin/resumen'));
+    } catch (e) {
+      manejarError(e);
+    } finally {
+      setCargandoResumen(false);
+    }
+  }, [authFetch, manejarError]);
+
+  useEffect(() => {
+    if (fase === 'panel' && pestana === 'resumen') cargarResumen();
+  }, [fase, pestana, cargarResumen]);
+
+  const seccionActual = SECCIONES.find((x) => x.id === pestana) || SECCIONES[0];
+
   const parchar = async (id: string, cambios: Record<string, unknown>) => {
     setOcupado(true);
     setError('');
@@ -745,7 +779,7 @@ export function AdminApp() {
   // ── Panel ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="adm-fondo">
+    <div className="adm-fondo adm-app">
       {segundosAviso !== null && (
         // Aviso de cierre por inactividad (2 min antes). Mover el mouse no basta: hay que decidir.
         <div
@@ -777,242 +811,271 @@ export function AdminApp() {
           </div>
         </div>
       )}
-      <header className="adm-barra">
-        <div className="adm-barra-interior">
-          <Marca pequena />
-          <nav className="adm-pestanas" aria-label="Secciones del panel">
+      {/* Menú lateral (computador) */}
+      <aside className="adm-lateral" aria-label="Menú del panel">
+        <Marca pequena />
+        <nav className="adm-lateral-nav">
+          {SECCIONES.map(({ id, nombre, Icono }) => (
             <button
-              className={pestana === 'catalogo' ? 'adm-pestana activa' : 'adm-pestana'}
-              onClick={() => setPestana('catalogo')}
+              key={id}
+              className={pestana === id ? 'adm-lateral-item activo' : 'adm-lateral-item'}
+              onClick={() => setPestana(id)}
+              aria-current={pestana === id ? 'page' : undefined}
             >
-              Catálogo
+              <Icono size={18} aria-hidden="true" />
+              <span>{nombre}</span>
+              {id === 'retiros' && (datosResumen?.retiros.pendientes || 0) > 0 && (
+                <span className="adm-insignia-conteo">{datosResumen?.retiros.pendientes}</span>
+              )}
             </button>
-            <button
-              className={pestana === 'vitrina' ? 'adm-pestana activa' : 'adm-pestana'}
-              onClick={() => setPestana('vitrina')}
-            >
-              Vitrina
-            </button>
-            <button
-              className={pestana === 'retiros' ? 'adm-pestana activa' : 'adm-pestana'}
-              onClick={() => setPestana('retiros')}
-            >
-              Retiros
-            </button>
-          </nav>
-          <div className="adm-usuario">
-            {user.photoURL && (
-              <img src={user.photoURL} alt="" className="adm-avatar" referrerPolicy="no-referrer" />
-            )}
-            <span className="adm-usuario-correo">{user.email}</span>
-            <button className="adm-btn adm-btn-secundario" onClick={salir}>
-              Salir
-            </button>
-          </div>
+          ))}
+        </nav>
+        <div className="adm-lateral-usuario">
+          {user.photoURL && (
+            <img src={user.photoURL} alt="" className="adm-avatar" referrerPolicy="no-referrer" />
+          )}
+          <span className="adm-usuario-correo">{user.email}</span>
+          <button
+            className="adm-icono-btn"
+            onClick={salir}
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <LogOut size={18} aria-hidden="true" />
+          </button>
         </div>
-      </header>
+      </aside>
 
-      <main className="adm-contenido">
-        {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
-        {mensaje && <p className="adm-alerta adm-alerta-ok">{mensaje}</p>}
-
-        <section className="adm-kpis" aria-label="Resumen del catálogo">
-          <button className="adm-kpi" onClick={() => irAFiltro('todos')}>
-            <span className="adm-kpi-valor">{resumen.total}</span>
-            <span className="adm-kpi-etiqueta">Inmuebles</span>
+      <div className="adm-principal">
+        <header className="adm-cabecera">
+          <div className="adm-cabecera-marca">
+            <Marca pequena />
+          </div>
+          <h1 className="adm-cabecera-titulo">{seccionActual.nombre}</h1>
+          <button
+            className="adm-icono-btn adm-cabecera-salir"
+            onClick={salir}
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <LogOut size={18} aria-hidden="true" />
           </button>
-          <button className="adm-kpi" onClick={() => irAFiltro('visibles')}>
-            <span className="adm-kpi-valor adm-verde">{resumen.visibles}</span>
-            <span className="adm-kpi-etiqueta">Visibles</span>
-          </button>
-          <button className="adm-kpi" onClick={() => irAFiltro('ocultos')}>
-            <span className="adm-kpi-valor adm-rojo">{resumen.ocultos}</span>
-            <span className="adm-kpi-etiqueta">Ocultos</span>
-          </button>
-          <button className="adm-kpi" onClick={() => irAFiltro('destacados')}>
-            <span className="adm-kpi-valor adm-dorado">{resumen.destacados}</span>
-            <span className="adm-kpi-etiqueta">Destacados</span>
-          </button>
-        </section>
+        </header>
 
-        {pestana === 'retiros' ? (
-          <PanelRetiros authFetch={authFetch} onError={manejarError} />
-        ) : pestana === 'vitrina' ? (
-          <form className="adm-panel" onSubmit={guardarConfig}>
-            <div className="adm-panel-cabecera">
-              <div>
-                <h2>Vitrina</h2>
-                <p>Textos de la portada pública de Origgo.</p>
-              </div>
-            </div>
-            <div className="adm-campos">
-              <label className="adm-campo">
-                <span>Etiqueta del contador</span>
-                <input
-                  className="adm-input"
-                  value={config.counterLabel || ''}
-                  onChange={(e) => setConfig({ ...config, counterLabel: e.target.value })}
-                  placeholder="Ej. Oportunidades detectadas"
-                />
-              </label>
-              <label className="adm-campo">
-                <span>Número del contador</span>
-                <input
-                  className="adm-input"
-                  value={config.counterValue || ''}
-                  onChange={(e) => setConfig({ ...config, counterValue: e.target.value })}
-                  placeholder="Ej. 146"
-                />
-              </label>
-            </div>
-            <div className="adm-panel-pie">
-              <button className="adm-btn adm-btn-primario" type="submit" disabled={ocupado}>
-                {ocupado ? 'Guardando…' : 'Guardar cambios'}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <section className="adm-panel">
-            <div className="adm-panel-cabecera">
-              <div>
-                <h2>Catálogo</h2>
-                <p>Inmuebles en la base de datos (fuente de la verdad).</p>
-              </div>
-              <button className="adm-btn adm-btn-secundario" onClick={cargar} disabled={ocupado}>
-                Recargar
-              </button>
-            </div>
+        <main className="adm-contenido">
+          {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
+          {mensaje && <p className="adm-alerta adm-alerta-ok">{mensaje}</p>}
 
-            <div className="adm-herramientas">
-              <input
-                className="adm-input adm-buscar"
-                type="search"
-                value={busqueda}
-                onChange={(e) => {
-                  setBusqueda(e.target.value);
-                  setPagina(1);
-                }}
-                placeholder="Buscar por título, ciudad, portal o precio…"
-                aria-label="Buscar inmuebles"
-              />
-              <div className="adm-segmentos" role="group" aria-label="Filtrar inmuebles">
-                {FILTROS.map((f) => (
-                  <button
-                    key={f}
-                    aria-pressed={filtro === f}
-                    className={filtro === f ? 'adm-segmento activo' : 'adm-segmento'}
-                    onClick={() => {
-                      setFiltro(f);
-                      setPagina(1);
-                    }}
-                  >
-                    {f[0].toUpperCase() + f.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="adm-tabla-scroll">
-              <table className="adm-tabla">
-                <thead>
-                  <tr>
-                    <th>Inmueble</th>
-                    <th>Ciudad</th>
-                    <th>Precio</th>
-                    <th>Portal</th>
-                    <th>Estado</th>
-                    <th className="adm-th-acciones">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibles.map((l) => (
-                    <tr key={l.id} className={l.activo === false ? 'adm-fila-oculta' : ''}>
-                      <td data-label="Inmueble" className="adm-celda-titulo">
-                        {l.titulo || '—'}
-                        {l.destacado ? (
-                          <span className="adm-estrella" title="Destacado">
-                            {' '}
-                            ★
-                          </span>
-                        ) : null}
-                      </td>
-                      <td data-label="Ciudad">{l.ciudad || '—'}</td>
-                      <td data-label="Precio" className="adm-precio">
-                        {l.precio || '—'}
-                      </td>
-                      <td data-label="Portal">{l.portal || '—'}</td>
-                      <td data-label="Estado">
-                        <span
-                          className={l.activo === false ? 'adm-chip adm-chip-oculto' : 'adm-chip'}
-                        >
-                          {l.activo === false ? 'Oculto' : 'Visible'}
-                        </span>
-                      </td>
-                      <td className="adm-acciones">
-                        <button
-                          className="adm-btn adm-btn-mini"
-                          onClick={() => parchar(l.id, { activo: l.activo === false })}
-                          disabled={ocupado}
-                        >
-                          {l.activo === false ? 'Mostrar' : 'Ocultar'}
-                        </button>
-                        <button
-                          className="adm-btn adm-btn-mini"
-                          onClick={() => parchar(l.id, { destacado: !l.destacado })}
-                          disabled={ocupado}
-                        >
-                          {l.destacado ? 'Quitar ★' : 'Destacar'}
-                        </button>
-                        <button
-                          className="adm-btn adm-btn-mini adm-btn-peligro"
-                          onClick={() => eliminar(l.id)}
-                          disabled={ocupado}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {leads.length === 0 && !error && (
-                <p className="adm-vacio">No hay inmuebles en la base de datos.</p>
-              )}
-              {leads.length > 0 && filtrados.length === 0 && (
-                <p className="adm-vacio">Ningún inmueble coincide con la búsqueda.</p>
-              )}
-            </div>
-
-            {filtrados.length > 0 && (
-              <nav className="adm-paginacion" aria-label="Paginación">
-                <span className="adm-paginacion-info">
-                  {(paginaActual - 1) * POR_PAGINA + 1}–
-                  {Math.min(paginaActual * POR_PAGINA, filtrados.length)} de {filtrados.length}
-                </span>
-                <div className="adm-paginacion-botones">
-                  <button
-                    className="adm-btn adm-btn-secundario"
-                    onClick={() => setPagina(paginaActual - 1)}
-                    disabled={paginaActual <= 1}
-                  >
-                    ← Anterior
-                  </button>
-                  <span className="adm-paginacion-pagina">
-                    {paginaActual} / {totalPaginas}
-                  </span>
-                  <button
-                    className="adm-btn adm-btn-secundario"
-                    onClick={() => setPagina(paginaActual + 1)}
-                    disabled={paginaActual >= totalPaginas}
-                  >
-                    Siguiente →
-                  </button>
+          {pestana === 'resumen' ? (
+            <PanelResumen
+              datos={datosResumen}
+              cargando={cargandoResumen}
+              onIr={setPestana}
+              onFiltroCatalogo={irAFiltro}
+            />
+          ) : pestana === 'retiros' ? (
+            <PanelRetiros authFetch={authFetch} onError={manejarError} />
+          ) : pestana === 'vitrina' ? (
+            <form className="adm-panel" onSubmit={guardarConfig}>
+              <div className="adm-panel-cabecera">
+                <div>
+                  <h2>Vitrina</h2>
+                  <p>Textos de la portada pública de Origgo.</p>
                 </div>
-              </nav>
-            )}
-          </section>
-        )}
-      </main>
+              </div>
+              <div className="adm-campos">
+                <label className="adm-campo">
+                  <span>Etiqueta del contador</span>
+                  <input
+                    className="adm-input"
+                    value={config.counterLabel || ''}
+                    onChange={(e) => setConfig({ ...config, counterLabel: e.target.value })}
+                    placeholder="Ej. Oportunidades detectadas"
+                  />
+                </label>
+                <label className="adm-campo">
+                  <span>Número del contador</span>
+                  <input
+                    className="adm-input"
+                    value={config.counterValue || ''}
+                    onChange={(e) => setConfig({ ...config, counterValue: e.target.value })}
+                    placeholder="Ej. 146"
+                  />
+                </label>
+              </div>
+              <div className="adm-panel-pie">
+                <button className="adm-btn adm-btn-primario" type="submit" disabled={ocupado}>
+                  {ocupado ? 'Guardando…' : 'Guardar cambios'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <section className="adm-panel">
+              <div className="adm-panel-cabecera">
+                <div>
+                  <h2>Catálogo</h2>
+                  <p>
+                    {datosResumen && datosResumen.catalogo.total > leads.length
+                      ? `Se muestran los ${leads.length} más recientes de ${datosResumen.catalogo.total.toLocaleString('es-CO')} inmuebles.`
+                      : `${leads.length} inmuebles en la base de datos (fuente de la verdad).`}
+                  </p>
+                </div>
+                <button className="adm-btn adm-btn-secundario" onClick={cargar} disabled={ocupado}>
+                  Recargar
+                </button>
+              </div>
+
+              <div className="adm-herramientas">
+                <input
+                  className="adm-input adm-buscar"
+                  type="search"
+                  value={busqueda}
+                  onChange={(e) => {
+                    setBusqueda(e.target.value);
+                    setPagina(1);
+                  }}
+                  placeholder="Buscar por título, ciudad, portal o precio…"
+                  aria-label="Buscar inmuebles"
+                />
+                <div className="adm-segmentos" role="group" aria-label="Filtrar inmuebles">
+                  {FILTROS.map((f) => (
+                    <button
+                      key={f}
+                      aria-pressed={filtro === f}
+                      className={filtro === f ? 'adm-segmento activo' : 'adm-segmento'}
+                      onClick={() => {
+                        setFiltro(f);
+                        setPagina(1);
+                      }}
+                    >
+                      {f[0].toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="adm-tabla-scroll">
+                <table className="adm-tabla">
+                  <thead>
+                    <tr>
+                      <th>Inmueble</th>
+                      <th>Ciudad</th>
+                      <th>Precio</th>
+                      <th>Portal</th>
+                      <th>Estado</th>
+                      <th className="adm-th-acciones">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibles.map((l) => (
+                      <tr key={l.id} className={l.activo === false ? 'adm-fila-oculta' : ''}>
+                        <td data-label="Inmueble" className="adm-celda-titulo">
+                          {l.titulo || '—'}
+                          {l.destacado ? (
+                            <span className="adm-estrella" title="Destacado">
+                              {' '}
+                              ★
+                            </span>
+                          ) : null}
+                        </td>
+                        <td data-label="Ciudad">{l.ciudad || '—'}</td>
+                        <td data-label="Precio" className="adm-precio">
+                          {l.precio || '—'}
+                        </td>
+                        <td data-label="Portal">{l.portal || '—'}</td>
+                        <td data-label="Estado">
+                          <span
+                            className={l.activo === false ? 'adm-chip adm-chip-oculto' : 'adm-chip'}
+                          >
+                            {l.activo === false ? 'Oculto' : 'Visible'}
+                          </span>
+                        </td>
+                        <td className="adm-acciones">
+                          <button
+                            className="adm-btn adm-btn-mini"
+                            onClick={() => parchar(l.id, { activo: l.activo === false })}
+                            disabled={ocupado}
+                          >
+                            {l.activo === false ? 'Mostrar' : 'Ocultar'}
+                          </button>
+                          <button
+                            className="adm-btn adm-btn-mini"
+                            onClick={() => parchar(l.id, { destacado: !l.destacado })}
+                            disabled={ocupado}
+                          >
+                            {l.destacado ? 'Quitar ★' : 'Destacar'}
+                          </button>
+                          <button
+                            className="adm-btn adm-btn-mini adm-btn-peligro"
+                            onClick={() => eliminar(l.id)}
+                            disabled={ocupado}
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {leads.length === 0 && !error && (
+                  <p className="adm-vacio">No hay inmuebles en la base de datos.</p>
+                )}
+                {leads.length > 0 && filtrados.length === 0 && (
+                  <p className="adm-vacio">Ningún inmueble coincide con la búsqueda.</p>
+                )}
+              </div>
+
+              {filtrados.length > 0 && (
+                <nav className="adm-paginacion" aria-label="Paginación">
+                  <span className="adm-paginacion-info">
+                    {(paginaActual - 1) * POR_PAGINA + 1}–
+                    {Math.min(paginaActual * POR_PAGINA, filtrados.length)} de {filtrados.length}
+                  </span>
+                  <div className="adm-paginacion-botones">
+                    <button
+                      className="adm-btn adm-btn-secundario"
+                      onClick={() => setPagina(paginaActual - 1)}
+                      disabled={paginaActual <= 1}
+                    >
+                      ← Anterior
+                    </button>
+                    <span className="adm-paginacion-pagina">
+                      {paginaActual} / {totalPaginas}
+                    </span>
+                    <button
+                      className="adm-btn adm-btn-secundario"
+                      onClick={() => setPagina(paginaActual + 1)}
+                      disabled={paginaActual >= totalPaginas}
+                    >
+                      Siguiente →
+                    </button>
+                  </div>
+                </nav>
+              )}
+            </section>
+          )}
+        </main>
+      </div>
+
+      {/* Barra inferior (teléfono): acceso con el pulgar a cada sección */}
+      <nav className="adm-nav-inferior" aria-label="Secciones del panel">
+        {SECCIONES.map(({ id, nombre, Icono }) => (
+          <button
+            key={id}
+            className={pestana === id ? 'adm-nav-inferior-item activo' : 'adm-nav-inferior-item'}
+            onClick={() => setPestana(id)}
+            aria-current={pestana === id ? 'page' : undefined}
+          >
+            <span className="adm-nav-inferior-icono">
+              <Icono size={22} aria-hidden="true" />
+              {id === 'retiros' && (datosResumen?.retiros.pendientes || 0) > 0 && (
+                <span className="adm-insignia-conteo">{datosResumen?.retiros.pendientes}</span>
+              )}
+            </span>
+            <span>{nombre}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

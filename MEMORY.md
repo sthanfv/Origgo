@@ -4,6 +4,14 @@
 
 ---
 
+- 123. **Hito 123: Panel con patrón profesional — etapa 1 (estructura, Resumen y versión para teléfono)**:
+    - **Por qué:** el propietario pidió un panel como los profesionales (Stripe, Shopify, Vercel), con versión para teléfono porque lo usa desde allí.
+    - **Estructura:** computador (≥ 960 px) con menú lateral fijo (Resumen, Catálogo, Retiros, Vitrina, insignia de retiros pendientes, usuario y salir abajo); teléfono con cabecera compacta y barra inferior de 4 secciones (botones de 56 px, sin desplazamiento horizontal a 390 px). Componentes: `src/admin/PanelResumen.tsx`, `SECCIONES` en `AdminApp.tsx`, estilos al final de `admin.css`.
+    - **Resumen (pantalla de inicio):** alertas accionables primero (retiros vencidos o por vencer, cazador sin publicar hace más de 6 h, índice de búsqueda sin reconstruir), luego cifras REALES del catálogo con `count()` (antes el panel decía "500" porque solo carga 500) y tarjetas de Retiros y Cazador. API: `GET /api/admin/resumen` (`lib/admin/resumen.js`). La ingesta registra `admin_estado/cazador` (última publicación) y "Reindexar" registra `admin_estado/indice`.
+    - **Catálogo:** indica "se muestran los N más recientes de TOTAL".
+    - **Pruebas:** `admin_resumen` 1/1 (nueva), `leads_ingest` 9/9; `tsc` y build OK; capturas a 390×844 y 1366×800 sin errores.
+    - **Siguientes etapas (acordadas):** 2) Clientes y Pagos; 3) Cazador, Auditoría y Precios.
+
 - 122. **Hito 122: Animaciones visibles con movimiento reducido (Windows con efectos apagados)**: el PC del propietario tiene los "Efectos de animación" de Windows apagados, Chrome envía `prefers-reduced-motion: reduce` y `admin.css` eliminaba toda animación, así que no veía nada. Ahora se REDUCE en vez de eliminar (WCAG 2.3.3): brillo de la casilla activa, onda solo de luz, fundido a "Código verificado", sello, check y botón; sin escalas, sacudidas ni desenfoques. Verificado con capturas emulando movimiento reducido; build OK.
 
 - 121. **Hito 121: Animación del código fiel a la referencia y cierre de sesión por inactividad (estándar OWASP/NIST)**:

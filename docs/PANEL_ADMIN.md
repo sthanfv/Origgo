@@ -15,6 +15,13 @@ Página aparte del sitio público (`admin.html` + `src/admin/`), con `noindex`.
 Además: máx. 5 intentos de código cada 15 min, cada código sirve una sola vez, y todo queda en `admin_auditoria`.
 No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hito 110 de `MEMORY.md`.
 
+## Estructura (patrón de paneles profesionales)
+
+- **Computador:** menú lateral fijo con las secciones y el usuario; contenido a la derecha.
+- **Teléfono:** cabecera compacta y barra inferior con las secciones (al alcance del pulgar).
+- **Resumen** (inicio): primero las alertas que piden acción, después las cifras reales y el estado del cazador y de los retiros. Cada tarjeta lleva a su sección.
+- **Plan por etapas:** 1) estructura + Resumen ✅; 2) Clientes y Pagos; 3) Cazador, Auditoría y Precios.
+
 ## Sesión (estándar OWASP / NIST 800-63B)
 
 - **15 minutos sin actividad** cierran la sesión; lo exige el servidor (`lib/admin/sesion.js`), no solo la página.

@@ -24,3 +24,25 @@ export function leadsDeEjemplo() {
     destacado: i % 11 === 0,
   }));
 }
+
+export function resumenDeEjemplo() {
+  const ahora = Date.now();
+  return {
+    catalogo: { total: 1284, visibles: 1150, ocultos: 134, destacados: 12 },
+    retiros: { pendientes: 2, porVencer: 1 },
+    cazador: { ultima_ms: ahora - 38 * 60 * 1000, procesados: 4 },
+    alertas: [
+      {
+        nivel: 'aviso' as const,
+        seccion: 'retiros' as const,
+        texto: '1 solicitud de retiro vence en 3 días o menos.',
+      },
+      {
+        nivel: 'aviso' as const,
+        seccion: 'retiros' as const,
+        texto:
+          'Falta reconstruir el índice de búsqueda (Retiros → "Reindexar búsqueda"), una sola vez.',
+      },
+    ],
+  };
+}

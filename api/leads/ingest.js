@@ -214,6 +214,17 @@ async function handler(req, res) {
     // La vitrina muestra los cambios de inmediato (sin esperar a que venza la caché).
     if (resultado.count > 0 || desactivados > 0 || reconciliados > 0) await invalidarCatalogo();
 
+    // Estado del cazador para el panel (Resumen → "última publicación"). Un fallo aquí no
+    // afecta la ingesta.
+    try {
+      await db.coleccion('admin_estado').doc('cazador').set(
+        { ultima_ms: Date.now(), procesados: resultado.count, desactivados, reconciliados },
+        { merge: true }
+      );
+    } catch (errEstado) {
+      console.warn('[api/leads/ingest] No se pudo registrar el estado del cazador:', errEstado.message);
+    }
+
     return res.status(200).json({
       success: true,
       procesados: resultado.count,
