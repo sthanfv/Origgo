@@ -251,133 +251,81 @@ body {
   opacity: 0.55;
 }
 
-/* ── Animación del código (referencia: video del propietario) ─────────────────
-   Brillo en la casilla activa → cada dígito entra con rebote → al completarse
-   los dígitos se juntan en el centro con un destello → check dentro de un anillo
-   luminoso si es correcto, o sacudida en rojo si no. Solo transform/opacity. */
-.adm-otp {
-  position: relative;
+/* ── Animación del código (fiel a la referencia "OTP Verification" del propietario) ──────
+   1. Casilla activa: borde grueso + resplandor que la llena por dentro, latiendo.
+   2. Dígito: entra con un rebote.
+   3. Verificando: una onda de luz y desenfoque recorre las casillas de izquierda a derecha.
+   4. Correcto: el contenido de la tarjeta se desenfoca y desaparece; la tarjeta se llena de
+      un resplandor desde abajo; un sello pequeño crece, se dibuja el check con su halo y
+      aparece el botón "Continuar".
+   5. Incorrecto: casillas en rojo y sacudida. */
+.adm-otp .adm-casillas {
+  gap: 10px;
 }
 .adm-otp .adm-casilla {
+  min-height: 58px;
+  font-size: 1.7rem;
+  border-radius: 14px;
+  background: rgba(8, 20, 17, 0.8);
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.42s cubic-bezier(0.65, 0, 0.35, 1),
-    opacity 0.42s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 .adm-otp .adm-casilla:focus:not(.adm-casilla-llena) {
-  animation: adm-brillo 1.6s ease-in-out infinite;
+  border: 2px solid var(--adm-acento-claro);
+  background:
+    radial-gradient(circle at 50% 55%, hsla(158, 75%, 58%, 0.6), hsla(158, 70%, 42%, 0.2) 55%, transparent 85%),
+    rgba(8, 20, 17, 0.8);
+  animation: adm-brillo 1.4s ease-in-out infinite;
 }
 .adm-casilla-llena {
-  border-color: hsla(158, 64%, 52%, 0.45);
-  animation: adm-entra-digito 0.24s cubic-bezier(0.3, 1.5, 0.6, 1);
+  border-color: hsla(158, 64%, 52%, 0.35);
+  animation: adm-entra-digito 0.28s cubic-bezier(0.3, 1.5, 0.6, 1);
 }
 @keyframes adm-brillo {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px hsla(158, 64%, 52%, 0.16),
+      0 0 18px 2px hsla(158, 64%, 52%, 0.3);
+  }
   50% {
     box-shadow:
-      0 0 0 4px hsla(158, 64%, 52%, 0.22),
-      0 0 22px 2px hsla(158, 64%, 52%, 0.35);
+      0 0 0 5px hsla(158, 64%, 52%, 0.24),
+      0 0 34px 6px hsla(158, 64%, 52%, 0.5);
   }
 }
 @keyframes adm-entra-digito {
   from {
-    transform: translateY(6px) scale(0.86);
+    transform: translateY(8px) scale(0.8);
+    filter: blur(4px);
+    opacity: 0.4;
   }
 }
 
-/* Verificando: cada casilla viaja al centro (su distancia depende de su posición --i). */
+/* Onda mientras se verifica: cada casilla se ilumina y se desenfoca con un retraso según su posición. */
 .adm-otp[data-estado='verificando'] .adm-casilla,
 .adm-otp[data-estado='exito'] .adm-casilla {
-  transform: translateX(calc((2.5 - var(--i)) * (100% + 8px))) scale(0.5);
-  opacity: 0;
-}
-.adm-otp[data-estado='verificando'] .adm-casilla:disabled,
-.adm-otp[data-estado='exito'] .adm-casilla:disabled {
-  opacity: 0;
-}
-.adm-otp-centro {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-}
-.adm-otp-centro > * {
-  grid-area: 1 / 1;
-}
-.adm-otp-destello {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, var(--adm-acento-claro) 45%, transparent 72%);
-  box-shadow: 0 0 26px 8px hsla(158, 64%, 52%, 0.5);
-  opacity: 0;
-  transform: scale(0);
-  transition:
-    opacity 0.2s ease,
-    transform 0.3s ease;
-}
-.adm-otp[data-estado='verificando'] .adm-otp-destello {
   opacity: 1;
-  transform: scale(1);
-  transition-delay: 0.3s;
-  animation: adm-latido 1s ease-in-out 0.55s infinite;
+  animation: adm-onda 0.9s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 110ms);
 }
-@keyframes adm-latido {
-  50% {
-    transform: scale(1.4);
-    box-shadow: 0 0 40px 14px hsla(158, 64%, 52%, 0.32);
+@keyframes adm-onda {
+  0%,
+  100% {
+    filter: none;
+    transform: none;
+  }
+  35% {
+    filter: blur(3px) brightness(1.7);
+    transform: translateY(-3px) scale(1.05);
+    border-color: var(--adm-acento-claro);
+    box-shadow: 0 0 26px 4px hsla(158, 64%, 52%, 0.45);
   }
 }
 
-/* Correcto: el anillo y el check se dibujan (stroke-dashoffset). */
-.adm-otp-check {
-  width: 60px;
-  height: 60px;
-  overflow: visible;
-  opacity: 0;
-  transform: scale(0.6);
-}
-.adm-otp-check circle {
-  fill: hsla(158, 64%, 52%, 0.12);
-  stroke: var(--adm-acento-claro);
-  stroke-width: 2.5;
-  stroke-dasharray: 158;
-}
-.adm-otp-check path {
-  fill: none;
-  stroke: #ecfdf5;
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 34;
-}
-.adm-otp[data-estado='exito'] .adm-otp-check {
-  opacity: 1;
-  transform: scale(1);
-  filter: drop-shadow(0 0 12px hsla(158, 64%, 52%, 0.7));
-  transition:
-    opacity 0.2s ease,
-    transform 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.adm-otp[data-estado='exito'] .adm-otp-check circle {
-  animation: adm-trazo-anillo 0.5s ease-out both;
-}
-.adm-otp[data-estado='exito'] .adm-otp-check path {
-  animation: adm-trazo-check 0.35s ease-out 0.35s both;
-}
-@keyframes adm-trazo-anillo {
-  from {
-    stroke-dashoffset: 158;
-  }
-}
-@keyframes adm-trazo-check {
-  from {
-    stroke-dashoffset: 34;
-  }
-}
-
-/* Incorrecto: las casillas vuelven a su sitio en rojo y se sacuden. */
+/* Incorrecto */
 .adm-otp[data-estado='error'] .adm-casillas {
   animation: adm-sacudida 0.45s ease;
 }
@@ -388,17 +336,218 @@ body {
 }
 @keyframes adm-sacudida {
   20% {
-    transform: translateX(-9px);
+    transform: translateX(-10px);
   }
   40% {
-    transform: translateX(8px);
+    transform: translateX(9px);
   }
   60% {
-    transform: translateX(-5px);
+    transform: translateX(-6px);
   }
   80% {
     transform: translateX(3px);
   }
+}
+
+/* Tarjeta que se transforma al verificar */
+.adm-otp-tarjeta {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+.adm-otp-tarjeta::after {
+  /* ::before ya es la línea superior de la tarjeta; el resplandor va en su propia capa. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(90% 70% at 50% 100%, hsla(168, 80%, 45%, 0.55), hsla(168, 75%, 32%, 0.2) 50%, transparent 78%),
+    radial-gradient(40% 30% at 50% 62%, hsla(168, 85%, 55%, 0.28), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.8s ease 0.2s;
+  pointer-events: none;
+}
+.adm-otp-tarjeta[data-estado='exito'] {
+  border-color: hsla(168, 70%, 55%, 0.45);
+  box-shadow:
+    var(--adm-sombra),
+    0 0 60px -12px hsla(168, 80%, 45%, 0.55);
+}
+.adm-otp-tarjeta[data-estado='exito']::after {
+  opacity: 1;
+}
+.adm-otp-vista-codigo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  transition:
+    filter 0.5s ease,
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+.adm-otp-tarjeta[data-estado='exito'] .adm-otp-vista-codigo {
+  filter: blur(12px);
+  opacity: 0;
+  transform: scale(0.97);
+  pointer-events: none;
+}
+.adm-otp-vista-exito {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+}
+.adm-otp-aparece {
+  margin: 0;
+  animation: adm-aparece 0.55s ease 0.4s both;
+}
+.adm-otp-vista-exito .adm-subtitulo {
+  animation-delay: 0.5s;
+}
+@keyframes adm-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+  }
+}
+.adm-otp-sello {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin: 14px 0 10px;
+  border-radius: 24px;
+  border: 2px solid hsla(168, 80%, 58%, 0.95);
+  background: linear-gradient(160deg, hsla(168, 60%, 22%, 0.9), hsla(168, 70%, 12%, 0.95));
+  box-shadow:
+    0 0 0 1px hsla(168, 80%, 60%, 0.2) inset,
+    0 0 44px 6px hsla(168, 80%, 48%, 0.5);
+  animation: adm-sello-crece 0.7s cubic-bezier(0.3, 1.35, 0.5, 1) 0.55s both;
+}
+.adm-otp-sello::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 32px;
+  border: 1.5px solid hsla(168, 80%, 60%, 0.35);
+  box-shadow: 0 0 22px hsla(168, 80%, 50%, 0.25);
+  animation: adm-halo 0.7s ease-out 1.05s both;
+}
+.adm-otp-sello svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #ecfdf5;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  animation: adm-trazo-check 0.45s ease-out 1s both;
+}
+@keyframes adm-sello-crece {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+    box-shadow: none;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes adm-halo {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+@keyframes adm-trazo-check {
+  from {
+    stroke-dashoffset: 24;
+  }
+}
+.adm-otp-continuar {
+  min-width: 170px;
+  padding: 12px 28px;
+  border: 1.5px solid hsla(168, 90%, 75%, 0.9);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5eead4, #14b8a6);
+  color: #042f2e;
+  font-family: var(--adm-fuente-titulo);
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 0 28px -2px hsla(172, 80%, 50%, 0.6);
+  animation: adm-aparece 0.5s ease 1.3s both;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.adm-otp-continuar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 38px 0 hsla(172, 80%, 55%, 0.75);
+}
+.adm-otp-continuar:focus-visible {
+  outline: 3px solid hsla(168, 90%, 75%, 0.6);
+  outline-offset: 3px;
+}
+
+/* Aviso de cierre por inactividad */
+.adm-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(2, 8, 6, 0.72);
+  backdrop-filter: blur(4px);
+}
+.adm-modal {
+  width: min(420px, 100%);
+  padding: 26px;
+  border-radius: var(--adm-radio);
+  border: 1px solid var(--adm-borde);
+  background: var(--adm-cristal-fuerte);
+  box-shadow: var(--adm-sombra);
+  text-align: center;
+}
+.adm-modal h2 {
+  margin: 0 0 8px;
+  font-family: var(--adm-fuente-titulo);
+}
+.adm-modal p {
+  margin: 0 0 18px;
+  color: var(--adm-texto-suave);
+}
+.adm-modal-cuenta {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 1.15rem;
+  color: var(--adm-dorado);
+}
+.adm-modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.adm-alerta-info {
+  border: 1px solid hsla(45, 90%, 60%, 0.35);
+  background: hsla(45, 90%, 50%, 0.08);
+  color: #fde68a;
 }
 .adm-solo-lector {
   position: absolute;

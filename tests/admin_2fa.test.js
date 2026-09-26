@@ -145,9 +145,35 @@ test('un JWT de usuario de la vitrina no sirve como sesión del panel (separaci�
 
 test('la cookie es HttpOnly, Secure, SameSite=Strict y limitada a /api/admin', () => {
   const c = sesion.cabeceraCookie('x');
-  for (const parte of ['HttpOnly', 'Secure', 'SameSite=Strict', 'Path=/api/admin', 'Max-Age=28800']) {
+  for (const parte of ['HttpOnly', 'Secure', 'SameSite=Strict', 'Path=/api/admin']) {
     assert.ok(c.includes(parte), parte);
   }
+  assert.ok(!c.includes('Max-Age'), 'cookie de sesión: se borra al cerrar el navegador');
+});
+
+test('sesión: 15 min sin uso la cierran, el uso la renueva y 8 h es el máximo absoluto', () => {
+  const ahora = Date.now();
+  const minuto = 60 * 1000;
+  const req = (t) => ({ headers: { cookie: `${sesion.COOKIE}=${t}` } });
+
+  // Usada hace 14 min: sigue activa. Hace 16 min: cerrada por inactividad.
+  const hace14 = sesion.crearSesion('uid-admin', 8, { ini: ahora - 14 * minuto, ahora: ahora - 14 * minuto });
+  assert.equal(sesion.estadoSesion(req(hace14), 'uid-admin').valida, true);
+  const hace16 = sesion.crearSesion('uid-admin', 8, { ini: ahora - 16 * minuto, ahora: ahora - 16 * minuto });
+  assert.deepEqual(sesion.estadoSesion(req(hace16), 'uid-admin'), { valida: false, motivo: 'inactiva' });
+
+  // La renovación (más de 1 min después) entrega una cookie nueva con el mismo inicio.
+  let cabecera = '';
+  const res = { setHeader: (_n, v) => (cabecera = v) };
+  sesion.renovarSesion(res, sesion.estadoSesion(req(hace14), 'uid-admin').datos);
+  const renovada = cabecera.split(';')[0].split('=').slice(1).join('=');
+  const datos = sesion.estadoSesion(req(renovada), 'uid-admin').datos;
+  assert.ok(datos.act >= ahora - 1000, 'actividad renovada');
+  assert.equal(datos.ini, ahora - 14 * minuto, 'el inicio no cambia: el límite de 8 h no se extiende');
+
+  // Iniciada hace 8 h 1 min, aunque se haya usado hace 1 min: vencida.
+  const vieja = sesion.crearSesion('uid-admin', 8, { ini: ahora - 481 * minuto, ahora: ahora - minuto });
+  assert.equal(sesion.estadoSesion(req(vieja), 'uid-admin').valida, false);
 });
 
 // --- Acceso de 4 capas -------------------------------------------------------------------

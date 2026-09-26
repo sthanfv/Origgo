@@ -13,6 +13,7 @@ import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebas
 import { auth, googleProvider } from './firebase';
 import { leadsDeEjemplo, vistaPrevia } from './vista-previa';
 import { PanelRetiros } from './PanelRetiros';
+import { useSesionInactividad } from './sesion-inactividad';
 
 /** Inmueble del catálogo (Firestore `leads`). Se muestran solo campos no sensibles. */
 interface Lead {
@@ -103,10 +104,13 @@ const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * Seis casillas para el código TOTP: avanzan solas, aceptan pegar y envían al completarse.
- * Animación: brillo en la casilla activa, cada dígito entra con un rebote, al completarse los
- * dígitos se juntan en el centro con un destello y, si el código es correcto, se dibuja un
- * check dentro de un anillo luminoso; si es incorrecto, las casillas se sacuden en rojo.
- * Solo CSS (transform/opacity) y respeta prefers-reduced-motion.
+ * Animación (fiel a la referencia "OTP Verification" del propietario):
+ *   - la casilla activa tiene borde grueso y un resplandor que la llena por dentro;
+ *   - cada dígito entra con un rebote;
+ *   - al completar, una onda de luz y desenfoque recorre las casillas mientras se verifica;
+ *   - si es incorrecto, las casillas se sacuden en rojo.
+ * El estado "verificado" (la tarjeta completa se transforma) está en la pantalla del código.
+ * Solo CSS y respeta prefers-reduced-motion.
  */
 function CasillasCodigo({
   valor,
@@ -187,13 +191,6 @@ function CasillasCodigo({
           />
         ))}
       </div>
-      <div className="adm-otp-centro" aria-hidden="true">
-        <span className="adm-otp-destello" />
-        <svg className="adm-otp-check" viewBox="0 0 56 56">
-          <circle cx="28" cy="28" r="25" />
-          <path d="M17 29l7.5 7.5L40 21" />
-        </svg>
-      </div>
       <span className="adm-solo-lector" role="status">
         {TEXTO_ESTADO[estado]}
       </span>
@@ -224,6 +221,8 @@ export function AdminApp() {
   const [codigo, setCodigo] = useState('');
   const [modoRespaldo, setModoRespaldo] = useState(false);
   const [estadoCodigo, setEstadoCodigo] = useState<EstadoCodigo>('normal');
+  // Motivo del último cierre automático (se muestra en la pantalla de entrada).
+  const [avisoSesion, setAvisoSesion] = useState('');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [ocupado, setOcupado] = useState(false);
@@ -281,6 +280,15 @@ export function AdminApp() {
 
   /** Traduce errores de la API a la fase correcta de la pantalla. */
   const manejarError = useCallback((e: unknown) => {
+    if (e instanceof ErrorApi && e.codigo === 'SESION_INACTIVA') {
+      // El servidor ya la dio por cerrada: se sale también de Google y se explica por qué.
+      setAvisoSesion(
+        'Cerramos tu sesión tras 15 minutos sin actividad. Vuelve a entrar para continuar.',
+      );
+      setCodigo('');
+      signOut(auth);
+      return;
+    }
     if (e instanceof ErrorApi && e.codigo === '2FA_REQUERIDO') {
       setFase('codigo');
       return;
@@ -371,6 +379,7 @@ export function AdminApp() {
 
   const entrar = async () => {
     setError('');
+    setAvisoSesion('');
     setOcupado(true);
     try {
       await signInWithPopup(auth, googleProvider);
@@ -383,46 +392,79 @@ export function AdminApp() {
     }
   };
 
+  const cerrarSesion = useCallback(
+    async (mensajeSalida = '') => {
+      try {
+        await authFetch('/api/admin/salir', { method: 'POST', body: '{}' });
+      } catch {
+        // Aunque falle, se cierra la sesión de Google.
+      }
+      setCodigo('');
+      setModoRespaldo(false);
+      setEstadoCodigo('normal');
+      setAvisoSesion(mensajeSalida);
+      await signOut(auth);
+    },
+    [authFetch],
+  );
+
+  const latido = useCallback(async () => {
+    const d = await authFetch('/api/admin/estado?latido=1');
+    if (!d.dosFactores)
+      throw new ErrorApi('La sesión se cerró por inactividad.', 401, 'SESION_INACTIVA');
+  }, [authFetch]);
+
+  const alCerrarPorInactividad = useCallback(
+    (motivo: 'inactividad' | 'otra-pestana') => {
+      cerrarSesion(
+        motivo === 'inactividad'
+          ? 'Cerramos tu sesión tras 15 minutos sin actividad. Vuelve a entrar para continuar.'
+          : 'Se cerró la sesión desde otra pestaña.',
+      );
+    },
+    [cerrarSesion],
+  );
+
+  const { segundosAviso, seguir, avisarSalida } = useSesionInactividad({
+    activo: fase === 'panel',
+    onLatido: latido,
+    onCerrar: alCerrarPorInactividad,
+  });
+
   const salir = async () => {
-    try {
-      await authFetch('/api/admin/salir', { method: 'POST', body: '{}' });
-    } catch {
-      // Aunque falle, se cierra la sesión de Google.
-    }
-    setCodigo('');
-    setModoRespaldo(false);
-    await signOut(auth);
+    avisarSalida();
+    await cerrarSesion();
   };
 
   const verificarCodigo = async (valor: string) => {
     if (ocupado) return;
     setOcupado(true);
     setError('');
-    const conAnimacion = !modoRespaldo;
-    if (conAnimacion) setEstadoCodigo('verificando');
+    const conCasillas = !modoRespaldo;
+    if (conCasillas) setEstadoCodigo('verificando');
     try {
-      if (import.meta.env.DEV && vistaPrevia()) {
-        // Vista previa (solo desarrollo): 123456 es correcto, cualquier otro es incorrecto.
-        await esperar(700);
-        if (valor !== '123456') throw new ErrorApi('Código incorrecto.', 401);
-      } else {
-        await authFetch('/api/admin/verificar', {
-          method: 'POST',
-          body: JSON.stringify({ codigo: valor.trim() }),
-        });
-      }
-      if (conAnimacion) {
-        // Se deja ver el check antes de entrar al panel.
-        setEstadoCodigo('exito');
-        await esperar(prefiereMenosMovimiento() ? 400 : 1100);
-      }
-      setCodigo('');
-      if (!(import.meta.env.DEV && vistaPrevia())) await cargar();
-      setEstadoCodigo('normal');
+      const verificacion =
+        import.meta.env.DEV && vistaPrevia()
+          ? // Vista previa (solo desarrollo): 123456 es correcto, cualquier otro es incorrecto.
+            esperar(700).then(() => {
+              if (valor !== '123456') throw new ErrorApi('Código incorrecto.', 401);
+            })
+          : authFetch('/api/admin/verificar', {
+              method: 'POST',
+              body: JSON.stringify({ codigo: valor.trim() }),
+            });
+      // La onda de las casillas se deja ver completa al menos una vez.
+      await Promise.all([
+        verificacion,
+        esperar(conCasillas && !prefiereMenosMovimiento() ? 900 : 0),
+      ]);
+      // La tarjeta pasa a "Código verificado" con los dígitos aún visibles mientras se
+      // desenfocan (como la referencia); se entra al panel con "Continuar".
+      setEstadoCodigo('exito');
     } catch (e) {
       manejarError(e);
-      if (conAnimacion) {
-        // Las casillas vuelven a su sitio en rojo y se sacuden antes de vaciarse.
+      if (conCasillas) {
+        // Las casillas se ponen en rojo y se sacuden antes de vaciarse.
         setEstadoCodigo('error');
         await esperar(prefiereMenosMovimiento() ? 0 : 650);
       }
@@ -430,6 +472,18 @@ export function AdminApp() {
       setEstadoCodigo('normal');
     } finally {
       setOcupado(false);
+    }
+  };
+
+  const continuarAlPanel = async () => {
+    setOcupado(true);
+    try {
+      if (import.meta.env.DEV && vistaPrevia()) setFase('panel');
+      else await cargar();
+    } finally {
+      setOcupado(false);
+      setCodigo('');
+      setEstadoCodigo('normal');
     }
   };
 
@@ -537,6 +591,7 @@ export function AdminApp() {
               {ocupado ? 'Abriendo Google…' : 'Continuar con Google'}
             </button>
 
+            {avisoSesion && <p className="adm-alerta adm-alerta-info">{avisoSesion}</p>}
             {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
 
             <div className="adm-capas" aria-label="Capas de seguridad del acceso">
@@ -581,75 +636,107 @@ export function AdminApp() {
   if (fase === 'codigo') {
     return (
       <div className="adm-fondo adm-centro">
-        <form className="adm-tarjeta-acceso" onSubmit={alEnviarCodigo}>
-          <Marca />
-          <div className="adm-usuario-mini">
-            {user.photoURL && (
-              <img src={user.photoURL} alt="" className="adm-avatar" referrerPolicy="no-referrer" />
-            )}
-            <span>{user.email}</span>
-          </div>
-          <h1 className="adm-titulo">Verificación en dos pasos</h1>
-          <p className="adm-subtitulo">
-            {modoRespaldo
-              ? 'Escribe uno de tus códigos de respaldo (formato XXXXX-XXXXX).'
-              : 'Abre tu app autenticadora y escribe el código de 6 dígitos de Origgo Admin.'}
-          </p>
-
-          {modoRespaldo ? (
-            <input
-              className="adm-input adm-input-respaldo"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value.toUpperCase())}
-              placeholder="XXXXX-XXXXX"
-              maxLength={11}
-              autoFocus
-              autoComplete="off"
-              aria-label="Código de respaldo"
-              disabled={ocupado}
-            />
-          ) : (
-            <CasillasCodigo
-              valor={codigo}
-              onCambio={setCodigo}
-              onCompleto={verificarCodigo}
-              deshabilitado={ocupado}
-              estado={estadoCodigo}
-            />
-          )}
-
-          {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
-
-          <button
-            className="adm-btn adm-btn-primario adm-btn-ancho"
-            type="submit"
-            disabled={ocupado || (modoRespaldo ? codigo.trim().length < 10 : codigo.length < 6)}
-          >
-            {estadoCodigo === 'exito'
-              ? 'Código correcto'
-              : ocupado && estadoCodigo !== 'error'
-                ? 'Verificando…'
-                : 'Verificar'}
-          </button>
-
-          <div className="adm-enlaces">
-            <button
-              type="button"
-              className="adm-enlace"
-              onClick={() => {
-                setModoRespaldo(!modoRespaldo);
-                setCodigo('');
-                setError('');
-              }}
-            >
+        <form
+          className="adm-tarjeta-acceso adm-otp-tarjeta"
+          data-estado={estadoCodigo}
+          onSubmit={alEnviarCodigo}
+        >
+          <div className="adm-otp-vista-codigo" aria-hidden={estadoCodigo === 'exito'}>
+            <Marca />
+            <div className="adm-usuario-mini">
+              {user.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt=""
+                  className="adm-avatar"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <span>{user.email}</span>
+            </div>
+            <h1 className="adm-titulo">Verificación en dos pasos</h1>
+            <p className="adm-subtitulo">
               {modoRespaldo
-                ? 'Usar la app autenticadora'
-                : '¿Perdiste el celular? Usa un código de respaldo'}
+                ? 'Escribe uno de tus códigos de respaldo (formato XXXXX-XXXXX).'
+                : 'Abre tu app autenticadora y escribe el código de 6 dígitos de Origgo Admin.'}
+            </p>
+
+            {modoRespaldo ? (
+              <input
+                className="adm-input adm-input-respaldo"
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value.toUpperCase())}
+                placeholder="XXXXX-XXXXX"
+                maxLength={11}
+                autoFocus
+                autoComplete="off"
+                aria-label="Código de respaldo"
+                disabled={ocupado}
+              />
+            ) : (
+              <CasillasCodigo
+                valor={codigo}
+                onCambio={setCodigo}
+                onCompleto={verificarCodigo}
+                deshabilitado={ocupado}
+                estado={estadoCodigo}
+              />
+            )}
+
+            {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
+
+            <button
+              className="adm-btn adm-btn-primario adm-btn-ancho"
+              type="submit"
+              disabled={ocupado || (modoRespaldo ? codigo.trim().length < 10 : codigo.length < 6)}
+            >
+              {ocupado && estadoCodigo !== 'error' ? 'Verificando…' : 'Verificar'}
             </button>
-            <button type="button" className="adm-enlace" onClick={salir}>
-              Usar otra cuenta
-            </button>
+
+            <div className="adm-enlaces">
+              <button
+                type="button"
+                className="adm-enlace"
+                onClick={() => {
+                  setModoRespaldo(!modoRespaldo);
+                  setCodigo('');
+                  setError('');
+                }}
+              >
+                {modoRespaldo
+                  ? 'Usar la app autenticadora'
+                  : '¿Perdiste el celular? Usa un código de respaldo'}
+              </button>
+              <button type="button" className="adm-enlace" onClick={salir}>
+                Usar otra cuenta
+              </button>
+            </div>
           </div>
+
+          {estadoCodigo === 'exito' && (
+            // La tarjeta completa se transforma (referencia "OTP Verification"): resplandor
+            // desde abajo, sello que crece con el check y el botón Continuar.
+            <div className="adm-otp-vista-exito" role="status">
+              <h1 className="adm-titulo adm-otp-aparece">Código verificado</h1>
+              <p className="adm-subtitulo adm-otp-aparece">
+                Tu sesión de administrador está activa en este dispositivo.
+              </p>
+              <div className="adm-otp-sello" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              </div>
+              <button
+                type="button"
+                className="adm-otp-continuar"
+                onClick={continuarAlPanel}
+                disabled={ocupado}
+                autoFocus
+              >
+                {ocupado ? 'Entrando…' : 'Continuar'}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     );
@@ -659,6 +746,37 @@ export function AdminApp() {
 
   return (
     <div className="adm-fondo">
+      {segundosAviso !== null && (
+        // Aviso de cierre por inactividad (2 min antes). Mover el mouse no basta: hay que decidir.
+        <div
+          className="adm-modal-fondo"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="aviso-inactividad"
+        >
+          <div className="adm-modal">
+            <h2 id="aviso-inactividad">¿Sigues ahí?</h2>
+            <p>
+              Por seguridad cerraremos tu sesión por inactividad en{' '}
+              <strong className="adm-modal-cuenta">
+                {Math.floor(segundosAviso / 60)}:{String(segundosAviso % 60).padStart(2, '0')}
+              </strong>
+            </p>
+            <div className="adm-modal-acciones">
+              <button
+                className="adm-btn adm-btn-primario"
+                onClick={() => seguir().catch(manejarError)}
+                autoFocus
+              >
+                Seguir conectado
+              </button>
+              <button className="adm-btn adm-btn-secundario" onClick={salir}>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="adm-barra">
         <div className="adm-barra-interior">
           <Marca pequena />

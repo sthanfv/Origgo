@@ -15,6 +15,14 @@ Página aparte del sitio público (`admin.html` + `src/admin/`), con `noindex`.
 Además: máx. 5 intentos de código cada 15 min, cada código sirve una sola vez, y todo queda en `admin_auditoria`.
 No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hito 110 de `MEMORY.md`.
 
+## Sesión (estándar OWASP / NIST 800-63B)
+
+- **15 minutos sin actividad** cierran la sesión; lo exige el servidor (`lib/admin/sesion.js`), no solo la página.
+- **2 minutos antes** aparece el aviso "¿Sigues ahí?" con cuenta regresiva: "Seguir conectado" o "Cerrar sesión".
+- **Máximo 8 horas** desde que se verificó el código, aunque haya actividad.
+- **Pestañas sincronizadas:** la actividad en una cuenta para todas; salir en una sale en todas.
+- **Cerrar la pestaña o el navegador** cierra la sesión (cookie de sesión y Firebase con persistencia de sesión).
+
 ## Operación
 
 | Tarea | Cómo |
