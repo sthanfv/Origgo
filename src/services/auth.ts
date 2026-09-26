@@ -116,7 +116,17 @@ export async function iniciarSesionConPin(
  */
 export async function reclamarReferenciaPago(
   reference: string
-): Promise<{ ok: boolean; token?: string; user?: UserSession; tempPin?: string; isNewUser?: boolean; error?: string }> {
+): Promise<{
+  ok: boolean;
+  token?: string;
+  user?: UserSession;
+  tempPin?: string;
+  isNewUser?: boolean;
+  error?: string;
+  /** El pago se acreditó, pero la cuenta ya existía: hay que entrar con el PIN para verlo. */
+  requiresLogin?: boolean;
+  message?: string;
+}> {
   try {
     const res = await apiFetch<{
       ok: boolean;
@@ -125,6 +135,8 @@ export async function reclamarReferenciaPago(
       tempPin?: string;
       isNewUser?: boolean;
       error?: string;
+      requiresLogin?: boolean;
+      message?: string;
     }>('/api/auth/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,6 +154,9 @@ export async function reclamarReferenciaPago(
       return res;
     }
 
+    if (res.ok && res.requiresLogin) {
+      return { ok: false, requiresLogin: true, message: res.message };
+    }
     return { ok: false, error: res.error || 'No se pudo reclamar la orden de pago' };
   } catch (err: any) {
     return { ok: false, error: err.message || 'Error al conectar con el ledger de pagos' };

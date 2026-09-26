@@ -8,6 +8,8 @@ interface SiteHeroProps {
   totalSectors: number;
   onScrollToCatalog: () => void;
   onOpenAbout: () => void;
+  /** Inmuebles detectados en las últimas 24 h (para decir "hoy" solo si es verdad). */
+  leadsHoy?: number;
   /** Textos editables desde el panel (Vitrina); si faltan, se usan los de siempre. */
   vitrina?: { counterLabel?: string; counterValue?: string; heroTitulo?: string; heroSubtitulo?: string };
 }
@@ -24,11 +26,17 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
   onScrollToCatalog,
   onOpenAbout,
   vitrina = {},
+  leadsHoy = 0,
 }) => {
   const { t, isEn } = useLanguage();
   // Los textos del panel están en español: en inglés se mantienen los traducidos.
-  const cifraContador = vitrina.counterValue || String(totalLeads > 0 ? totalLeads : 21);
-  const textoContador = vitrina.counterLabel ? vitrina.counterLabel.toUpperCase() : 'OPORTUNIDADES DETECTADAS HOY';
+  // Cifras reales: "hoy" solo con lo detectado en las últimas 24 h; si no, el total disponible.
+  const cifraContador = vitrina.counterValue || String(leadsHoy > 0 ? leadsHoy : totalLeads);
+  const textoContador = vitrina.counterLabel
+    ? vitrina.counterLabel.toUpperCase()
+    : leadsHoy > 0
+      ? 'OPORTUNIDADES DETECTADAS HOY'
+      : 'OPORTUNIDADES DIRECTAS DISPONIBLES';
 
   return (
     <>
@@ -43,7 +51,7 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
               <span className="status-pulse"></span>
               <span className="eyebrow-text" id="badgeSectoresHero">
                 {isEn 
-                  ? `${totalLeads > 0 ? totalLeads : 21} OPPORTUNITIES DETECTED TODAY • AI ORIGGO FINDER`
+                  ? `${leadsHoy > 0 ? `${leadsHoy} OPPORTUNITIES DETECTED TODAY` : `${totalLeads} DIRECT OPPORTUNITIES AVAILABLE`} • AI ORIGGO FINDER`
                   : `${cifraContador} ${textoContador} • IA ORIGGO FINDER`}
               </span>
               <button 
@@ -88,17 +96,17 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
 
             <div className="hero-live-stats" id="heroLiveStats">
               <div className="hero-stat-item">
-                <span className="hero-stat-number">{totalLeads > 0 ? totalLeads : 24}</span>
+                <span className="hero-stat-number">{totalLeads}</span>
                 <span className="hero-stat-label">{t('stat_leads_total', 'Propietarios Directos')}</span>
               </div>
               <div className="hero-stat-divider"></div>
               <div className="hero-stat-item">
-                <span className="hero-stat-number">{totalCities > 0 ? totalCities : 8}</span>
+                <span className="hero-stat-number">{totalCities}</span>
                 <span className="hero-stat-label">{t('stat_ciudades', 'Ciudades Activas')}</span>
               </div>
               <div className="hero-stat-divider"></div>
               <div className="hero-stat-item">
-                <span className="hero-stat-number">{totalSectors > 0 ? totalSectors : 26}</span>
+                <span className="hero-stat-number">{totalSectors}</span>
                 <span className="hero-stat-label">{t('stat_sectores', 'Sectores Monitoreados')}</span>
               </div>
             </div>

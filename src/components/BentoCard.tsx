@@ -266,7 +266,7 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
             </div>
           )}
 
-          {isUnlocked && unlockedData && (
+          {isUnlocked && unlockedData?.phone && (
             <div className="card-contact-phone-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.45rem 0.75rem', background: 'var(--accent-emerald-bg)', border: '1px solid var(--accent-emerald)', borderRadius: '0.75rem', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
                 <i className="fa-solid fa-phone" style={{ marginRight: 6 }}></i>
@@ -280,7 +280,18 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
         </div>
 
         <div className="card-bottom-row">
-          {isUnlocked ? (
+          {isUnlocked && !phoneClean ? (
+            // Desbloqueado sin teléfono en el anuncio: se lleva al anuncio original, sin inventar números.
+            <a
+              href={unlockedData?.link || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-unlock-lead"
+              style={{ width: '100%', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+            >
+              <i className="fa-solid fa-arrow-up-right-from-square"></i> {isEn ? 'View Original Ad' : 'Ver Anuncio Original'}
+            </a>
+          ) : isUnlocked ? (
             <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
               <a 
                 href={`https://wa.me/${phoneClean}?text=Hola%2C%20vi%20tu%20anuncio%20directo%20en%20Origgo`} 
@@ -380,7 +391,8 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
           <div style={{ marginTop: 'auto', paddingTop: '0.5rem' }}>
             {isUnlocked ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {phoneClean && (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <a 
                     href={`https://wa.me/${phoneClean}?text=Hola%2C%20vi%20tu%20anuncio%20directo%20en%20Origgo`} 
                     target="_blank" 
@@ -400,6 +412,7 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
                     <i className="fa-solid fa-phone"></i> {t('card_call', 'Llamar')}
                   </a>
                 </div>
+                )}
                 {unlockedData?.link && (
                   <a
                     href={unlockedData.link}

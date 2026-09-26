@@ -4,6 +4,14 @@
 
 ---
 
+- 128. **Hito 128: "Todo debe ser real" — fuera las simulaciones de la web pública**:
+    - **Regla del propietario:** ninguna función simulada; solo pueden faltar las llaves de producción de Wompi (las cambiará él).
+    - **Pago con el widget de Wompi:** al aprobarse, la web **inventaba el saldo** (+10, "999" o "9999" créditos) sin preguntar al servidor. Ahora llama al reclamo real (`reclamarReferenciaPago` → el servidor verifica con Wompi y acredita una sola vez), reintenta 4 veces cada 2,5 s por si Wompi tarda, y muestra el saldo real; si no se confirma, muestra la referencia para sincronizar después. Si la cuenta ya existía, el servidor acredita y pide entrar con el PIN (`requiresLogin`), y la web lo dice así.
+    - **Soporte → "Sincronizar pago":** era un `setTimeout` que decía "saldo acreditado". Ahora consulta el pago real con la referencia (HNT-…) y actualiza la sesión con el saldo real.
+    - **Número inventado:** tras desbloquear un contacto sin teléfono, la web mostraba `3001234567` (podría ser de una persona real). Ahora no se muestra ningún número: se ofrece "Ver anuncio original". El perfil tampoco muestra un celular de relleno.
+    - **Portada:** cifras de relleno (21, 24, 8, 26) cuando no había datos, y "detectadas hoy" contando todo. Ahora son reales: "hoy" solo con lo detectado en 24 h (si no, "disponibles"), barrios distintos reales; se eliminó `SECTORES_TOTALES` (26 fijo).
+    - **Archivos:** `src/components/CheckoutModal.tsx`, `SupportModal.tsx`, `BentoCard.tsx`, `AccountProfileTab.tsx`, `SiteHero.tsx`, `src/App.tsx`, `src/services/auth.ts`, `src/data.ts`. `tsc` y build OK.
+
 - 127. **Hito 127: Las pruebas ya no pueden tocar servicios de producción (incidente de caché de precios)**:
     - **Qué pasó:** `lib/env.js` cargaba el `.env` real también en pruebas. La prueba de precios (`admin_operacion`) escribió en el Upstash de PRODUCCIÓN la copia de respaldo de 24 h de `config-publica` con un precio de prueba (bolsa a $40.000). No se llegó a mostrar (solo se usa si Firestore falla y el código que la lee acababa de publicarse). Se borraron las claves `cache:v1:(respaldo:)precios` y `cache:v1:(respaldo:)config-publica`.
     - **Arreglo de raíz:** con `NODE_ENV=test`, `lib/env.js` no carga credenciales de servicios externos (UPSTASH_, FIREBASE_, WOMPI_, RESEND_, TELEGRAM_, R2_, CLOUDFLARE_, HEALTHCHECKS, INTERNAL_API_SECRET); se usan los valores de prueba.

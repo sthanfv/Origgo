@@ -5,6 +5,7 @@ import {
   iniciarSesionConPin,
   solicitarCreditoBienvenidaApi,
   recuperarPinPorEmailApi,
+  reclamarReferenciaPago,
 } from '../services/auth';
 import { crearOrdenPagoBackend, desplegarWidgetWompi } from '../services/wompi';
 import { formatoPrecio, ModalPlanOption, planesConPrecios, type PreciosPublicos } from '../data/plans';
@@ -352,29 +353,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         );
       }
 
-      await desplegarWidgetWompi(orden, (resultado) => {
-        if (resultado.status === 'APPROVED') {
+      await desplegarWidgetWompi(orden, async (resultado) => {
+        if (resultado.status !== 'APPROVED') return;
+        setSuccessMessage(
+          isEn ? 'Payment approved! Confirming with Wompi...' : '¡Pago aprobado! Confirmándolo con Wompi...'
+        );
+        // Saldo REAL: el servidor verifica el pago con Wompi y acredita una sola vez. Se reintenta
+        // unos segundos por si Wompi aún no refleja la aprobación en su API.
+        let confirmado = null;
+        for (let intento = 0; intento < 4 && !confirmado; intento++) {
+          if (intento > 0) await new Promise((r) => setTimeout(r, 2500));
+          const res = await reclamarReferenciaPago(resultado.reference);
+          if (res.ok && res.user) confirmado = res;
+          if (res.requiresLogin) {
+            // Acreditado a una cuenta que ya existía: por seguridad se entra con su PIN.
+            setSuccessMessage(null);
+            setErrorMessage(
+              res.message ||
+                (isEn
+                  ? 'Payment credited. Sign in with your PIN to see your balance.'
+                  : 'Pago acreditado. Entra con tu PIN para ver tu saldo.')
+            );
+            setActiveTab('tengo-pin');
+            return;
+          }
+        }
+        if (confirmado?.user) {
+          onSessionUpdate({ ...confirmado.user, token: confirmado.token });
           setSuccessMessage(
-            isEn ? 'Payment approved! Activating credits...' : '¡Pago aprobado! Acreditando saldo...'
+            isEn
+              ? `✓ Payment confirmed. Balance: ${confirmado.user.credits} credit(s).`
+              : `✓ Pago confirmado. Saldo: ${confirmado.user.credits} crédito(s).`
           );
-
-          let creditsToAdd = 1;
-          if (selectedPlan === 'pack_10_leads') creditsToAdd = 10;
-          if (selectedPlan === 'subscription_city') creditsToAdd = 999;
-          if (selectedPlan === 'subscription_national') creditsToAdd = 9999;
-
-          onSessionUpdate({
-            phone: val.cleanPhone,
-            credits: userCredits + creditsToAdd,
-            token: localStorage.getItem('origgo_auth_jwt_token') || undefined,
-          });
-
-          setTimeout(() => {
-            if (selectedLead) {
-              onConfirmUnlock(selectedLead);
-            }
-            onClose();
-          }, 1200);
+          if (selectedLead) onConfirmUnlock(selectedLead);
+          onClose();
+        } else {
+          setSuccessMessage(null);
+          setErrorMessage(
+            isEn
+              ? `Your payment was approved but we could not confirm it yet. Save reference ${resultado.reference} and use "Support → Sync payment" in a few minutes, or sign in with your PIN.`
+              : `Tu pago fue aprobado pero aún no pudimos confirmarlo. Guarda la referencia ${resultado.reference} y usa "Soporte → Sincronizar pago" en unos minutos, o entra con tu PIN.`
+          );
         }
       });
     } catch (err: any) {

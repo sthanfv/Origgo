@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { PreciosPublicos } from './data/plans';
 import { LeadItem, UserSession } from './types';
-import { INMUEBLES_DATA, SECTORES_TOTALES } from './data';
+import { INMUEBLES_DATA } from './data';
 import { useLanguage } from './i18n';
 import { registrarEfectosRippleGlobales } from './utils/ripple';
 import {
@@ -362,6 +362,16 @@ export function App() {
       });
   }, [leads, selectedCity, selectedOperation, selectedNiche, searchQuery, selectedSort]);
 
+  // Cifras reales de la portada: barrios distintos e inmuebles detectados en las últimas 24 h.
+  const uniqueSectorsCount = useMemo(
+    () => new Set(leads.map((l) => `${l.ciudad}|${l.barrio}`).filter((x) => !x.endsWith('|'))).size,
+    [leads]
+  );
+  const leadsHoy = useMemo(
+    () => leads.filter((l) => l.timestamp_ms && Date.now() - Number(l.timestamp_ms) < 24 * 3600 * 1000).length,
+    [leads]
+  );
+
   const uniqueCitiesCount = useMemo(() => {
     return new Set(leads.map((l) => l.ciudad)).size;
   }, [leads]);
@@ -408,7 +418,8 @@ export function App() {
           setUnlockedMap((prev) => ({
             ...prev,
             [item.id]: {
-              phone: res.contacto!.telefonoDisplay || res.contacto!.telefono || '3001234567',
+              // Nunca un número inventado: si el anuncio no trae teléfono, queda vacío.
+              phone: res.contacto!.telefonoDisplay || res.contacto!.telefono || '',
               portal: res.contacto!.portal,
               link: res.contacto!.enlace,
               realTitle: res.contacto!.tituloOriginal,
@@ -520,7 +531,8 @@ export function App() {
         totalLeads={leads.length}
         vitrina={configPublica?.vitrina}
         totalCities={uniqueCitiesCount}
-        totalSectors={SECTORES_TOTALES}
+        totalSectors={uniqueSectorsCount}
+        leadsHoy={leadsHoy}
         onScrollToCatalog={handleScrollToCatalog}
         onOpenAbout={() => setAboutModalOpen(true)}
       />
@@ -620,6 +632,10 @@ export function App() {
           setCheckoutModalOpen(true);
         }}
         onNotify={notify}
+        onSessionUpdate={(nuevaSesion) => {
+          setUserSession(nuevaSesion);
+          setUserCredits(nuevaSesion.credits);
+        }}
       />
 
       {/* 11. Modal Acerca de Origgo */}

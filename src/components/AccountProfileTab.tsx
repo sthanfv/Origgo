@@ -57,7 +57,7 @@ export const AccountProfileTab: React.FC<AccountProfileTabProps> = ({
         </div>
         <div style={{ textAlign: 'left' }}>
           <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-main)' }}>
-            +57 {userSession?.phone || phoneInput || '3001234567'}
+            {userSession?.phone || phoneInput ? `+57 ${userSession?.phone || phoneInput}` : isEn ? 'No phone yet' : 'Sin celular registrado'}
           </h4>
           <span style={{ fontSize: '0.72rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
             {isEn ? 'Verified Account' : 'Cuenta Verificada'}

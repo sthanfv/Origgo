@@ -2,7 +2,6 @@ import { ArchitectureMetric, TestResultItem, LeadItem } from './types';
 import rawData from '../public/data/inmobiliario.json';
 
 export const INMUEBLES_DATA: LeadItem[] = ((rawData as unknown as { leads: LeadItem[] }).leads || []) as LeadItem[];
-export const SECTORES_TOTALES: number = (rawData as unknown as { config?: { total_sectores_monitoreados?: number } })?.config?.total_sectores_monitoreados || 26;
 
 
 export const ARCHITECTURE_METRICS: ArchitectureMetric[] = [

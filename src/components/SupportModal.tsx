@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { FormularioRetiro } from './FormularioRetiro';
+import { reclamarReferenciaPago } from '../services/auth';
+import type { UserSession } from '../types';
 
 export type SupportOptionKey = 'pago' | 'takedown' | 'cuenta';
 
@@ -9,6 +11,8 @@ interface SupportModalProps {
   onClose: () => void;
   onOpenRestorePin: () => void;
   onNotify: (msg: string) => void;
+  /** Actualiza la sesión con el saldo real tras sincronizar un pago. */
+  onSessionUpdate?: (sesion: UserSession) => void;
 }
 
 export const SupportModal: React.FC<SupportModalProps> = ({
@@ -17,6 +21,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   onClose,
   onOpenRestorePin,
   onNotify,
+  onSessionUpdate,
 }) => {
   const [activeOption, setActiveOption] = useState<SupportOptionKey>(initialOption);
   const [payReference, setPayReference] = useState('');
@@ -35,20 +40,42 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSyncPayment = (e: React.FormEvent) => {
+  /** Sincroniza un pago REAL: el servidor lo verifica con Wompi y acredita una sola vez. */
+  const handleSyncPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!payReference.trim()) {
-      setFeedback({ text: 'Por favor ingresa una referencia de pago válida de Wompi.', type: 'error' });
+    const referencia = payReference.trim();
+    if (!referencia) {
+      setFeedback({ text: 'Escribe la referencia de tu pago (empieza por HNT-).', type: 'error' });
       return;
     }
     setIsLoading(true);
-    setFeedback({ text: 'Consultando transacción oficial con Wompi...', type: 'info' });
-    setTimeout(() => {
+    setFeedback({ text: 'Consultando tu pago en Wompi...', type: 'info' });
+    try {
+      const res = await reclamarReferenciaPago(referencia);
+      if (res.ok && res.user) {
+        onSessionUpdate?.({ ...res.user, token: res.token });
+        setFeedback({ text: `✓ Pago verificado en Wompi. Saldo actual: ${res.user.credits} crédito(s).`, type: 'success' });
+        onNotify('✓ Pago verificado y saldo actualizado.');
+        setPayReference('');
+      } else if (res.requiresLogin) {
+        setFeedback({
+          text: res.message || 'Pago acreditado. Entra con tu celular y PIN para ver tu saldo.',
+          type: 'success',
+        });
+      } else {
+        setFeedback({
+          text:
+            res.error === 'TRANSACCION_NO_APROBADA'
+              ? 'Wompi todavía no reporta este pago como aprobado. Si acabas de pagar, espera unos minutos e intenta de nuevo.'
+              : res.error || 'No encontramos un pago aprobado con esa referencia.',
+          type: 'error',
+        });
+      }
+    } catch {
+      setFeedback({ text: 'Sin conexión. Revisa tu internet e intenta de nuevo.', type: 'error' });
+    } finally {
       setIsLoading(false);
-      setFeedback({ text: '✓ Transacción verificada en Wompi Bancolombia. Saldo acreditado a tu cuenta.', type: 'success' });
-      onNotify('✓ Pago verificado y créditos acreditados.');
-      setPayReference('');
-    }, 900);
+    }
   };
 
   const handleSelectOption = (opt: SupportOptionKey) => {
