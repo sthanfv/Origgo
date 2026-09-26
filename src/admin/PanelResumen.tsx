@@ -6,7 +6,7 @@ import { AlertTriangle, Bot, Building2, Eye, EyeOff, Info, ShieldAlert, Star } f
  * Datos: GET /api/admin/resumen (lib/admin/resumen.js).
  */
 
-export type Seccion = 'resumen' | 'catalogo' | 'retiros' | 'vitrina';
+export type Seccion = 'resumen' | 'catalogo' | 'clientes' | 'pagos' | 'retiros' | 'vitrina';
 
 export interface DatosResumen {
   catalogo: { total: number; visibles: number; ocultos: number; destacados: number };

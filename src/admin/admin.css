@@ -1463,7 +1463,7 @@ body {
   bottom: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
   background: rgba(6, 14, 12, 0.94);
   backdrop-filter: blur(18px);
@@ -1769,5 +1769,290 @@ button.adm-tarjeta-dato {
   }
   .adm-resumen-dos {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ══ Etapa 2: Clientes, Pagos y piezas comunes (comunes.tsx) ═══════════════════════════ */
+.adm-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.adm-nota {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--adm-texto-tenue);
+}
+.adm-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--adm-borde-suave);
+  background: var(--adm-cristal);
+  color: var(--adm-texto-tenue);
+}
+.adm-buscador .adm-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding-left: 0;
+}
+.adm-segmentos-desplazables {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+}
+.adm-segmentos-desplazables .adm-segmento {
+  flex: none;
+}
+.adm-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.adm-etiqueta-verde {
+  background: hsla(158, 64%, 52%, 0.14);
+  color: var(--adm-acento-claro);
+}
+.adm-etiqueta-dorado {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--adm-dorado);
+}
+.adm-etiqueta-rojo {
+  background: rgba(251, 113, 133, 0.14);
+  color: var(--adm-rojo);
+}
+.adm-etiqueta-tenue {
+  background: hsla(158, 20%, 60%, 0.1);
+  color: var(--adm-texto-suave);
+}
+.adm-mono {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+/* Listas táctiles (una tarjeta por fila, 64 px mínimo) */
+.adm-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.adm-lista-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--adm-borde-suave);
+  background: var(--adm-cristal);
+  color: var(--adm-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.adm-lista-item:hover {
+  border-color: var(--adm-borde);
+}
+.adm-lista-item-estatico {
+  cursor: default;
+}
+.adm-lista-principal {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.adm-lista-principal strong {
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adm-lista-principal small {
+  font-size: 0.78rem;
+  color: var(--adm-texto-tenue);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adm-lista-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex: none;
+}
+.adm-lista-cifra {
+  font-family: var(--adm-fuente-titulo);
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+.adm-lista-flecha {
+  flex: none;
+  color: var(--adm-texto-tenue);
+}
+.adm-cifra-estatica {
+  cursor: default;
+}
+.adm-cifras-pagos .adm-cifra-valor {
+  font-size: 1.35rem;
+}
+.adm-cifras-pagos .adm-cifra-estatica {
+  grid-column: 1 / -1;
+}
+
+/* Hoja de detalle: pantalla completa desde abajo (teléfono), panel a la derecha (computador) */
+.adm-hoja-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(2, 8, 6, 0.65);
+  backdrop-filter: blur(3px);
+}
+.adm-hoja {
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px 22px 0 0;
+  border: 1px solid var(--adm-borde);
+  border-bottom: 0;
+  background: #07120f;
+  box-shadow: var(--adm-sombra);
+  animation: adm-hoja-sube 0.25s ease-out;
+}
+@keyframes adm-hoja-sube {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+.adm-hoja-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--adm-borde-suave);
+}
+.adm-hoja-cabecera h2 {
+  margin: 0;
+  font-family: var(--adm-fuente-titulo);
+  font-size: 1.05rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adm-hoja-cuerpo {
+  overflow-y: auto;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.adm-ficha {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid var(--adm-borde-suave);
+  overflow: hidden;
+}
+.adm-dato {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  font-size: 0.88rem;
+}
+.adm-dato + .adm-dato {
+  border-top: 1px solid var(--adm-borde-suave);
+}
+.adm-dato > span {
+  color: var(--adm-texto-tenue);
+  flex: none;
+}
+.adm-dato > strong {
+  text-align: right;
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.adm-subformulario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.adm-subformulario h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.adm-fila-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.adm-fila-form .adm-input {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+.adm-fila-form .adm-input-corto {
+  flex: 0 0 80px;
+}
+.adm-fila-form .adm-btn {
+  flex: none;
+}
+
+/* "Más" (teléfono): secciones que no caben en la barra inferior */
+.adm-mas-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 960px) {
+  .adm-hoja-fondo {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+  .adm-hoja {
+    width: min(480px, 100%);
+    max-height: none;
+    height: 100vh;
+    border-radius: 0;
+    border: 0;
+    border-left: 1px solid var(--adm-borde);
+    animation-name: adm-hoja-lado;
+  }
+  @keyframes adm-hoja-lado {
+    from {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+  }
+  .adm-cifras-pagos {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+  .adm-cifras-pagos .adm-cifra-estatica {
+    grid-column: auto;
   }
 }

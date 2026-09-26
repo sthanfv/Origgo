@@ -356,3 +356,6 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+
+// Reutilizado por el panel (lib/admin/pagos.js → "Conciliar con Wompi").
+module.exports.resolverBeneficioOrden = resolverBeneficioOrden;

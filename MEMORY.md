@@ -4,6 +4,14 @@
 
 ---
 
+- 124. **Hito 124: Panel — etapa 2: Clientes y Pagos (con versión para teléfono)**:
+    - **Clientes** (`lib/admin/clientes.js`, `src/admin/PanelClientes.tsx`): últimos 50 o búsqueda por celular/correo; ficha con créditos, plan, vencimiento, desbloqueos y órdenes; ajustes de créditos (±1000) y de plan (Gratis/Ciudad/Nacional, 1–366 días) con **motivo obligatorio**, confirmación y registro en la auditoría. Transacción atómica `db.ajustarCuentaAdmin` (no crea cuentas, nunca deja saldo negativo). **Nunca** se entrega el PIN.
+    - **Pagos** (`lib/admin/pagos.js`, `src/admin/PanelPagos.tsx`): últimas 100 órdenes (sin los documentos auxiliares `idem_…`), totales (ventas aprobadas 30 días, pendientes, sospechas de fraude), filtro por estado, búsqueda por referencia; ficha con "¿se entregó?" (registro `pago_<ref>`) y **"Conciliar con Wompi"**: consulta la pasarela real, acredita UNA sola vez con `acreditarPagoUnaVez` (origen `panel`) y marca sospecha de fraude si el monto es menor.
+    - **Resumen:** nueva alerta crítica por pagos con sospecha de fraude.
+    - **Estructura:** hoja de detalle común (`src/admin/comunes.tsx`: pantalla completa desde abajo en el teléfono, panel a la derecha en el computador); barra inferior del teléfono con 4 secciones + "Más" (Retiros con insignia, Vitrina); estados de orden en español.
+    - **Pruebas:** `admin_clientes_pagos` 5/5 (nueva: sin PIN, ajustes atómicos, sin cuentas nuevas, órdenes sin `idem_`, conciliación que no duplica, sospecha de fraude), `admin_resumen` 1/1; `tsc` y build OK; capturas 390×844 y 1366×800 sin errores ni desplazamiento horizontal.
+    - **Siguiente etapa:** Cazador, Auditoría y Precios.
+
 - 123. **Hito 123: Panel con patrón profesional — etapa 1 (estructura, Resumen y versión para teléfono)**:
     - **Por qué:** el propietario pidió un panel como los profesionales (Stripe, Shopify, Vercel), con versión para teléfono porque lo usa desde allí.
     - **Estructura:** computador (≥ 960 px) con menú lateral fijo (Resumen, Catálogo, Retiros, Vitrina, insignia de retiros pendientes, usuario y salir abajo); teléfono con cabecera compacta y barra inferior de 4 secciones (botones de 56 px, sin desplazamiento horizontal a 390 px). Componentes: `src/admin/PanelResumen.tsx`, `SECCIONES` en `AdminApp.tsx`, estilos al final de `admin.css`.

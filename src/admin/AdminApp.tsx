@@ -11,18 +11,35 @@ import {
 } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
-import { leadsDeEjemplo, resumenDeEjemplo, vistaPrevia } from './vista-previa';
+import { leadsDeEjemplo, respuestaDeEjemplo, resumenDeEjemplo, vistaPrevia } from './vista-previa';
 import { PanelRetiros } from './PanelRetiros';
 import { PanelResumen, type DatosResumen, type Seccion } from './PanelResumen';
-import { Building2, LayoutDashboard, LogOut, ShieldAlert, Store } from 'lucide-react';
+import {
+  Building2,
+  CreditCard,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  ShieldAlert,
+  Store,
+  Users,
+} from 'lucide-react';
+import { PanelClientes } from './PanelClientes';
+import { PanelPagos } from './PanelPagos';
+import { Hoja } from './comunes';
 
 /** Secciones del panel: menú lateral (computador) y barra inferior (teléfono). */
 const SECCIONES: { id: Seccion; nombre: string; Icono: typeof Building2 }[] = [
   { id: 'resumen', nombre: 'Resumen', Icono: LayoutDashboard },
   { id: 'catalogo', nombre: 'Catálogo', Icono: Building2 },
+  { id: 'clientes', nombre: 'Clientes', Icono: Users },
+  { id: 'pagos', nombre: 'Pagos', Icono: CreditCard },
   { id: 'retiros', nombre: 'Retiros', Icono: ShieldAlert },
   { id: 'vitrina', nombre: 'Vitrina', Icono: Store },
 ];
+
+/** En el teléfono caben 4 secciones + "Más" (estándar de barras inferiores: máx. 5 botones). */
+const EN_BARRA_MOVIL: Seccion[] = ['resumen', 'catalogo', 'clientes', 'pagos'];
 import { useSesionInactividad } from './sesion-inactividad';
 
 /** Inmueble del catálogo (Firestore `leads`). Se muestran solo campos no sensibles. */
@@ -531,6 +548,13 @@ export function AdminApp() {
   }, [fase, pestana, cargarResumen]);
 
   const seccionActual = SECCIONES.find((x) => x.id === pestana) || SECCIONES[0];
+  const [masAbierto, setMasAbierto] = useState(false);
+  // En la vista previa de desarrollo las secciones usan datos de ejemplo (nunca en producción).
+  const peticionPanel = import.meta.env.DEV && vistaPrevia() ? respuestaDeEjemplo : authFetch;
+  const irASeccion = (s: Seccion) => {
+    setPestana(s);
+    setMasAbierto(false);
+  };
 
   const parchar = async (id: string, cambios: Record<string, unknown>) => {
     setOcupado(true);
@@ -873,8 +897,12 @@ export function AdminApp() {
               onIr={setPestana}
               onFiltroCatalogo={irAFiltro}
             />
+          ) : pestana === 'clientes' ? (
+            <PanelClientes peticion={peticionPanel} onError={manejarError} />
+          ) : pestana === 'pagos' ? (
+            <PanelPagos peticion={peticionPanel} onError={manejarError} />
           ) : pestana === 'retiros' ? (
-            <PanelRetiros authFetch={authFetch} onError={manejarError} />
+            <PanelRetiros authFetch={peticionPanel} onError={manejarError} />
           ) : pestana === 'vitrina' ? (
             <form className="adm-panel" onSubmit={guardarConfig}>
               <div className="adm-panel-cabecera">
@@ -1059,23 +1087,61 @@ export function AdminApp() {
 
       {/* Barra inferior (teléfono): acceso con el pulgar a cada sección */}
       <nav className="adm-nav-inferior" aria-label="Secciones del panel">
-        {SECCIONES.map(({ id, nombre, Icono }) => (
+        {SECCIONES.filter((x) => EN_BARRA_MOVIL.includes(x.id)).map(({ id, nombre, Icono }) => (
           <button
             key={id}
             className={pestana === id ? 'adm-nav-inferior-item activo' : 'adm-nav-inferior-item'}
-            onClick={() => setPestana(id)}
+            onClick={() => irASeccion(id)}
             aria-current={pestana === id ? 'page' : undefined}
           >
             <span className="adm-nav-inferior-icono">
               <Icono size={22} aria-hidden="true" />
-              {id === 'retiros' && (datosResumen?.retiros.pendientes || 0) > 0 && (
-                <span className="adm-insignia-conteo">{datosResumen?.retiros.pendientes}</span>
-              )}
             </span>
             <span>{nombre}</span>
           </button>
         ))}
+        <button
+          className={
+            !EN_BARRA_MOVIL.includes(pestana)
+              ? 'adm-nav-inferior-item activo'
+              : 'adm-nav-inferior-item'
+          }
+          onClick={() => setMasAbierto(true)}
+          aria-haspopup="dialog"
+        >
+          <span className="adm-nav-inferior-icono">
+            <Menu size={22} aria-hidden="true" />
+            {(datosResumen?.retiros.pendientes || 0) > 0 && (
+              <span className="adm-insignia-conteo">{datosResumen?.retiros.pendientes}</span>
+            )}
+          </span>
+          <span>Más</span>
+        </button>
       </nav>
+
+      {masAbierto && (
+        <Hoja titulo="Más secciones" onCerrar={() => setMasAbierto(false)}>
+          <ul className="adm-mas-lista">
+            {SECCIONES.filter((x) => !EN_BARRA_MOVIL.includes(x.id)).map(
+              ({ id, nombre, Icono }) => (
+                <li key={id}>
+                  <button className="adm-lista-item" onClick={() => irASeccion(id)}>
+                    <Icono size={20} aria-hidden="true" />
+                    <span className="adm-lista-principal">
+                      <strong>{nombre}</strong>
+                    </span>
+                    {id === 'retiros' && (datosResumen?.retiros.pendientes || 0) > 0 && (
+                      <span className="adm-insignia-conteo">
+                        {datosResumen?.retiros.pendientes}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ),
+            )}
+          </ul>
+        </Hoja>
+      )}
     </div>
   );
 }
