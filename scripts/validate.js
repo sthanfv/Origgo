@@ -414,6 +414,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de clientes y pagos del panel: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'admin_codigo_correo.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Panel: código por correo (un solo uso, 10 min, 5 intentos, sesión de 2 h) verificado al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test del código por correo: ${e.message}`);
+  }
+
   // Validación de resiliencia offline, autocompletado inteligente y skeletons en React
   assert(fs.existsSync(path.join(ROOT_DIR, 'src', 'components', 'CommandBar.tsx')), 'Componente CommandBar (Búsqueda y Autocompletado React) integrado');
   assert(fs.existsSync(path.join(ROOT_DIR, 'src', 'components', 'BentoGrid.tsx')), 'Componente BentoGrid (Skeletons y Bento Cards) integrado');

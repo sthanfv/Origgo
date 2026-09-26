@@ -247,6 +247,9 @@ export function AdminApp() {
   const [config, setConfig] = useState<ShowcaseConfig>({});
   const [codigo, setCodigo] = useState('');
   const [modoRespaldo, setModoRespaldo] = useState(false);
+  // Código por correo (alternativa sin teléfono): correo enmascarado al que se envió, o null.
+  const [destinoCorreo, setDestinoCorreo] = useState<string | null>(null);
+  const [esperaReenvio, setEsperaReenvio] = useState(0);
   const [estadoCodigo, setEstadoCodigo] = useState<EstadoCodigo>('normal');
   // Motivo del último cierre automático (se muestra en la pantalla de entrada).
   const [avisoSesion, setAvisoSesion] = useState('');
@@ -430,6 +433,7 @@ export function AdminApp() {
       }
       setCodigo('');
       setModoRespaldo(false);
+      setDestinoCorreo(null);
       setEstadoCodigo('normal');
       setAvisoSesion(mensajeSalida);
       await signOut(auth);
@@ -480,7 +484,10 @@ export function AdminApp() {
             })
           : authFetch('/api/admin/verificar', {
               method: 'POST',
-              body: JSON.stringify({ codigo: valor.trim() }),
+              body: JSON.stringify({
+                codigo: valor.trim(),
+                ...(destinoCorreo ? { metodo: 'correo' } : {}),
+              }),
             });
       // La onda de las casillas se deja ver completa al menos una vez.
       await Promise.all([
@@ -515,6 +522,32 @@ export function AdminApp() {
       setEstadoCodigo('normal');
     }
   };
+
+  /** "¿No tienes el teléfono?": envía un código de 6 dígitos al correo del administrador. */
+  const pedirCodigoCorreo = async () => {
+    setError('');
+    setOcupado(true);
+    try {
+      const d =
+        import.meta.env.DEV && vistaPrevia()
+          ? { destino: 'a•••@ejemplo.com' }
+          : await authFetch('/api/admin/codigo-correo', { method: 'POST', body: '{}' });
+      setDestinoCorreo(d.destino);
+      setModoRespaldo(false);
+      setCodigo('');
+      setEsperaReenvio(60);
+    } catch (e) {
+      manejarError(e);
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  useEffect(() => {
+    if (esperaReenvio <= 0) return;
+    const t = setTimeout(() => setEsperaReenvio((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [esperaReenvio]);
 
   const alEnviarCodigo = (ev: FormEvent) => {
     ev.preventDefault();
@@ -716,7 +749,9 @@ export function AdminApp() {
             <p className="adm-subtitulo">
               {modoRespaldo
                 ? 'Escribe uno de tus códigos de respaldo (formato XXXXX-XXXXX).'
-                : 'Abre tu app autenticadora y escribe el código de 6 dígitos de Origgo Admin.'}
+                : destinoCorreo
+                  ? `Escribe el código de 6 dígitos que enviamos a ${destinoCorreo}. Vence en 10 minutos.`
+                  : 'Abre tu app autenticadora y escribe el código de 6 dígitos de Origgo Admin.'}
             </p>
 
             {modoRespaldo ? (
@@ -756,14 +791,27 @@ export function AdminApp() {
                 type="button"
                 className="adm-enlace"
                 onClick={() => {
-                  setModoRespaldo(!modoRespaldo);
+                  setModoRespaldo(!modoRespaldo && !destinoCorreo);
+                  setDestinoCorreo(null);
                   setCodigo('');
                   setError('');
                 }}
               >
-                {modoRespaldo
+                {modoRespaldo || destinoCorreo
                   ? 'Usar la app autenticadora'
                   : '¿Perdiste el celular? Usa un código de respaldo'}
+              </button>
+              <button
+                type="button"
+                className="adm-enlace"
+                onClick={pedirCodigoCorreo}
+                disabled={ocupado || esperaReenvio > 0}
+              >
+                {destinoCorreo
+                  ? esperaReenvio > 0
+                    ? `Reenviar el código en ${esperaReenvio} s`
+                    : 'Reenviar el código al correo'
+                  : '¿No tienes el teléfono? Recibir un código por correo'}
               </button>
               <button type="button" className="adm-enlace" onClick={salir}>
                 Usar otra cuenta

@@ -4,6 +4,12 @@
 
 ---
 
+- 125. **Hito 125: Entrar al panel sin el teléfono — código por correo (alternativa al TOTP)**:
+    - **Por qué:** el propietario no tiene oficina, entra desde equipos prestados y quedó bloqueado con el teléfono (app autenticadora) apagado y lejos. Estándar (GitHub, Google, Vercel): nunca depender de un solo aparato → app (principal) + códigos de respaldo + código por correo.
+    - **Cómo:** en la pantalla del código, "¿No tienes el teléfono? Recibir un código por correo" (`POST /api/admin/codigo-correo`). Protecciones (`lib/admin/codigo-correo.js`): solo al correo del administrador ya autenticado con Google, huella HMAC (nunca el código en claro), 10 min, un solo uso, 5 intentos por código, 3 envíos cada 15 min, sesión de máximo 2 h (claim `dur` en `lib/admin/sesion.js`), correo de aviso en cada ingreso por correo (fecha, IP aproximada, navegador) y auditoría. Envío genérico con Resend: `lib/correo.js` (requiere `RESEND_API_KEY` en Vercel).
+    - **Equipos ajenos:** ventana de incógnito → "Usar otra cuenta" en Google; la sesión no se guarda al cerrar la pestaña y se cierra a los 15 min sin uso.
+    - **Pruebas:** `admin_codigo_correo` 5/5 (nueva), `admin_2fa` 15/15; `tsc` y build OK; captura en teléfono.
+
 - 124. **Hito 124: Panel — etapa 2: Clientes y Pagos (con versión para teléfono)**:
     - **Clientes** (`lib/admin/clientes.js`, `src/admin/PanelClientes.tsx`): últimos 50 o búsqueda por celular/correo; ficha con créditos, plan, vencimiento, desbloqueos y órdenes; ajustes de créditos (±1000) y de plan (Gratis/Ciudad/Nacional, 1–366 días) con **motivo obligatorio**, confirmación y registro en la auditoría. Transacción atómica `db.ajustarCuentaAdmin` (no crea cuentas, nunca deja saldo negativo). **Nunca** se entrega el PIN.
     - **Pagos** (`lib/admin/pagos.js`, `src/admin/PanelPagos.tsx`): últimas 100 órdenes (sin los documentos auxiliares `idem_…`), totales (ventas aprobadas 30 días, pendientes, sospechas de fraude), filtro por estado, búsqueda por referencia; ficha con "¿se entregó?" (registro `pago_<ref>`) y **"Conciliar con Wompi"**: consulta la pasarela real, acredita UNA sola vez con `acreditarPagoUnaVez` (origen `panel`) y marca sospecha de fraude si el monto es menor.

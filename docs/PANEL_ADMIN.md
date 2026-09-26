@@ -38,6 +38,7 @@ No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hit
 | --- | --- |
 | Dar o quitar el rol de administrador | `node scripts/admin-rol.js` (a los correos de `ADMIN_EMAILS`) · `node scripts/admin-rol.js --quitar correo@...` |
 | Configurar la app autenticadora | `node scripts/admin-2fa-enrolar.js` → abrir `ADMIN_2FA_ENROLAMIENTO.html`, escanear, guardar los códigos y borrar el archivo |
+| No tengo el teléfono a la mano | En la pantalla del código: "¿No tienes el teléfono? Recibir un código por correo" (10 min, un solo uso, sesión de 2 h, llega un aviso al correo). En equipos ajenos: ventana de incógnito y "Usar otra cuenta" en Google |
 | Perdí el celular | Entrar con un **código de respaldo** (archivo "NO TOCAR - Codigos de respaldo ORIGGO" en el Escritorio), luego `node scripts/admin-2fa-enrolar.js --forzar` y actualizar `ADMIN_TOTP_SECRET` y `ADMIN_BACKUP_CODES` en Vercel |
 | Olvidé la contraseña | El panel no tiene contraseña propia: se entra con Google. La recuperación es la de la cuenta de Google (enlace en la pantalla de entrada) |
 | Revisar el diseño sin iniciar sesión | `npm run dev` y abrir `/admin.html?vista=login`, `?vista=codigo`, `?vista=sin-acceso` o `?vista=panel` (solo en desarrollo; se elimina del build) |

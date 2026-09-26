@@ -59,7 +59,7 @@ async function handler(req, res) {
   if (action === 'config') {
     return configHandler(req, res);
   }
-  if (action === 'estado' || action === 'verificar' || action === 'salir') {
+  if (action === 'estado' || action === 'verificar' || action === 'salir' || action === 'codigo-correo') {
     req.query = { ...(req.query || {}), action };
     return dosFactoresHandler(req, res);
   }
