@@ -13,6 +13,7 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
+const { obtenerPrecios, productoPorCodigo, beneficio, combinar } = require('../../lib/precios');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
 
@@ -54,35 +55,31 @@ function validarAutenticacionCron(req) {
  * @param {Object} order - Orden recuperada de la base de datos
  * @returns {{ creditos: number, planData: Object|null, expectedAmount: number }}
  */
-function resolverBeneficioOrden(order) {
+/**
+ * Beneficio (créditos o plan) y monto exigido de una orden. Usa lo guardado en la orden al
+ * crearla; si falta, lo deduce del código de la referencia con los precios del panel.
+ * @param {Object} order
+ * @param {Object} [precios] Precios vigentes (lib/precios.js); por defecto, los valores base.
+ */
+function resolverBeneficioOrden(order, precios = combinar(null)) {
   let creditos = order?.creditos !== undefined ? Number(order.creditos) : 0;
   let planData = null;
   let expectedAmount = Number(order?.amountInCents || 0);
+  const diasOrden = Number(order?.dias) || 30;
 
   if (order?.tipo === 'suscripcion_ciudad') {
-    planData = { plan: 'city', city: order.ciudad || 'Colombia', days: 30 };
+    planData = { plan: 'city', city: order.ciudad || 'Colombia', days: diasOrden };
   } else if (order?.tipo === 'suscripcion_nacional') {
-    planData = { plan: 'national', days: 30 };
+    planData = { plan: 'national', days: diasOrden };
   } else if (order?.reference && order.reference.startsWith('HNT-')) {
     const partes = order.reference.split('-');
     if (partes.length >= 3) {
       const code = partes[2];
-      if (code === '10CR') {
-        creditos = 10;
-        if (!expectedAmount) expectedAmount = 3500000;
-      } else if (code.startsWith('VIPCIU')) {
-        const cSlug = code.includes('_') ? code.split('_')[1] : null;
-        planData = { plan: 'city', city: cSlug || 'Colombia', days: 30 };
-        creditos = 0;
-        if (!expectedAmount) expectedAmount = 8900000;
-      } else if (code === 'VIPNAC') {
-        planData = { plan: 'national', days: 30 };
-        creditos = 0;
-        if (!expectedAmount) expectedAmount = 14900000;
-      } else {
-        creditos = 1;
-        if (!expectedAmount) expectedAmount = 500000;
-      }
+      const producto = productoPorCodigo(precios, code);
+      const entrega = beneficio(producto, code.includes('_') ? code.split('_')[1] : null);
+      planData = entrega.planData;
+      creditos = producto.tipo === 'credito' ? (order.creditos !== undefined ? Number(order.creditos) : entrega.creditos) : 0;
+      if (!expectedAmount) expectedAmount = producto.montoCentavos;
     }
   }
 
@@ -134,6 +131,7 @@ module.exports = async function handler(req, res) {
   try {
     // 2. Recuperar órdenes en estado PENDING (lote de hasta 25 para evitar timeout serverless)
     const ordenesPendientes = await db.getPendingOrders(25);
+    const preciosVigentes = await obtenerPrecios();
     metricas.totalRevisadas = ordenesPendientes.length;
 
     if (ordenesPendientes.length === 0) {
@@ -216,7 +214,7 @@ module.exports = async function handler(req, res) {
         const trxAprobada = listaTransacciones.find(t => t.status === 'APPROVED');
 
         if (trxAprobada) {
-          const { creditos, planData, expectedAmount } = resolverBeneficioOrden(orden);
+          const { creditos, planData, expectedAmount } = resolverBeneficioOrden(orden, preciosVigentes);
           const montoPagado = Number(trxAprobada.amount_in_cents || 0);
 
           // 🛡️ Blindaje Antifraude: Verificar que el monto pagado no sea inferior al exigido

@@ -20,7 +20,11 @@ No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hit
 - **Computador:** menú lateral fijo con las secciones y el usuario; contenido a la derecha.
 - **Teléfono:** cabecera compacta y barra inferior con las secciones (al alcance del pulgar).
 - **Resumen** (inicio): primero las alertas que piden acción, después las cifras reales y el estado del cazador y de los retiros. Cada tarjeta lleva a su sección.
-- **Plan por etapas:** 1) estructura + Resumen ✅; 2) Clientes y Pagos ✅; 3) Cazador, Auditoría y Precios.
+- **Plan por etapas:** 1) estructura + Resumen ✅; 2) Clientes y Pagos ✅; 3) Cazador, Auditoría y Precios ✅.
+- **Cazador:** último contacto del teléfono, última publicación y las 20 más recientes.
+- **Auditoría:** últimas 100 acciones (quién, qué, cuándo), solo lectura.
+- **Precios:** editables (la web y los cobros los leen de `config/precios`); un cambio no afecta pagos ya iniciados.
+- **Vitrina:** contador, título y subtítulo de la portada; la web los muestra en minutos.
 - **Clientes:** buscar por celular o correo, ficha, ajustar créditos o plan (con motivo obligatorio y auditoría; nunca se muestra el PIN).
 - **Pagos:** órdenes con totales y filtros, ficha con "¿se entregó?" y "Conciliar con Wompi" (acredita una sola vez).
 

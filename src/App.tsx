@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import type { PreciosPublicos } from './data/plans';
 import { LeadItem, UserSession } from './types';
 import { INMUEBLES_DATA, SECTORES_TOTALES } from './data';
 import { useLanguage } from './i18n';
@@ -66,6 +67,11 @@ export function App() {
 
   // 1. Estado de Datos y Catálogo
   const [leads, setLeads] = useState<LeadItem[]>(() => deduplicarLeadsCanonica(INMUEBLES_DATA));
+  // Configuración editable desde el panel (textos de la vitrina y precios); llega con el catálogo.
+  const [configPublica, setConfigPublica] = useState<{
+    vitrina?: { counterLabel?: string; counterValue?: string; heroTitulo?: string; heroSubtitulo?: string };
+    precios?: PreciosPublicos;
+  } | null>(null);
   const [unlockedMap, setUnlockedMap] = useState<
     Record<
       string,
@@ -279,6 +285,8 @@ export function App() {
         if (Array.isArray(items) && items.length > 0) {
           setLeads(deduplicarLeadsCanonica(items));
         }
+        // Textos de la vitrina y precios editados en el panel de administración.
+        if (data?.publico) setConfigPublica(data.publico);
       })
       .catch(() => {
         // Respaldo secundario a archivo JSON estático si la API tiene latencia o desconexión
@@ -510,6 +518,7 @@ export function App() {
       {/* 3. Hero Principal y Estadísticas de Monitoreo */}
       <SiteHero
         totalLeads={leads.length}
+        vitrina={configPublica?.vitrina}
         totalCities={uniqueCitiesCount}
         totalSectors={SECTORES_TOTALES}
         onScrollToCatalog={handleScrollToCatalog}
@@ -626,6 +635,7 @@ export function App() {
 
       {/* 12. Modal de Desbloqueo, Wompi y Autenticación con PIN */}
       <CheckoutModal
+        precios={configPublica?.precios}
         isOpen={checkoutModalOpen}
         selectedLead={leadToUnlock}
         userCredits={userCredits}

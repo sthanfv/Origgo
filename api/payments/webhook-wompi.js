@@ -11,6 +11,7 @@
 
 const crypto = require('crypto');
 const db = require('../../lib/db');
+const { obtenerPrecios, productoPorCodigo, beneficio } = require('../../lib/precios');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { requireEnv } = require('../../lib/env');
 const { despacharCorreoConfirmacion } = require('../../lib/email-templates');
@@ -177,32 +178,22 @@ async function procesarPagoAprobado(transaction, res) {
   if (pendingOrder) {
     creditosAAcreditar = pendingOrder.creditos || 0;
     expectedAmountInCents = Number(pendingOrder.amountInCents || 0);
+    // Los días del plan quedan en la orden al crearla (editables en el panel); 30 si es antigua.
+    const diasOrden = Number(pendingOrder.dias) || 30;
     if (pendingOrder.tipo === 'suscripcion_ciudad') {
-      planData = { plan: 'city', city: pendingOrder.ciudad, days: 30 };
+      planData = { plan: 'city', city: pendingOrder.ciudad, days: diasOrden };
     } else if (pendingOrder.tipo === 'suscripcion_nacional') {
-      planData = { plan: 'national', days: 30 };
+      planData = { plan: 'national', days: diasOrden };
     }
   } else {
-    // Inferencia por código en referencia
-    if (prodCodeFromRef === '1CR') {
-      creditosAAcreditar = 1;
-      expectedAmountInCents = 500000;
-    } else if (prodCodeFromRef === '10CR') {
-      creditosAAcreditar = 10;
-      expectedAmountInCents = 3500000;
-    } else if (prodCodeFromRef && prodCodeFromRef.startsWith('VIPCIU')) {
-      const cityPart = prodCodeFromRef.includes('_') ? prodCodeFromRef.split('_')[1] : null;
-      planData = { plan: 'city', city: cityPart || 'Colombia', days: 30 };
-      expectedAmountInCents = 8900000;
-      creditosAAcreditar = 0;
-    } else if (prodCodeFromRef === 'VIPNAC') {
-      planData = { plan: 'national', days: 30 };
-      expectedAmountInCents = 14900000;
-      creditosAAcreditar = 0;
-    } else {
-      creditosAAcreditar = 1;
-      expectedAmountInCents = 500000;
-    }
+    // Orden no encontrada: se deduce el producto por el código de la referencia, con los
+    // precios vigentes del panel (lib/precios.js).
+    const producto = productoPorCodigo(await obtenerPrecios(), prodCodeFromRef);
+    const ciudadRef = prodCodeFromRef && prodCodeFromRef.includes('_') ? prodCodeFromRef.split('_')[1] : null;
+    const entrega = beneficio(producto, ciudadRef);
+    creditosAAcreditar = entrega.creditos;
+    planData = entrega.planData;
+    expectedAmountInCents = producto.montoCentavos;
 
     if (!celular) {
       celular = transaction.customer_email || transaction.reference;

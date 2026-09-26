@@ -153,7 +153,88 @@ export async function respuestaDeEjemplo(ruta: string, opciones: RequestInit = {
     }
     case '/api/admin/retiros':
       return { ok: true, solicitudes: [] };
+    case '/api/admin/cazador':
+    case '/api/admin/auditoria':
+    case '/api/admin/precios':
+      return operacionDeEjemplo(url.pathname);
     default:
       return { ok: true, resultados: [] };
   }
+}
+
+/** Respuestas de ejemplo de Cazador, Auditoría y Precios (solo desarrollo). */
+export function operacionDeEjemplo(ruta: string) {
+  const ahora = Date.now();
+  if (ruta.startsWith('/api/admin/cazador')) {
+    return {
+      ok: true,
+      latido_ms: ahora - 2 * 60e3,
+      ultima: { ultima_ms: ahora - 38 * 60e3, procesados: 4 },
+      activos: 1150,
+      publicaciones: [
+        { id: 'a', ms: ahora - 38 * 60e3, procesados: 4, desactivados: 1 },
+        { id: 'b', ms: ahora - 5 * 3600e3, procesados: 2 },
+        { id: 'c', ms: ahora - 26 * 3600e3, procesados: 150, reconciliados: 12 },
+      ],
+    };
+  }
+  if (ruta.startsWith('/api/admin/auditoria')) {
+    return {
+      ok: true,
+      entradas: [
+        {
+          id: '1',
+          ts: ahora - 5 * 60e3,
+          accion: 'ajuste_creditos',
+          email: 'admin@ejemplo.com',
+          detalle: { telefono: '3104445566', delta: 5, motivo: 'compensación' },
+        },
+        {
+          id: '2',
+          ts: ahora - 3600e3,
+          accion: 'editar_precios',
+          email: 'admin@ejemplo.com',
+          detalle: { pack_10_leads: { antes: 3500000, despues: 4000000 } },
+        },
+        {
+          id: '3',
+          ts: ahora - 2 * 3600e3,
+          accion: 'ingreso_2fa',
+          email: 'admin@ejemplo.com',
+          detalle: { metodo: 'correo' },
+        },
+      ],
+    };
+  }
+  const base = {
+    single_lead: {
+      nombre: 'Desbloqueo de Contacto Individual',
+      montoCentavos: 500000,
+      creditos: 1,
+      dias: 0,
+      tipo: 'credito',
+    },
+    pack_10_leads: {
+      nombre: 'Bolsa de 10 Contactos Directos (-30% Desc.)',
+      montoCentavos: 3500000,
+      creditos: 10,
+      dias: 0,
+      tipo: 'credito',
+    },
+    subscription_city: {
+      nombre: 'Plan Pro Ciudad — Acceso Ilimitado 30 Días',
+      montoCentavos: 8900000,
+      creditos: 0,
+      dias: 30,
+      tipo: 'suscripcion_ciudad',
+    },
+    subscription_national: {
+      nombre: 'Plan Nacional VIP — Radar Total y Rebajas',
+      montoCentavos: 14900000,
+      creditos: 0,
+      dias: 30,
+      tipo: 'suscripcion_nacional',
+    },
+  };
+  return { ok: true, precios: base, base };
 }

@@ -10,6 +10,7 @@
  * - /api/admin/resumen -> lib/admin/resumen.js (cifras reales y alertas de la pantalla de inicio)
  * - /api/admin/clientes | /cliente -> lib/admin/clientes.js (cuentas, créditos y planes)
  * - /api/admin/pagos | /pago -> lib/admin/pagos.js (órdenes de Wompi y conciliación)
+ * - /api/admin/cazador | /auditoria | /precios -> lib/admin/operacion.js (estado del teléfono, historial, precios)
  *
  * Las rutas /api/admin/<acción> llegan aquí por la regla de reenlace de vercel.json.
  * Capas de seguridad: Google + ADMIN_EMAILS + custom claim `admin` + TOTP (ver lib/admin/acceso.js).
@@ -24,6 +25,7 @@ let retirosHandler = null;
 let resumenHandler = null;
 let clientesHandler = null;
 let pagosHandler = null;
+let operacionHandler = null;
 let errorCarga = null;
 
 function cargarManejadores() {
@@ -36,6 +38,7 @@ function cargarManejadores() {
     resumenHandler = require('../lib/admin/resumen');
     clientesHandler = require('../lib/admin/clientes');
     pagosHandler = require('../lib/admin/pagos');
+    operacionHandler = require('../lib/admin/operacion');
   } catch (e) {
     const faltante = /Cannot find module '([^']+)'/.exec(e && e.message ? e.message : '');
     errorCarga = {
@@ -69,6 +72,10 @@ async function handler(req, res) {
   if (action === 'clientes' || action === 'cliente') {
     req.query = { ...(req.query || {}), action };
     return clientesHandler(req, res);
+  }
+  if (action === 'cazador' || action === 'auditoria' || action === 'precios') {
+    req.query = { ...(req.query || {}), action };
+    return operacionHandler(req, res);
   }
   if (action === 'pagos' || action === 'pago') {
     req.query = { ...(req.query || {}), action };

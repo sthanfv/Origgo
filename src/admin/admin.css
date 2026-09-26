@@ -2056,3 +2056,36 @@ button.adm-tarjeta-dato {
     grid-column: auto;
   }
 }
+
+/* Precios (PanelOperacion.tsx) */
+.adm-precio {
+  margin: 0;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--adm-borde-suave);
+  border-radius: 14px;
+  background: var(--adm-cristal);
+}
+.adm-precio legend {
+  padding: 0 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--adm-texto-tenue);
+}
+.adm-fila-form .adm-campo {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+/* Dentro de un campo, la casilla no se estira en vertical. */
+.adm-fila-form .adm-campo .adm-input {
+  flex: none;
+  width: 100%;
+}
+.adm-detalle-auditoria {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}

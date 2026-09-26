@@ -15,6 +15,9 @@ import { leadsDeEjemplo, respuestaDeEjemplo, resumenDeEjemplo, vistaPrevia } fro
 import { PanelRetiros } from './PanelRetiros';
 import { PanelResumen, type DatosResumen, type Seccion } from './PanelResumen';
 import {
+  Bot,
+  History,
+  Tag,
   Building2,
   CreditCard,
   LayoutDashboard,
@@ -26,6 +29,7 @@ import {
 } from 'lucide-react';
 import { PanelClientes } from './PanelClientes';
 import { PanelPagos } from './PanelPagos';
+import { PanelAuditoria, PanelCazador, PanelPrecios } from './PanelOperacion';
 import { Hoja } from './comunes';
 
 /** Secciones del panel: menú lateral (computador) y barra inferior (teléfono). */
@@ -36,6 +40,9 @@ const SECCIONES: { id: Seccion; nombre: string; Icono: typeof Building2 }[] = [
   { id: 'pagos', nombre: 'Pagos', Icono: CreditCard },
   { id: 'retiros', nombre: 'Retiros', Icono: ShieldAlert },
   { id: 'vitrina', nombre: 'Vitrina', Icono: Store },
+  { id: 'precios', nombre: 'Precios', Icono: Tag },
+  { id: 'cazador', nombre: 'Cazador', Icono: Bot },
+  { id: 'auditoria', nombre: 'Auditoría', Icono: History },
 ];
 
 /** En el teléfono caben 4 secciones + "Más" (estándar de barras inferiores: máx. 5 botones). */
@@ -58,6 +65,8 @@ interface Lead {
 interface ShowcaseConfig {
   counterLabel?: string;
   counterValue?: string;
+  heroTitulo?: string;
+  heroSubtitulo?: string;
 }
 
 /** Error de la API del panel con su código HTTP y código interno (ej. 2FA_REQUERIDO). */
@@ -949,6 +958,12 @@ export function AdminApp() {
             <PanelClientes peticion={peticionPanel} onError={manejarError} />
           ) : pestana === 'pagos' ? (
             <PanelPagos peticion={peticionPanel} onError={manejarError} />
+          ) : pestana === 'cazador' ? (
+            <PanelCazador peticion={peticionPanel} onError={manejarError} />
+          ) : pestana === 'precios' ? (
+            <PanelPrecios peticion={peticionPanel} onError={manejarError} />
+          ) : pestana === 'auditoria' ? (
+            <PanelAuditoria peticion={peticionPanel} onError={manejarError} />
           ) : pestana === 'retiros' ? (
             <PanelRetiros authFetch={peticionPanel} onError={manejarError} />
           ) : pestana === 'vitrina' ? (
@@ -978,7 +993,32 @@ export function AdminApp() {
                     placeholder="Ej. 146"
                   />
                 </label>
+                <label className="adm-campo">
+                  <span>Título de la portada</span>
+                  <input
+                    className="adm-input"
+                    value={config.heroTitulo || ''}
+                    onChange={(e) => setConfig({ ...config, heroTitulo: e.target.value })}
+                    placeholder="Inmuebles en venta directo de sus dueños"
+                    maxLength={120}
+                  />
+                </label>
+                <label className="adm-campo">
+                  <span>Subtítulo de la portada</span>
+                  <textarea
+                    className="adm-input"
+                    value={config.heroSubtitulo || ''}
+                    onChange={(e) => setConfig({ ...config, heroSubtitulo: e.target.value })}
+                    placeholder="Déjalo vacío para usar el texto de siempre."
+                    maxLength={200}
+                    rows={3}
+                  />
+                </label>
               </div>
+              <p className="adm-nota">
+                Los campos vacíos usan el texto de siempre. La web muestra los cambios en unos
+                minutos (solo en español; en inglés se mantiene la traducción).
+              </p>
               <div className="adm-panel-pie">
                 <button className="adm-btn adm-btn-primario" type="submit" disabled={ocupado}>
                   {ocupado ? 'Guardando…' : 'Guardar cambios'}

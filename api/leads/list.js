@@ -8,6 +8,7 @@
  */
 
 const fs = require('fs');
+const { obtenerConfigPublica } = require('../../lib/configuracion-publica');
 const path = require('path');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
@@ -232,6 +233,8 @@ module.exports = async function handler(req, res) {
       totalPages,
       hayMas: page < totalPages,
       config: datasetConfig || {},
+      // Textos de la vitrina y precios editables desde el panel (lib/configuracion-publica.js).
+      publico: await obtenerConfigPublica(),
       fuente: origenDatos,
       leads: lotePaginado
     });

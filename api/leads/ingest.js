@@ -221,6 +221,15 @@ async function handler(req, res) {
         { ultima_ms: Date.now(), procesados: resultado.count, desactivados, reconciliados },
         { merge: true }
       );
+      // Historial de publicaciones (panel → Cazador): una entrada por envío del teléfono.
+      await db.coleccion('admin_cazador_log').add({
+        ms: Date.now(),
+        procesados: resultado.count,
+        desactivados,
+        reconciliados,
+        invalidos: invalidosOmitidos,
+        desindexados: desindexadosOmitidos,
+      });
     } catch (errEstado) {
       console.warn('[api/leads/ingest] No se pudo registrar el estado del cazador:', errEstado.message);
     }

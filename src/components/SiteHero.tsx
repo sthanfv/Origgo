@@ -8,6 +8,13 @@ interface SiteHeroProps {
   totalSectors: number;
   onScrollToCatalog: () => void;
   onOpenAbout: () => void;
+  /** Textos editables desde el panel (Vitrina); si faltan, se usan los de siempre. */
+  vitrina?: { counterLabel?: string; counterValue?: string; heroTitulo?: string; heroSubtitulo?: string };
+}
+
+/** El título se inserta como HTML: el texto del panel se escapa para que no pueda inyectar código. */
+function escaparHtml(texto: string): string {
+  return texto.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
 }
 
 export const SiteHero: React.FC<SiteHeroProps> = ({
@@ -16,8 +23,12 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
   totalSectors,
   onScrollToCatalog,
   onOpenAbout,
+  vitrina = {},
 }) => {
   const { t, isEn } = useLanguage();
+  // Los textos del panel están en español: en inglés se mantienen los traducidos.
+  const cifraContador = vitrina.counterValue || String(totalLeads > 0 ? totalLeads : 21);
+  const textoContador = vitrina.counterLabel ? vitrina.counterLabel.toUpperCase() : 'OPORTUNIDADES DETECTADAS HOY';
 
   return (
     <>
@@ -33,7 +44,7 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
               <span className="eyebrow-text" id="badgeSectoresHero">
                 {isEn 
                   ? `${totalLeads > 0 ? totalLeads : 21} OPPORTUNITIES DETECTED TODAY • AI ORIGGO FINDER`
-                  : `${totalLeads > 0 ? totalLeads : 21} OPORTUNIDADES DETECTADAS HOY • IA ORIGGO FINDER`}
+                  : `${cifraContador} ${textoContador} • IA ORIGGO FINDER`}
               </span>
               <button 
                 type="button" 
@@ -52,12 +63,14 @@ export const SiteHero: React.FC<SiteHeroProps> = ({
               dangerouslySetInnerHTML={{ 
                 __html: isEn 
                   ? 'Properties for sale <span class="editorial-italic">directly</span> from owners' 
-                  : 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños' 
+                  : vitrina.heroTitulo
+                    ? escaparHtml(vitrina.heroTitulo)
+                    : 'Inmuebles en venta <span class="editorial-italic">directo</span> de sus dueños' 
               }}
             />
 
             <p className="hero-macro-subtitle" id="heroSubtitle">
-              {t('hero_subtitle', 'El primer sistema de inteligencia artificial que rastrea portales inmobiliarios y redes sociales en tiempo real, detectando y conectando directamente con propietarios que no quieren intermediarios ni pagar comisiones.')}
+              {!isEn && vitrina.heroSubtitulo ? vitrina.heroSubtitulo : t('hero_subtitle', 'El primer sistema de inteligencia artificial que rastrea portales inmobiliarios y redes sociales en tiempo real, detectando y conectando directamente con propietarios que no quieren intermediarios ni pagar comisiones.')}
             </p>
 
             <div className="hero-cta-wrapper">

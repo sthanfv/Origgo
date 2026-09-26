@@ -20,33 +20,9 @@ const JWT_SECRET = requireEnv('JWT_SECRET', {
   testFallback: 'f61aaf96e7d33f87ce54c3efff2965c52295cc1b3c04ff9f9b17caf1a6bec232'
 });
 
-// Diccionario oficial de productos y precios en centavos de peso (COP)
-const PRODUCT_CATALOG = {
-  single_lead: {
-    nombre: 'Desbloqueo de Contacto Individual',
-    montoCentavos: 500000, // $5.000 COP
-    creditos: 1,
-    tipo: 'credito'
-  },
-  pack_10_leads: {
-    nombre: 'Bolsa de 10 Contactos Directos (-30% Desc.)',
-    montoCentavos: 3500000, // $35.000 COP
-    creditos: 10,
-    tipo: 'credito'
-  },
-  subscription_city: {
-    nombre: 'Plan Pro Ciudad — Acceso Ilimitado 30 Días',
-    montoCentavos: 8900000, // $89.000 COP
-    creditos: 0,
-    tipo: 'suscripcion_ciudad'
-  },
-  subscription_national: {
-    nombre: 'Plan Nacional VIP — Radar Total y Rebajas',
-    montoCentavos: 14900000, // $149.000 COP
-    creditos: 0,
-    tipo: 'suscripcion_nacional'
-  }
-};
+// Precios y productos: editables desde el panel (Firestore `config/precios`, ver lib/precios.js).
+// Cada orden guarda su monto al crearse, así que un cambio de precio no afecta pagos ya iniciados.
+const { obtenerPrecios } = require('../../lib/precios');
 
 const PRODUCT_CATALOG_EN = {
   single_lead: 'Single Direct Contact Unlock',
@@ -151,6 +127,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    const PRODUCT_CATALOG = await obtenerPrecios();
     const producto = PRODUCT_CATALOG[productType];
     if (!producto) {
       return res.status(400).json({ 
@@ -209,7 +186,7 @@ module.exports = async function handler(req, res) {
         const integrityChain = `${reference}${amountInCents}${currency}${integritySecret}`;
         const signature = crypto.createHash('sha256').update(integrityChain).digest('hex');
 
-        const nombreProducto = isEn ? (PRODUCT_CATALOG_EN[productType] || producto.nombre) : producto.nombre;
+        const nombreProducto = isEn ? (PRODUCT_CATALOG_EN[productType] || producto.nombreEn || producto.nombre) : producto.nombre;
 
         // Registrar pre-orden en el ledger para conciliación posterior
         await db.savePendingOrder(reference, {
@@ -222,6 +199,7 @@ module.exports = async function handler(req, res) {
           ciudad: ciudadLimpia,
           tipo: producto.tipo,
           creditos: producto.creditos,
+          dias: producto.dias,
           status: 'PENDING',
           accountExistedAtOrderCreation: Boolean(cuentaExistente),
           lang: reqLang,

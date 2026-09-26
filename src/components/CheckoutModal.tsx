@@ -7,7 +7,7 @@ import {
   recuperarPinPorEmailApi,
 } from '../services/auth';
 import { crearOrdenPagoBackend, desplegarWidgetWompi } from '../services/wompi';
-import { MODAL_PLANS, ModalPlanOption } from '../data/plans';
+import { formatoPrecio, ModalPlanOption, planesConPrecios, type PreciosPublicos } from '../data/plans';
 import { humanizarError } from '../utils/error-formatter';
 import { LeadSummaryMini } from './LeadSummaryMini';
 import { WelcomeVerificationNotice } from './WelcomeVerificationNotice';
@@ -23,6 +23,8 @@ interface CheckoutModalProps {
   onConfirmUnlock: (lead: LeadItem) => void;
   onSessionUpdate: (session: UserSession) => void;
   onLogout: () => void;
+  /** Precios vigentes del panel (si no llegan, se usan los de respaldo de data/plans.ts). */
+  precios?: PreciosPublicos | null;
 }
 
 const DOMINIOS_DESECHABLES = [
@@ -39,6 +41,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onConfirmUnlock,
   onSessionUpdate,
   onLogout,
+  precios,
 }) => {
   const { isEn } = useLanguage();
   const [activeTab, setActiveTab] = useState<'comprar' | 'tengo-pin' | 'cuenta'>(() => {
@@ -503,7 +506,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               /* VISTA NORMAL DE PLANES Y FORMULARIO */
               <>
                 <div className="pricing-options-grid">
-                  {MODAL_PLANS.map((plan) => (
+                  {planesConPrecios(precios).map((plan) => (
                     <label
                       key={plan.id}
                       className={`pricing-option-card ${plan.id === 'welcome_free' ? 'welcome-card' : ''} ${selectedPlan === plan.id ? 'active-option' : ''}`}
@@ -654,22 +657,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   ) : selectedPlan === 'single_lead' ? (
                     <>
                       <i className="fa-solid fa-lock"></i>
-                      <span>{isEn ? 'Pay Single Unlock ($5,000)' : 'Pagar Desbloqueo Individual ($5.000)'}</span>
+                      <span>{isEn ? 'Pay Single Unlock' : 'Pagar Desbloqueo Individual'} ({formatoPrecio(precios?.single_lead?.montoCentavos ?? 500000, isEn)})</span>
                     </>
                   ) : selectedPlan === 'pack_10_leads' ? (
                     <>
                       <i className="fa-solid fa-star"></i>
-                      <span>{isEn ? 'Pay 10 Contacts Pack ($35,000)' : 'Pagar Bolsa 10 Contactos ($35.000)'}</span>
+                      <span>{isEn ? `Pay ${precios?.pack_10_leads?.creditos ?? 10} Contacts Pack` : `Pagar Bolsa ${precios?.pack_10_leads?.creditos ?? 10} Contactos`} ({formatoPrecio(precios?.pack_10_leads?.montoCentavos ?? 3500000, isEn)})</span>
                     </>
                   ) : selectedPlan === 'subscription_city' ? (
                     <>
                       <i className="fa-solid fa-city"></i>
-                      <span>{isEn ? 'Activate City Pro ($89,000)' : 'Activar Plan Pro Ciudad ($89.000)'}</span>
+                      <span>{isEn ? 'Activate City Pro' : 'Activar Plan Pro Ciudad'} ({formatoPrecio(precios?.subscription_city?.montoCentavos ?? 8900000, isEn)})</span>
                     </>
                   ) : (
                     <>
                       <i className="fa-solid fa-crown"></i>
-                      <span>{isEn ? 'Activate National VIP ($149,000)' : 'Activar Plan Nacional VIP ($149.000)'}</span>
+                      <span>{isEn ? 'Activate National VIP' : 'Activar Plan Nacional VIP'} ({formatoPrecio(precios?.subscription_national?.montoCentavos ?? 14900000, isEn)})</span>
                     </>
                   )}
                 </button>
