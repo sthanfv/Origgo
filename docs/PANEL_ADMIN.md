@@ -35,7 +35,7 @@ El plan gratis (Spark) permite **50.000 lecturas y 20.000 escrituras al día**; 
 
 | Consumidor | Antes | Ahora |
 | --- | --- | --- |
-| Lista negra (el cazador la pide cada 3 min, 155 registros) | hasta ~74.000 lecturas/día | caché 30 min → máx. ~7.400/día; se renueva al registrar un retiro |
+| Lista negra (el cazador la pide cada 3 min) | hasta ~74.000 lecturas/día | caché de 24 h que se renueva al registrar un retiro (con 30 min y ~970 registros de prueba se agotó la cuota otra vez el 2026-09-25; lista vaciada) |
 | Catálogo público (`/api/leads/list`) | ~150–300 lecturas por visita no cacheada | caché 15 min → máx. ~14.400/día; se renueva al cambiar algo en el panel |
 | `npm test` | escribía y leía Firestore de producción | base en memoria (`FIRESTORE_DESACTIVADO=1`) |
 
@@ -49,7 +49,7 @@ El estándar es que toda función del sitio que requiera operación humana se ge
 | --- | --- | --- | --- |
 | Catálogo (ocultar, destacar, eliminar, buscar, filtrar, paginar) | ✅ Hecho | `leads` | |
 | Vitrina (contador de la portada) | ✅ Hecho | `config/showcase` | |
-| Solicitudes de retiro de anuncios (Habeas Data) | ⏳ Prioridad alta | `blacklisted_leads` | Obligación legal: ver y atender las solicitudes de los propietarios desde el panel |
+| Solicitudes de retiro de anuncios (Habeas Data) | ✅ Hecho (2026-09-25) | `solicitudes_retiro`, `blacklisted_leads` | Pestaña **Retiros**: cola con radicado y plazo, buscador, retirar/rechazar, reindexar. Ver [RETIRO_DE_ANUNCIOS.md](RETIRO_DE_ANUNCIOS.md) |
 | Auditoría (ver quién hizo qué) | ⏳ Pendiente | `admin_auditoria` | Ya se registra; falta la vista |
 | Métricas del embudo | ⏳ Pendiente | `funnel_daily_metrics` | |
 | Notificaciones push | ⏳ Pendiente | `push_subscriptions` | Enviar alertas desde el panel |

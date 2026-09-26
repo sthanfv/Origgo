@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FormularioRetiro } from './FormularioRetiro';
 
 export type SupportOptionKey = 'pago' | 'takedown' | 'cuenta';
 
@@ -19,9 +20,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 }) => {
   const [activeOption, setActiveOption] = useState<SupportOptionKey>(initialOption);
   const [payReference, setPayReference] = useState('');
-  const [takedownLeadId, setTakedownLeadId] = useState('');
-  const [takedownPhone, setTakedownPhone] = useState('');
-  const [takedownReason, setTakedownReason] = useState('ya_vendido');
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -51,34 +49,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
       onNotify('✓ Pago verificado y créditos acreditados.');
       setPayReference('');
     }, 900);
-  };
-
-  const handleTakedown = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!takedownLeadId.trim()) {
-      setFeedback({ text: 'Por favor ingresa la referencia o enlace del inmueble a retirar.', type: 'error' });
-      return;
-    }
-    setIsLoading(true);
-    setFeedback({ text: 'Procesando desindexación del inmueble conforme a Ley 1581...', type: 'info' });
-    try {
-      // Intentar enviar al endpoint de soporte serverless
-      await fetch('/api/support?action=takedown', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId: takedownLeadId.trim(),
-          telefono: takedownPhone.trim(),
-          motivo: takedownReason,
-        }),
-      }).catch(() => {});
-    } finally {
-      setIsLoading(false);
-      setFeedback({ text: '✓ Inmueble retirado exitosamente del índice público de Origgo (Habeas Data procesado).', type: 'success' });
-      onNotify('✓ Solicitud de desindexación procesada con éxito.');
-      setTakedownLeadId('');
-      setTakedownPhone('');
-    }
   };
 
   const handleSelectOption = (opt: SupportOptionKey) => {
@@ -261,88 +231,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
           </form>
         )}
 
-        {activeOption === 'takedown' && (
-          <form onSubmit={handleTakedown} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ textAlign: 'left' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <i className="fa-solid fa-link" style={{ color: 'var(--accent-emerald)', fontSize: '0.95rem' }}></i>
-                <span>Identificador o Enlace del Inmueble</span>
-              </label>
-              <input 
-                type="text" 
-                value={takedownLeadId} 
-                onChange={(e) => setTakedownLeadId(e.target.value)}
-                placeholder="ID del anuncio o link directo"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  background: 'var(--bg-card-inner)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 10,
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem'
-                }}
-              />
-            </div>
-
-            <div style={{ textAlign: 'left' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <i className="fa-solid fa-phone" style={{ color: 'var(--accent-emerald)', fontSize: '0.95rem' }}></i>
-                <span>Teléfono del Propietario (Validación)</span>
-              </label>
-              <input 
-                type="text" 
-                value={takedownPhone} 
-                onChange={(e) => setTakedownPhone(e.target.value)}
-                placeholder="300 123 4567"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  background: 'var(--bg-card-inner)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 10,
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem'
-                }}
-              />
-            </div>
-
-            <div style={{ textAlign: 'left' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <i className="fa-solid fa-clipboard-question" style={{ color: 'var(--accent-emerald)', fontSize: '0.95rem' }}></i>
-                <span>Motivo de Retiro</span>
-              </label>
-              <select 
-                value={takedownReason} 
-                onChange={(e) => setTakedownReason(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  background: 'var(--bg-card-inner)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 10,
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem'
-                }}
-              >
-                <option value="ya_vendido">Inmueble ya vendido o arrendado</option>
-                <option value="desistimiento">Ya no deseo vender ni arrendar</option>
-                <option value="datos_erroneos">Datos o precio incorrectos en portal origen</option>
-                <option value="privacidad">Solicitud de privacidad y protección de datos</option>
-              </select>
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn-confirm-wompi" 
-              disabled={isLoading}
-              style={{ marginTop: 8, background: '#EF4444', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-            >
-              <i className="fa-solid fa-shield-xmark"></i>
-              <span>{isLoading ? 'Procesando...' : 'Retirar Inmueble del Índice'}</span>
-            </button>
-          </form>
-        )}
+        {activeOption === 'takedown' && <FormularioRetiro onNotify={onNotify} />}
       </div>
     </div>
   );

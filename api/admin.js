@@ -6,6 +6,7 @@
  * - /api/admin/leads  -> lib/admin/leads.js  (catálogo en Firestore: listar, ocultar, editar, borrar)
  * - /api/admin/config -> lib/admin/config.js (configuración de la vitrina)
  * - /api/admin/estado | /verificar | /salir -> lib/admin/dos-factores.js (segundo factor TOTP)
+ * - /api/admin/retiros | /buscar | /reindexar -> lib/admin/retiros.js (Habeas Data y buscador)
  *
  * Las rutas /api/admin/<acción> llegan aquí por la regla de reenlace de vercel.json.
  * Capas de seguridad: Google + ADMIN_EMAILS + custom claim `admin` + TOTP (ver lib/admin/acceso.js).
@@ -16,6 +17,7 @@
 let leadsHandler = null;
 let configHandler = null;
 let dosFactoresHandler = null;
+let retirosHandler = null;
 let errorCarga = null;
 
 function cargarManejadores() {
@@ -24,6 +26,7 @@ function cargarManejadores() {
     leadsHandler = require('../lib/admin/leads');
     configHandler = require('../lib/admin/config');
     dosFactoresHandler = require('../lib/admin/dos-factores');
+    retirosHandler = require('../lib/admin/retiros');
   } catch (e) {
     const faltante = /Cannot find module '([^']+)'/.exec(e && e.message ? e.message : '');
     errorCarga = {
@@ -50,6 +53,10 @@ async function handler(req, res) {
   if (action === 'estado' || action === 'verificar' || action === 'salir') {
     req.query = { ...(req.query || {}), action };
     return dosFactoresHandler(req, res);
+  }
+  if (action === 'retiros' || action === 'buscar' || action === 'reindexar') {
+    req.query = { ...(req.query || {}), action };
+    return retirosHandler(req, res);
   }
   return leadsHandler(req, res);
 }

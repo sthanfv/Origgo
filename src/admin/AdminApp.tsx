@@ -12,6 +12,7 @@ import {
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 import { leadsDeEjemplo, vistaPrevia } from './vista-previa';
+import { PanelRetiros } from './PanelRetiros';
 
 /** Inmueble del catálogo (Firestore `leads`). Se muestran solo campos no sensibles. */
 interface Lead {
@@ -44,7 +45,7 @@ class ErrorApi extends Error {
 
 type Fase = 'cargando' | 'login' | 'sin-acceso' | 'codigo' | 'panel';
 type Filtro = 'todos' | 'visibles' | 'ocultos' | 'destacados';
-type Pestana = 'catalogo' | 'vitrina';
+type Pestana = 'catalogo' | 'vitrina' | 'retiros';
 
 const POR_PAGINA = 20;
 const RECUPERAR_GOOGLE = 'https://accounts.google.com/signin/recovery';
@@ -674,6 +675,12 @@ export function AdminApp() {
             >
               Vitrina
             </button>
+            <button
+              className={pestana === 'retiros' ? 'adm-pestana activa' : 'adm-pestana'}
+              onClick={() => setPestana('retiros')}
+            >
+              Retiros
+            </button>
           </nav>
           <div className="adm-usuario">
             {user.photoURL && (
@@ -710,7 +717,9 @@ export function AdminApp() {
           </button>
         </section>
 
-        {pestana === 'vitrina' ? (
+        {pestana === 'retiros' ? (
+          <PanelRetiros authFetch={authFetch} onError={manejarError} />
+        ) : pestana === 'vitrina' ? (
           <form className="adm-panel" onSubmit={guardarConfig}>
             <div className="adm-panel-cabecera">
               <div>

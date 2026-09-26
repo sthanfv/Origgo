@@ -62,7 +62,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.21' },
-      body: { leadId, phone: '3159998877', reason: 'ya_vendido' }
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', relacion: 'propietario', acepta: true, leadId, phone: '3159998877', reason: 'ya_vendido' }
     };
     const res = mockRes();
 
@@ -80,7 +80,8 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.15' },
-      body: { phone: '3159998877', reason: 'ya_vendido' }
+      // El celular del anuncio SÍ identifica el inmueble; aquí no se envía ningún identificador.
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', acepta: true, reason: 'ya_vendido' }
     };
     const res = mockRes();
 
@@ -134,7 +135,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.26' },
-      body: { leadId: 'Hola por favor bajen mi casa de la calle 45 no quiero que la publiquen mas', phone: '3159998877' }
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', relacion: 'propietario', acepta: true, leadId: 'Hola por favor bajen mi casa de la calle 45 no quiero que la publiquen mas' }
     };
     const res = mockRes();
 
@@ -150,7 +151,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.27' },
-      body: { leadId: `https://origgo.online/#lead-modal?id=${targetLeadId}`, phone: '3001234567' }
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', relacion: 'propietario', acepta: true, leadId: `https://origgo.online/#lead-modal?id=${targetLeadId}`, phone: '3001234567' }
     };
     const res = mockRes();
 
@@ -169,7 +170,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.28' },
-      body: { leadId: `https://www.fincaraiz.com.co/inmueble/${portalNum}`, phone: '3001234567' }
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', relacion: 'propietario', acepta: true, leadId: `https://www.fincaraiz.com.co/inmueble/${portalNum}`, phone: '3001234567' }
     };
     const res = mockRes();
 
@@ -189,7 +190,7 @@ describe('🎧 Centro de Auto-Soporte y Desindexación Automatizada (Notice & Ta
     const req = {
       method: 'POST',
       headers: { 'x-forwarded-for': '186.84.10.29' },
-      body: { leadId: targetLeadId, phone: '3001234567', reason: textoLargo }
+      body: { nombre: 'Titular de Prueba', correo: 'titular@example.com', relacion: 'propietario', acepta: true, leadId: targetLeadId, phone: '3001234567', reason: textoLargo }
     };
     const res = mockRes();
 

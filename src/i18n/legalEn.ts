@@ -65,8 +65,8 @@ export const TEXTOS_LEGALES_ORIGGO_EN: Record<string, { titulo: string; subtitul
       <p>Under Law 1581 of 2012, data subjects may request the update or removal of public contact details directly via platform self-service channels or official WhatsApp.</p>
     </div>
     <div class="legal-section legal-section-highlight">
-      <div class="legal-section-badge"><i class="fa-solid fa-shield-cat"></i> 4. Automated Delisting for Owners</div>
-      <p>Origgo operates as an open public source search and indexing engine. If an owner has already closed their deal or wishes to remove their listing from the index, they can request immediate removal with the property reference.</p>
+      <div class="legal-section-badge"><i class="fa-solid fa-shield-cat"></i> 4. Listing Removal (Data Protection)</div>
+      <p>If you are the owner (or their representative) and want a listing removed, use "Remove Property" in the Self-Support Center. Identify the listing by its link, the code shown in its spec sheet, the original listing link or the phone published on it, and give your name and an email. You will receive a filing number. If the listing is identified exactly, we hide it immediately while we review the request; we reply within 15 business days (Colombian Law 1581 of 2012, art. 15). Request data is used only to handle it.</p>
     </div>`
   },
   reembolsos: {

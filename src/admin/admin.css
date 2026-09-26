@@ -1099,3 +1099,109 @@ body {
   background: hsla(158, 64%, 52%, 0.12);
   border: 1px solid hsla(158, 64%, 52%, 0.25);
 }
+
+/* ── Pestaña Retiros (Habeas Data) ─────────────────────────────────────────── */
+.adm-retiros-buscador {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+.adm-retiros-buscador .adm-input {
+  flex: 1;
+  min-width: 0;
+}
+.adm-retiro-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--adm-borde);
+  border-radius: 14px;
+  background: var(--adm-cristal-fuerte);
+  font-size: 0.88rem;
+}
+.adm-retiro-detalle p {
+  margin: 0;
+  color: var(--adm-texto-suave);
+  overflow-wrap: anywhere;
+}
+.adm-retiro-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--adm-texto-suave);
+}
+.adm-retiro-cabecera strong {
+  color: var(--adm-acento-claro);
+  font-family: ui-monospace, Consolas, monospace;
+}
+.adm-retiro-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.adm-retiro-resultados,
+.adm-retiro-lista {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.adm-retiro-resultados label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--adm-borde-suave);
+  border-radius: 12px;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.adm-retiro-resultados small {
+  color: var(--adm-texto-tenue);
+}
+.adm-retiro-lista button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--adm-borde-suave);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--adm-texto);
+  font: inherit;
+  font-size: 0.86rem;
+  text-align: left;
+  cursor: pointer;
+}
+.adm-retiro-lista button.activa,
+.adm-retiro-lista button:hover {
+  border-color: var(--adm-acento);
+}
+.adm-estado {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: hsla(158, 64%, 52%, 0.12);
+  color: var(--adm-acento-claro);
+}
+.adm-estado-recibida {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--adm-dorado);
+}
+.adm-estado-rechazada {
+  background: rgba(251, 113, 133, 0.14);
+  color: var(--adm-rojo);
+}
+@media (max-width: 720px) {
+  .adm-retiro-lista button {
+    grid-template-columns: 1fr auto;
+  }
+}

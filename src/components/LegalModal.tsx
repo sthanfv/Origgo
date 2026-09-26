@@ -101,10 +101,10 @@ const LEGAL_DATA_ES: Record<LegalTabKey, {
         text: 'Conforme a la Ley 1581 de 2012, los titulares pueden solicitar la actualización o supresión de sus datos de contacto públicos directamente a través de los canales de autogestión de la plataforma o vía WhatsApp oficial.'
       },
       {
-        title: '4. Desindexación Automatizada para Titulares',
+        title: '4. Retiro de Anuncios (Habeas Data)',
         icon: 'fa-solid fa-shield-cat',
         type: 'highlight',
-        text: 'Origgo opera como motor de búsqueda e indexación tecnológica de fuentes públicas abiertas. Si un propietario ya vendió su inmueble o desea retirar su anuncio del índice, puede solicitar el retiro inmediato indicando la referencia del inmueble en el Centro de Auto-Soporte.'
+        text: 'Si eres el propietario (o su apoderado) y quieres retirar un anuncio, usa "Retirar Inmueble" en el Centro de Auto-Soporte. Identifica el anuncio con su enlace, el código que aparece en su ficha técnica, el enlace del anuncio original o el celular publicado en él, e indica tu nombre y un correo. Recibirás un número de radicado. Si el anuncio queda identificado con exactitud, lo ocultamos de inmediato mientras revisamos la solicitud; respondemos en máximo 15 días hábiles (Ley 1581 de 2012, art. 15). Los datos de la solicitud solo se usan para atenderla.'
       }
     ]
   },

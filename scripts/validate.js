@@ -393,6 +393,13 @@ async function ejecutarValidacionCompleta() {
     assert(false, `Fallo en test de pagos idempotentes: ${e.message}`);
   }
 
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'retiros_habeas_data.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Retiro de anuncios (Habeas Data) e índice de búsqueda verificados al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de retiros Habeas Data: ${e.message}`);
+  }
+
   // Validación de resiliencia offline, autocompletado inteligente y skeletons en React
   assert(fs.existsSync(path.join(ROOT_DIR, 'src', 'components', 'CommandBar.tsx')), 'Componente CommandBar (Búsqueda y Autocompletado React) integrado');
   assert(fs.existsSync(path.join(ROOT_DIR, 'src', 'components', 'BentoGrid.tsx')), 'Componente BentoGrid (Skeletons y Bento Cards) integrado');

@@ -349,6 +349,11 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
               <span className="slideup-spec-key"><i className="fa-solid fa-building-flag"></i> {isEn ? 'Source Portal' : 'Portal Origen'}</span>
               <span className="slideup-spec-val">{item.portal || (isEn ? 'Direct' : 'Directo')}</span>
             </div>
+            {/* Código visible (estándar de portales): permite pedir el retiro del anuncio exacto (Habeas Data). */}
+            <div className="slideup-spec-card">
+              <span className="slideup-spec-key"><i className="fa-solid fa-hashtag"></i> {isEn ? 'Listing code' : 'Código del inmueble'}</span>
+              <span className="slideup-spec-val" style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.8rem', userSelect: 'all' }}>{item.id}</span>
+            </div>
             {item.dato_1 && (
               <div className="slideup-spec-card">
                 <span className="slideup-spec-key"><i className="fa-solid fa-ruler-combined"></i> {t('slideup_spec_area', 'Área')}</span>

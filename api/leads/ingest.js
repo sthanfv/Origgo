@@ -12,7 +12,8 @@
 const crypto = require('crypto');
 require('../../lib/env');
 const db = require('../../lib/db');
-const { encryptLeadContact, CURRENT_KID } = require('../../lib/crypto');
+const { encryptLeadContact, decryptLeadContact, obtenerKeyRingLeads, CURRENT_KID } = require('../../lib/crypto');
+const { camposIndice } = require('../../lib/indice-busqueda');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { invalidarCatalogo, desactivarLeads, reconciliarActivos } = require('../../lib/catalogo');
@@ -183,6 +184,17 @@ async function handler(req, res) {
         // Sin esto el catálogo público (que filtra activo == true) no mostraba lo ingerido.
         activo: true
       };
+
+      // Índice de búsqueda (retiros y panel): palabras clave + huellas del enlace y del celular.
+      // El contacto se descifra solo en memoria para calcular las huellas; no se guarda en claro.
+      const contactoPlano = decryptLeadContact(contactoCifrado, obtenerKeyRingLeads().keys) || {};
+      Object.assign(
+        registroLimpio,
+        camposIndice(registroLimpio, {
+          telefono: item.telefono_propietario || item.telefono || item.phone || contactoPlano.telefono,
+          enlace: item.enlace || item.url || contactoPlano.enlace,
+        })
+      );
 
       // Limpieza estricta: nunca asignar undefined para compatibilidad con Firestore
       delete registroLimpio.telefono_propietario;
