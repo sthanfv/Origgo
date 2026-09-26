@@ -9,6 +9,8 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 process.env.NODE_ENV = 'test';
+// Las pruebas usan la base de datos en memoria, nunca Firestore de producción (ver lib/db.js).
+process.env.FIRESTORE_DESACTIVADO = '1';
 require('../lib/env');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
@@ -63,6 +65,8 @@ async function ejecutarValidacionCompleta() {
     'lib/admin/leads.js',
     'lib/admin/config.js',
     'lib/admin-auth.js',
+    'lib/cache.js',
+    'lib/catalogo.js',
     'lib/admin/totp.js',
     'lib/admin/sesion.js',
     'lib/admin/acceso.js',
@@ -289,6 +293,13 @@ async function ejecutarValidacionCompleta() {
     assert(true, 'Pruebas del acceso al panel (token de Google, ADMIN_EMAILS, custom claim, 401/403/503) pasadas al 100%');
   } catch (e) {
     assert(false, `Fallo en test del acceso al panel: ${e.message}`);
+  }
+
+  try {
+    execSync(`node --test "${path.join(ROOT_DIR, 'tests', 'cache.test.js')}"`, { stdio: 'pipe' });
+    assert(true, 'Pruebas de la caché que protege la cuota de Firestore (memoria, paralelo, respaldo, invalidación) pasadas al 100%');
+  } catch (e) {
+    assert(false, `Fallo en test de la caché de Firestore: ${e.message}`);
   }
 
   try {

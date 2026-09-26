@@ -28,6 +28,18 @@ No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hit
 Variables en Vercel (Production): `ADMIN_EMAILS`, `ADMIN_TOTP_SECRET`, `ADMIN_BACKUP_CODES`.
 Límite del plan Hobby: `api/` debe tener como máximo **12 funciones**; toda ruta nueva del panel va como acción de `api/admin.js`.
 
+## Cuota gratuita de Firestore (incidente del 2026-09-25)
+
+El plan gratis (Spark) permite **50.000 lecturas y 20.000 escrituras al día**; se restablece a las **2:00 a. m. hora de Colombia**. Si se agota, Firestore responde `RESOURCE_EXHAUSTED`, el panel muestra "Se agotó la cuota diaria gratuita…" y la vitrina sirve la última copia buena.
+
+| Consumidor | Antes | Ahora |
+| --- | --- | --- |
+| Lista negra (el cazador la pide cada 3 min, 155 registros) | hasta ~74.000 lecturas/día | caché 30 min → máx. ~7.400/día; se renueva al registrar un retiro |
+| Catálogo público (`/api/leads/list`) | ~150–300 lecturas por visita no cacheada | caché 15 min → máx. ~14.400/día; se renueva al cambiar algo en el panel |
+| `npm test` | escribía y leía Firestore de producción | base en memoria (`FIRESTORE_DESACTIVADO=1`) |
+
+Caché: `lib/cache.js` (memoria de la función → Upstash → Firestore), con copia de respaldo de 24 h y pausa de 2 min tras un fallo de cuota.
+
 ## Módulos: hechos y pendientes
 
 El estándar es que toda función del sitio que requiera operación humana se gestione desde el panel. Las llaves, las copias de seguridad y los servidores **no** van aquí: siguen en las consolas de Google, Vercel y GitHub.
@@ -42,3 +54,9 @@ El estándar es que toda función del sitio que requiera operación humana se ge
 | Notificaciones push | ⏳ Pendiente | `push_subscriptions` | Enviar alertas desde el panel |
 | Usuarios, créditos y órdenes | ⏸ Depende del pivote | `users`, `transactions`, `orders` | Con "buscador que enlaza" desaparece la venta de contactos; definir después del pivote |
 | Edición completa de un inmueble (formulario) | ⏳ Pendiente | `leads` | Hoy la API ya acepta los campos editables; falta el formulario |
+
+## Pendientes técnicos detectados (prioridad)
+
+1. **Crítico — modo memoria permanente en `lib/db.js`:** al primer error de cuota, la función cambia a una base en memoria **hasta que Vercel la reinicie**, aunque la cuota ya se haya restablecido. Mientras tanto, un pago (webhook de Wompi), créditos o desbloqueos se guardarían en memoria y **se perderían**. Corregir: pausa temporal (reintentar Firestore tras unos minutos) y que las escrituras críticas respondan 503 (Wompi reintenta el webhook) en vez de guardar en memoria.
+2. **Cazador:** guardar localmente la última lista negra buena; hoy, si la consulta falla, usa una lista vacía y podría republicar anuncios retirados.
+3. **Cazador:** `publisher_web.js` tiene una clave de cifrado de respaldo escrita en el código (`LEADS_ENCRYPTION_KEY`). Quitarla, rotar la clave y dejarla solo en variables de entorno.

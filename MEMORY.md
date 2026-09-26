@@ -4,6 +4,21 @@
 
 ---
 
+- 114. **Hito 114: Incidente de cuota agotada en Firestore (RESOURCE_EXHAUSTED) y caché de lecturas**:
+    - **Síntoma (2026-09-25):** tras entrar con Google y el código 2FA, `/api/admin/leads` y `/api/admin/config` daban 500 `8 RESOURCE_EXHAUSTED: Quota exceeded`. La vitrina seguía en pie (usaba el catálogo local de respaldo).
+    - **Causa raíz:** plan gratis de Firestore (50.000 lecturas/día) sin ninguna caché de lecturas:
+      1. `/api/support/blacklist` leía la colección completa (155 registros) en cada consulta; el cazador la pide cada 3 minutos → hasta ~74.000 lecturas/día (la mitad con la caché CDN de 5 min). **Principal consumidor.**
+      2. `/api/leads/list` leía hasta 300 documentos por visita no cacheada (la caché CDN varía por página/filtros).
+      3. `npm test` usaba `service-account.json` y leía/escribía en **Firestore de producción** (incluso creaba usuarios de prueba); se corrió varias veces ese día.
+      4. Cada apertura del panel lee el catálogo completo (~150 docs).
+    - **Solución:** `lib/cache.js` (memoria de la función → Upstash → Firestore; respaldo de 24 h; una sola carga ante visitas simultáneas; pausa de 2 min tras fallo de cuota). `lib/catalogo.js` (catálogo público cacheado 15 min). Lista negra cacheada 30 min. Los retiros (`takedown.js`) y los cambios del panel invalidan la caché al instante. El panel responde 503 `CUOTA_AGOTADA` con mensaje claro y entra igual (sin "no hay inmuebles" engañoso). `lib/db.js`: `FIRESTORE_DESACTIVADO=1` deja las pruebas en memoria (lo fija `scripts/validate.js`) y `estadoAlmacenamiento()` informa por qué está en memoria.
+    - **Casos cuidados:** si Firestore pasa a memoria durante la lectura, no se cachea esa lista (evita que el cazador republique anuncios retirados); en pruebas/desarrollo la memoria es la fuente legítima y no se cachea.
+    - **Pruebas:** `tests/cache.test.js` (8). `tests/support_blacklist.test.js` y `tests/fair_usage_quota.test.js` ahora corren en memoria. `npm test` 8/8, typecheck y build en verde; 12 funciones.
+    - **Pendientes críticos detectados:** ver "Pendientes técnicos detectados" en `docs/PANEL_ADMIN.md` (modo memoria permanente que puede perder pagos; lista negra local en el cazador; clave de cifrado escrita en `publisher_web.js`).
+    - **Archivos afectados:** `lib/cache.js`, `lib/catalogo.js`, `api/leads/list.js`, `lib/support/blacklist.js`, `lib/support/takedown.js`, `lib/admin/leads.js`, `lib/admin/config.js`, `lib/db.js`, `src/admin/*`, `tests/cache.test.js`, `scripts/validate.js`, `docs/PANEL_ADMIN.md`, `MEMORY.md`.
+
+---
+
 - 113. **Hito 113: Rediseño del panel con la identidad de Origgo, códigos de respaldo en el Escritorio y hoja de ruta de módulos**:
     - **Por qué:** el propietario entró al panel y lo encontró pobre visualmente frente a los paneles profesionales; pidió guardar los códigos de respaldo en el Escritorio con una advertencia visible y preguntó si todas las funciones del sitio deben administrarse desde el panel.
     - **Rediseño** (`src/admin/AdminApp.tsx`, `src/admin/admin.css`, `admin.html`): fondo verde-petróleo con brillos y retícula, tarjetas de cristal, Lufga + Inter, logo e insignia "Admin". Entrada en PC con panel de marca a la izquierda y tarjeta a la derecha; botón oficial de Google; las 4 capas visibles; enlace de recuperación de la cuenta de Google. Pantalla de código con 6 casillas (avance automático, pegar, envío al completar) y modo "código de respaldo". Panel con barra fija, avatar, pestañas Catálogo/Vitrina, tarjetas de resumen que filtran al hacer clic, control segmentado de filtros, tabla con encabezado fijo y paginación, y tarjetas en celular.

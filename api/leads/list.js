@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
+const { obtenerConCache, CACHE_CATALOGO, cargarCatalogoFirestore } = require('../../lib/catalogo');
 
 let cacheDataset = null;
 let mtimeCache = 0;
@@ -91,28 +92,19 @@ module.exports = async function handler(req, res) {
     let leadsRaw = [];
     let origenDatos = 'local_file';
 
-    // 1. Intentar consultar leads en vivo desde Google Cloud Firestore
+    // 1. Catálogo en vivo desde Firestore, servido desde caché (lib/cache.js).
+    // [2026-09-25] Antes se leían hasta 300 documentos en CADA visita y la cuota gratuita
+    // (50.000 lecturas/día) se agotó. Ahora Firestore se consulta como máximo una vez cada
+    // 15 minutos; las visitas intermedias salen de la memoria de la función o de Upstash.
     try {
-      const db = require('../../lib/db');
-      const ref = db.leadsRef;
-      if (ref) {
-        const snapshot = await ref
-          .where('activo', '==', true)
-          .orderBy('timestamp_ms', 'desc')
-          .limit(300)
-          .get();
-
-        if (!snapshot.empty) {
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            // Omitir contacto cifrado en listado público por seguridad
-            const { contacto_cifrado: _omitido, ...leadPublico } = data;
-            leadsRaw.push({ ...leadPublico, id: doc.id });
-          });
-          if (leadsRaw.length > 0) {
-            origenDatos = 'firestore';
-          }
-        }
+      const { valor, origen } = await obtenerConCache(
+        CACHE_CATALOGO,
+        15 * 60,
+        cargarCatalogoFirestore
+      );
+      leadsRaw = Array.isArray(valor) ? [...valor] : [];
+      if (leadsRaw.length > 0) {
+        origenDatos = `firestore:${origen}`;
       }
     } catch (errFs) {
       console.warn('[leads:list] Firestore no disponible, usando dataset local:', errFs.message);
