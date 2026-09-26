@@ -16,6 +16,7 @@ const { encryptLeadContact, CURRENT_KID } = require('../../lib/crypto');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
 const { invalidarCatalogo, desactivarLeads, reconciliarActivos } = require('../../lib/catalogo');
+const { obtenerIdsListaNegra } = require('../../lib/support/blacklist');
 
 /**
  * Valida un token entrante comparándolo en tiempo constante contra el valor esperado.
@@ -127,6 +128,9 @@ async function handler(req, res) {
     let desindexadosOmitidos = 0;
     let invalidosOmitidos = 0;
 
+    // Lista negra de una sola vez y desde caché (antes: 1 lectura de Firestore por inmueble).
+    const listaNegra = items.length > 0 ? new Set(await obtenerIdsListaNegra()) : new Set();
+
     for (const item of items) {
       if (!item || typeof item !== 'object') {
         invalidosOmitidos++;
@@ -143,7 +147,7 @@ async function handler(req, res) {
       }
 
       // 5. Filtro de salvaguarda: desindexación por solicitud de titular (Notice & Takedown)
-      const estaDesindexado = await db.isLeadBlacklisted(id);
+      const estaDesindexado = listaNegra.has(id);
       if (estaDesindexado) {
         desindexadosOmitidos++;
         continue;

@@ -4,6 +4,12 @@
 
 ---
 
+- 119. **Hito 119: Segunda cuota agotada — la lista negra de pruebas consumía ~46.500 lecturas al día**:
+    - **Causa:** `blacklisted_leads` tenía ~970 documentos creados por pruebas automáticas que antes escribían en producción (ids `fincaraiz-unit-…`). La caché de la lista negra vencía cada 30 min y cada renovación leía la colección completa: ~970 × 48 ≈ 46.500 lecturas de las 50.000 gratuitas. Además, la ingesta leía un documento por inmueble para revisar la lista negra (~150 lecturas por publicación).
+    - **Limpieza (autorizada por el propietario: "la lista negra debe estar vacía"):** con la cuota de lecturas agotada se borraron por id, solo con escrituras, los 454 ids de la copia de respaldo en Upstash, y la caché quedó en `[]` (el cazador ya la recibe vacía). **Pendiente:** borrar los ~515 restantes cuando se renueve la cuota (2:00 a. m.), porque para listarlos hay que leer Firestore.
+    - **Arreglo:** caché de la lista negra de 24 h (se invalida al registrar un retiro; el vencimiento es solo red de seguridad) y la ingesta usa la lista en caché de una sola vez (`obtenerIdsListaNegra`) en vez de `isLeadBlacklisted` por inmueble.
+    - **Archivos:** `lib/support/blacklist.js`, `api/leads/ingest.js`. **Pruebas:** `leads_ingest` 9/9, `support_blacklist` 9/9.
+
 - 118. **Hito 118: Animación del código de verificación en el panel (referencia: video del propietario)**:
     - **Qué:** la casilla activa brilla, cada dígito entra con un rebote; al completar los 6, los dígitos viajan al centro y se funden en un destello que late mientras se verifica; si es correcto se dibuja un check dentro de un anillo luminoso (~1 s) y se entra al panel; si es incorrecto, las casillas vuelven en rojo, se sacuden, se vacían y el foco regresa a la primera. El botón acompaña el estado ("Verificando…", "Código correcto").
     - **Cómo (estándar):** solo CSS con `transform`/`opacity` (sin librerías, sin costo de rendimiento), estados por `data-estado` (`normal`, `verificando`, `exito`, `error`), aviso para lectores de pantalla (`role="status"`) y respeto de `prefers-reduced-motion` (sin animación y esperas mínimas). El modo de código de respaldo no se anima.
