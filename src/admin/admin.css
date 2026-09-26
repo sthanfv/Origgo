@@ -1042,12 +1042,55 @@ body {
     transform: rotate(360deg);
   }
 }
+/* Movimiento reducido (p. ej. Windows con "Efectos de animación" apagados): se REDUCE, no se
+   elimina (WCAG 2.3.3). Fuera escalas, sacudidas y desenfoques; se mantienen los fundidos, el
+   brillo de la casilla activa y una onda solo de luz mientras se verifica el código. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+  .adm-otp .adm-casilla:focus:not(.adm-casilla-llena) {
+    animation: adm-brillo 2s ease-in-out infinite !important;
+  }
+  .adm-otp[data-estado='verificando'] .adm-casilla,
+  .adm-otp[data-estado='exito'] .adm-casilla {
+    animation: adm-onda-suave 1.2s ease-in-out infinite !important;
+    animation-delay: calc(var(--i) * 150ms) !important;
+  }
+  .adm-otp-tarjeta::after {
+    transition: opacity 0.6s ease !important;
+  }
+  .adm-otp-vista-codigo {
+    transition: opacity 0.4s ease !important;
+  }
+  .adm-otp-tarjeta[data-estado='exito'] .adm-otp-vista-codigo {
+    filter: none;
+    transform: none;
+  }
+  .adm-otp-aparece,
+  .adm-otp-sello,
+  .adm-otp-continuar {
+    animation: adm-solo-aparece 0.5s ease 0.3s both !important;
+  }
+  .adm-otp-sello::after {
+    animation: adm-solo-aparece 0.5s ease 0.6s both !important;
+  }
+  .adm-otp-sello svg {
+    animation: adm-trazo-check 0.4s ease-out 0.5s both !important;
+  }
+}
+@keyframes adm-onda-suave {
+  35% {
+    border-color: var(--adm-acento-claro);
+    box-shadow: 0 0 22px 3px hsla(158, 64%, 52%, 0.45);
+  }
+}
+@keyframes adm-solo-aparece {
+  from {
+    opacity: 0;
   }
 }
 

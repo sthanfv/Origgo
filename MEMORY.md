@@ -4,6 +4,8 @@
 
 ---
 
+- 122. **Hito 122: Animaciones visibles con movimiento reducido (Windows con efectos apagados)**: el PC del propietario tiene los "Efectos de animación" de Windows apagados, Chrome envía `prefers-reduced-motion: reduce` y `admin.css` eliminaba toda animación, así que no veía nada. Ahora se REDUCE en vez de eliminar (WCAG 2.3.3): brillo de la casilla activa, onda solo de luz, fundido a "Código verificado", sello, check y botón; sin escalas, sacudidas ni desenfoques. Verificado con capturas emulando movimiento reducido; build OK.
+
 - 121. **Hito 121: Animación del código fiel a la referencia y cierre de sesión por inactividad (estándar OWASP/NIST)**:
     - **Por qué:** el propietario grabó el panel en producción: la animación anterior (un punto de 18 px y un check pequeño) no se notaba y no se parecía a la referencia (`C:/Users/Sthan/Escritorio/para antigravity/tiktok_…mp4`). Además pidió cerrar la sesión por inactividad "como lo hacen los profesionales".
     - **Animación (se comparó cuadro por cuadro con la referencia):** casilla activa con borde grueso y resplandor interno; dígitos con rebote; al completar, onda de luz y desenfoque por las casillas; al acertar, la TARJETA completa se transforma: el contenido se desenfoca, resplandor verde-azulado desde abajo, sello que crece con el check y halo, y botón **Continuar** (entra al panel). Error: rojo y sacudida. Vista previa en desarrollo: `/admin.html?vista=codigo` (123456 = correcto).
