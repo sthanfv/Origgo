@@ -24,6 +24,7 @@ No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hit
 | Perdí el celular | Entrar con un **código de respaldo** (archivo "NO TOCAR - Codigos de respaldo ORIGGO" en el Escritorio), luego `node scripts/admin-2fa-enrolar.js --forzar` y actualizar `ADMIN_TOTP_SECRET` y `ADMIN_BACKUP_CODES` en Vercel |
 | Olvidé la contraseña | El panel no tiene contraseña propia: se entra con Google. La recuperación es la de la cuenta de Google (enlace en la pantalla de entrada) |
 | Revisar el diseño sin iniciar sesión | `npm run dev` y abrir `/admin.html?vista=login`, `?vista=codigo`, `?vista=sin-acceso` o `?vista=panel` (solo en desarrollo; se elimina del build) |
+| Probar la animación del código | En `?vista=codigo`, `123456` simula un código correcto (anillo con check) y cualquier otro, uno incorrecto (sacudida en rojo). Solo en desarrollo |
 
 Variables en Vercel (Production): `ADMIN_EMAILS`, `ADMIN_TOTP_SECRET`, `ADMIN_BACKUP_CODES`.
 Límite del plan Hobby: `api/` debe tener como máximo **12 funciones**; toda ruta nueva del panel va como acción de `api/admin.js`.

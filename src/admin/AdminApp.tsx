@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type ClipboardEvent,
+  type CSSProperties,
   type FormEvent,
   type KeyboardEvent,
 } from 'react';
@@ -82,19 +83,49 @@ function LogoGoogle() {
   );
 }
 
-/** Seis casillas para el código TOTP: avanzan solas, aceptan pegar y envían al completarse. */
+/** Estado visual del código: escribiendo, verificando, correcto o incorrecto. */
+type EstadoCodigo = 'normal' | 'verificando' | 'exito' | 'error';
+
+const TEXTO_ESTADO: Record<EstadoCodigo, string> = {
+  normal: '',
+  verificando: 'Verificando el código…',
+  exito: 'Código correcto',
+  error: 'Código incorrecto',
+};
+
+/** ¿El sistema pide menos movimiento? Entonces las animaciones se acortan o se omiten. */
+function prefiereMenosMovimiento() {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
+const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Seis casillas para el código TOTP: avanzan solas, aceptan pegar y envían al completarse.
+ * Animación: brillo en la casilla activa, cada dígito entra con un rebote, al completarse los
+ * dígitos se juntan en el centro con un destello y, si el código es correcto, se dibuja un
+ * check dentro de un anillo luminoso; si es incorrecto, las casillas se sacuden en rojo.
+ * Solo CSS (transform/opacity) y respeta prefers-reduced-motion.
+ */
 function CasillasCodigo({
   valor,
   onCambio,
   onCompleto,
   deshabilitado,
+  estado,
 }: {
   valor: string;
   onCambio: (v: string) => void;
   onCompleto: (v: string) => void;
   deshabilitado: boolean;
+  estado: EstadoCodigo;
 }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Tras un código incorrecto las casillas se vacían: el foco vuelve a la primera.
+  useEffect(() => {
+    if (estado === 'normal' && !deshabilitado && valor === '') refs.current[0]?.focus();
+  }, [estado, deshabilitado, valor]);
 
   const fijar = (nuevo: string, enfocar: number) => {
     const limpio = nuevo.replace(/\D/g, '').slice(0, 6);
@@ -131,27 +162,40 @@ function CasillasCodigo({
   };
 
   return (
-    <div className="adm-casillas" role="group" aria-label="Código de 6 dígitos">
-      {Array.from({ length: 6 }, (_, i) => (
-        <input
-          key={i}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          className="adm-casilla"
-          value={valor[i] || ''}
-          onChange={(e) => alEscribir(i, e.target.value)}
-          onKeyDown={(e) => alTecla(i, e)}
-          onPaste={alPegar}
-          onFocus={(e) => e.target.select()}
-          inputMode="numeric"
-          autoComplete={i === 0 ? 'one-time-code' : 'off'}
-          maxLength={6}
-          disabled={deshabilitado}
-          autoFocus={i === 0}
-          aria-label={`Dígito ${i + 1}`}
-        />
-      ))}
+    <div className="adm-otp" data-estado={estado}>
+      <div className="adm-casillas" role="group" aria-label="Código de 6 dígitos">
+        {Array.from({ length: 6 }, (_, i) => (
+          <input
+            key={i}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            className={valor[i] ? 'adm-casilla adm-casilla-llena' : 'adm-casilla'}
+            style={{ '--i': i } as CSSProperties}
+            value={valor[i] || ''}
+            onChange={(e) => alEscribir(i, e.target.value)}
+            onKeyDown={(e) => alTecla(i, e)}
+            onPaste={alPegar}
+            onFocus={(e) => e.target.select()}
+            inputMode="numeric"
+            autoComplete={i === 0 ? 'one-time-code' : 'off'}
+            maxLength={6}
+            disabled={deshabilitado}
+            autoFocus={i === 0}
+            aria-label={`Dígito ${i + 1}`}
+          />
+        ))}
+      </div>
+      <div className="adm-otp-centro" aria-hidden="true">
+        <span className="adm-otp-destello" />
+        <svg className="adm-otp-check" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="25" />
+          <path d="M17 29l7.5 7.5L40 21" />
+        </svg>
+      </div>
+      <span className="adm-solo-lector" role="status">
+        {TEXTO_ESTADO[estado]}
+      </span>
     </div>
   );
 }
@@ -178,6 +222,7 @@ export function AdminApp() {
   const [config, setConfig] = useState<ShowcaseConfig>({});
   const [codigo, setCodigo] = useState('');
   const [modoRespaldo, setModoRespaldo] = useState(false);
+  const [estadoCodigo, setEstadoCodigo] = useState<EstadoCodigo>('normal');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [ocupado, setOcupado] = useState(false);
@@ -352,16 +397,36 @@ export function AdminApp() {
     if (ocupado) return;
     setOcupado(true);
     setError('');
+    const conAnimacion = !modoRespaldo;
+    if (conAnimacion) setEstadoCodigo('verificando');
     try {
-      await authFetch('/api/admin/verificar', {
-        method: 'POST',
-        body: JSON.stringify({ codigo: valor.trim() }),
-      });
+      if (import.meta.env.DEV && vistaPrevia()) {
+        // Vista previa (solo desarrollo): 123456 es correcto, cualquier otro es incorrecto.
+        await esperar(700);
+        if (valor !== '123456') throw new ErrorApi('Código incorrecto.', 401);
+      } else {
+        await authFetch('/api/admin/verificar', {
+          method: 'POST',
+          body: JSON.stringify({ codigo: valor.trim() }),
+        });
+      }
+      if (conAnimacion) {
+        // Se deja ver el check antes de entrar al panel.
+        setEstadoCodigo('exito');
+        await esperar(prefiereMenosMovimiento() ? 400 : 1100);
+      }
       setCodigo('');
-      await cargar();
+      if (!(import.meta.env.DEV && vistaPrevia())) await cargar();
+      setEstadoCodigo('normal');
     } catch (e) {
-      setCodigo('');
       manejarError(e);
+      if (conAnimacion) {
+        // Las casillas vuelven a su sitio en rojo y se sacuden antes de vaciarse.
+        setEstadoCodigo('error');
+        await esperar(prefiereMenosMovimiento() ? 0 : 650);
+      }
+      setCodigo('');
+      setEstadoCodigo('normal');
     } finally {
       setOcupado(false);
     }
@@ -548,6 +613,7 @@ export function AdminApp() {
               onCambio={setCodigo}
               onCompleto={verificarCodigo}
               deshabilitado={ocupado}
+              estado={estadoCodigo}
             />
           )}
 
@@ -558,7 +624,11 @@ export function AdminApp() {
             type="submit"
             disabled={ocupado || (modoRespaldo ? codigo.trim().length < 10 : codigo.length < 6)}
           >
-            {ocupado ? 'Verificando…' : 'Verificar'}
+            {estadoCodigo === 'exito'
+              ? 'Código correcto'
+              : ocupado && estadoCodigo !== 'error'
+                ? 'Verificando…'
+                : 'Verificar'}
           </button>
 
           <div className="adm-enlaces">

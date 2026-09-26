@@ -4,6 +4,13 @@
 
 ---
 
+- 118. **Hito 118: Animación del código de verificación en el panel (referencia: video del propietario)**:
+    - **Qué:** la casilla activa brilla, cada dígito entra con un rebote; al completar los 6, los dígitos viajan al centro y se funden en un destello que late mientras se verifica; si es correcto se dibuja un check dentro de un anillo luminoso (~1 s) y se entra al panel; si es incorrecto, las casillas vuelven en rojo, se sacuden, se vacían y el foco regresa a la primera. El botón acompaña el estado ("Verificando…", "Código correcto").
+    - **Cómo (estándar):** solo CSS con `transform`/`opacity` (sin librerías, sin costo de rendimiento), estados por `data-estado` (`normal`, `verificando`, `exito`, `error`), aviso para lectores de pantalla (`role="status"`) y respeto de `prefers-reduced-motion` (sin animación y esperas mínimas). El modo de código de respaldo no se anima.
+    - **Archivos:** `src/admin/AdminApp.tsx` (`CasillasCodigo`, `verificarCodigo`), `src/admin/admin.css`, `docs/PANEL_ADMIN.md`.
+    - **Verificado:** `tsc` limpio, `npm run build` OK (la vista previa no entra al paquete), capturas con Playwright de cada fase sin errores de página.
+    - **Pendiente:** llevar la misma animación al código OTP de Desmulta.
+
 - 117. **Hito 117: Pagos que nunca se pierden ni se duplican (fallo cerrado y acreditación única)**:
     - **Problema 1 (pagos perdidos):** `withRetry` en `lib/db.js` trataba un tiempo de espera (3,5 s, fácil de alcanzar en un arranque en frío) o la cuota agotada como motivo para cambiar TODA la instancia a la "libreta" temporal en memoria. Desde ese momento, pagos y créditos se guardaban en memoria y se perdían al apagarse la función.
     - **Problema 2 (pago cobrado sin entregar):** el webhook marcaba la transacción como procesada ANTES de acreditar; si acreditar fallaba, el reintento de Wompi se ignoraba como duplicado y el usuario no recibía lo pagado.
