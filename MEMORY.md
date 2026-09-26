@@ -4,6 +4,12 @@
 
 ---
 
+- 127. **Hito 127: Las pruebas ya no pueden tocar servicios de producción (incidente de caché de precios)**:
+    - **Qué pasó:** `lib/env.js` cargaba el `.env` real también en pruebas. La prueba de precios (`admin_operacion`) escribió en el Upstash de PRODUCCIÓN la copia de respaldo de 24 h de `config-publica` con un precio de prueba (bolsa a $40.000). No se llegó a mostrar (solo se usa si Firestore falla y el código que la lee acababa de publicarse). Se borraron las claves `cache:v1:(respaldo:)precios` y `cache:v1:(respaldo:)config-publica`.
+    - **Arreglo de raíz:** con `NODE_ENV=test`, `lib/env.js` no carga credenciales de servicios externos (UPSTASH_, FIREBASE_, WOMPI_, RESEND_, TELEGRAM_, R2_, CLOUDFLARE_, HEALTHCHECKS, INTERNAL_API_SECRET); se usan los valores de prueba.
+    - **Prueba inestable corregida:** `retiros_habeas_data` usaba un celular y un enlace fijos; el almacén local de pruebas conserva datos de ejecuciones anteriores. Ahora usa datos únicos por ejecución.
+    - **Suite completa (`npm test`, una vez, por tocar pagos y acceso):** 8/8 fases, 0 errores.
+
 - 126. **Hito 126: Panel — etapa 3: Cazador, Auditoría y Precios editables (fin del plan del panel)**:
     - **Precios fuera del código:** `lib/precios.js` es la única fuente (Firestore `config/precios`, caché 1 h que se borra al guardar; valores base de respaldo). Antes estaban repetidos en 5 archivos del servidor (create-order, webhook, reclamo, cron, conciliación) y 2 de la web (planes y botones de pago). Validación: $1.000–$1.000.000, créditos 1–1000, días 1–366. Cada orden guarda su monto y días al crearse: cambiar un precio no afecta pagos iniciados. Si falta la orden, el producto se deduce del código de la referencia con los precios vigentes (`productoPorCodigo` + `beneficio`).
     - **Web conectada al panel:** `lib/configuracion-publica.js` entrega textos de la Vitrina y precios dentro de la respuesta del catálogo (`api/leads/list.js` → `publico`), sin peticiones extra. **Hallazgo:** la Vitrina guardaba el contador pero la web nunca lo leía; ahora `SiteHero` usa contador, título y subtítulo del panel (título escapado contra inyección de HTML) y `CheckoutModal`/`data/plans.ts` usan los precios vigentes. Vitrina suma campos de título y subtítulo.

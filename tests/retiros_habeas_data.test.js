@@ -147,6 +147,9 @@ describe('🛡️ Retiro de anuncios (Habeas Data) e índice de búsqueda', () =
   it('8. reindexar llena el índice de inmuebles viejos y el buscador los encuentra', async () => {
     const id = `lead-inm-${sufijo()}`;
     const barrio = `Viejo${sufijo()}`;
+    // Datos únicos por ejecución: el almacén local de pruebas conserva lo de ejecuciones anteriores.
+    const telefono = `30${String(Math.floor(Math.random() * 1e8)).padStart(8, '0')}`;
+    const enlace = `https://metrocuadrado.com/x/${sufijo()}`;
     const { keys, activeKid } = obtenerKeyRingLeads();
     await db.leadsRef.doc(id).set({
       id,
@@ -154,7 +157,7 @@ describe('🛡️ Retiro de anuncios (Habeas Data) e índice de búsqueda', () =
       ciudad: 'Cali',
       barrio,
       activo: true,
-      contacto_cifrado: encryptLeadContact({ telefono: '3001112233', enlace: 'https://metrocuadrado.com/x/99' }, keys[activeKid], activeKid),
+      contacto_cifrado: encryptLeadContact({ telefono, enlace }, keys[activeKid], activeKid),
     });
     assert.equal((await buscarInmuebles(barrio)).resultados.length, 0, 'sin índice no aparece');
 
@@ -162,7 +165,7 @@ describe('🛡️ Retiro de anuncios (Habeas Data) e índice de búsqueda', () =
     assert.ok(r.actualizados >= 1);
     assert.equal(r.siguiente, null);
     assert.deepEqual((await buscarInmuebles(`cali ${barrio}`)).resultados.map((x) => x.id), [id]);
-    assert.deepEqual((await buscarInmuebles('300 111 2233')).resultados.map((x) => x.id), [id]);
-    assert.deepEqual((await buscarInmuebles('https://www.metrocuadrado.com/x/99/')).resultados.map((x) => x.id), [id]);
+    assert.deepEqual((await buscarInmuebles(`${telefono.slice(0, 3)} ${telefono.slice(3, 6)} ${telefono.slice(6)}`)).resultados.map((x) => x.id), [id]);
+    assert.deepEqual((await buscarInmuebles(enlace.replace('https://', 'https://www.') + '/')).resultados.map((x) => x.id), [id]);
   });
 });
