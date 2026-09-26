@@ -4,6 +4,14 @@
 
 ---
 
+- 116. **Hito 116: Ingesta por cambios desde el cazador (activo, retiros y alineación)**:
+    - **Contexto:** al instalar la publicación por cambios en el J7 se descubrió que el teléfono NUNCA escribió directo en Firestore (no tiene firebase-admin ni credenciales, correcto por mínimo privilegio): alimenta la vitrina por `POST /api/leads/ingest` con `INGEST_SECRET_KEY`. Ese canal solo recibía inmuebles nuevos y **no los marcaba `activo: true`**, que es el filtro del catálogo público.
+    - **Cambios (`api/leads/ingest.js`, `lib/catalogo.js`):** lo ingerido queda `activo: true`; nuevo campo `retirados` (máx. 100 ids por petición) que desactiva; `reconciliar: true` + `idsVigentes` (máx. 1.000) que, en la primera publicación del cazador, desactiva todo lo activo que no esté en su catálogo real (lee los activos una vez); tras cualquier cambio se invalida la caché del catálogo para que se vea de inmediato.
+    - **Pruebas (solo las del cambio):** `tests/leads_ingest.test.js` 9/9 (3 nuevas: queda activo, retiro desactiva, >100 retirados → 413).
+    - **Orden de despliegue:** primero la vitrina (este cambio) y después el cazador; si no, el teléfono enviaría retiros que la versión vieja rechaza.
+
+---
+
 - 115. **Hito 115: "Hace X horas" calculado en el navegador (el cazador publica solo cambios)**:
     - **Por qué:** el cazador (repo `ofertas-hunter-pro`, commit cc730ac) ahora publica solo lo nuevo, modificado o retirado, y ya no guarda `fecha_relativa` ni `dias_en_mercado` (se volvían viejos y obligaban a reescribir los 150 inmuebles ~20 veces al día). También se cortó el commit del catálogo a GitHub: `data/inmobiliario.json` del repo queda solo como respaldo histórico.
     - **Cambio:** `src/components/BentoCard.tsx` calcula la etiqueta de tiempo desde `timestamp_ms` (`tiempoRelativo`); si falta, usa el texto antiguo.

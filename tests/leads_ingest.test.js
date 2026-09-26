@@ -166,4 +166,55 @@ describe('📱 Endpoint Serverless de Ingesta Segura (POST /api/leads/ingest)', 
     assert.ok(data.ids.includes(idActivo));
     assert.ok(!data.ids.includes(idDesindexado));
   });
+
+  it('7. Lo ingerido queda activo (el catálogo público filtra activo == true)', async () => {
+    const id = `ingest-activo-${Date.now()}`;
+    const res = crearRespuestaMock();
+    await ingestHandler(
+      {
+        method: 'POST',
+        headers: { 'x-origgo-ingest-token': secretKey },
+        body: { leads: [{ id, titulo: 'Casa activa', precio_raw: 250000000, telefono_propietario: '3005556677' }] },
+      },
+      res
+    );
+    assert.equal(res.getStatusCode(), 200);
+    const doc = await db.leadsRef.doc(id).get();
+    assert.equal(doc.data().activo, true);
+  });
+
+  it('8. Un envío solo con retirados desactiva esos inmuebles (publicación por cambios del cazador)', async () => {
+    const id = `ingest-retiro-${Date.now()}`;
+    const ingresar = crearRespuestaMock();
+    await ingestHandler(
+      {
+        method: 'POST',
+        headers: { 'x-origgo-ingest-token': secretKey },
+        body: { leads: [{ id, titulo: 'Lote vendido', precio_raw: 90000000, telefono_propietario: '3007778899' }] },
+      },
+      ingresar
+    );
+    const retirar = crearRespuestaMock();
+    await ingestHandler(
+      { method: 'POST', headers: { 'x-origgo-ingest-token': secretKey }, body: { leads: [], retirados: [id] } },
+      retirar
+    );
+    assert.equal(retirar.getStatusCode(), 200);
+    assert.equal(retirar.getData().desactivados, 1);
+    const doc = await db.leadsRef.doc(id).get();
+    assert.equal(doc.data().activo, false);
+  });
+
+  it('9. Más de 100 retirados en una petición se rechaza con 413', async () => {
+    const res = crearRespuestaMock();
+    await ingestHandler(
+      {
+        method: 'POST',
+        headers: { 'x-origgo-ingest-token': secretKey },
+        body: { leads: [], retirados: Array.from({ length: 101 }, (_, i) => `r-${i}`) },
+      },
+      res
+    );
+    assert.equal(res.getStatusCode(), 413);
+  });
 });

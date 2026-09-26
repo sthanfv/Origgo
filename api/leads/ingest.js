@@ -15,6 +15,7 @@ const db = require('../../lib/db');
 const { encryptLeadContact, CURRENT_KID } = require('../../lib/crypto');
 const { aplicarCorsSeguro } = require('../../lib/cors');
 const { checkRateLimitAsync } = require('../../lib/rate-limiter');
+const { invalidarCatalogo, desactivarLeads, reconciliarActivos } = require('../../lib/catalogo');
 
 /**
  * Valida un token entrante comparándolo en tiempo constante contra el valor esperado.
@@ -97,8 +98,16 @@ async function handler(req, res) {
     }
     body = body || {};
     const items = Array.isArray(body) ? body : (Array.isArray(body.leads) ? body.leads : null);
+    // [2026-09-25] El cazador publica solo cambios: además de inmuebles nuevos/modificados puede
+    // enviar `retirados` (se desactivan) y, en su primera publicación, `idsVigentes` con
+    // `reconciliar: true` (se desactiva todo lo activo que no esté en el catálogo real).
+    const retirados = Array.isArray(body.retirados) ? body.retirados.map((x) => String(x).trim()).filter(Boolean) : [];
+    const reconciliar = body.reconciliar === true && Array.isArray(body.idsVigentes);
+    if (retirados.length > 100 || (reconciliar && body.idsVigentes.length > 1000)) {
+      return res.status(413).json({ success: false, error: 'Demasiados identificadores en una sola petición' });
+    }
 
-    if (!items || items.length === 0) {
+    if (!items || (items.length === 0 && retirados.length === 0 && !reconciliar)) {
       return res.status(400).json({
         success: false,
         error: 'Cuerpo de petición inválido. Se requiere un arreglo de leads no vacío.'
@@ -166,7 +175,9 @@ async function handler(req, res) {
         titulo,
         precio_raw: precioRaw,
         precio: item.precio || `$ ${precioRaw.toLocaleString('es-CO')}`,
-        contacto_cifrado: contactoCifrado
+        contacto_cifrado: contactoCifrado,
+        // Sin esto el catálogo público (que filtra activo == true) no mostraba lo ingerido.
+        activo: true
       };
 
       // Limpieza estricta: nunca asignar undefined para compatibilidad con Firestore
@@ -181,10 +192,17 @@ async function handler(req, res) {
 
     // 7. Persistencia atómica en Firestore / almacén local
     const resultado = await db.upsertLeadsBatch(leadsAptos);
+    const desactivados = await desactivarLeads(retirados);
+    const reconciliados = reconciliar ? await reconciliarActivos(body.idsVigentes) : 0;
+
+    // La vitrina muestra los cambios de inmediato (sin esperar a que venza la caché).
+    if (resultado.count > 0 || desactivados > 0 || reconciliados > 0) await invalidarCatalogo();
 
     return res.status(200).json({
       success: true,
       procesados: resultado.count,
+      desactivados,
+      reconciliados,
       desindexadosOmitidos,
       invalidosOmitidos,
       ids: resultado.ids
