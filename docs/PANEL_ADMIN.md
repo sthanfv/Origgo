@@ -15,6 +15,13 @@ Página aparte del sitio público (`admin.html` + `src/admin/`), con `noindex`.
 Además: máx. 5 intentos de código cada 15 min, cada código sirve una sola vez, y todo queda en `admin_auditoria`.
 No se usa `firebase-admin/auth` en Vercel (falla con `ERR_REQUIRE_ESM`); ver hito 110 de `MEMORY.md`.
 
+## Protección extra (2026-09-26)
+
+- **Modo sudo:** eliminar inmuebles, cambiar precios, ajustar clientes y resolver retiros piden el código otra vez si pasaron más de 10 minutos desde el último.
+- **Aviso por correo en cada ingreso** al panel (método, hora e IP aproximada).
+- **Ayuda en cada sección:** recuadro "¿Qué es esta sección y cómo se usa?" para quien reciba el panel.
+- Detalle completo: [AUDITORIA_SEGURIDAD_2026-09-26.md](AUDITORIA_SEGURIDAD_2026-09-26.md).
+
 ## Estructura (patrón de paneles profesionales)
 
 - **Computador:** menú lateral fijo con las secciones y el usuario; contenido a la derecha.

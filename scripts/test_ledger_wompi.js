@@ -261,10 +261,12 @@ async function runTests() {
 
   // TEST 6b: Restauración por enlace temporal firmado sin filtrar PIN
   console.log('▶ Test 6b: Restauración de sesión por token temporal de correo...');
+  // Formato real (lib/auth/recover.js): con nonce, que hace el enlace de un solo uso.
   const recoveryToken = signJwt({
     purpose: 'recover_session',
     phone: testCelular,
-    role: 'recovery'
+    role: 'recovery',
+    nonce: crypto.randomUUID()
   }, jwtSecret, 15 / (24 * 60));
   const mockReqRecoverToken = {
     method: 'POST',
@@ -276,6 +278,9 @@ async function runTests() {
   assert.strictEqual(mockResRecoverToken.statusCode, 200);
   assert.ok(mockResRecoverToken.data.token, 'Debe emitir sesión con token temporal válido');
   assert.strictEqual(mockResRecoverToken.data.user.pin, undefined, 'La restauración por correo no debe devolver PIN');
+  const mockResRecoverReuso = createMockRes();
+  await sessionHandler(mockReqRecoverToken, mockResRecoverReuso);
+  assert.strictEqual(mockResRecoverReuso.statusCode, 401, 'El mismo enlace no debe servir dos veces');
   console.log('  ✅ Restauración temporal validada sin exponer credenciales permanentes.');
 
   // TEST 7: Desbloqueo de Inmueble y Descuento de 1 Crédito

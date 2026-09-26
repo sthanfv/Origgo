@@ -164,6 +164,33 @@ export async function reclamarReferenciaPago(
 }
 
 /**
+ * Canjea un enlace de recuperación (?recovery_token=…) por una sesión. El servidor lo acepta
+ * una sola vez y solo mientras está vigente.
+ */
+export async function recuperarSesionConEnlace(
+  recoveryToken: string
+): Promise<{ ok: boolean; token?: string; user?: UserSession; error?: string }> {
+  try {
+    const res = await apiFetch<{ ok: boolean; token?: string; user?: UserSession; message?: string; error?: string }>(
+      '/api/auth/session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'recover_token', recoveryToken }),
+      }
+    );
+    if (res.ok && res.token) {
+      localStorage.setItem('origgo_auth_jwt_token', res.token);
+      if (res.user?.phone) localStorage.setItem('origgo_session_phone', res.user.phone);
+      return res;
+    }
+    return { ok: false, error: res.message || res.error || 'El enlace no es válido o ya se usó.' };
+  } catch (err: any) {
+    return { ok: false, error: err.message || 'El enlace no es válido o ya se usó.' };
+  }
+}
+
+/**
  * Verifica si hay una sesión activa válida guardada en el navegador.
  */
 export async function verificarSesionLocal(): Promise<{ authenticated: boolean; user?: UserSession }> {
@@ -190,10 +217,23 @@ export async function verificarSesionLocal(): Promise<{ authenticated: boolean; 
 /**
  * Cierra la sesión activa y limpia los registros locales.
  */
+/**
+ * Cierra la sesión en este navegador y borra TODO dato personal guardado: token, celular,
+ * correo, créditos y los contactos desbloqueados (teléfonos de propietarios). Importante en
+ * equipos compartidos: el siguiente usuario no debe ver nada del anterior.
+ */
 export function cerrarSesionLocal(): void {
+  const CLAVES_PERSONALES = [
+    'origgo_auth_jwt_token',
+    'origgo_session_phone',
+    'origgo_auth_phone',
+    'origgo_auth_email',
+    'origgo_user_credits_v1',
+    'origgo_unlocked_leads_map',
+    'origgo_pending_lead_id',
+  ];
   try {
-    localStorage.removeItem('origgo_auth_jwt_token');
-    localStorage.removeItem('origgo_session_phone');
+    CLAVES_PERSONALES.forEach((clave) => localStorage.removeItem(clave));
   } catch {}
 }
 

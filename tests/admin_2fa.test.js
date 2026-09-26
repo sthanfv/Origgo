@@ -187,6 +187,28 @@ test('exigirAdminCon2FA: sin cookie pide 2FA; con cookie válida deja pasar', as
   assert.strictEqual(admin.email, 'admin@ejemplo.com');
 });
 
+test('modo sudo: las acciones peligrosas exigen un código de hace menos de 10 minutos', async () => {
+  const ahora = Date.now();
+  const min = 60 * 1000;
+  // Sesión activa (usada hace 1 min) pero con el código verificado hace 11 min.
+  const token = sesion.crearSesion('uid-admin', 8, { ini: ahora - 11 * min, ahora: ahora - min, v2fa: ahora - 11 * min });
+  const req = { headers: { authorization: 'Bearer t', cookie: `${sesion.COOKIE}=${token}` } };
+  const admin = await exigirAdminCon2FA(req);
+  assert.strictEqual(admin.email, 'admin@ejemplo.com', 'las acciones normales siguen funcionando');
+  await assert.rejects(
+    exigirAdminCon2FA(req, undefined, { reciente: true }),
+    (e) => e.status === 403 && e.codigo === 'REVERIFICAR',
+  );
+  // Con un código recién verificado (sesión nueva), la acción peligrosa sí pasa.
+  const nueva = { headers: { authorization: 'Bearer t', cookie: `${sesion.COOKIE}=${sesion.crearSesion('uid-admin')}` } };
+  await exigirAdminCon2FA(nueva, undefined, { reciente: true });
+  // Renovar la sesión por actividad NO renueva la verificación reciente.
+  let cabecera = '';
+  sesion.renovarSesion({ setHeader: (_n, v) => (cabecera = v) }, sesion.estadoSesion(req, 'uid-admin').datos);
+  const renovada = cabecera.split(';')[0].split('=').slice(1).join('=');
+  assert.strictEqual(sesion.estadoSesion({ headers: { cookie: `${sesion.COOKIE}=${renovada}` } }, 'uid-admin').datos.v2fa, ahora - 11 * min);
+});
+
 // --- Manejador /api/admin/{estado,verificar,salir} ----------------------------------------
 test('flujo completo: estado → código TOTP → cookie → estado verificado; el código no se reutiliza', async () => {
   process.env.NODE_ENV = 'test';

@@ -31,6 +31,7 @@ import { PanelClientes } from './PanelClientes';
 import { PanelPagos } from './PanelPagos';
 import { PanelAuditoria, PanelCazador, PanelPrecios } from './PanelOperacion';
 import { Hoja } from './comunes';
+import { AyudaSeccion } from './ayuda';
 
 /** Secciones del panel: menú lateral (computador) y barra inferior (teléfono). */
 const SECCIONES: { id: Seccion; nombre: string; Icono: typeof Building2 }[] = [
@@ -298,8 +299,29 @@ export function AdminApp() {
   const visibles = filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
 
   /** fetch con el token de Google; la cookie del segundo factor viaja sola (HttpOnly). */
+  // "Modo sudo": si el servidor pide confirmar el código (acción peligrosa), se abre el diálogo
+  // y, al confirmarlo, la acción se repite sola una vez.
+  const reverificarRef = useRef<(() => Promise<boolean>) | null>(null);
+  const [sudo, setSudo] = useState<{
+    codigo: string;
+    porCorreo: boolean;
+    error: string;
+    ocupado: boolean;
+  } | null>(null);
+  const resolverSudoRef = useRef<((ok: boolean) => void) | null>(null);
+  reverificarRef.current = () =>
+    new Promise<boolean>((resolver) => {
+      resolverSudoRef.current = resolver;
+      setSudo({ codigo: '', porCorreo: false, error: '', ocupado: false });
+    });
+
   const authFetch = useCallback(
-    async (ruta: string, opciones: RequestInit = {}, refrescarToken = false) => {
+    async (
+      ruta: string,
+      opciones: RequestInit = {},
+      refrescarToken = false,
+      reintento = false,
+    ): Promise<any> => {
       const actual = auth.currentUser;
       if (!actual) throw new ErrorApi('Sesión no iniciada.', 401);
       const token = await actual.getIdToken(refrescarToken);
@@ -312,12 +334,59 @@ export function AdminApp() {
         credentials: 'same-origin',
       });
       const datos = await res.json().catch(() => ({}));
+      if (!res.ok && datos.codigo === 'REVERIFICAR' && !reintento && reverificarRef.current) {
+        const confirmado = await reverificarRef.current();
+        if (confirmado) return authFetch(ruta, opciones, refrescarToken, true);
+        throw new ErrorApi(
+          'Acción cancelada: no se confirmó el código.',
+          403,
+          'REVERIFICAR_CANCELADO',
+        );
+      }
       if (!res.ok)
         throw new ErrorApi(datos.error || `Error ${res.status}`, res.status, datos.codigo);
       return datos;
     },
     [],
   );
+
+  const cerrarSudo = (ok: boolean) => {
+    resolverSudoRef.current?.(ok);
+    resolverSudoRef.current = null;
+    setSudo(null);
+  };
+
+  const confirmarSudo = async (codigoIngresado: string) => {
+    if (!sudo) return;
+    setSudo({ ...sudo, codigo: codigoIngresado, ocupado: true, error: '' });
+    try {
+      await authFetch('/api/admin/verificar', {
+        method: 'POST',
+        body: JSON.stringify({
+          codigo: codigoIngresado,
+          ...(sudo.porCorreo ? { metodo: 'correo' } : {}),
+        }),
+      });
+      cerrarSudo(true);
+    } catch (e) {
+      setSudo({
+        ...sudo,
+        codigo: '',
+        ocupado: false,
+        error: (e as Error).message || 'Código incorrecto.',
+      });
+    }
+  };
+
+  const sudoPorCorreo = async () => {
+    if (!sudo) return;
+    try {
+      await authFetch('/api/admin/codigo-correo', { method: 'POST', body: '{}' });
+      setSudo({ ...sudo, porCorreo: true, codigo: '', error: '' });
+    } catch (e) {
+      setSudo({ ...sudo, error: (e as Error).message });
+    }
+  };
 
   /** Traduce errores de la API a la fase correcta de la pantalla. */
   const manejarError = useCallback((e: unknown) => {
@@ -332,6 +401,10 @@ export function AdminApp() {
     }
     if (e instanceof ErrorApi && e.codigo === '2FA_REQUERIDO') {
       setFase('codigo');
+      return;
+    }
+    if (e instanceof ErrorApi && e.codigo === 'REVERIFICAR_CANCELADO') {
+      setError(e.message);
       return;
     }
     if (e instanceof ErrorApi && e.status === 403) {
@@ -892,6 +965,50 @@ export function AdminApp() {
           </div>
         </div>
       )}
+      {sudo && (
+        // Confirmación de identidad para acciones peligrosas ("modo sudo").
+        <div
+          className="adm-modal-fondo"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo-sudo"
+        >
+          <div className="adm-modal adm-modal-sudo">
+            <h2 id="titulo-sudo">Confirma que eres tú</h2>
+            <p>
+              {sudo.porCorreo
+                ? 'Escribe el código de 6 dígitos que te enviamos al correo.'
+                : 'Esta acción es sensible. Escribe el código de tu app autenticadora.'}
+            </p>
+            <CasillasCodigo
+              valor={sudo.codigo}
+              onCambio={(v) => setSudo({ ...sudo, codigo: v })}
+              onCompleto={confirmarSudo}
+              deshabilitado={sudo.ocupado}
+              estado={sudo.error ? 'error' : sudo.ocupado ? 'verificando' : 'normal'}
+            />
+            {sudo.error && <p className="adm-alerta adm-alerta-error">{sudo.error}</p>}
+            <div className="adm-modal-acciones">
+              {!sudo.porCorreo && (
+                <button
+                  className="adm-btn adm-btn-secundario"
+                  onClick={sudoPorCorreo}
+                  disabled={sudo.ocupado}
+                >
+                  Recibir código por correo
+                </button>
+              )}
+              <button
+                className="adm-btn adm-btn-secundario"
+                onClick={() => cerrarSudo(false)}
+                disabled={sudo.ocupado}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Menú lateral (computador) */}
       <aside className="adm-lateral" aria-label="Menú del panel">
         <Marca pequena />
@@ -946,6 +1063,8 @@ export function AdminApp() {
         <main className="adm-contenido">
           {error && <p className="adm-alerta adm-alerta-error">{error}</p>}
           {mensaje && <p className="adm-alerta adm-alerta-ok">{mensaje}</p>}
+
+          <AyudaSeccion key={pestana} seccion={pestana} />
 
           {pestana === 'resumen' ? (
             <PanelResumen

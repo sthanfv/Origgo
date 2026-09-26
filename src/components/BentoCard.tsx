@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { urlSegura } from '../utils/url-segura';
 import { LeadItem } from '../types';
 import { useLanguage } from '../i18n';
 import { inyectarOndaRipple } from '../utils/ripple';
@@ -283,7 +284,7 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
           {isUnlocked && !phoneClean ? (
             // Desbloqueado sin teléfono en el anuncio: se lleva al anuncio original, sin inventar números.
             <a
-              href={unlockedData?.link || '#'}
+              href={urlSegura(unlockedData?.link) || '#'}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-unlock-lead"
@@ -413,9 +414,9 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
                   </a>
                 </div>
                 )}
-                {unlockedData?.link && (
+                {urlSegura(unlockedData?.link) && (
                   <a
-                    href={unlockedData.link}
+                    href={urlSegura(unlockedData.link)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-unlock-lead"

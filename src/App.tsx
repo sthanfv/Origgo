@@ -8,6 +8,7 @@ import {
   verificarSesionLocal,
   cerrarSesionLocal,
   reclamarReferenciaPago,
+  recuperarSesionConEnlace,
   verificarTokenBienvenidaApi,
 } from './services/auth';
 import { desbloquearLeadApi } from './services/leads';
@@ -242,6 +243,24 @@ export function App() {
         .catch(() => {});
     }
 
+    // 1b. Enlace de acceso enviado por correo (?recovery_token=…): se quita de la URL de inmediato
+    // (no queda en el historial ni en capturas) y se canjea una sola vez en el servidor.
+    const recoveryToken = urlParams.get('recovery_token');
+    if (recoveryToken) {
+      const urlLimpia = new URL(window.location.href);
+      urlLimpia.searchParams.delete('recovery_token');
+      window.history.replaceState({}, '', urlLimpia.toString());
+      recuperarSesionConEnlace(recoveryToken).then((res) => {
+        if (res.ok && res.user) {
+          setUserSession({ ...res.user, token: res.token });
+          setUserCredits(res.user.credits || 0);
+          notify(isEn ? '✓ Access restored.' : '✓ Acceso restaurado.');
+        } else {
+          notify(res.error || (isEn ? 'The link is invalid or was already used.' : 'El enlace no es válido o ya se usó.'));
+        }
+      });
+    }
+
     // 2. Reconciliación automática si el usuario regresa de Wompi con ?reference=...
     const wompiRef = urlParams.get('reference') || urlParams.get('id');
 
@@ -445,6 +464,8 @@ export function App() {
         if (res.codigoError === 'NO_AUTENTICADO') {
           cerrarSesionLocal();
           setUserSession(null);
+          setUserCredits(0);
+          setUnlockedMap({});
           setLeadToUnlock(item);
           setCheckoutModalOpen(true);
           notify(isEn ? '🔒 Enter your PIN to continue' : '🔒 Ingresa tu PIN de 4 dígitos para continuar');
@@ -668,6 +689,8 @@ export function App() {
         onLogout={() => {
           cerrarSesionLocal();
           setUserSession(null);
+          setUserCredits(0);
+          setUnlockedMap({});
           notify(isEn ? 'Session closed successfully' : 'Sesión cerrada exitosamente');
         }}
       />

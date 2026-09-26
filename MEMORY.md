@@ -4,6 +4,14 @@
 
 ---
 
+- 129. **Hito 129: Auditoría de seguridad del frontend + blindaje del panel + ayuda en cada sección**:
+    - **Reporte completo:** `docs/AUDITORIA_SEGURIDAD_2026-09-26.md` (11 hallazgos: 3 altos, 5 medios, 3 bajos; 10 corregidos, 1 pendiente con plan).
+    - **Corregido hoy:** enlaces de recuperación de un solo uso (nonce quemado con `db.marcarTokenUsado`) y de 24 h en el correo de pago (antes 30 días reutilizable), y la web por fin procesa `?recovery_token` y lo borra de la URL; cerrar sesión borra todo dato personal del navegador; CSP sin scripts en línea (script de tema a `public/inicio.js`) y con `object-src 'none'`, `base-uri`, `form-action`, `frame-ancestors 'none'` (verificado con el build servido con la CSP real: 0 bloqueos); `src/utils/url-segura.ts` para enlaces externos.
+    - **Panel:** "modo sudo" (acciones peligrosas —eliminar inmueble, precios, ajustes de clientes, resolver retiros— exigen código de hace < 10 min; claim `v2fa`; diálogo "Confirma que eres tú" que repite la acción), y correo de aviso en CADA ingreso con método, hora e IP aproximada.
+    - **Ayuda en cada sección** (`src/admin/ayuda.tsx`): qué hace, cómo se usa y qué cuidar, para entregar el panel a otra persona.
+    - **Pendiente recomendado (H-02):** migrar la sesión del comprador a cookie HttpOnly con revocación (`sesionVersion`). Acción del propietario (H-10): restringir la llave web de Firebase a origgo.online en Google Cloud.
+    - **Pruebas:** `seguridad_auditoria` 5/5 (nueva), `admin_2fa` 16/16 (modo sudo), `test_ledger_wompi` (enlace de un solo uso); suite completa 8/8, 0 errores.
+
 - 128. **Hito 128: "Todo debe ser real" — fuera las simulaciones de la web pública**:
     - **Regla del propietario:** ninguna función simulada; solo pueden faltar las llaves de producción de Wompi (las cambiará él).
     - **Pago con el widget de Wompi:** al aprobarse, la web **inventaba el saldo** (+10, "999" o "9999" créditos) sin preguntar al servidor. Ahora llama al reclamo real (`reclamarReferenciaPago` → el servidor verifica con Wompi y acredita una sola vez), reintenta 4 veces cada 2,5 s por si Wompi tarda, y muestra el saldo real; si no se confirma, muestra la referencia para sincronizar después. Si la cuenta ya existía, el servidor acredita y pide entrar con el PIN (`requiresLogin`), y la web lo dice así.
