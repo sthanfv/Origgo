@@ -17,6 +17,24 @@ interface BentoCardProps {
   onUnlock: (item: LeadItem, index: number) => void;
 }
 
+/**
+ * "Hace X horas" calculado en el navegador desde la fecha real de captura (timestamp_ms).
+ * [2026-09-25] El cazador ya no guarda el texto "Hace 2 horas": se volvía viejo y obligaba a
+ * reescribir los 150 inmuebles en cada publicación. Si falta la fecha, usa el texto antiguo.
+ */
+function tiempoRelativo(timestampMs?: number, fechaTexto?: string, isEn?: boolean): string {
+  const ms = Number(timestampMs);
+  if (!ms || Number.isNaN(ms)) return formatearFechaRelativa(fechaTexto, isEn);
+  const min = Math.max(0, Math.floor((Date.now() - ms) / 60000));
+  if (min < 2) return isEn ? 'Just now' : '⚡ Justo ahora';
+  if (min < 60) return isEn ? `${min}m ago` : `Hace ${min} min`;
+  const horas = Math.floor(min / 60);
+  if (horas < 24) return isEn ? `${horas}h ago` : `Hace ${horas} ${horas === 1 ? 'hora' : 'horas'}`;
+  const dias = Math.floor(horas / 24);
+  if (dias < 30) return isEn ? `${dias}d ago` : `Hace ${dias} ${dias === 1 ? 'día' : 'días'}`;
+  return isEn ? 'Recent' : 'Captado recientemente';
+}
+
 function formatearFechaRelativa(fecha?: string, isEn?: boolean): string {
   if (!fecha) return isEn ? 'Recent' : 'Reciente';
   if (!isEn) return fecha;
@@ -184,7 +202,7 @@ export const BentoCard: React.FC<BentoCardProps> = React.memo(({
           <span className="badge-time-pill">
             <i className="fa-regular fa-clock"></i> 
             <span className="time-relative-text">
-              {formatearFechaRelativa(item.fecha_relativa, isEn)}
+              {tiempoRelativo(item.timestamp_ms, item.fecha_relativa, isEn)}
             </span>
           </span>
           {item.urgencia && (

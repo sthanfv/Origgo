@@ -4,6 +4,13 @@
 
 ---
 
+- 115. **Hito 115: "Hace X horas" calculado en el navegador (el cazador publica solo cambios)**:
+    - **Por qué:** el cazador (repo `ofertas-hunter-pro`, commit cc730ac) ahora publica solo lo nuevo, modificado o retirado, y ya no guarda `fecha_relativa` ni `dias_en_mercado` (se volvían viejos y obligaban a reescribir los 150 inmuebles ~20 veces al día). También se cortó el commit del catálogo a GitHub: `data/inmobiliario.json` del repo queda solo como respaldo histórico.
+    - **Cambio:** `src/components/BentoCard.tsx` calcula la etiqueta de tiempo desde `timestamp_ms` (`tiempoRelativo`); si falta, usa el texto antiguo.
+    - **Validación (proporcional):** typecheck y build en verde; sin suite completa.
+
+---
+
 - 114. **Hito 114: Incidente de cuota agotada en Firestore (RESOURCE_EXHAUSTED) y caché de lecturas**:
     - **Síntoma (2026-09-25):** tras entrar con Google y el código 2FA, `/api/admin/leads` y `/api/admin/config` daban 500 `8 RESOURCE_EXHAUSTED: Quota exceeded`. La vitrina seguía en pie (usaba el catálogo local de respaldo).
     - **Causa raíz:** plan gratis de Firestore (50.000 lecturas/día) sin ninguna caché de lecturas:
